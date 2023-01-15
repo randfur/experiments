@@ -1,21 +1,25 @@
 // Represents the following matrix shape:
-// [[0] [2] [4]]
-// [[1] [3] [5]]
-// [ 0   0   1 ]
+// [a c e]
+// [b d f]
+// [0 0 1]
 // This matches the order of HTMLCanvasContext2D.setTransform()'s parameters.
 export class Mat3 {
   constructor() {
-    this.data = new Float64Array(6);
-    this.reset();
+    this.a = 1;
+    this.b = 0;
+    this.c = 0;
+    this.d = 1;
+    this.e = 0;
+    this.f = 0;
   }
 
   reset() {
-    this.data[0] = 1;
-    this.data[1] = 0;
-    this.data[2] = 0;
-    this.data[3] = 1;
-    this.data[4] = 0;
-    this.data[5] = 0;
+    this.a = 1;
+    this.b = 0;
+    this.c = 0;
+    this.d = 1;
+    this.e = 0;
+    this.f = 0;
   }
 
   applyTransformJson(transformJson) {
@@ -31,71 +35,71 @@ export class Mat3 {
     // }
 
     // translate
-    // [[0] [2] [4]]   [1 0 tx]
-    // [[1] [3] [5]] * [0 1 ty]
-    // [ 0   0   1 ]   [0 0  1]
+    // [a c e]   [1 0 tx]
+    // [b d f] * [0 1 ty]
+    // [0 0 1]   [0 0  1]
     const tx = transformJson.translate?.x ?? 0;
     const ty = transformJson.translate?.y ?? 0;
     [
-      this.data[4],
-      this.data[5],
+      this.e,
+      this.f,
     ] = [
-      this.data[0] * tx + this.data[2] * ty + this.data[4],
-      this.data[1] * tx + this.data[3] * ty + this.data[5],
+      this.a * tx + this.c * ty + this.e,
+      this.b * tx + this.d * ty + this.f,
     ];
 
     // rotate
-    // [[0] [2] [4]]   [rx -ry  0]
-    // [[1] [3] [5]] * [ry  rx  0]
-    // [ 0   0   1 ]   [ 0   0  1]
+    // [a c e]   [rx -ry  0]
+    // [b d f] * [ry  rx  0]
+    // [0 0 1]   [ 0   0  1]
     const rx = transformJson.rotate?.x ?? 1;
     const ry = transformJson.rotate?.y ?? 0;
     [
-      this.data[0],
-      this.data[1],
-      this.data[2],
-      this.data[3],
+      this.a,
+      this.b,
+      this.c,
+      this.d,
     ] = [
-      this.data[0] * rx + this.data[2] * ry,
-      this.data[1] * rx + this.data[3] * ry,
-      this.data[0] * -ry + this.data[2] * rx,
-      this.data[1] * -ry + this.data[3] * rx,
+      this.a * rx + this.c * ry,
+      this.b * rx + this.d * ry,
+      this.a * -ry + this.c * rx,
+      this.b * -ry + this.d * rx,
     ];
 
     // scale
-    // [[0] [2] [4]]   [sx  0  0]
-    // [[1] [3] [5]] * [ 0 sy  0]
-    // [ 0   0   1 ]   [ 0  0  1]
+    // [a c e]   [sx  0  0]
+    // [b d f] * [ 0 sy  0]
+    // [0 0 1]   [ 0  0  1]
     const sx = transformJson.scale?.x ?? 1;
     const sy = transformJson.scale?.y ?? 1;
     [
-      this.data[0],
-      this.data[1],
-      this.data[2],
-      this.data[3],
+      this.a,
+      this.b,
+      this.c,
+      this.d,
     ] = [
-      this.data[0] * sx,
-      this.data[1] * sx,
-      this.data[2] * sy,
-      this.data[3] * sy,
+      this.a * sx,
+      this.b * sx,
+      this.c * sy,
+      this.d * sy,
     ];
 
     // origin
-    // [[0] [2] [4]]   [1 0 -ox]
-    // [[1] [3] [5]] * [0 1 -oy]
-    // [ 0   0   1 ]   [0 0   1]
+    // [a c e]   [1 0 -ox]
+    // [b d f] * [0 1 -oy]
+    // [0 0 1]   [0 0   1]
     const ox = transformJson.origin?.x ?? 0;
     const oy = transformJson.origin?.y ?? 0;
     [
-      this.data[4],
-      this.data[5],
+      this.e,
+      this.f,
     ] = [
-      this.data[0] * -ox + this.data[2] * -oy + this.data[4],
-      this.data[1] * -ox + this.data[3] * -oy + this.data[5],
+      this.a * -ox + this.c * -oy + this.e,
+      this.b * -ox + this.d * -oy + this.f,
     ];
   }
 
   applyToContext(context) {
-    context.setTransform(this.data[0], this.data[1], this.data[2], this.data[3], this.data[4], this.data[5]);
+    context.setTransform(this.a, this.b, this.c, this.d, this.e, this.f);
   }
 }
