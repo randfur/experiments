@@ -1,4 +1,4 @@
-import {Mat3} from './mat3.js';
+import {Mat3} from './mat3-optimised.js';
 
 const TAU = Math.PI * 2;
 
