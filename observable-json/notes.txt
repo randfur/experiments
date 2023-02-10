@@ -1,0 +1,2 @@
+# 2023-02-10 Friday
+- Goal: Solid JS but with JS DOM API instead of XML parsing and with signals being entire JSON objects that can be observed at any inner level.
