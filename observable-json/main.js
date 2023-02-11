@@ -1,16 +1,11 @@
+import {nonReactive} from './non-reactive.js';
+import {reactive} from './reactive.js';
+
 async function main() {
-  let model = makeObservable({
-    dog: [
-      { bark: 1 },
-      { bark: 2 },
-      { bark: 3 },
-    ],
-    cow: 'moo',
-  });
+  await new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve));
 
-
-  reRenderScope(() => {
-  });
+  document.body.append(nonReactiveExample());
+  document.body.append(reactiveExample());
 }
 
-window.addEventListener('DOMContentLoaded', main);
+main();
