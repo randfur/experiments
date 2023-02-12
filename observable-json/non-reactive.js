@@ -9,7 +9,7 @@ import {
 
 export function nonReactiveExample() {
   let model = {
-    dog: [
+    dogs: [
       { barks: 1 },
       { barks: 2 },
       { barks: 3 },
@@ -20,13 +20,13 @@ export function nonReactiveExample() {
   (async () => {
     while (true) {
       await sleep(1000 + random(3000));
-      pickRandom(model.dog).barks += coinFlip() ? 1 : -1;
+      pickRandom(model.dogs).barks += coinFlip() ? 1 : -1;
     }
   })();
 
   return flexColumn(
-    group(`there are ${sum(...model.dog.map(({barks}) => barks))} dog bark`),
-    ...model.dog.map(({barks}) => group(`🐶 ${'bark '.repeat(barks)}`)),
+    group(`there are ${sum(...model.dogs.map(({barks}) => barks))} dog bark`),
+    ...model.dogs.map(({barks}) => group(`🐶 ${'bark '.repeat(barks)}`)),
     group(`cow go ${model.cow}`),
   );
 }
