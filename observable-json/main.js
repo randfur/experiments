@@ -1,5 +1,5 @@
-import {nonReactive} from './non-reactive.js';
-import {reactive} from './reactive.js';
+import {nonReactiveExample} from './non-reactive.js';
+import {reactiveExample} from './reactive.js';
 
 async function main() {
   await new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve));
