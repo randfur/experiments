@@ -17,7 +17,12 @@ export function reactiveExample() {
     cow: 'moo',
   });
 
+  writeListener = () => {
+    console.log(read(model.cow));
+  };
   console.log(read(model.cow));
+  writeListener = null;
+  write(model.cow, 'tip');
 
   // (async () => {
   //   while (true) {
@@ -45,6 +50,7 @@ const observableJsonProxyHandler = {
         parent: target,
         property,
         subProxies: {},
+        writeListeners: [],
       }, observableJsonProxyHandler);
     }
     return target.subProxies[property];
@@ -61,10 +67,14 @@ function createObservableJson(json) {
   return new Proxy({
     json,
     subProxies: {},
+    writeListeners: [],
   }, observableJsonProxyHandler);
 }
 
 let modelAccessAllowed = true;
+let modelMutationAllowed = true;
+let writeListener = null;
+
 function render(generateTemplate) {
   // TODO:
   // - Crash on any writes.
@@ -80,8 +90,10 @@ function render(generateTemplate) {
 function read(proxy) {
   console.assert(modelAccessAllowed);
   const internals = proxy[jsonProxyInternals];
+  if (writeListener) {
+    internals.writeListeners.push(writeListener);
+  }
   return traverseForRead(internals);
-  // TODO: Set up observers.
 }
 
 function traverseForRead(internals) {
@@ -94,5 +106,6 @@ function traverseForRead(internals) {
 
 function write(proxy, value) {
   console.assert(modelAccessAllowed);
+  console.assert(modelMutationAllowed);
   // TODO.
 }
