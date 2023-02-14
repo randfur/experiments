@@ -63,7 +63,7 @@ const observableJsonProxyHandler = {
   },
 };
 
-function createObservableJson(json) {
+export function createObservableJson(json) {
   return new Proxy({
     json,
     subProxies: {},
@@ -75,7 +75,7 @@ let modelAccessAllowed = true;
 let modelMutationAllowed = true;
 let writeListener = null;
 
-function render(generateTemplate) {
+export function render(generateTemplate) {
   // TODO:
   // - Crash on any writes.
   // - Look for reads and member accesses.
@@ -87,7 +87,7 @@ function render(generateTemplate) {
   // return renderTemplate(template);?
 }
 
-function read(proxy) {
+export function read(proxy) {
   console.assert(modelAccessAllowed);
   const internals = proxy[jsonProxyInternals];
   if (writeListener) {
@@ -104,8 +104,17 @@ function traverseForRead(internals) {
   return traverseForRead(parent)[property];
 }
 
-function write(proxy, value) {
+export function write(proxy, value) {
   console.assert(modelAccessAllowed);
   console.assert(modelMutationAllowed);
-  // TODO.
+  const internals = proxy[jsonProxyInternals];
+  if ('json' in internals) {
+    internals.json = value;
+  } else {
+    const {parent, property} = internals;
+    traverseForRead(parent)[property] = value;
+  }
+  for (const writeListener of internals.writeListeners) {
+    writeListener();
+  }
 }
