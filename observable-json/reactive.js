@@ -5,6 +5,7 @@ import {
   coinFlip,
   popKeys,
   sum,
+  setElementStyle,
 } from './utils.js';
 
 export function reactiveExample() {
@@ -17,11 +18,11 @@ export function reactiveExample() {
     cow: 'moo',
   });
 
-  writeListener = () => {
+  observer = () => {
     console.log(read(model.cow));
   };
   console.log(read(model.cow));
-  writeListener = null;
+  observer = null;
   write(model.cow, 'tip');
 
   // (async () => {
@@ -50,7 +51,7 @@ const observableJsonProxyHandler = {
         parent: target,
         property,
         subProxies: {},
-        writeListeners: [],
+        observers: [],
       }, observableJsonProxyHandler);
     }
     return target.subProxies[property];
@@ -67,31 +68,69 @@ export function createObservableJson(json) {
   return new Proxy({
     json,
     subProxies: {},
-    writeListeners: [],
+    observers: [],
   }, observableJsonProxyHandler);
 }
 
 let modelAccessAllowed = true;
 let modelMutationAllowed = true;
-let writeListener = null;
+let observer = null;
 
-export function render(generateTemplate) {
+export function render(generateElementTemplate) {
   // TODO:
   // - Crash on any writes.
   // - Look for reads and member accesses.
   // - Register HTML pieces that require re-rendering for reads and member accesses.
   // - Clear registrations when things get re-rendered.
   modelAccessAllowed = false;
-  const template = generateTemplate();
+  const elementTemplate = generateElementTemplate();
   modelAccessAllowed = true;
-  // return renderTemplate(template);?
+  return renderElementTemplate(elementTemplate);
+}
+
+function renderElementTemplate(elementTemplate) {
+  const {tag, style, events, children} = popKeys(params, {
+    tag: 'div',
+    style: {},
+    events: {},
+    children: [],
+  });
+  console.assert(typeof tag === 'string');
+  const element = document.createElement(tag);
+  if (typeof style === 'function') {
+    // TODO: Not sure about observer registration:
+    // - How are observers cleaned up when this element goes away?
+    // - How to avoid reregistering the same observers a second time when it gets re-run?
+    // - How to ensure this observer gets registered on different values if state changes cause different values to be read via future branching?
+    observer = () => {
+      setElementStyle(element, style());
+    };
+    observer();
+    observer = null;
+  } else {
+    setElementStyle(element, style);
+  }
+}
+
+function flexColumn(...children) {
+  return ({
+    style: {
+      display: 'flex',
+      flexDirection: 'column',
+    },
+    children,
+  });
+}
+
+function group(...children) {
+  return { children };
 }
 
 export function read(proxy) {
   console.assert(modelAccessAllowed);
   const internals = proxy[jsonProxyInternals];
-  if (writeListener) {
-    internals.writeListeners.push(writeListener);
+  if (observer) {
+    internals.observers.push(observer);
   }
   return traverseForRead(internals);
 }
@@ -114,7 +153,17 @@ export function write(proxy, value) {
     const {parent, property} = internals;
     traverseForRead(parent)[property] = value;
   }
-  for (const writeListener of internals.writeListeners) {
-    writeListener();
+  for (const observer of internals.observers) {
+    observer();
+  }
+}
+
+export function mutate(proxy, mutator) {
+  console.assert(modelAccessAllowed);
+  console.assert(modelMutationAllowed);
+  const internals = proxy[jsonProxyInternals];
+  mutator(traverseForRead(internals));
+  for (const observer of internals.observers) {
+    observer();
   }
 }

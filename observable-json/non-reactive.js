@@ -39,13 +39,7 @@ function createElement(params) {
     children: [],
   });
   const element = document.createElement(tag);
-  for (const [property, value] of Object.entries(style)) {
-    if (property.startsWith('-')) {
-      element.style.setProperty(property, value);
-    } else {
-      element.style[property] = value;
-    }
-  }
+  setElementStyle(element, style);
   for (const [eventName, handler] of Object.entries(events)) {
     element.addEventListener(eventName, handler);
   }
