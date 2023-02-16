@@ -52,6 +52,38 @@
         dog: () => 'bark '.repeat(read(model.barks)),
       }
     ));
+  - And again with $n at the start of each rerender point:
+    render(container, () => group(
+      h1($0 () => capitalise(read(model.mode)), ' mode'),
+      $1 htmlSwitch(model.mode, {
+        pony: group(
+          group('You are ambushed by ', $2 model.ponies.length, ' ponies.'),
+          $3 htmlList(model.ponies, pony => group(
+            group($4 pony.name, ' hits you for ', $5 pony.attack, ' damage.'),
+            $6 htmlIf(
+              () => (read(pony.thievery) ?? 0) > 0,
+              group($7 pony.name, ' steals ', $8 pony.thievery, ' coins.'),
+            ),
+          ),
+        ),
+        dog: $9 () => 'bark '.repeat(read(model.barks)),
+      }
+    ));
+  - Rerender points appear at every model proxy, lambda and htmlBranch node.
+  - Rerender observation tree:
+    $0 model.mode
+    $1 model.mode
+      $2 model.ponies.length
+      $3 model.ponies
+        $4 model.ponies[n].name
+        $5 model.ponies[n].attack
+        $6 model.ponies[n].thievery
+          $7 model.ponies[n].name
+          $8 model.ponies[n].thievery
+      OR
+      $9 model.barks
+  - thievery is used at two levels (per pony), changes to the top one should wipe the lower one's active observation since it will be rerendered entirely and a new observation will be established.
+  - How to structure the observation registrations to enable render subtree clearing?
 
 
 # 2023-02-10 Friday
