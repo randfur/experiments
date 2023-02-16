@@ -133,6 +133,7 @@
             barks: 6,
           });
         - When a model node mutates it invokes its observations which return whether to wipe the sub observations from the rest of the model.
+          - It may not wipe e.g. for an htmlIf condition that doesn't change its value even though the model it reads from changes e.g. htmlIf(() => read(model.value) > 10) is true/false for many values.
         - Either the sub observation references will need to point to the proxy on which the observations live or all observations have a back link to the proxy on which they live.
         - When there are multiple batched mutations at the same time how to know which observation to trigger first?
           - Want to trigger the highest one.
