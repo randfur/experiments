@@ -55,55 +55,60 @@
         ),
       }
     ));
-  - And again with $n at the start of each rerender point:
+  - And again with $ at the start of each observation/rerender point:
     render(container, () => group(
-      h1($0 () => capitalise(read(model.mode)), ' mode'),
-      $1 htmlSwitch(model.mode, {
+      h1($ () => capitalise(read(model.mode)), ' mode'),
+      $ htmlSwitch(model.mode, {
         pony: group(
-          group('You are ambushed by ', $2 model.ponies.length, ' ponies.'),
-          $3 htmlList(model.ponies, pony => group(
-            group($4 pony.name, ' hits you for ', $5 pony.attack, ' damage.'),
-            $6 htmlIf(
+          group('You are ambushed by ', $ model.ponies.length, ' ponies.'),
+          $ htmlList(model.ponies, pony => group(
+            group($ pony.name, ' hits you for ', $ pony.attack, ' damage.'),
+            $ htmlIf(
               () => (read(pony.thievery) ?? 0) > 0,
-              group($7 pony.name, ' steals ', $8 pony.thievery, ' coins.'),
+              group($ pony.name, ' steals ', $ pony.thievery, ' coins.'),
             ),
           ),
         ),
         dog: group(
           'Dog go ',
-          $9 () => 'bark '.repeat(read(model.barks)),
+          $ () => 'bark '.repeat(read(model.barks)),
         ),
       }
     ));
   - Rerender points appear at every model proxy, lambda and htmlBranch node.
-  - Rerender observation tree:
+  - Rerender observation tree for the active model:
     $0 model.mode
     $1 model.mode
       $2 model.ponies.length
       $3 model.ponies
-        $4 model.ponies[n].name
-        $5 model.ponies[n].attack
-        $6 model.ponies[n].thievery
-          $7 model.ponies[n].name
-          $8 model.ponies[n].thievery
-      OR
-      $9 model.barks
-  - thievery is used at two levels (per pony), $6 and $8.
-  - Changes to the top one should wipe the lower one's active observation since it will be rerendered entirely and a new observation will be established.
+        $4 model.ponies[0]
+          $5 model.ponies[0].name
+          $6 model.ponies[0].attack
+          $7 model.ponies[0].thievery
+        $8 model.ponies[1]
+          $9 model.ponies[1].name
+          $10 model.ponies[1].attack
+          $11 model.ponies[1].thievery
+            $12 model.ponies[1].name
+            $13 model.ponies[1].thievery
+  - thievery is used at two levels in ponies[1], $11 and $13.
+  - Changes to $11 should wipe out $13 since that render node will be rerendered entirely and a new observation will be established.
   - How to structure the observation registrations to enable render subtree clearing?
   - Model tree with observations:
     const model = createObservableJson({
       mode: 'pony', $0 $1
-      ponies: [{ $2 $3
-        name: 'twigl', $4 $7
-        attack: 100, $5
-        thievery: undefined, $6 $8
-      }, {
-        name: 'flutpants', $4 $7
-        attack: 300, $5
-        thievery: 86, $6 $8
-      }],
-      barks: 6, $9
+      ponies: [ $3
+        { $4
+          name: 'twigl', $5
+          attack: 100, $6
+          thievery: undefined, $7
+        }, { $8
+          name: 'flutpants', $9 $12
+          attack: 300, $10
+          thievery: 86, $11 $13
+        }
+      ],
+      barks: 6,
     });
   - Perhaps the observations at each model node can be its own tree and invoking each one returns whether to wipe the subtree or invoke it.
     - The problem with this is the observation subtree can be for different points in the model rather than the one being mutated.
@@ -113,17 +118,19 @@
       - Maybe start with an expensive solution for now. Store lots of references to observations everywhere.
         - Model with heavy weight observation data where $n{$a, $b, $c} is an observation $n with references to its immediate subtree children $a, $b, $c:
           const model = createObservableJson({
-            mode: 'pony', $0{} $1{$2, $3, $9}
-            ponies: [{ $2{} $3{$4, $6}
-              name: 'twigl', $4{} $7{}
-              attack: 100, $5{}
-              thievery: undefined, $6{$7, $8} $8{}
-            }, {
-              name: 'flutpants', $4{} $7{}
-              attack: 300, $5{}
-              thievery: 86, $6{$7, $8} $8{}
-            }],
-            barks: 6, $9{}
+            mode: 'pony', $0{} $1{$2, $3}
+            ponies: [ $3{$4, $8}
+              { $4{$5, $6, $7}
+                name: 'twigl', $5{}
+                attack: 100, $6{}
+                thievery: undefined, $7{}
+              }, { $8{$9, $10, $11}
+                name: 'flutpants', $9{} $12{}
+                attack: 300, $10{}
+                thievery: 86, $11{$12, $13} $13{}
+              }
+            ],
+            barks: 6,
           });
         - When a model node mutates it invokes its observations which return whether to wipe the sub observations from the rest of the model.
         - Either the sub observation references will need to point to the proxy on which the observations live or all observations have a back link to the proxy on which they live.
