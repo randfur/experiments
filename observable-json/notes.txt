@@ -127,6 +127,12 @@
           });
         - When a model node mutates it invokes its observations which return whether to wipe the sub observations from the rest of the model.
         - Either the sub observation references will need to point to the proxy on which the observations live or all observations have a back link to the proxy on which they live.
+        - When there are multiple batched mutations at the same time how to know which observation to trigger first?
+          - Want to trigger the highest one.
+            - Maybe doesn't have to be highest of them all, just has to be a root, any root, probably.
+          - Perhaps observation references need back links to the observation referencing them.
+          - Do all observations have only one parent referencing observation? Probably, due to tree shape of observations.
+          - All htmlBranch observations are what define subtrees of other observations as they are the only thing that can cause a render branch to be deleted/replaced.
 
 # 2023-02-10 Friday
 - Goal: Solid JS but with JS DOM API instead of XML parsing and with signals being entire JSON objects that can be observed at any inner level.
