@@ -49,7 +49,10 @@
             ),
           ),
         ),
-        dog: () => 'bark '.repeat(read(model.barks)),
+        dog: group(
+          'Dog go ',
+          () => 'bark '.repeat(read(model.barks)),
+        ),
       }
     ));
   - And again with $n at the start of each rerender point:
@@ -66,7 +69,10 @@
             ),
           ),
         ),
-        dog: $9 () => 'bark '.repeat(read(model.barks)),
+        dog: group(
+          'Dog go ',
+          $9 () => 'bark '.repeat(read(model.barks)),
+        ),
       }
     ));
   - Rerender points appear at every model proxy, lambda and htmlBranch node.
@@ -82,9 +88,45 @@
           $8 model.ponies[n].thievery
       OR
       $9 model.barks
-  - thievery is used at two levels (per pony), changes to the top one should wipe the lower one's active observation since it will be rerendered entirely and a new observation will be established.
+  - thievery is used at two levels (per pony), $6 and $8.
+  - Changes to the top one should wipe the lower one's active observation since it will be rerendered entirely and a new observation will be established.
   - How to structure the observation registrations to enable render subtree clearing?
-
+  - Model tree with observations:
+    const model = createObservableJson({
+      mode: 'pony', $0 $1
+      ponies: [{ $2 $3
+        name: 'twigl', $4 $7
+        attack: 100, $5
+        thievery: undefined, $6 $8
+      }, {
+        name: 'flutpants', $4 $7
+        attack: 300, $5
+        thievery: 86, $6 $8
+      }],
+      barks: 6, $9
+    });
+  - Perhaps the observations at each model node can be its own tree and invoking each one returns whether to wipe the subtree or invoke it.
+    - The problem with this is the observation subtree can be for different points in the model rather than the one being mutated.
+    - A mutation at one point in the model tree needs to clear observations of a different part of the model tree based on the observation tree.
+    - The observation tree is like a less granular version of the render tree.
+    - How best to wipe the subtree of observations from the model?
+      - Maybe start with an expensive solution for now. Store lots of references to observations everywhere.
+        - Model with heavy weight observation data where $n{$a, $b, $c} is an observation $n with references to its immediate subtree children $a, $b, $c:
+          const model = createObservableJson({
+            mode: 'pony', $0{} $1{$2, $3, $9}
+            ponies: [{ $2{} $3{$4, $6}
+              name: 'twigl', $4{} $7{}
+              attack: 100, $5{}
+              thievery: undefined, $6{$7, $8} $8{}
+            }, {
+              name: 'flutpants', $4{} $7{}
+              attack: 300, $5{}
+              thievery: 86, $6{$7, $8} $8{}
+            }],
+            barks: 6, $9{}
+          });
+        - When a model node mutates it invokes its observations which return whether to wipe the sub observations from the rest of the model.
+        - Either the sub observation references will need to point to the proxy on which the observations live or all observations have a back link to the proxy on which they live.
 
 # 2023-02-10 Friday
 - Goal: Solid JS but with JS DOM API instead of XML parsing and with signals being entire JSON objects that can be observed at any inner level.
