@@ -5,7 +5,6 @@ import {
   coinFlip,
   popKeys,
   sum,
-  setElementStyle,
 } from './utils.js';
 
 export function reactiveExample() {
@@ -109,6 +108,17 @@ function renderElementTemplate(elementTemplate) {
     observer = null;
   } else {
     setElementStyle(element, style);
+  }
+}
+
+export function setElementStyle(element, style) {
+  for (const [property, value] of Object.entries(style)) {
+    // TODO: What if value is a function? Needs to register observation as well.
+    if (property.startsWith('-')) {
+      element.style.setProperty(property, value);
+    } else {
+      element.style[property] = value;
+    }
   }
 }
 

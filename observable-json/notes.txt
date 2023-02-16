@@ -1,2 +1,58 @@
+# 2023-02-16 Thursday
+- Render observation updating.
+  - HTML render output is a tree.
+    - Not of DOM nodes, more fine grained, nodes are the values on the DOM elements themselves as well as child DOM nodes.
+    - E.g. the value of CSS properties and XML attributes in addition to the DOM children.
+  - Nested content with nested observations.
+  - Every observation corresponds to a node in the tree getting re-rendered and replacing the previous node.
+  - Need to ensure observation notifications happen top down in the tree.
+    - Natural DFS registration is probably fine?
+  - How do element events work with model observer registration?
+    - Hopefully fine to just replace them whenever they update like any other render tree node.
+  - The entire subtree needs cleaning up on re-render.
+    - Need to be able to wipe those inner observers so they don't fire if they're listening to the same thing.
+      - Need data structure of observers on model to reflect render tree.
+      - Maybe model points back to template nodes?
+- What does branching look like in the template?
+  - Need if, switch and map (list and dict).
+  - Element is {...}.
+  - Branch point can be class instance.
+    - htmlIf(condition, trueBranch, falseBranch=null);
+    - htmlSwitch(value, { value: branch, ... });
+    - htmlList(list, item => branch);
+      - Filters on the list?
+      - sort, map, filter.
+    - htmlMap(object, ([key, value]) => branch);
+  - Example:
+    const model = createObservableJson({
+      mode: 'pony',
+      ponies: [{
+        name: 'twigl',
+        attack: 100,
+      }, {
+        name: 'flutpants',
+        attack: 300,
+        thievery: 86,
+      }],
+      barks: 6,
+    });
+    render(container, () => group(
+      h1(() => capitalise(read(model.mode)), ' mode'),
+      htmlSwitch(model.mode, {
+        pony: group(
+          group('You are ambushed by ', model.ponies.length, ' ponies.'),
+          htmlList(model.ponies, pony => group(
+            group(pony.name, ' hits you for ', pony.attack, ' damage.'),
+            htmlIf(
+              () => (read(pony.thievery) ?? 0) > 0,
+              group(pony.name, ' steals ', pony.thievery, ' coins.'),
+            ),
+          ),
+        ),
+        dog: () => 'bark '.repeat(read(model.barks)),
+      }
+    ));
+
+
 # 2023-02-10 Friday
 - Goal: Solid JS but with JS DOM API instead of XML parsing and with signals being entire JSON objects that can be observed at any inner level.

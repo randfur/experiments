@@ -30,13 +30,3 @@ export function sum(...values) {
   }
   return result;
 }
-
-export function setElementStyle(element, style) {
-  for (const [property, value] of Object.entries(style)) {
-    if (property.startsWith('-')) {
-      element.style.setProperty(property, value);
-    } else {
-      element.style[property] = value;
-    }
-  }
-}
