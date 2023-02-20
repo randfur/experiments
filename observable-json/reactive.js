@@ -15,28 +15,25 @@ export function reactiveExample() {
       { barks: 3 },
     ],
     cow: 'moo',
+    blue: true,
   });
 
-  observer = () => {
-    console.log(read(model.cow));
-  };
-  console.log(read(model.cow));
-  observer = null;
-  write(model.cow, 'tip');
+  (async () => {
+    while (true) {
+      await sleep(100 + random(300));
+      write(model.cow, coinFlip() ? 'moo' : 'tip');
+      write(model.blue, coinFlip());
+    }
+  })();
 
-  // (async () => {
-  //   while (true) {
-  //     await sleep(1000 + random(3000));
-  //     const barks = pickRandom(model.dogs).barks;
-  //     write(barks, read(barks) + coinFlip() ? 1 : -1);
-  //   }
-  // })();
-
-  // return render(() => flexColumn(
-  //   group('there are ', () => sum(...mapRead(model.dogs, ({barks}) => read(barks))), ' dog bark'),
-  //   () => mapRead(model.dogs, ({barks}) => group('🐶 ', () => 'bark '.repeat(read(barks)))),
-  //   group('cow go ', model.cow),
-  // ));
+  return render(document.body, () => {
+    return {
+      style: {
+        color: () => read(model.blue) ? 'blue' : 'grey',
+      },
+      textContent: model.cow,
+    };
+  });
 }
 
 const jsonProxyInternals = Symbol();
@@ -50,7 +47,7 @@ const observableJsonProxyHandler = {
         parent: target,
         property,
         subProxies: {},
-        observers: [],
+        writeObservers: [],
       }, observableJsonProxyHandler);
     }
     return target.subProxies[property];
@@ -67,15 +64,16 @@ export function createObservableJson(json) {
   return new Proxy({
     json,
     subProxies: {},
-    observers: [],
+    writeObservers: [],
   }, observableJsonProxyHandler);
 }
 
 let modelAccessAllowed = true;
 let modelMutationAllowed = true;
-let observer = null;
+let htmlBranchObserverStack = [];
+let writeObserver = null;
 
-export function render(generateElementTemplate) {
+export function render(container, generateElementTemplate) {
   // TODO:
   // - Crash on any writes.
   // - Look for reads and member accesses.
@@ -84,11 +82,11 @@ export function render(generateElementTemplate) {
   modelAccessAllowed = false;
   const elementTemplate = generateElementTemplate();
   modelAccessAllowed = true;
-  return renderElementTemplate(elementTemplate);
+  return renderElementTemplate(container, elementTemplate);
 }
 
-function renderElementTemplate(elementTemplate) {
-  const {tag, style, events, children} = popKeys(params, {
+function renderElementTemplate(container, elementTemplate) {
+  const {tag, style, events, children} = popKeys(elementTemplate, {
     tag: 'div',
     style: {},
     events: {},
@@ -96,31 +94,58 @@ function renderElementTemplate(elementTemplate) {
   });
   console.assert(typeof tag === 'string');
   const element = document.createElement(tag);
-  if (typeof style === 'function') {
-    // TODO: Not sure about observer registration:
-    // - How are observers cleaned up when this element goes away?
-    // - How to avoid reregistering the same observers a second time when it gets re-run?
-    // - How to ensure this observer gets registered on different values if state changes cause different values to be read via future branching?
-    observer = () => {
-      setElementStyle(element, style());
-    };
-    observer();
-    observer = null;
-  } else {
-    setElementStyle(element, style);
+
+  console.assert(typeof style === 'object');
+  for (const [property, value] of Object.entries(style)) {
+    setTemplateValue(value => {
+      if (property.startsWith('-')) {
+        element.style.setProperty(property, value);
+      } else {
+        element.style[property] = value;
+      }
+    }, value);
   }
+
+  // TODO: events
+
+  for (let [property, value] of Object.entries(elementTemplate)) {
+    setTemplateValue(value => {
+      element[property] = value
+    }, value);
+  }
+
+  // TODO: children
+
+  container.append(element);
 }
 
-export function setElementStyle(element, style) {
-  for (const [property, value] of Object.entries(style)) {
-    // TODO: What if value is a function? Needs to register observation as well.
-    if (property.startsWith('-')) {
-      element.style.setProperty(property, value);
-    } else {
-      element.style[property] = value;
-    }
+function setTemplateValue(setter, value) {
+  if (isJsonProxy(value)) {
+    writeObserver = () => {
+      setter(read(value));
+    };
+    writeObserver();
+    writeObserver = null;
+  } else if (typeof value === 'function') {
+    writeObserver = () => {
+      setter(value());
+    };
+    writeObserver();
+    writeObserver = null;
+  } else {
+    setter(value);
   }
 }
+// export function setElementStyle(element, style) {
+//   for (const [property, value] of Object.entries(style)) {
+//     // TODO: What if value is a function? Needs to register observation as well.
+//     if (property.startsWith('-')) {
+//       element.style.setProperty(property, value);
+//     } else {
+//       element.style[property] = value;
+//     }
+//   }
+// }
 
 function flexColumn(...children) {
   return ({
@@ -139,8 +164,8 @@ function group(...children) {
 export function read(proxy) {
   console.assert(modelAccessAllowed);
   const internals = proxy[jsonProxyInternals];
-  if (observer) {
-    internals.observers.push(observer);
+  if (writeObserver) {
+    internals.writeObservers.push(writeObserver);
   }
   return traverseForRead(internals);
 }
@@ -154,17 +179,19 @@ function traverseForRead(internals) {
 }
 
 export function write(proxy, value) {
+  console.assert(isJsonProxy(proxy));
   console.assert(modelAccessAllowed);
   console.assert(modelMutationAllowed);
   const internals = proxy[jsonProxyInternals];
+  console.log(internals);
   if ('json' in internals) {
     internals.json = value;
   } else {
     const {parent, property} = internals;
     traverseForRead(parent)[property] = value;
   }
-  for (const observer of internals.observers) {
-    observer();
+  for (const writeObserver of internals.writeObservers) {
+    writeObserver();
   }
 }
 
@@ -173,7 +200,11 @@ export function mutate(proxy, mutator) {
   console.assert(modelMutationAllowed);
   const internals = proxy[jsonProxyInternals];
   mutator(traverseForRead(internals));
-  for (const observer of internals.observers) {
-    observer();
+  for (const writeObserver of internals.writeObservers) {
+    writeObserver();
   }
+}
+
+function isJsonProxy(object) {
+  return Boolean(object[jsonProxyInternals]);
 }

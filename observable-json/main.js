@@ -4,8 +4,8 @@ import {reactiveExample} from './reactive.js';
 async function main() {
   await new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve));
 
-  document.body.append(nonReactiveExample());
-  document.body.append(reactiveExample());
+  // document.body.append(nonReactiveExample());
+  reactiveExample();
 }
 
 main();
