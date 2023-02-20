@@ -27,15 +27,12 @@ export function reactiveExample() {
   })();
 
   return render(document.body, () => {
-    return group(
-      {
-        style: {
-          color: () => read(model.blue) ? 'blue' : 'grey',
-        },
-        textContent: model.cow,
+    return {
+      style: {
+        color: () => read(model.blue) ? 'blue' : 'grey',
       },
-      htmlList(model.dogs, dog => dog.barks),
-    );
+      textContent: model.cow,
+    };
   });
 }
 
@@ -110,7 +107,6 @@ export function write(proxy, value) {
   console.assert(modelAccessAllowed);
   console.assert(modelMutationAllowed);
   const internals = proxy[jsonProxyInternals];
-  console.log(internals);
   if ('json' in internals) {
     internals.json = value;
   } else {
