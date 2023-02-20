@@ -1,3 +1,17 @@
+# 2023-02-21 Tuesday
+- Created helper function watch().
+  - Takes two parameters:
+    - A readingValue which may be a JSON proxy to be read, a function that read()s a proxy object or a normal value.
+    - A setter function that's called whenever the readingValue is evaluated.
+  - The readingValue gets re-evaluated whenever a mutation happens on anything it read().
+  - Registers the setter as a write observer for any proxy value that gets read.
+  - Noticed a generalisation over htmlBranch observations.
+    - This applies to the style property on an element, the style value could be a function and so could the inner style property values.
+    - The inner style property values are dependent on the outer style value computation and need to be wiped if the outer computation gets redone.
+    - The generalisation is in nested calls to watch() within the setter function.
+    - This is a primitive of the JSON proxy separate to HTML rendering.
+    - This is very similar to an effect in Solid JS, not sure if effects can be nested.
+
 # 2023-02-16 Thursday
 - Render observation updating.
   - HTML render output is a tree.

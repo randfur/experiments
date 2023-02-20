@@ -82,7 +82,6 @@ function isJsonProxy(object) {
 
 let modelAccessAllowed = true;
 let modelMutationAllowed = true;
-let htmlBranchObserverStack = [];
 let writeObserver = null;
 
 export function read(proxy) {
@@ -128,6 +127,24 @@ export function mutate(proxy, mutator) {
   }
 }
 
+function watch(readingValue, f) {
+  if (isJsonProxy(readingValue)) {
+    writeObserver = () => {
+      f(read(readingValue));
+    };
+    writeObserver();
+    writeObserver = null;
+  } else if (typeof readingValue === 'function') {
+    writeObserver = () => {
+      f(readingValue());
+    };
+    writeObserver();
+    writeObserver = null;
+  } else {
+    f(readingValue);
+  }
+}
+
 ////////////////////////////////////////////////////////////////
 // Rendering
 ////////////////////////////////////////////////////////////////
@@ -155,45 +172,28 @@ function renderElementTemplate(container, elementTemplate) {
   const element = document.createElement(tag);
 
   console.assert(typeof style === 'object');
-  for (const [property, value] of Object.entries(style)) {
-    setTemplateValue(value => {
+  // TODO: Allow style to be a readingValue.
+  for (const [property, readingValue] of Object.entries(style)) {
+    watch(readingValue, value => {
       if (property.startsWith('-')) {
         element.style.setProperty(property, value);
       } else {
         element.style[property] = value;
       }
-    }, value);
+    });
   }
 
   // TODO: events
 
-  for (let [property, value] of Object.entries(elementTemplate)) {
-    setTemplateValue(value => {
+  for (let [property, readingValue] of Object.entries(elementTemplate)) {
+    watch(readingValue, value => {
       element[property] = value
-    }, value);
+    });
   }
 
   // TODO: children
 
   container.append(element);
-}
-
-function setTemplateValue(setter, value) {
-  if (isJsonProxy(value)) {
-    writeObserver = () => {
-      setter(read(value));
-    };
-    writeObserver();
-    writeObserver = null;
-  } else if (typeof value === 'function') {
-    writeObserver = () => {
-      setter(value());
-    };
-    writeObserver();
-    writeObserver = null;
-  } else {
-    setter(value);
-  }
 }
 
 ////////////////////////////////////////////////////////////////
