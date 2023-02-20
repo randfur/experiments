@@ -27,14 +27,21 @@ export function reactiveExample() {
   })();
 
   return render(document.body, () => {
-    return {
-      style: {
-        color: () => read(model.blue) ? 'blue' : 'grey',
+    return group(
+      {
+        style: {
+          color: () => read(model.blue) ? 'blue' : 'grey',
+        },
+        textContent: model.cow,
       },
-      textContent: model.cow,
-    };
+      htmlList(model.dogs, dog => dog.barks),
+    );
   });
 }
+
+////////////////////////////////////////////////////////////////
+// Proxy
+////////////////////////////////////////////////////////////////
 
 const jsonProxyInternals = Symbol();
 const observableJsonProxyHandler = {
@@ -68,10 +75,66 @@ export function createObservableJson(json) {
   }, observableJsonProxyHandler);
 }
 
+function isJsonProxy(object) {
+  return Boolean(object[jsonProxyInternals]);
+}
+
+////////////////////////////////////////////////////////////////
+// Proxy access
+////////////////////////////////////////////////////////////////
+
 let modelAccessAllowed = true;
 let modelMutationAllowed = true;
 let htmlBranchObserverStack = [];
 let writeObserver = null;
+
+export function read(proxy) {
+  console.assert(modelAccessAllowed);
+  const internals = proxy[jsonProxyInternals];
+  if (writeObserver) {
+    internals.writeObservers.push(writeObserver);
+  }
+  return traverseForRead(internals);
+}
+
+function traverseForRead(internals) {
+  if ('json' in internals) {
+    return internals.json;
+  }
+  const {parent, property} = internals;
+  return traverseForRead(parent)[property];
+}
+
+export function write(proxy, value) {
+  console.assert(isJsonProxy(proxy));
+  console.assert(modelAccessAllowed);
+  console.assert(modelMutationAllowed);
+  const internals = proxy[jsonProxyInternals];
+  console.log(internals);
+  if ('json' in internals) {
+    internals.json = value;
+  } else {
+    const {parent, property} = internals;
+    traverseForRead(parent)[property] = value;
+  }
+  for (const writeObserver of internals.writeObservers) {
+    writeObserver();
+  }
+}
+
+export function mutate(proxy, mutator) {
+  console.assert(modelAccessAllowed);
+  console.assert(modelMutationAllowed);
+  const internals = proxy[jsonProxyInternals];
+  mutator(traverseForRead(internals));
+  for (const writeObserver of internals.writeObservers) {
+    writeObserver();
+  }
+}
+
+////////////////////////////////////////////////////////////////
+// Rendering
+////////////////////////////////////////////////////////////////
 
 export function render(container, generateElementTemplate) {
   // TODO:
@@ -136,16 +199,25 @@ function setTemplateValue(setter, value) {
     setter(value);
   }
 }
-// export function setElementStyle(element, style) {
-//   for (const [property, value] of Object.entries(style)) {
-//     // TODO: What if value is a function? Needs to register observation as well.
-//     if (property.startsWith('-')) {
-//       element.style.setProperty(property, value);
-//     } else {
-//       element.style[property] = value;
-//     }
-//   }
-// }
+
+////////////////////////////////////////////////////////////////
+// HTML branches
+////////////////////////////////////////////////////////////////
+
+class HtmlList {
+  constructor(listModel, generateItemTemplate) {
+    this.listModel = listModel;
+    this.generateItemTemplate = generateItemTemplate;
+  }
+}
+
+function htmlList(listModel, generateItemTemplate) {
+  return new HtmlList(listModel, generateItemTemplate);
+}
+
+////////////////////////////////////////////////////////////////
+// HTML helpers
+////////////////////////////////////////////////////////////////
 
 function flexColumn(...children) {
   return ({
@@ -161,50 +233,3 @@ function group(...children) {
   return { children };
 }
 
-export function read(proxy) {
-  console.assert(modelAccessAllowed);
-  const internals = proxy[jsonProxyInternals];
-  if (writeObserver) {
-    internals.writeObservers.push(writeObserver);
-  }
-  return traverseForRead(internals);
-}
-
-function traverseForRead(internals) {
-  if ('json' in internals) {
-    return internals.json;
-  }
-  const {parent, property} = internals;
-  return traverseForRead(parent)[property];
-}
-
-export function write(proxy, value) {
-  console.assert(isJsonProxy(proxy));
-  console.assert(modelAccessAllowed);
-  console.assert(modelMutationAllowed);
-  const internals = proxy[jsonProxyInternals];
-  console.log(internals);
-  if ('json' in internals) {
-    internals.json = value;
-  } else {
-    const {parent, property} = internals;
-    traverseForRead(parent)[property] = value;
-  }
-  for (const writeObserver of internals.writeObservers) {
-    writeObserver();
-  }
-}
-
-export function mutate(proxy, mutator) {
-  console.assert(modelAccessAllowed);
-  console.assert(modelMutationAllowed);
-  const internals = proxy[jsonProxyInternals];
-  mutator(traverseForRead(internals));
-  for (const writeObserver of internals.writeObservers) {
-    writeObserver();
-  }
-}
-
-function isJsonProxy(object) {
-  return Boolean(object[jsonProxyInternals]);
-}
