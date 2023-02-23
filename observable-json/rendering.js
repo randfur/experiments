@@ -11,8 +11,8 @@ export function render(container, generateElementTemplate) {
   // TODO:
   // - Register HTML pieces that require re-rendering for reads and member accesses.
   // - Clear registrations when things get re-rendered.
-  return lockMutating(() => {
-    return renderElementTemplate(
+  lockMutating(() => {
+    renderElementTemplate(
       container,
       lockAccessing(generateElementTemplate),
     );
@@ -29,17 +29,18 @@ function renderElementTemplate(container, elementTemplate) {
   console.assert(typeof tag === 'string');
   const element = document.createElement(tag);
 
-  console.assert(typeof style === 'object');
-  // TODO: Allow style to be a readingValue.
-  for (const [property, readingValue] of Object.entries(style)) {
-    watch(readingValue, value => {
-      if (property.startsWith('-')) {
-        element.style.setProperty(property, value);
-      } else {
-        element.style[property] = value;
-      }
-    });
-  }
+  watch(style, style => {
+    element.style.cssText = '';
+    for (const [property, readingValue] of Object.entries(style)) {
+      watch(readingValue, value => {
+        if (property.startsWith('-')) {
+          element.style.setProperty(property, value);
+        } else {
+          element.style[property] = value;
+        }
+      });
+    }
+  });
 
   // TODO: events
 

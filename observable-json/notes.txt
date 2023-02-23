@@ -1,3 +1,13 @@
+# 2023-02-23 Thursday
+- Split up the reactive code.
+  - Pulled JSON observation into observable-json.js, includes reading, mutation and watching.
+  - Pulled rendering into rendering.js that mainly calls watch().
+- Implemented generic nested watching.
+  - Seem to need fancy htmlBranches to test it with DOM.
+  - Can test it out on just style though.
+  - Made dog cow style demo, seems to work.
+- Created debug output to monitor number of watchers.
+
 # 2023-02-21 Tuesday
 - Created helper function watch().
   - Takes two parameters:

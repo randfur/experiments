@@ -164,11 +164,37 @@ class Watcher {
 }
 
 export function watch(readingValue, consumer) {
-  console.log(watch);
   if (isJsonProxy(readingValue) || typeof readingValue === 'function') {
     const watcher = new Watcher(readingValue, consumer);
     watcher.run();
     return;
   }
   consumer(readingValue);
+}
+
+export function printObservation(proxy) {
+  let result = '';
+  let internals = proxy[jsonProxyInternals];
+  while (!('json' in internals)) {
+    internals = internals.parent;
+  }
+  result += `JSON: ${JSON.stringify(internals.json, null, '  ')}\n`;
+
+  result += 'PROXY:\n';
+  function printProxy(proxy, indent='') {
+    let result = indent;
+    const internals = proxy[jsonProxyInternals];
+    if ('json' in internals) {
+      result += '{JSON}';
+    } else {
+      result += `[${internals.property}]`;
+    }
+    result += ` (watchers: ${internals.watchers.size})\n`;
+    for (const subProxy of Object.values(internals.subProxies)) {
+      result += printProxy(subProxy, indent + '  ');
+    }
+    return result;
+  }
+  result += printProxy(proxy);
+  return result;
 }
