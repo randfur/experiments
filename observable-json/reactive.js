@@ -1,11 +1,16 @@
 import {
   sleep,
   random,
-  pickRandom,
   coinFlip,
-  popKeys,
-  sum,
 } from './utils.js';
+import {
+  createObservableJson,
+  write,
+  read,
+} from './observable-json.js';
+import {
+  render,
+} from './rendering.js';
 
 export function reactiveExample() {
   let model = createObservableJson({

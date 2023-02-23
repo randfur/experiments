@@ -1,17 +1,22 @@
-////////////////////////////////////////////////////////////////
-// Rendering
-////////////////////////////////////////////////////////////////
+import {
+  popKeys,
+} from './utils.js';
+import {
+  lockAccessing,
+  lockMutating,
+  watch,
+} from './observable-json.js';
 
 export function render(container, generateElementTemplate) {
   // TODO:
-  // - Crash on any writes.
-  // - Look for reads and member accesses.
   // - Register HTML pieces that require re-rendering for reads and member accesses.
   // - Clear registrations when things get re-rendered.
-  modelAccessAllowed = false;
-  const elementTemplate = generateElementTemplate();
-  modelAccessAllowed = true;
-  return renderElementTemplate(container, elementTemplate);
+  return lockMutating(() => {
+    return renderElementTemplate(
+      container,
+      lockAccessing(generateElementTemplate),
+    );
+  });
 }
 
 function renderElementTemplate(container, elementTemplate) {

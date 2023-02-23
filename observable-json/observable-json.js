@@ -2,7 +2,8 @@ const jsonProxyInternals = Symbol();
 let modelAccessAllowed = true;
 let modelMutationAllowed = true;
 const watcherStack = [];
-const
+let notifyingWatchers = null;
+let notifyingWatchersWaitingRoom = null;
 
 export function createObservableJson(json) {
   return new Proxy({
@@ -41,7 +42,7 @@ const observableJsonProxyHandler = {
 };
 
 function isJsonProxy(object) {
-  return Boolean(object[jsonProxyInternals]);
+  return typeof object === 'object' && Boolean(object[jsonProxyInternals]);
 }
 
 export function read(proxy) {
@@ -50,7 +51,11 @@ export function read(proxy) {
   if (watcherStack.length > 0) {
     const watcher = watcherStack[watcherStack.length - 1];
     watcher.proxies.add(proxy);
-    internals.watchers.add(watcher);
+    if (internals.watchers === notifyingWatchers) {
+      notifyingWatchersWaitingRoom.add(watcher);
+    } else {
+      internals.watchers.add(watcher);
+    }
   }
   return traverseForRead(internals);
 }
@@ -74,10 +79,7 @@ export function write(proxy, value) {
     const {parent, property} = internals;
     traverseForRead(parent)[property] = value;
   }
-  for (const watcher of internals.watchers) {
-    // TODO: Defer to animation frame.
-    watcher.run();
-  }
+  notifyWatchers(internals);
 }
 
 export function mutate(proxy, mutator) {
@@ -85,24 +87,40 @@ export function mutate(proxy, mutator) {
   console.assert(modelMutationAllowed);
   const internals = proxy[jsonProxyInternals];
   mutator(traverseForRead(internals));
-  for (const watcher of internals.watchers) {
-    // TODO: Defer to animation frame.
-    watcher.run();
-  }
+  notifyWatchers(internals);
+}
+
+function notifyWatchers(internals) {
+  console.assert(notifyingWatchers === null);
+  console.assert(notifyingWatchersWaitingRoom === null);
+  // TODO: Defer to animation frame.
+  // TODO: Notify highest level watcher.
+  lockMutating(() => {
+    notifyingWatchers = internals.watchers;
+    notifyingWatchersWaitingRoom = new Set();
+    for (const watcher of internals.watchers) {
+      watcher.run();
+    }
+    internals.watchers = notifyingWatchersWaitingRoom;
+    notifyingWatchers = null;
+    notifyingWatchersWaitingRoom = null;
+  });
 }
 
 export function lockAccessing(f) {
   const oldModelAccessAllowed = modelAccessAllowed;
   modelAccessAllowed = false;
-  f();
+  const result = f();
   modelAccessAllowed = oldModelAccessAllowed;
+  return result;
 }
 
 export function lockMutating(f) {
   const oldModelMutationAllowed = modelMutationAllowed;
   modelMutationAllowed = false;
-  f();
+  const result = f();
   modelMutationAllowed = oldModelMutationAllowed;
+  return result;
 }
 
 class Watcher {
@@ -119,7 +137,7 @@ class Watcher {
       this.parentWatcher.subWatchers.delete(this);
     }
     for (const proxy of this.proxies) {
-      proxy.watchers.delete(this);
+      proxy[jsonProxyInternals].watchers.delete(this);
     }
     for (const subWatcher of this.subWatchers) {
       subWatcher.remove();
@@ -132,13 +150,13 @@ class Watcher {
     if (watcherStack.length > 0) {
       watcherStack[watcherStack.length - 1].subWatchers.add(watcher);
     }
-    watcherStack.push(watcher);
+    watcherStack.push(this);
 
     if (isJsonProxy(this.readingValue)) {
-      consumer(read(this.readingValue));
+      this.consumer(read(this.readingValue));
     } else {
       console.assert(typeof this.readingValue === 'function');
-      consumer(this.readingValue());
+      this.consumer(this.readingValue());
     }
 
     watcherStack.pop();
@@ -146,10 +164,11 @@ class Watcher {
 }
 
 export function watch(readingValue, consumer) {
-  if (isJsonProxy(readingValue) || typeof this.readingValue === 'function') {
+  console.log(watch);
+  if (isJsonProxy(readingValue) || typeof readingValue === 'function') {
     const watcher = new Watcher(readingValue, consumer);
     watcher.run();
     return;
   }
-  consumer(this.readingValue);
+  consumer(readingValue);
 }
