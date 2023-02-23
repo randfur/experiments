@@ -46,15 +46,17 @@ export function reactiveExample() {
     return {
       style: () => {
         const mode = read(model.mode);
-        const value = read(model[mode].value);
+        const valueProxy = model[mode].value;
         const result = {
           height: '40px',
         };
         if (mode === 'dog') {
-          result.fontSize = `${value}px`;
+          result.fontSize = `${read(valueProxy)}px`;
+          // result.fontSize = () => `${read(valueProxy)}px`;
         } else {
           result.fontSize = '20px';
-          result.marginLeft = `${value}px`;
+          result.marginLeft = `${read(valueProxy)}px`;
+          // result.marginLeft = () => `${read(valueProxy)}px`;
         }
         return result;
       },

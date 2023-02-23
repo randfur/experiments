@@ -6,6 +6,8 @@
   - Seem to need fancy htmlBranches to test it with DOM.
   - Can test it out on just style though.
   - Made dog cow style demo, seems to work.
+    - Oops it doesn't work, I read the values in the style object creation function instead of making the property values nested functions themselves.
+    - Adding actual watch nesting shows it doesn't work, the watchers accumulate infinitely and old watchers erroneously execute. They're not removing properly.
 - Created debug output to monitor number of watchers.
 
 # 2023-02-21 Tuesday

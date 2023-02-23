@@ -97,21 +97,24 @@ function notifyWatchers(internals) {
   console.assert(notifyingWatchers === null);
   console.assert(notifyingWatchersWaitingRoom.size === 0);
   // TODO: Defer to animation frame.
-  // TODO: Notify highest level watcher.
+  // TODO: Notify watchers in tree order.
+
+  // Indicate globally that internals.watchers is being notified and not to
+  // add to it. If existing watchers are added to it during their run() they
+  // will be iterated over again and have run() called again in an infinite
+  // loop. Add to notifyingWatchersWaitingRoom instead and we'll swap them in
+  // when iteration is done.
+  notifyingWatchers = internals.watchers;
+
   lockMutating(() => {
-    // Indicate globally that internals.watchers is being notified and not to
-    // add to it. If existing watchers are added to it during their run() they
-    // will be iterated over again and have run() called again in an infinite
-    // loop. Add to notifyingWatchersWaitingRoom instead and we'll swap them in
-    // when iteration is done.
-    notifyingWatchers = internals.watchers;
     for (const watcher of internals.watchers) {
       watcher.run();
     }
-    [notifyingWatchersWaitingRoom, internals.watchers] = [internals.watchers, notifyingWatchersWaitingRoom];
-    notifyingWatchersWaitingRoom.clear();
-    notifyingWatchers = null;
   });
+
+  [notifyingWatchersWaitingRoom, internals.watchers] = [internals.watchers, notifyingWatchersWaitingRoom];
+  notifyingWatchersWaitingRoom.clear();
+  notifyingWatchers = null;
 }
 
 export function lockAccessing(f) {
@@ -155,7 +158,7 @@ class Watcher {
     this.remove();
 
     if (watcherStack.length > 0) {
-      watcherStack[watcherStack.length - 1].subWatchers.add(watcher);
+      watcherStack[watcherStack.length - 1].subWatchers.add(this);
     }
     watcherStack.push(this);
 
@@ -185,7 +188,9 @@ export function printObservation(proxy) {
   while (!('json' in internals)) {
     internals = internals.parent;
   }
-  result += `JSON: ${JSON.stringify(internals.json, null, '  ')}\n`;
+  const watchers = new Set();
+
+  result += `JSON: ${JSON.stringify(internals.json, null, '  ')}\n\n`;
 
   result += 'PROXY:\n';
   function printProxy(proxy, indent='') {
@@ -196,12 +201,21 @@ export function printObservation(proxy) {
     } else {
       result += `[${internals.property}]`;
     }
-    result += ` (watchers: ${internals.watchers.size})\n`;
+    result += ` (watchers: ${internals.watchers.size}})\n`;
+    for (const watcher of internals.watchers) {
+      watchers.add(watcher);
+    }
     for (const subProxy of Object.values(internals.subProxies)) {
       result += printProxy(subProxy, indent + '  ');
     }
     return result;
   }
   result += printProxy(proxy);
+  result += '\n';
+
+  result += 'WATCHERS:\n';
+  result += 'TODO: Print the watcher tree.\n';
+  // TODO: Print the watcher tree.
+
   return result;
 }
