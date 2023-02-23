@@ -3,7 +3,7 @@ let modelAccessAllowed = true;
 let modelMutationAllowed = true;
 const watcherStack = [];
 let notifyingWatchers = null;
-let notifyingWatchersWaitingRoom = null;
+let notifyingWatchersWaitingRoom = new Set();
 
 export function createObservableJson(json) {
   return new Proxy({
@@ -52,6 +52,9 @@ export function read(proxy) {
     const watcher = watcherStack[watcherStack.length - 1];
     watcher.proxies.add(proxy);
     if (internals.watchers === notifyingWatchers) {
+      // We are currently iterating over internals.watchers in notifyWatchers,
+      // if we add the watcher to it during its run() it will get re-run() again
+      // in an infinite loop. Add to notifyingWatchersWaitingRoom instead.
       notifyingWatchersWaitingRoom.add(watcher);
     } else {
       internals.watchers.add(watcher);
@@ -92,18 +95,22 @@ export function mutate(proxy, mutator) {
 
 function notifyWatchers(internals) {
   console.assert(notifyingWatchers === null);
-  console.assert(notifyingWatchersWaitingRoom === null);
+  console.assert(notifyingWatchersWaitingRoom.size === 0);
   // TODO: Defer to animation frame.
   // TODO: Notify highest level watcher.
   lockMutating(() => {
+    // Indicate globally that internals.watchers is being notified and not to
+    // add to it. If existing watchers are added to it during their run() they
+    // will be iterated over again and have run() called again in an infinite
+    // loop. Add to notifyingWatchersWaitingRoom instead and we'll swap them in
+    // when iteration is done.
     notifyingWatchers = internals.watchers;
-    notifyingWatchersWaitingRoom = new Set();
     for (const watcher of internals.watchers) {
       watcher.run();
     }
-    internals.watchers = notifyingWatchersWaitingRoom;
+    [notifyingWatchersWaitingRoom, internals.watchers] = [internals.watchers, notifyingWatchersWaitingRoom];
+    notifyingWatchersWaitingRoom.clear();
     notifyingWatchers = null;
-    notifyingWatchersWaitingRoom = null;
   });
 }
 
