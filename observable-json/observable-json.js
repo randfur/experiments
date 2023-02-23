@@ -137,29 +137,29 @@ class Watcher {
   constructor(readingValue, consumer) {
     this.readingValue = readingValue;
     this.consumer = consumer;
-    this.parentWatcher = watcherStack.length > 0 ? watcherStack[watcherStack.length - 1] : null;
+    this.parentWatcher = null;
+    if (watcherStack.length > 0) {
+      this.parentWatcher = watcherStack[watcherStack.length - 1];
+      this.parentWatcher.subWatchers.add(this);
+    }
     this.subWatchers = new Set();
     this.proxies = new Set();
   }
 
-  remove() {
-    if (this.parentWatcher) {
-      this.parentWatcher.subWatchers.delete(this);
-    }
+  clear() {
     for (const proxy of this.proxies) {
       proxy[jsonProxyInternals].watchers.delete(this);
     }
+    this.proxies.clear();
     for (const subWatcher of this.subWatchers) {
-      subWatcher.remove();
+      subWatcher.parentWatcher = null;
+      subWatcher.clear();
     }
+    this.subWatchers.clear();
   }
 
   run() {
-    this.remove();
-
-    if (watcherStack.length > 0) {
-      watcherStack[watcherStack.length - 1].subWatchers.add(this);
-    }
+    this.clear();
     watcherStack.push(this);
 
     if (isJsonProxy(this.readingValue)) {
