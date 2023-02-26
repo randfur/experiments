@@ -1,3 +1,8 @@
+# 2023-02-27 Monday
+- Added watcher tree view.
+- Added notify count to proxies and run count to watchers for debug print.
+- Confirmed mutations on proxies that used to be watched doesn't notify anything and shouldn't run UI mutating code once hooked up with rendering.
+
 # 2023-02-23 Thursday
 - Split up the reactive code.
   - Pulled JSON observation into observable-json.js, includes reading, mutation and watching.

@@ -16,6 +16,7 @@ function createProxyInternalsBase() {
   return {
     subProxies: {},
     watchers: new Set(),
+    notifyCount: 0,
   };
 }
 
@@ -99,6 +100,8 @@ function notifyWatchers(internals) {
   // TODO: Defer to animation frame.
   // TODO: Notify watchers in tree order.
 
+  internals.notifyCount += internals.watchers.size;
+
   // Indicate globally that internals.watchers is being notified and not to
   // add to it. If existing watchers are added to it during their run() they
   // will be iterated over again and have run() called again in an infinite
@@ -144,6 +147,7 @@ class Watcher {
     }
     this.subWatchers = new Set();
     this.proxies = new Set();
+    this.runCount = 0;
   }
 
   clear() {
@@ -159,6 +163,7 @@ class Watcher {
   }
 
   run() {
+    ++this.runCount;
     this.clear();
     watcherStack.push(this);
 
@@ -201,7 +206,7 @@ export function printObservation(proxy) {
     } else {
       result += `[${internals.property}]`;
     }
-    result += ` (watchers: ${internals.watchers.size}})\n`;
+    result += ` (watchers: ${internals.watchers.size}, notifyCount: ${internals.notifyCount})\n`;
     for (const watcher of internals.watchers) {
       watchers.add(watcher);
     }
@@ -214,7 +219,29 @@ export function printObservation(proxy) {
   result += '\n';
 
   result += 'WATCHERS:\n';
-  result += 'TODO: Print the watcher tree.\n';
+  function printProxyInternalsName(proxyInternals) {
+    if ('json' in proxyInternals) {
+      return '{}';
+    }
+    return `${printProxyInternalsName(proxyInternals.parent)}.${proxyInternals.property}`;
+  }
+  function printWatcher(watcher, indent='') {
+    watchers.delete(watcher);
+    let result = indent;
+    const proxyNames = Array.from(watcher.proxies).map(proxy => proxy[jsonProxyInternals]).map(printProxyInternalsName);
+    result += `[${proxyNames.join(', ')}] (runCount: ${watcher.runCount})\n`;
+    for (const subWatcher of watcher.subWatchers) {
+      result += printWatcher(subWatcher, indent + '  ');
+    }
+    return result;
+  }
+  while (watchers.size > 0) {
+    let watcher = watchers.values().next().value;
+    while (watcher.parentWatcher) {
+      watcher = watcher.parentWatcher;
+    }
+    result += printWatcher(watcher);
+  }
   // TODO: Print the watcher tree.
 
   return result;

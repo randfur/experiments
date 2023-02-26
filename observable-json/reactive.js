@@ -51,11 +51,9 @@ export function reactiveExample() {
           height: '40px',
         };
         if (mode === 'dog') {
-          // result.fontSize = `${read(valueProxy)}px`;
           result.fontSize = () => `${read(valueProxy)}px`;
         } else {
           result.fontSize = '20px';
-          // result.marginLeft = `${read(valueProxy)}px`;
           result.marginLeft = () => `${read(valueProxy)}px`;
         }
         return result;
