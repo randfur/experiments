@@ -35,6 +35,8 @@ class HtmlMap<T> {
 
 export function render(container: HTMLElement, elementTemplate: Template);
 
+// TODO: Complete.
+
 */
 
 export function render(container, template) {

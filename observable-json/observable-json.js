@@ -12,7 +12,109 @@ export function read(proxy: ObservableJsonProxy): Json;
 export function write(proxy: ObservableJsonProxy, value: Json);
 export function mutate(proxy: ObservableJsonProxy, mutator: () => void);
 export function watch<T>(readingValue: ReadingValue<T>, consumer: (value: any) => void);
+*/
 
+export function createObservableJsonProxy(json) {
+  return new Proxy(unused, new ProxyInternal({json}));
+}
+
+export function printObservation(proxy) {
+  let result = '';
+  let proxyInternal = proxy[internalKey];
+  while (!proxyInternal.isRoot()) {
+    proxyInternal = proxyInternal.parentProxyInternal;
+  }
+  const watchers = new Set();
+
+  result += `JSON: ${JSON.stringify(proxyInternal.json, null, '  ')}\n\n`;
+
+  result += 'PROXY:\n';
+  function printProxy(proxy, indent='') {
+    let result = indent;
+    const proxyInternal = proxy[internalKey];
+    if (proxyInternal.isRoot()) {
+      result += '{json}';
+    } else {
+      result += `[${proxyInternal.property}]`;
+    }
+    result += ` (watchers: ${proxyInternal.watchers.size}, notifyCount: ${proxyInternal.notifyCount})\n`;
+    for (const watcher of proxyInternal.watchers) {
+      watchers.add(watcher);
+    }
+    for (const subProxy of Object.values(proxyInternal.subProxies)) {
+      result += printProxy(subProxy, indent + '  ');
+    }
+    return result;
+  }
+  result += printProxy(proxy);
+  result += '\n';
+
+  result += 'WATCHERS:\n';
+  function printProxyInternalName(proxyInternal) {
+    if (proxyInternal.isRoot()) {
+      return '{json}';
+    }
+    return `${printProxyInternalName(proxyInternal.parentProxyInternal)}.${proxyInternal.property}`;
+  }
+  function printWatcher(watcher, indent='') {
+    watchers.delete(watcher);
+    let result = indent;
+    const proxyNames = Array.from(watcher.proxyInternals).map(printProxyInternalName);
+    result += `[${proxyNames.join(', ')}] (runCount: ${watcher.runCount})\n`;
+    for (const subWatcher of watcher.subWatchers) {
+      result += printWatcher(subWatcher, indent + '  ');
+    }
+    return result;
+  }
+  while (watchers.size > 0) {
+    let watcher = watchers.values().next().value;
+    while (watcher.parentWatcher) {
+      watcher = watcher.parentWatcher;
+    }
+    result += printWatcher(watcher);
+  }
+
+  return result;
+}
+
+export function read(proxy) {
+  const proxyInternal = proxy[internalKey];
+  if (watcherStack.length > 0) {
+    const watcher = watcherStack[watcherStack.length - 1];
+    watcher.proxyInternals.add(proxyInternal);
+    proxyInternal.watchers.add(watcher);
+  }
+  return proxyInternal.readJsonValue();
+}
+
+export function write(proxy, value) {
+  console.assert(isObservableJsonProxy(proxy));
+  console.assert(proxyMutationAllowed);
+  const proxyInternal = proxy[internalKey];
+  proxyInternal.writeJsonValue(value);
+  proxyInternal.notifyWatchers();
+}
+
+export function mutate(proxy, mutator) {
+  console.assert(proxyMutationAllowed);
+  const proxyInternal = proxy[internalKey];
+  mutator(proxyInternal.readJsonValue());
+  proxyInternal.notifyWatchers();
+}
+
+export function watch(readingValue, consumer) {
+  const oldProxyMutationAllowed = proxyMutationAllowed;
+  proxyMutationAllowed = false;
+  if (isObservableJsonProxy(readingValue) || typeof readingValue === 'function') {
+    const watcher = new Watcher(readingValue, consumer);
+    watcher.run();
+  } else {
+    consumer(readingValue);
+  }
+  proxyMutationAllowed = oldProxyMutationAllowed;
+}
+
+/*
 # Private
 
 class ProxyInternal {
@@ -56,10 +158,6 @@ let currentNotifyId = 0;
 let pendingNotify = false;
 const pendingNotifyProxyInternals = new Set();
 const unused = {};
-
-export function createObservableJsonProxy(json) {
-  return new Proxy(unused, new ProxyInternal({json}));
-}
 
 class ProxyInternal {
   constructor({json=null, parentProxyInternal=null, property=null}) {
@@ -159,94 +257,6 @@ class ProxyInternal {
   }
 };
 
-function isObservableJsonProxy(object) {
-  return typeof object === 'object' && Boolean(object[internalKey]);
-}
-
-export function printObservation(proxy) {
-  let result = '';
-  let proxyInternal = proxy[internalKey];
-  while (!proxyInternal.isRoot()) {
-    proxyInternal = proxyInternal.parentProxyInternal;
-  }
-  const watchers = new Set();
-
-  result += `JSON: ${JSON.stringify(proxyInternal.json, null, '  ')}\n\n`;
-
-  result += 'PROXY:\n';
-  function printProxy(proxy, indent='') {
-    let result = indent;
-    const proxyInternal = proxy[internalKey];
-    if (proxyInternal.isRoot()) {
-      result += '{json}';
-    } else {
-      result += `[${proxyInternal.property}]`;
-    }
-    result += ` (watchers: ${proxyInternal.watchers.size}, notifyCount: ${proxyInternal.notifyCount})\n`;
-    for (const watcher of proxyInternal.watchers) {
-      watchers.add(watcher);
-    }
-    for (const subProxy of Object.values(proxyInternal.subProxies)) {
-      result += printProxy(subProxy, indent + '  ');
-    }
-    return result;
-  }
-  result += printProxy(proxy);
-  result += '\n';
-
-  result += 'WATCHERS:\n';
-  function printProxyInternalName(proxyInternal) {
-    if (proxyInternal.isRoot()) {
-      return '{json}';
-    }
-    return `${printProxyInternalName(proxyInternal.parentProxyInternal)}.${proxyInternal.property}`;
-  }
-  function printWatcher(watcher, indent='') {
-    watchers.delete(watcher);
-    let result = indent;
-    const proxyNames = Array.from(watcher.proxyInternals).map(printProxyInternalName);
-    result += `[${proxyNames.join(', ')}] (runCount: ${watcher.runCount})\n`;
-    for (const subWatcher of watcher.subWatchers) {
-      result += printWatcher(subWatcher, indent + '  ');
-    }
-    return result;
-  }
-  while (watchers.size > 0) {
-    let watcher = watchers.values().next().value;
-    while (watcher.parentWatcher) {
-      watcher = watcher.parentWatcher;
-    }
-    result += printWatcher(watcher);
-  }
-
-  return result;
-}
-
-export function read(proxy) {
-  const proxyInternal = proxy[internalKey];
-  if (watcherStack.length > 0) {
-    const watcher = watcherStack[watcherStack.length - 1];
-    watcher.proxyInternals.add(proxyInternal);
-    proxyInternal.watchers.add(watcher);
-  }
-  return proxyInternal.readJsonValue();
-}
-
-export function write(proxy, value) {
-  console.assert(isObservableJsonProxy(proxy));
-  console.assert(proxyMutationAllowed);
-  const proxyInternal = proxy[internalKey];
-  proxyInternal.writeJsonValue(value);
-  proxyInternal.notifyWatchers();
-}
-
-export function mutate(proxy, mutator) {
-  console.assert(proxyMutationAllowed);
-  const proxyInternal = proxy[internalKey];
-  mutator(proxyInternal.readJsonValue());
-  proxyInternal.notifyWatchers();
-}
-
 class Watcher {
   constructor(readingValue, consumer) {
     this.lastNotifyId = currentNotifyId;
@@ -291,15 +301,7 @@ class Watcher {
   }
 }
 
-export function watch(readingValue, consumer) {
-  const oldProxyMutationAllowed = proxyMutationAllowed;
-  proxyMutationAllowed = false;
-  if (isObservableJsonProxy(readingValue) || typeof readingValue === 'function') {
-    const watcher = new Watcher(readingValue, consumer);
-    watcher.run();
-  } else {
-    consumer(readingValue);
-  }
-  proxyMutationAllowed = oldProxyMutationAllowed;
+function isObservableJsonProxy(object) {
+  return typeof object === 'object' && Boolean(object[internalKey]);
 }
 

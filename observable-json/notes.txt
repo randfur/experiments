@@ -5,6 +5,7 @@
   - Renamed the handler to be ProxyInternal.
   - Removed "internals" as a singular term as it made having sets of ProxyInternals difficult to name.
   - Made Watcher contain a set of ProxyInternals rather than a set of Proxies, it had no need for the outer Proxy object.
+- Split obserable-json.js file in two sections, public and private.
 
 # 2023-03-05
 - Removed global notifyingWatchers and notifyingWatchersWaitingRoom in favour of resetting the internals.watchers and saving the set to iterate over as a local variable.
