@@ -1,3 +1,11 @@
+# 2023-03-05
+- Removed global notifyingWatchers and notifyingWatchersWaitingRoom in favour of resetting the internals.watchers and saving the set to iterate over as a local variable.
+  - Not 100% sure it's okay to clear the internals.watchers here but it probably should be okay.
+  - Much better than having those two globals used in 3 places.
+- Added TS types for observable-json.js.
+- Project name idea: Render Observable JSON (ROJ).
+  - Renamed rendering.js to render.js to match.
+
 # 2023-02-27 Monday
 - Added watcher tree view.
 - Added notify count to proxies and run count to watchers for debug print.
