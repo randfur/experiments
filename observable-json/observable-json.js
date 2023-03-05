@@ -15,21 +15,22 @@ export function watch<T>(readingValue: ReadingValue<T>, consumer: (value: any) =
 
 # Private
 
-type ProxyInternals = ProxyInternalsRoot | ProxyInternalsPropertyReferenc;
-
-interface ProxyInternalsBase {
+class ProxyInternal {
+  json: Json;
+  parentProxyInternal: ProxyInternal;
+  property: string;
   subProxies: Set<ObservableJsonProxy>;
   watchers: Set<Watcher>;
   notifyCount: 0;
-}
 
-interface ProxyInternalsRoot extends ProxyInternalsBase {
-  json: Json;
-}
+  get(unused: Object, property: string, proxy: Proxy);
+  has(unused: Object, property: string, proxy: Proxy);
+  set(unused: Object, property: string, value: any, proxy: Proxy);
 
-interface ProxyInternalsPropertyReference extends ProxyInternalsBase {
-  parent: ProxyInternals,
-  property: string,
+  readJsonValue(): Json;
+  writeJsonValue(json: Json);
+
+  notifyWatchers();
 }
 
 class Watcher<T> {
@@ -45,83 +46,147 @@ class Watcher<T> {
   run();
 }
 
-function createProxyInternalsBase(): ProxyInternalsBase;
 function isObservableJsonProxy(value: any): boolean;
-function notifyWatchers(proxyInternals: ProxyInternals);
 */
 
-const proxyInternalsKey = Symbol();
+const internalKey = Symbol();
 let proxyMutationAllowed = true;
 const watcherStack = [];
 let currentNotifyId = 0;
 let pendingNotify = false;
 const pendingNotifyProxyInternals = new Set();
+const unused = {};
 
 export function createObservableJsonProxy(json) {
-  return new Proxy({
-    ...createProxyInternalsBase(),
-    json,
-  }, observableJsonProxyHandler);
+  return new Proxy(unused, new ProxyInternal({json}));
 }
 
-function createProxyInternalsBase() {
-  return {
-    subProxies: {},
-    watchers: new Set(),
-    notifyCount: 0,
-  };
-}
+class ProxyInternal {
+  constructor({json=null, parentProxyInternal=null, property=null}) {
+    this.json = json;
+    this.parentProxyInternal = parentProxyInternal;
+    this.property = property;
+    this.subProxies = {};
+    this.watchers = new Set();
+    this.notifyCount = 0;
+  }
 
-const observableJsonProxyHandler = {
-  get(proxyInternals, property, proxy) {
-    if (property === proxyInternalsKey) {
-      return proxyInternals;
+  isRoot() {
+    return this.json !== null;
+  }
+
+  get(unused, property, proxy) {
+    if (property === internalKey) {
+      return this;
     }
-    if (!(property in proxyInternals.subProxies)) {
-      proxyInternals.subProxies[property] = new Proxy({
-        ...createProxyInternalsBase(),
-        parent: proxyInternals,
-        property,
-      }, observableJsonProxyHandler);
+    if (!(property in this.subProxies)) {
+      this.subProxies[property] = new Proxy(
+        unused,
+        new ProxyInternal({
+          parentProxyInternal: this,
+          property,
+        }));
     }
-    return proxyInternals.subProxies[property];
-  },
-  has(proxyInternals, property, proxy) {
+    return this.subProxies[property];
+  }
+
+  has(unused, property, proxy) {
     console.assert(false);
-  },
-  set(proxyInternals, property, value, proxy) {
+  }
+
+  set(unused, property, value, proxy) {
     console.assert(false);
-  },
+  }
+
+  readJsonValue() {
+    if (this.isRoot()) {
+      return this.json;
+    }
+    return this.parentProxyInternal.readJsonValue()[this.property];
+  }
+
+  writeJsonValue(json) {
+    if (this.isRoot()) {
+      this.json = json;
+    }
+    this.parentProxyInternal.readJsonValue()[this.property] = json;
+  }
+
+  notifyWatchers() {
+    if (this.watchers.size === 0) {
+      return;
+    }
+
+    pendingNotifyProxyInternals.add(this);
+
+    if (pendingNotify) {
+      return;
+    }
+
+    pendingNotify = true;
+    requestAnimationFrame(() => {
+      const oldProxyMutationAllowed = proxyMutationAllowed;
+      proxyMutationAllowed = false;
+      ++currentNotifyId;
+
+      for (const proxyInternal of pendingNotifyProxyInternals) {
+        const watchers = new Set(proxyInternal.watchers);
+        while (watchers.size > 0) {
+          let watcher = watchers[Symbol.iterator]().next().value;
+
+          // Process parent watchers in set before their descendants.
+          let checkWatcher = watcher;
+          while (checkWatcher.parent) {
+            checkWatcher = checkWatcher.parent;
+            if (checkWatcher in watchers) {
+              watcher = checkWatcher;
+            }
+          }
+
+          watchers.delete(watcher);
+
+          if (watcher.lastNotifyId < currentNotifyId && proxyInternal.watchers.has(watcher)) {
+            ++proxyInternal.notifyCount;
+            watcher.run();
+          }
+        }
+      }
+      pendingNotifyProxyInternals.clear();
+
+      proxyMutationAllowed = oldProxyMutationAllowed;
+      pendingNotify = false;
+    });
+  }
 };
 
 function isObservableJsonProxy(object) {
-  return typeof object === 'object' && Boolean(object[proxyInternalsKey]);
+  return typeof object === 'object' && Boolean(object[internalKey]);
 }
 
 export function printObservation(proxy) {
   let result = '';
-  let proxyInternals = proxy[proxyInternalsKey];
-  while (!('json' in proxyInternals)) {
-    proxyInternals = proxyInternals.parent;
+  let proxyInternal = proxy[internalKey];
+  while (!proxyInternal.isRoot()) {
+    proxyInternal = proxyInternal.parentProxyInternal;
   }
   const watchers = new Set();
 
-  result += `JSON: ${JSON.stringify(proxyInternals.json, null, '  ')}\n\n`;
+  result += `JSON: ${JSON.stringify(proxyInternal.json, null, '  ')}\n\n`;
 
   result += 'PROXY:\n';
   function printProxy(proxy, indent='') {
     let result = indent;
-    const proxyInternals = proxy[proxyInternalsKey];
-    if ('json' in proxyInternals) {
+    const proxyInternal = proxy[internalKey];
+    if (proxyInternal.isRoot()) {
       result += '{json}';
     } else {
-      result += `[${proxyInternals.property}]`;
+      result += `[${proxyInternal.property}]`;
     }
-    result += ` (watchers: ${proxyInternals.watchers.size}, notifyCount: ${proxyInternals.notifyCount})\n`;
-    for (const watcher of proxyInternals.watchers) {
+    result += ` (watchers: ${proxyInternal.watchers.size}, notifyCount: ${proxyInternal.notifyCount})\n`;
+    for (const watcher of proxyInternal.watchers) {
       watchers.add(watcher);
     }
-    for (const subProxy of Object.values(proxyInternals.subProxies)) {
+    for (const subProxy of Object.values(proxyInternal.subProxies)) {
       result += printProxy(subProxy, indent + '  ');
     }
     return result;
@@ -130,16 +195,16 @@ export function printObservation(proxy) {
   result += '\n';
 
   result += 'WATCHERS:\n';
-  function printProxyInternalsName(proxyInternals) {
-    if ('json' in proxyInternals) {
+  function printProxyInternalName(proxyInternal) {
+    if (proxyInternal.isRoot()) {
       return '{json}';
     }
-    return `${printProxyInternalsName(proxyInternals.parent)}.${proxyInternals.property}`;
+    return `${printProxyInternalName(proxyInternal.parentProxyInternal)}.${proxyInternal.property}`;
   }
   function printWatcher(watcher, indent='') {
     watchers.delete(watcher);
     let result = indent;
-    const proxyNames = Array.from(watcher.proxies).map(proxy => proxy[proxyInternalsKey]).map(printProxyInternalsName);
+    const proxyNames = Array.from(watcher.proxyInternals).map(printProxyInternalName);
     result += `[${proxyNames.join(', ')}] (runCount: ${watcher.runCount})\n`;
     for (const subWatcher of watcher.subWatchers) {
       result += printWatcher(subWatcher, indent + '  ');
@@ -158,41 +223,28 @@ export function printObservation(proxy) {
 }
 
 export function read(proxy) {
-  const proxyInternals = proxy[proxyInternalsKey];
+  const proxyInternal = proxy[internalKey];
   if (watcherStack.length > 0) {
     const watcher = watcherStack[watcherStack.length - 1];
-    watcher.proxies.add(proxy);
-    proxyInternals.watchers.add(watcher);
+    watcher.proxyInternals.add(proxyInternal);
+    proxyInternal.watchers.add(watcher);
   }
-  return extractJsonValue(proxyInternals);
-}
-
-function extractJsonValue(proxyInternals) {
-  if ('json' in proxyInternals) {
-    return proxyInternals.json;
-  }
-  const {parent, property} = proxyInternals;
-  return extractJsonValue(parent)[property];
+  return proxyInternal.readJsonValue();
 }
 
 export function write(proxy, value) {
   console.assert(isObservableJsonProxy(proxy));
   console.assert(proxyMutationAllowed);
-  const proxyInternals = proxy[proxyInternalsKey];
-  if ('json' in proxyInternals) {
-    proxyInternals.json = value;
-  } else {
-    const {parent, property} = proxyInternals;
-    extractJsonValue(parent)[property] = value;
-  }
-  notifyWatchers(proxyInternals);
+  const proxyInternal = proxy[internalKey];
+  proxyInternal.writeJsonValue(value);
+  proxyInternal.notifyWatchers();
 }
 
 export function mutate(proxy, mutator) {
   console.assert(proxyMutationAllowed);
-  const proxyInternals = proxy[proxyInternalsKey];
-  mutator(extractJsonValue(proxyInternals));
-  notifyWatchers(proxyInternals);
+  const proxyInternal = proxy[internalKey];
+  mutator(proxyInternal.readJsonValue());
+  proxyInternal.notifyWatchers();
 }
 
 class Watcher {
@@ -206,15 +258,15 @@ class Watcher {
       this.parentWatcher.subWatchers.add(this);
     }
     this.subWatchers = new Set();
-    this.proxies = new Set();
+    this.proxyInternals = new Set();
     this.runCount = 0;
   }
 
   clear() {
-    for (const proxy of this.proxies) {
-      proxy[proxyInternalsKey].watchers.delete(this);
+    for (const proxyInternal of this.proxyInternals) {
+      proxyInternal.watchers.delete(this);
     }
-    this.proxies.clear();
+    this.proxyInternals.clear();
     for (const subWatcher of this.subWatchers) {
       subWatcher.parentWatcher = null;
       subWatcher.clear();
@@ -251,48 +303,3 @@ export function watch(readingValue, consumer) {
   proxyMutationAllowed = oldProxyMutationAllowed;
 }
 
-function notifyWatchers(proxyInternals) {
-  if (proxyInternals.watchers.size === 0) {
-    return;
-  }
-
-  pendingNotifyProxyInternals.add(proxyInternals);
-
-  if (pendingNotify) {
-    return;
-  }
-
-  pendingNotify = true;
-  requestAnimationFrame(() => {
-    const oldProxyMutationAllowed = proxyMutationAllowed;
-    proxyMutationAllowed = false;
-    ++currentNotifyId;
-
-    for (const proxyInternals of pendingNotifyProxyInternals) {
-      const watchers = new Set(proxyInternals.watchers);
-      while (watchers.size > 0) {
-        let watcher = watchers[Symbol.iterator]().next().value;
-
-        // Process parent watchers in set before their descendants.
-        let checkWatcher = watcher;
-        while (checkWatcher.parent) {
-          checkWatcher = checkWatcher.parent;
-          if (checkWatcher in watchers) {
-            watcher = checkWatcher;
-          }
-        }
-
-        watchers.delete(watcher);
-
-        if (watcher.lastNotifyId < currentNotifyId && proxyInternals.watchers.has(watcher)) {
-          ++proxyInternals.notifyCount;
-          watcher.run();
-        }
-      }
-    }
-    pendingNotifyProxyInternals.clear();
-
-    proxyMutationAllowed = oldProxyMutationAllowed;
-    pendingNotify = false;
-  });
-}
