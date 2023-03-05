@@ -53,9 +53,9 @@ function notifyWatchers(proxyInternals: ProxyInternals);
 const proxyInternalsKey = Symbol();
 let proxyMutationAllowed = true;
 const watcherStack = [];
-const pendingMutatedProxyInternals = new Set();
-let notifyRequested = false;
 let currentNotifyId = 0;
+let pendingNotify = false;
+const pendingNotifyProxyInternals = new Set();
 
 export function createObservableJsonProxy(json) {
   return new Proxy({
@@ -256,19 +256,19 @@ function notifyWatchers(proxyInternals) {
     return;
   }
 
-  pendingMutatedProxyInternals.add(proxyInternals);
+  pendingNotifyProxyInternals.add(proxyInternals);
 
-  if (notifyRequested) {
+  if (pendingNotify) {
     return;
   }
 
-  notifyRequested = true;
+  pendingNotify = true;
   requestAnimationFrame(() => {
     const oldProxyMutationAllowed = proxyMutationAllowed;
     proxyMutationAllowed = false;
     ++currentNotifyId;
 
-    for (const proxyInternals of pendingMutatedProxyInternals) {
+    for (const proxyInternals of pendingNotifyProxyInternals) {
       const watchers = new Set(proxyInternals.watchers);
       while (watchers.size > 0) {
         let watcher = watchers[Symbol.iterator]().next().value;
@@ -290,9 +290,9 @@ function notifyWatchers(proxyInternals) {
         }
       }
     }
-    pendingMutatedProxyInternals.clear();
+    pendingNotifyProxyInternals.clear();
 
     proxyMutationAllowed = oldProxyMutationAllowed;
-    notifyRequested = false;
+    pendingNotify = false;
   });
 }
