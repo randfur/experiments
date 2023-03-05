@@ -202,7 +202,7 @@ export function printObservation(proxy) {
     let result = indent;
     const internals = proxy[jsonProxyInternals];
     if ('json' in internals) {
-      result += '{JSON}';
+      result += '{json}';
     } else {
       result += `[${internals.property}]`;
     }
@@ -221,7 +221,7 @@ export function printObservation(proxy) {
   result += 'WATCHERS:\n';
   function printProxyInternalsName(proxyInternals) {
     if ('json' in proxyInternals) {
-      return '{}';
+      return '{json}';
     }
     return `${printProxyInternalsName(proxyInternals.parent)}.${proxyInternals.property}`;
   }
