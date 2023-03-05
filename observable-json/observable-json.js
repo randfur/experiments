@@ -53,6 +53,9 @@ function notifyWatchers(proxyInternals: ProxyInternals);
 const proxyInternalsKey = Symbol();
 let proxyMutationAllowed = true;
 const watcherStack = [];
+const pendingMutatedProxyInternals = new Set();
+let notifyRequested = false;
+let currentNotifyId = 0;
 
 export function createObservableJsonProxy(json) {
   return new Proxy({
@@ -194,6 +197,7 @@ export function mutate(proxy, mutator) {
 
 class Watcher {
   constructor(readingValue, consumer) {
+    this.lastNotifyId = currentNotifyId;
     this.readingValue = readingValue;
     this.consumer = consumer;
     this.parentWatcher = null;
@@ -220,6 +224,7 @@ class Watcher {
 
   run() {
     ++this.runCount;
+    this.lastNotifyId = currentNotifyId;
     this.clear();
     watcherStack.push(this);
 
@@ -247,18 +252,47 @@ export function watch(readingValue, consumer) {
 }
 
 function notifyWatchers(proxyInternals) {
-  // TODO: Defer to animation frame.
-  // TODO: Notify watchers in tree order.
-
-  proxyInternals.notifyCount += proxyInternals.watchers.size;
-
-  const notifyingWatchers = proxyInternals.watchers;
-  proxyInternals.watchers = new Set();
-
-  const oldProxyMutationAllowed = proxyMutationAllowed;
-  proxyMutationAllowed = false;
-  for (const watcher of notifyingWatchers) {
-    watcher.run();
+  if (proxyInternals.watchers.size === 0) {
+    return;
   }
-  proxyMutationAllowed = oldProxyMutationAllowed;
+
+  pendingMutatedProxyInternals.add(proxyInternals);
+
+  if (notifyRequested) {
+    return;
+  }
+
+  notifyRequested = true;
+  requestAnimationFrame(() => {
+    const oldProxyMutationAllowed = proxyMutationAllowed;
+    proxyMutationAllowed = false;
+    ++currentNotifyId;
+
+    for (const proxyInternals of pendingMutatedProxyInternals) {
+      const watchers = new Set(proxyInternals.watchers);
+      while (watchers.size > 0) {
+        let watcher = watchers[Symbol.iterator]().next().value;
+
+        // Process parent watchers in set before their descendants.
+        let checkWatcher = watcher;
+        while (checkWatcher.parent) {
+          checkWatcher = checkWatcher.parent;
+          if (checkWatcher in watchers) {
+            watcher = checkWatcher;
+          }
+        }
+
+        watchers.delete(watcher);
+
+        if (watcher.lastNotifyId < currentNotifyId && proxyInternals.watchers.has(watcher)) {
+          ++proxyInternals.notifyCount;
+          watcher.run();
+        }
+      }
+    }
+    pendingMutatedProxyInternals.clear();
+
+    proxyMutationAllowed = oldProxyMutationAllowed;
+    notifyRequested = false;
+  });
 }

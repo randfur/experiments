@@ -2,6 +2,9 @@
 - Removed global notifyingWatchers and notifyingWatchersWaitingRoom in favour of resetting the internals.watchers and saving the set to iterate over as a local variable.
   - Not 100% sure it's okay to clear the internals.watchers here but it probably should be okay.
   - Much better than having those two globals used in 3 places.
+  - No this adds a bug. When watchers are removed from the proxy they won't be removed from the notifyingWatchers set.
+  - Maybe just need to pop from this set instead of looping over it.
+    - Implemented this.
 - Added TS types for observable-json.js.
 - Project name idea: Render Observable JSON (ROJ).
   - Renamed rendering.js to render.js to match.
@@ -15,6 +18,7 @@
   - Add an internal value to the element to track the range of children that different child templates manage.
   - As child templates are rerendered they can use this data to remove/re-order the children they originally appended.
 - Removed the use of popKeys(), it was mutating the original template which would bite us later as we try to re-render these templates.
+- Implemented waiting until the next animation before notifying watchers.
 
 # 2023-02-27 Monday
 - Added watcher tree view.
