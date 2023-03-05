@@ -6,7 +6,9 @@
 - Project name idea: Render Observable JSON (ROJ).
   - Renamed rendering.js to render.js to match.
 - Fixed up naming of proxy internals for consistency.
-- Removed the lockMutating() call in render(), it would be nice to have but eh, it's nicer to avoid the layering and having to have two functions named so similarly. Add it back if it's really needed.
+- Removed the lockAccessing() and lockMutating calls in render(), it would be nice to have but eh, it's nicer to avoid the layering and having to have two functions named so similarly. Add it back if it's really needed.
+  - No more lock on accessing anymore, deleted that code.
+  - Inlined lockMutating() into watch() and notifyWatchers(), no more lock methods.
 - Made render() handle all template values, not just element templates.
   - Make it append the template to the container element.
 - Managing containers' templated children.

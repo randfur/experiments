@@ -48,13 +48,10 @@ class Watcher<T> {
 function createProxyInternalsBase(): ProxyInternalsBase;
 function isObservableJsonProxy(value: any): boolean;
 function notifyWatchers(proxyInternals: ProxyInternals);
-function lockAccessing(f: () => void);
-function lockMutating(f: () => void);
 */
 
 const proxyInternalsKey = Symbol();
-let modelAccessAllowed = true;
-let modelMutationAllowed = true;
+let proxyMutationAllowed = true;
 const watcherStack = [];
 
 export function createObservableJsonProxy(json) {
@@ -158,7 +155,6 @@ export function printObservation(proxy) {
 }
 
 export function read(proxy) {
-  console.assert(modelAccessAllowed);
   const proxyInternals = proxy[proxyInternalsKey];
   if (watcherStack.length > 0) {
     const watcher = watcherStack[watcherStack.length - 1];
@@ -178,8 +174,7 @@ function extractJsonValue(proxyInternals) {
 
 export function write(proxy, value) {
   console.assert(isObservableJsonProxy(proxy));
-  console.assert(modelAccessAllowed);
-  console.assert(modelMutationAllowed);
+  console.assert(proxyMutationAllowed);
   const proxyInternals = proxy[proxyInternalsKey];
   if ('json' in proxyInternals) {
     proxyInternals.json = value;
@@ -191,8 +186,7 @@ export function write(proxy, value) {
 }
 
 export function mutate(proxy, mutator) {
-  console.assert(modelAccessAllowed);
-  console.assert(modelMutationAllowed);
+  console.assert(proxyMutationAllowed);
   const proxyInternals = proxy[proxyInternalsKey];
   mutator(extractJsonValue(proxyInternals));
   notifyWatchers(proxyInternals);
@@ -241,12 +235,15 @@ class Watcher {
 }
 
 export function watch(readingValue, consumer) {
+  const oldProxyMutationAllowed = proxyMutationAllowed;
+  proxyMutationAllowed = false;
   if (isObservableJsonProxy(readingValue) || typeof readingValue === 'function') {
     const watcher = new Watcher(readingValue, consumer);
     watcher.run();
-    return;
+  } else {
+    consumer(readingValue);
   }
-  consumer(readingValue);
+  proxyMutationAllowed = oldProxyMutationAllowed;
 }
 
 function notifyWatchers(proxyInternals) {
@@ -258,25 +255,10 @@ function notifyWatchers(proxyInternals) {
   const notifyingWatchers = proxyInternals.watchers;
   proxyInternals.watchers = new Set();
 
-  lockMutating(() => {
-    for (const watcher of notifyingWatchers) {
-      watcher.run();
-    }
-  });
-}
-
-export function lockAccessing(f) {
-  const oldModelAccessAllowed = modelAccessAllowed;
-  modelAccessAllowed = false;
-  const result = f();
-  modelAccessAllowed = oldModelAccessAllowed;
-  return result;
-}
-
-export function lockMutating(f) {
-  const oldModelMutationAllowed = modelMutationAllowed;
-  modelMutationAllowed = false;
-  const result = f();
-  modelMutationAllowed = oldModelMutationAllowed;
-  return result;
+  const oldProxyMutationAllowed = proxyMutationAllowed;
+  proxyMutationAllowed = false;
+  for (const watcher of notifyingWatchers) {
+    watcher.run();
+  }
+  proxyMutationAllowed = oldProxyMutationAllowed;
 }
