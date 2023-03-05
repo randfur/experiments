@@ -42,23 +42,21 @@ export function reactiveExample() {
     debug.textContent = printObservation(model);
   }, 100);
 
-  render(app, () => {
-    return {
-      style: () => {
-        const mode = read(model.mode);
-        const valueProxy = model[mode].value;
-        const result = {
-          height: '40px',
-        };
-        if (mode === 'dog') {
-          result.fontSize = () => `${read(valueProxy)}px`;
-        } else {
-          result.fontSize = '20px';
-          result.marginLeft = () => `${read(valueProxy)}px`;
-        }
-        return result;
-      },
-      textContent: () => read(model[read(model.mode)].emoji),
-    };
+  render(app, {
+    style: () => {
+      const mode = read(model.mode);
+      const valueProxy = model[mode].value;
+      const result = {
+        height: '40px',
+      };
+      if (mode === 'dog') {
+        result.fontSize = () => `${read(valueProxy)}px`;
+      } else {
+        result.fontSize = '20px';
+        result.marginLeft = () => `${read(valueProxy)}px`;
+      }
+      return result;
+    },
+    textContent: () => read(model[read(model.mode)].emoji),
   });
 }

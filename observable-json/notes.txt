@@ -6,6 +6,13 @@
 - Project name idea: Render Observable JSON (ROJ).
   - Renamed rendering.js to render.js to match.
 - Fixed up naming of proxy internals for consistency.
+- Removed the lockMutating() call in render(), it would be nice to have but eh, it's nicer to avoid the layering and having to have two functions named so similarly. Add it back if it's really needed.
+- Made render() handle all template values, not just element templates.
+  - Make it append the template to the container element.
+- Managing containers' templated children.
+  - Add an internal value to the element to track the range of children that different child templates manage.
+  - As child templates are rerendered they can use this data to remove/re-order the children they originally appended.
+- Removed the use of popKeys(), it was mutating the original template which would bite us later as we try to re-render these templates.
 
 # 2023-02-27 Monday
 - Added watcher tree view.

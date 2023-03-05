@@ -1,14 +1,9 @@
-const proxyInternalsKey = Symbol();
-let modelAccessAllowed = true;
-let modelMutationAllowed = true;
-const watcherStack = [];
-
 /*
 # Public
 
 export Json = null | undefined | number | string | Array<Json> | Record<string, Json>;
 export interface ObservableJsonProxy extends Proxy {}
-export type ReadingValue = ObservableJsonProxy | Function | any;
+export type ReadingValue<T> = ObservableJsonProxy | () => T | T;
 
 export function createObservableJsonProxy(json: Json): ObservableJsonProxy;
 export function printObservation(proxy: ObservableJsonProxy);
@@ -16,10 +11,7 @@ export function printObservation(proxy: ObservableJsonProxy);
 export function read(proxy: ObservableJsonProxy): Json;
 export function write(proxy: ObservableJsonProxy, value: Json);
 export function mutate(proxy: ObservableJsonProxy, mutator: () => void);
-export function watch(readingValue: ReadingValue, consumer: (value: any) => void);
-
-export function lockAccessing(f: () => void);
-export function lockMutating(f: () => void);
+export function watch<T>(readingValue: ReadingValue<T>, consumer: (value: any) => void);
 
 # Private
 
@@ -40,15 +32,15 @@ interface ProxyInternalsPropertyReference extends ProxyInternalsBase {
   property: string,
 }
 
-class Watcher {
-  readingValue: ReadingValue;
-  consumer: (value: any) => void;
-  parentWatcher: Watcher | null;
-  subWatchers: Set<Watcher>;
+class Watcher<T> {
+  readingValue: ReadingValue<T>;
+  consumer: (value: T) => void;
+  parentWatcher: Watcher<any> | null;
+  subWatchers: Set<Watcher<any>>;
   proxies: Set<ObservableJsonProxy>;
   runCount: number;
 
-  constructor(readingValue: readingValue, consumer: (value: any) => void);
+  constructor(readingValue: ReadingValue<T>, consumer: (value: T) => void);
   clear();
   run();
 }
@@ -56,7 +48,14 @@ class Watcher {
 function createProxyInternalsBase(): ProxyInternalsBase;
 function isObservableJsonProxy(value: any): boolean;
 function notifyWatchers(proxyInternals: ProxyInternals);
+function lockAccessing(f: () => void);
+function lockMutating(f: () => void);
 */
+
+const proxyInternalsKey = Symbol();
+let modelAccessAllowed = true;
+let modelMutationAllowed = true;
+const watcherStack = [];
 
 export function createObservableJsonProxy(json) {
   return new Proxy({

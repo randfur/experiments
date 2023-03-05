@@ -1,81 +1,119 @@
 import {
-  popKeys,
-} from './utils.js';
-import {
-  lockAccessing,
-  lockMutating,
   watch,
 } from './observable-json.js';
 
 /*
 # Public
 
-export type RenderTemplateNode = ElementTemplate |
-export function render(container: HTMLElement, generateElementTemplate
+import {ReadingValue} from './observable-json.js';
+
+export type Template = ElementTemplate | HtmlIf | HtmlSwitch | HtmlMap;
+
+export interface ElementTemplate {
+  tag: string,
+  style: ReadingValue<interface {
+    [cssProperty: string]: ReadingValue<string>;
+  }>;
+  children: ReadingValue<Array<Template>>;
+  [attribute: string]: ReadingValue<string>;
+}
+
+class HtmlIf {
+  constructor(condition: ReadingValue<bool>, trueBranch: Template, falseBranch: Template);
+  // TODO
+}
+
+class HtmlSwitch<T> {
+  constructor(value: ReadingValue<T>, interface { [value: T]: ReadingValue<Template> });
+  // TODO
+}
+
+class HtmlMap<T> {
+  constructor(value: ReadingValue<Array<T>>, (value: T) => Template);
+  // TODO
+}
+
+export function render(container: HTMLElement, elementTemplate: Template);
 
 */
 
-export function render(container, generateElementTemplate) {
-  // TODO:
-  // - Register HTML pieces that require re-rendering for reads and member accesses.
-  // - Clear registrations when things get re-rendered.
-  lockMutating(() => {
-    renderElementTemplate(
-      container,
-      lockAccessing(generateElementTemplate),
-    );
-  });
-}
+export function render(container, template) {
+  // TODO: Set up children template tracking.
+  if (template instanceof HtmlIf) {
+    // TODO
+  } else if (template instanceof HtmlSwitch) {
+    // TODO
+  } else if (template instanceof HtmlMap) {
+    // TODO
+  } else {
+    console.assert(typeof template === 'object');
+    const {
+      tag='div',
+      style={},
+      // TODO: events={},
+      children=[],
+    } = template;
 
-function renderElementTemplate(container, elementTemplate) {
-  const {tag, style, events, children} = popKeys(elementTemplate, {
-    tag: 'div',
-    style: {},
-    events: {},
-    children: [],
-  });
-  console.assert(typeof tag === 'string');
-  const element = document.createElement(tag);
+    console.assert(typeof tag === 'string');
+    const element = document.createElement(tag);
 
-  watch(style, style => {
-    element.style.cssText = '';
-    for (const [property, readingValue] of Object.entries(style)) {
-      watch(readingValue, value => {
-        if (property.startsWith('-')) {
-          element.style.setProperty(property, value);
-        } else {
-          element.style[property] = value;
-        }
-      });
-    }
-  });
-
-  // TODO: events
-
-  for (let [property, readingValue] of Object.entries(elementTemplate)) {
-    watch(readingValue, value => {
-      element[property] = value
+    watch(style, style => {
+      element.style.cssText = '';
+      for (const [property, readingValue] of Object.entries(style)) {
+        watch(readingValue, value => {
+          if (property.startsWith('-')) {
+            element.style.setProperty(property, value);
+          } else {
+            element.style[property] = value;
+          }
+        });
+      }
     });
+
+    // TODO: events
+
+    for (let [attribute, readingValue] of Object.entries(template)) {
+      switch (attribute) {
+      case 'tag':
+      case 'style':
+      case 'events':
+      case 'children':
+        break;
+      default:
+        watch(readingValue, value => {
+          element[attribute] = value
+        });
+        break;
+      }
+    }
+
+    // TODO: children
+
+    container.append(element);
   }
-
-  // TODO: children
-
-  container.append(element);
 }
 
 ////////////////////////////////////////////////////////////////
 // HTML branches
 ////////////////////////////////////////////////////////////////
 
-class HtmlList {
+class HtmlIf {
+  // TODO
+}
+
+class HtmlSwitch {
+  // TODO
+}
+
+class HtmlMap {
   constructor(listModel, generateItemTemplate) {
     this.listModel = listModel;
     this.generateItemTemplate = generateItemTemplate;
   }
 }
 
-function htmlList(listModel, generateItemTemplate) {
-  return new HtmlList(listModel, generateItemTemplate);
+function htmlMap(listModel, generateItemTemplate) {
+  return new HtmlMap(listModel, generateItemTemplate);
 }
 
 ////////////////////////////////////////////////////////////////
