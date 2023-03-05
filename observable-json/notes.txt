@@ -5,6 +5,7 @@
 - Added TS types for observable-json.js.
 - Project name idea: Render Observable JSON (ROJ).
   - Renamed rendering.js to render.js to match.
+- Fixed up naming of proxy internals for consistency.
 
 # 2023-02-27 Monday
 - Added watcher tree view.

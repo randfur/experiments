@@ -1,4 +1,4 @@
-const jsonProxyInternals = Symbol();
+const proxyInternalsKey = Symbol();
 let modelAccessAllowed = true;
 let modelMutationAllowed = true;
 const watcherStack = [];
@@ -11,30 +11,32 @@ export interface ObservableJsonProxy extends Proxy {}
 export type ReadingValue = ObservableJsonProxy | Function | any;
 
 export function createObservableJsonProxy(json: Json): ObservableJsonProxy;
+export function printObservation(proxy: ObservableJsonProxy);
+
 export function read(proxy: ObservableJsonProxy): Json;
 export function write(proxy: ObservableJsonProxy, value: Json);
 export function mutate(proxy: ObservableJsonProxy, mutator: () => void);
+export function watch(readingValue: ReadingValue, consumer: (value: any) => void);
+
 export function lockAccessing(f: () => void);
 export function lockMutating(f: () => void);
-export function watch(readingValue: ReadingValue, consumer: (value: any) => void);
-export function printObservation(proxy: ObservableJsonProxy);
 
 # Private
 
-type Internals = InternalsRoot | InternalsPropertyReferenc;
+type ProxyInternals = ProxyInternalsRoot | ProxyInternalsPropertyReferenc;
 
-interface InternalsBase {
+interface ProxyInternalsBase {
   subProxies: Set<ObservableJsonProxy>;
   watchers: Set<Watcher>;
   notifyCount: 0;
 }
 
-interface InternalsRoot extends InternalsBase {
+interface ProxyInternalsRoot extends ProxyInternalsBase {
   json: Json;
 }
 
-interface InternalsPropertyReference extends InternalsBase {
-  parent: Internals,
+interface ProxyInternalsPropertyReference extends ProxyInternalsBase {
+  parent: ProxyInternals,
   property: string,
 }
 
@@ -51,10 +53,9 @@ class Watcher {
   run();
 }
 
-function createInternalsBase(): InternalsBase;
+function createProxyInternalsBase(): ProxyInternalsBase;
 function isObservableJsonProxy(value: any): boolean;
-function notifyWatchers(internals: Internals);
-
+function notifyWatchers(proxyInternals: ProxyInternals);
 */
 
 export function createObservableJsonProxy(json) {
@@ -73,48 +74,106 @@ function createProxyInternalsBase() {
 }
 
 const observableJsonProxyHandler = {
-  // get(internals: Internals, property: string, proxy: ObservableJsonProxy): ObservableJsonProxy | Internals;
-  get(internals, property, proxy) {
-    if (property === jsonProxyInternals) {
-      return internals;
+  get(proxyInternals, property, proxy) {
+    if (property === proxyInternalsKey) {
+      return proxyInternals;
     }
-    if (!(property in internals.subProxies)) {
-      internals.subProxies[property] = new Proxy({
+    if (!(property in proxyInternals.subProxies)) {
+      proxyInternals.subProxies[property] = new Proxy({
         ...createProxyInternalsBase(),
-        parent: internals,
+        parent: proxyInternals,
         property,
       }, observableJsonProxyHandler);
     }
-    return internals.subProxies[property];
+    return proxyInternals.subProxies[property];
   },
-  has(internals, property, proxy) {
+  has(proxyInternals, property, proxy) {
     console.assert(false);
   },
-  set(internals, property, value, proxy) {
+  set(proxyInternals, property, value, proxy) {
     console.assert(false);
   },
 };
 
 function isObservableJsonProxy(object) {
-  return typeof object === 'object' && Boolean(object[jsonProxyInternals]);
+  return typeof object === 'object' && Boolean(object[proxyInternalsKey]);
+}
+
+export function printObservation(proxy) {
+  let result = '';
+  let proxyInternals = proxy[proxyInternalsKey];
+  while (!('json' in proxyInternals)) {
+    proxyInternals = proxyInternals.parent;
+  }
+  const watchers = new Set();
+
+  result += `JSON: ${JSON.stringify(proxyInternals.json, null, '  ')}\n\n`;
+
+  result += 'PROXY:\n';
+  function printProxy(proxy, indent='') {
+    let result = indent;
+    const proxyInternals = proxy[proxyInternalsKey];
+    if ('json' in proxyInternals) {
+      result += '{json}';
+    } else {
+      result += `[${proxyInternals.property}]`;
+    }
+    result += ` (watchers: ${proxyInternals.watchers.size}, notifyCount: ${proxyInternals.notifyCount})\n`;
+    for (const watcher of proxyInternals.watchers) {
+      watchers.add(watcher);
+    }
+    for (const subProxy of Object.values(proxyInternals.subProxies)) {
+      result += printProxy(subProxy, indent + '  ');
+    }
+    return result;
+  }
+  result += printProxy(proxy);
+  result += '\n';
+
+  result += 'WATCHERS:\n';
+  function printProxyInternalsName(proxyInternals) {
+    if ('json' in proxyInternals) {
+      return '{json}';
+    }
+    return `${printProxyInternalsName(proxyInternals.parent)}.${proxyInternals.property}`;
+  }
+  function printWatcher(watcher, indent='') {
+    watchers.delete(watcher);
+    let result = indent;
+    const proxyNames = Array.from(watcher.proxies).map(proxy => proxy[proxyInternalsKey]).map(printProxyInternalsName);
+    result += `[${proxyNames.join(', ')}] (runCount: ${watcher.runCount})\n`;
+    for (const subWatcher of watcher.subWatchers) {
+      result += printWatcher(subWatcher, indent + '  ');
+    }
+    return result;
+  }
+  while (watchers.size > 0) {
+    let watcher = watchers.values().next().value;
+    while (watcher.parentWatcher) {
+      watcher = watcher.parentWatcher;
+    }
+    result += printWatcher(watcher);
+  }
+
+  return result;
 }
 
 export function read(proxy) {
   console.assert(modelAccessAllowed);
-  const internals = proxy[jsonProxyInternals];
+  const proxyInternals = proxy[proxyInternalsKey];
   if (watcherStack.length > 0) {
     const watcher = watcherStack[watcherStack.length - 1];
     watcher.proxies.add(proxy);
-    internals.watchers.add(watcher);
+    proxyInternals.watchers.add(watcher);
   }
-  return extractJsonValue(internals);
+  return extractJsonValue(proxyInternals);
 }
 
-function extractJsonValue(internals) {
-  if ('json' in internals) {
-    return internals.json;
+function extractJsonValue(proxyInternals) {
+  if ('json' in proxyInternals) {
+    return proxyInternals.json;
   }
-  const {parent, property} = internals;
+  const {parent, property} = proxyInternals;
   return extractJsonValue(parent)[property];
 }
 
@@ -122,54 +181,22 @@ export function write(proxy, value) {
   console.assert(isObservableJsonProxy(proxy));
   console.assert(modelAccessAllowed);
   console.assert(modelMutationAllowed);
-  const internals = proxy[jsonProxyInternals];
-  if ('json' in internals) {
-    internals.json = value;
+  const proxyInternals = proxy[proxyInternalsKey];
+  if ('json' in proxyInternals) {
+    proxyInternals.json = value;
   } else {
-    const {parent, property} = internals;
+    const {parent, property} = proxyInternals;
     extractJsonValue(parent)[property] = value;
   }
-  notifyWatchers(internals);
+  notifyWatchers(proxyInternals);
 }
 
 export function mutate(proxy, mutator) {
   console.assert(modelAccessAllowed);
   console.assert(modelMutationAllowed);
-  const internals = proxy[jsonProxyInternals];
-  mutator(extractJsonValue(internals));
-  notifyWatchers(internals);
-}
-
-function notifyWatchers(internals) {
-  // TODO: Defer to animation frame.
-  // TODO: Notify watchers in tree order.
-
-  internals.notifyCount += internals.watchers.size;
-
-  const notifyingWatchers = internals.watchers;
-  internals.watchers = new Set();
-
-  lockMutating(() => {
-    for (const watcher of notifyingWatchers) {
-      watcher.run();
-    }
-  });
-}
-
-export function lockAccessing(f) {
-  const oldModelAccessAllowed = modelAccessAllowed;
-  modelAccessAllowed = false;
-  const result = f();
-  modelAccessAllowed = oldModelAccessAllowed;
-  return result;
-}
-
-export function lockMutating(f) {
-  const oldModelMutationAllowed = modelMutationAllowed;
-  modelMutationAllowed = false;
-  const result = f();
-  modelMutationAllowed = oldModelMutationAllowed;
-  return result;
+  const proxyInternals = proxy[proxyInternalsKey];
+  mutator(extractJsonValue(proxyInternals));
+  notifyWatchers(proxyInternals);
 }
 
 class Watcher {
@@ -188,7 +215,7 @@ class Watcher {
 
   clear() {
     for (const proxy of this.proxies) {
-      proxy[jsonProxyInternals].watchers.delete(this);
+      proxy[proxyInternalsKey].watchers.delete(this);
     }
     this.proxies.clear();
     for (const subWatcher of this.subWatchers) {
@@ -223,62 +250,34 @@ export function watch(readingValue, consumer) {
   consumer(readingValue);
 }
 
-export function printObservation(proxy) {
-  let result = '';
-  let internals = proxy[jsonProxyInternals];
-  while (!('json' in internals)) {
-    internals = internals.parent;
-  }
-  const watchers = new Set();
+function notifyWatchers(proxyInternals) {
+  // TODO: Defer to animation frame.
+  // TODO: Notify watchers in tree order.
 
-  result += `JSON: ${JSON.stringify(internals.json, null, '  ')}\n\n`;
+  proxyInternals.notifyCount += proxyInternals.watchers.size;
 
-  result += 'PROXY:\n';
-  function printProxy(proxy, indent='') {
-    let result = indent;
-    const internals = proxy[jsonProxyInternals];
-    if ('json' in internals) {
-      result += '{json}';
-    } else {
-      result += `[${internals.property}]`;
-    }
-    result += ` (watchers: ${internals.watchers.size}, notifyCount: ${internals.notifyCount})\n`;
-    for (const watcher of internals.watchers) {
-      watchers.add(watcher);
-    }
-    for (const subProxy of Object.values(internals.subProxies)) {
-      result += printProxy(subProxy, indent + '  ');
-    }
-    return result;
-  }
-  result += printProxy(proxy);
-  result += '\n';
+  const notifyingWatchers = proxyInternals.watchers;
+  proxyInternals.watchers = new Set();
 
-  result += 'WATCHERS:\n';
-  function printProxyInternalsName(proxyInternals) {
-    if ('json' in proxyInternals) {
-      return '{json}';
+  lockMutating(() => {
+    for (const watcher of notifyingWatchers) {
+      watcher.run();
     }
-    return `${printProxyInternalsName(proxyInternals.parent)}.${proxyInternals.property}`;
-  }
-  function printWatcher(watcher, indent='') {
-    watchers.delete(watcher);
-    let result = indent;
-    const proxyNames = Array.from(watcher.proxies).map(proxy => proxy[jsonProxyInternals]).map(printProxyInternalsName);
-    result += `[${proxyNames.join(', ')}] (runCount: ${watcher.runCount})\n`;
-    for (const subWatcher of watcher.subWatchers) {
-      result += printWatcher(subWatcher, indent + '  ');
-    }
-    return result;
-  }
-  while (watchers.size > 0) {
-    let watcher = watchers.values().next().value;
-    while (watcher.parentWatcher) {
-      watcher = watcher.parentWatcher;
-    }
-    result += printWatcher(watcher);
-  }
-  // TODO: Print the watcher tree.
+  });
+}
 
+export function lockAccessing(f) {
+  const oldModelAccessAllowed = modelAccessAllowed;
+  modelAccessAllowed = false;
+  const result = f();
+  modelAccessAllowed = oldModelAccessAllowed;
+  return result;
+}
+
+export function lockMutating(f) {
+  const oldModelMutationAllowed = modelMutationAllowed;
+  modelMutationAllowed = false;
+  const result = f();
+  modelMutationAllowed = oldModelMutationAllowed;
   return result;
 }

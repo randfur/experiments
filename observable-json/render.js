@@ -7,6 +7,14 @@ import {
   watch,
 } from './observable-json.js';
 
+/*
+# Public
+
+export type RenderTemplateNode = ElementTemplate |
+export function render(container: HTMLElement, generateElementTemplate
+
+*/
+
 export function render(container, generateElementTemplate) {
   // TODO:
   // - Register HTML pieces that require re-rendering for reads and member accesses.
