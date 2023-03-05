@@ -4,21 +4,21 @@ import {
   coinFlip,
 } from './utils.js';
 import {
-  createObservableJson,
+  createObservableJsonProxy,
   write,
   read,
   printObservation,
 } from './observable-json.js';
 import {
   render,
-} from './rendering.js';
+} from './render.js';
 
 export function reactiveExample() {
-  let model = createObservableJson({
+  let model = createObservableJsonProxy({
     mode: 'dog',
     dog: {
       emoji: '🐶',
-      value: 0,
+      value: 30,
     },
     cow: {
       emoji: '🐄',

@@ -2,10 +2,62 @@ const jsonProxyInternals = Symbol();
 let modelAccessAllowed = true;
 let modelMutationAllowed = true;
 const watcherStack = [];
-let notifyingWatchers = null;
-let notifyingWatchersWaitingRoom = new Set();
 
-export function createObservableJson(json) {
+/*
+# Public
+
+export Json = null | undefined | number | string | Array<Json> | Record<string, Json>;
+export interface ObservableJsonProxy extends Proxy {}
+export type ReadingValue = ObservableJsonProxy | Function | any;
+
+export function createObservableJsonProxy(json: Json): ObservableJsonProxy;
+export function read(proxy: ObservableJsonProxy): Json;
+export function write(proxy: ObservableJsonProxy, value: Json);
+export function mutate(proxy: ObservableJsonProxy, mutator: () => void);
+export function lockAccessing(f: () => void);
+export function lockMutating(f: () => void);
+export function watch(readingValue: ReadingValue, consumer: (value: any) => void);
+export function printObservation(proxy: ObservableJsonProxy);
+
+# Private
+
+type Internals = InternalsRoot | InternalsPropertyReferenc;
+
+interface InternalsBase {
+  subProxies: Set<ObservableJsonProxy>;
+  watchers: Set<Watcher>;
+  notifyCount: 0;
+}
+
+interface InternalsRoot extends InternalsBase {
+  json: Json;
+}
+
+interface InternalsPropertyReference extends InternalsBase {
+  parent: Internals,
+  property: string,
+}
+
+class Watcher {
+  readingValue: ReadingValue;
+  consumer: (value: any) => void;
+  parentWatcher: Watcher | null;
+  subWatchers: Set<Watcher>;
+  proxies: Set<ObservableJsonProxy>;
+  runCount: number;
+
+  constructor(readingValue: readingValue, consumer: (value: any) => void);
+  clear();
+  run();
+}
+
+function createInternalsBase(): InternalsBase;
+function isObservableJsonProxy(value: any): boolean;
+function notifyWatchers(internals: Internals);
+
+*/
+
+export function createObservableJsonProxy(json) {
   return new Proxy({
     ...createProxyInternalsBase(),
     json,
@@ -21,28 +73,29 @@ function createProxyInternalsBase() {
 }
 
 const observableJsonProxyHandler = {
-  get(target, property, receiver) {
+  // get(internals: Internals, property: string, proxy: ObservableJsonProxy): ObservableJsonProxy | Internals;
+  get(internals, property, proxy) {
     if (property === jsonProxyInternals) {
-      return target;
+      return internals;
     }
-    if (!(property in target.subProxies)) {
-      target.subProxies[property] = new Proxy({
+    if (!(property in internals.subProxies)) {
+      internals.subProxies[property] = new Proxy({
         ...createProxyInternalsBase(),
-        parent: target,
+        parent: internals,
         property,
       }, observableJsonProxyHandler);
     }
-    return target.subProxies[property];
+    return internals.subProxies[property];
   },
-  has(target, property, receiver) {
+  has(internals, property, proxy) {
     console.assert(false);
   },
-  set(target, property, value, receiver) {
+  set(internals, property, value, proxy) {
     console.assert(false);
   },
 };
 
-function isJsonProxy(object) {
+function isObservableJsonProxy(object) {
   return typeof object === 'object' && Boolean(object[jsonProxyInternals]);
 }
 
@@ -52,28 +105,21 @@ export function read(proxy) {
   if (watcherStack.length > 0) {
     const watcher = watcherStack[watcherStack.length - 1];
     watcher.proxies.add(proxy);
-    if (internals.watchers === notifyingWatchers) {
-      // We are currently iterating over internals.watchers in notifyWatchers,
-      // if we add the watcher to it during its run() it will get re-run() again
-      // in an infinite loop. Add to notifyingWatchersWaitingRoom instead.
-      notifyingWatchersWaitingRoom.add(watcher);
-    } else {
-      internals.watchers.add(watcher);
-    }
+    internals.watchers.add(watcher);
   }
-  return traverseForRead(internals);
+  return extractJsonValue(internals);
 }
 
-function traverseForRead(internals) {
+function extractJsonValue(internals) {
   if ('json' in internals) {
     return internals.json;
   }
   const {parent, property} = internals;
-  return traverseForRead(parent)[property];
+  return extractJsonValue(parent)[property];
 }
 
 export function write(proxy, value) {
-  console.assert(isJsonProxy(proxy));
+  console.assert(isObservableJsonProxy(proxy));
   console.assert(modelAccessAllowed);
   console.assert(modelMutationAllowed);
   const internals = proxy[jsonProxyInternals];
@@ -81,7 +127,7 @@ export function write(proxy, value) {
     internals.json = value;
   } else {
     const {parent, property} = internals;
-    traverseForRead(parent)[property] = value;
+    extractJsonValue(parent)[property] = value;
   }
   notifyWatchers(internals);
 }
@@ -90,34 +136,24 @@ export function mutate(proxy, mutator) {
   console.assert(modelAccessAllowed);
   console.assert(modelMutationAllowed);
   const internals = proxy[jsonProxyInternals];
-  mutator(traverseForRead(internals));
+  mutator(extractJsonValue(internals));
   notifyWatchers(internals);
 }
 
 function notifyWatchers(internals) {
-  console.assert(notifyingWatchers === null);
-  console.assert(notifyingWatchersWaitingRoom.size === 0);
   // TODO: Defer to animation frame.
   // TODO: Notify watchers in tree order.
 
   internals.notifyCount += internals.watchers.size;
 
-  // Indicate globally that internals.watchers is being notified and not to
-  // add to it. If existing watchers are added to it during their run() they
-  // will be iterated over again and have run() called again in an infinite
-  // loop. Add to notifyingWatchersWaitingRoom instead and we'll swap them in
-  // when iteration is done.
-  notifyingWatchers = internals.watchers;
+  const notifyingWatchers = internals.watchers;
+  internals.watchers = new Set();
 
   lockMutating(() => {
-    for (const watcher of internals.watchers) {
+    for (const watcher of notifyingWatchers) {
       watcher.run();
     }
   });
-
-  [notifyingWatchersWaitingRoom, internals.watchers] = [internals.watchers, notifyingWatchersWaitingRoom];
-  notifyingWatchersWaitingRoom.clear();
-  notifyingWatchers = null;
 }
 
 export function lockAccessing(f) {
@@ -167,7 +203,7 @@ class Watcher {
     this.clear();
     watcherStack.push(this);
 
-    if (isJsonProxy(this.readingValue)) {
+    if (isObservableJsonProxy(this.readingValue)) {
       this.consumer(read(this.readingValue));
     } else {
       console.assert(typeof this.readingValue === 'function');
@@ -179,7 +215,7 @@ class Watcher {
 }
 
 export function watch(readingValue, consumer) {
-  if (isJsonProxy(readingValue) || typeof readingValue === 'function') {
+  if (isObservableJsonProxy(readingValue) || typeof readingValue === 'function') {
     const watcher = new Watcher(readingValue, consumer);
     watcher.run();
     return;
