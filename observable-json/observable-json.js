@@ -6,6 +6,7 @@ export interface ObservableJsonProxy extends Proxy {}
 export type ReadingValue<T> = ObservableJsonProxy | () => T | T;
 
 export function createObservableJsonProxy(json: Json): ObservableJsonProxy;
+export function isObservableJsonProxy(value: any): boolean;
 export function printObservation(proxy: ObservableJsonProxy);
 
 export function read(proxy: ObservableJsonProxy): Json;
@@ -16,6 +17,10 @@ export function watch<T>(readingValue: ReadingValue<T>, consumer: (value: any) =
 
 export function createObservableJsonProxy(json) {
   return new Proxy(unused, new ProxyInternal({json}));
+}
+
+export function isObservableJsonProxy(object) {
+  return typeof object === 'object' && Boolean(object[internalKey]);
 }
 
 export function printObservation(proxy) {
@@ -147,8 +152,6 @@ class Watcher<T> {
   clear();
   run();
 }
-
-function isObservableJsonProxy(value: any): boolean;
 */
 
 const internalKey = Symbol();
@@ -299,9 +302,5 @@ class Watcher {
 
     watcherStack.pop();
   }
-}
-
-function isObservableJsonProxy(object) {
-  return typeof object === 'object' && Boolean(object[internalKey]);
 }
 

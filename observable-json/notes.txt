@@ -1,3 +1,30 @@
+# 2023-03-07
+- Template types.
+  - Came up with a few more types to support.
+    - String: Needed for element children since they can be text nodes.
+    - Function: Needed for reactive strings, should be able to support being any kind of template type.
+    - Proxy: Shorthand for reading the proxy, should behave like a reactive string.
+    - Array: Since branch template nodes can flat insert an arbitrary number of children it should also be possible with literals (not reading from a proxy), as in to hard code a list of templates to flat inject in as children.
+    - Example usage:
+      render(app, [
+        'Dogs',
+        htmlMap(model.dogs, dog => [
+          read`Dog ${dog.name} is ${dog.size} big.`,
+          htmlMap(dog.legs, leg => leg),
+        ]),
+      ]);
+    - Full set of template types:
+      - Singular:
+        - Element
+        - String
+        - Proxy
+      - Plural:
+        - htmlIf
+        - htmlSwitch
+        - htmlMap
+        - Array
+        - Function
+
 # 2023-03-06
 - Refactored ObservableJsonProxy to store all its internals in the handler and have a dummy object as the target instead.
   - The handler is now instantiated for each proxy rather than being shared.

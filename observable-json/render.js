@@ -1,5 +1,6 @@
 import {
   watch,
+  isObservableJsonProxy,
 } from './observable-json.js';
 
 /*
@@ -46,6 +47,14 @@ export function render(container, template) {
   } else if (template instanceof HtmlSwitch) {
     // TODO
   } else if (template instanceof HtmlMap) {
+    // TODO
+  } else if (template instanceof Array) {
+    // TODO
+  } else if (typeof template === 'function') {
+    // TODO
+  } else if (isObservableJsonProxy(template)) {
+    // TODO
+  } else if (typeof template === 'string') {
     // TODO
   } else {
     console.assert(typeof template === 'object');
