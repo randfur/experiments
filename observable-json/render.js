@@ -49,7 +49,7 @@ export function render(container, template) {
     // TODO
   } else {
     console.assert(typeof template === 'object');
-    const {
+    let {
       tag='div',
       style={},
       // TODO: events={},
@@ -89,9 +89,14 @@ export function render(container, template) {
       }
     }
 
-    // TODO: children
+    if (!(children instanceof Array)) {
+      children = [children];
+    }
+    for (const childTemplate of children) {
+      render(element, childTemplate);
+    }
 
-    container.append(element);
+    updateTemplatedChildren(container, template, [element]);
   }
 }
 
@@ -108,14 +113,14 @@ class HtmlSwitch {
 }
 
 class HtmlMap {
-  constructor(listModel, generateItemTemplate) {
-    this.listModel = listModel;
+  constructor(listProxy, generateItemTemplate) {
+    this.listProxy = listProxy;
     this.generateItemTemplate = generateItemTemplate;
   }
 }
 
-function htmlMap(listModel, generateItemTemplate) {
-  return new HtmlMap(listModel, generateItemTemplate);
+export function htmlMap(listProxy, generateItemTemplate) {
+  return new HtmlMap(listProxy, generateItemTemplate);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -136,3 +141,41 @@ function group(...children) {
   return { children };
 }
 
+/*
+# Private
+*/
+const childrenLogKey = Symbol();
+
+function updateTemplatedChildren(container, template, children) {
+  if (!(childrenLogKey in container)) {
+    container[childrenLogKey] = new Map();
+  }
+  const childrenLog = container[childrenLogKey];
+
+  if (!childrenLog.has(template)) {
+    childrenLog.set(template, {
+      index: container.childNodes.length,
+      length: children.length,
+    });
+    container.append(...children);
+    return;
+  }
+
+  const childLog = childrenLog.get(template);
+  const oldLength = childLog.length;
+  for (let i = 0; i < oldLength; ++i) {
+    container.removeChild(container.childNodes[childLog.index]);
+  }
+  const referenceNode = childLog.index >= container.childNodes.length ? null : container.childNodes[childLog.index];
+  for (let i = 0; i < children.length; ++i) {
+    container.insertBefore(children[i], referenceNode);
+  }
+
+  childLog.length = children.length;
+  const delta = childLog.length - oldLength;
+  for (const otherChildLog of Object.values(childrenLog)) {
+    if (otherChildLog.index > childLog.index) {
+      otherChildLog.index += delta;
+    }
+  }
+}
