@@ -24,6 +24,10 @@
         - htmlMap
         - Array
         - Function
+  - Plural types:
+    - Inject their child templates into their parent's element, which may be their parent's parent's parent's element etc.
+    - Need to be able to update their child templates in place amongst all the other flat mapped elements.
+    - Function is probably the most general form of the plurals
 
 # 2023-03-06
 - Refactored ObservableJsonProxy to store all its internals in the handler and have a dummy object as the target instead.
