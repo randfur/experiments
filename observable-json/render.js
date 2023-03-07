@@ -211,7 +211,7 @@ class Span {
   }
 }
 
-class SpanLeaf {
+class SpanLeaf extends Span {
   constructor(size) {
     super();
     this.size = size;
@@ -222,7 +222,7 @@ class SpanLeaf {
   }
 }
 
-class SpanBranch {
+class SpanBranch extends Span {
   constructor() {
     super();
     this.children = [];
