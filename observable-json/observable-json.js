@@ -303,4 +303,3 @@ class Watcher {
     watcherStack.pop();
   }
 }
-
