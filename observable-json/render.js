@@ -37,81 +37,41 @@ class HtmlMap<T> {
 export function render(container: HTMLElement, elementTemplate: Template);
 
 // TODO: Complete.
-
 */
 
-export function render(container, template) {
-  // TODO: Set up children template tracking.
-  if (template instanceof HtmlIf) {
-    // TODO
-  } else if (template instanceof HtmlSwitch) {
-    // TODO
-  } else if (template instanceof HtmlMap) {
+export function render(container, template, parentSpan=null) {
+  if (parentSpan === null) {
+    if (!(containerSpanKey in container)) {
+      container[containerSpanKey] = new SpanBranch();
+    }
+    parentSpan = container[containerSpanKey];
+  }
+
+  if (typeof template === 'string') {
+    renderString(container, template, parentSpan);
+  } else if (isObservableJsonProxy(template)) {
+    renderProxy(container, template, parentSpan);
     // TODO
   } else if (template instanceof Array) {
+    renderArray(container, template, parentSpan);
     // TODO
   } else if (typeof template === 'function') {
+    renderFunction(container, template, parentSpan);
     // TODO
-  } else if (isObservableJsonProxy(template)) {
+  } else if (template instanceof HtmlIf) {
+    renderIf(container, template, parentSpan);
     // TODO
-  } else if (typeof template === 'string') {
+  } else if (template instanceof HtmlSwitch) {
+    renderSwitch(container, template, parentSpan);
+    // TODO
+  } else if (template instanceof HtmlMap) {
+    renderMap(container, template, parentSpan);
     // TODO
   } else {
     console.assert(typeof template === 'object');
-    let {
-      tag='div',
-      style={},
-      // TODO: events={},
-      children=[],
-    } = template;
-
-    console.assert(typeof tag === 'string');
-    const element = document.createElement(tag);
-
-    watch(style, style => {
-      element.style.cssText = '';
-      for (const [property, readingValue] of Object.entries(style)) {
-        watch(readingValue, value => {
-          if (property.startsWith('-')) {
-            element.style.setProperty(property, value);
-          } else {
-            element.style[property] = value;
-          }
-        });
-      }
-    });
-
-    // TODO: events
-
-    for (let [attribute, readingValue] of Object.entries(template)) {
-      switch (attribute) {
-      case 'tag':
-      case 'style':
-      case 'events':
-      case 'children':
-        break;
-      default:
-        watch(readingValue, value => {
-          element[attribute] = value
-        });
-        break;
-      }
-    }
-
-    if (!(children instanceof Array)) {
-      children = [children];
-    }
-    for (const childTemplate of children) {
-      render(element, childTemplate);
-    }
-
-    updateTemplatedChildren(container, template, [element]);
+    renderElement(container, template, parentSpan);
   }
 }
-
-////////////////////////////////////////////////////////////////
-// HTML branches
-////////////////////////////////////////////////////////////////
 
 class HtmlIf {
   // TODO
@@ -132,10 +92,6 @@ export function htmlMap(listProxy, generateItemTemplate) {
   return new HtmlMap(listProxy, generateItemTemplate);
 }
 
-////////////////////////////////////////////////////////////////
-// HTML helpers
-////////////////////////////////////////////////////////////////
-
 function flexColumn(...children) {
   return ({
     style: {
@@ -153,38 +109,130 @@ function group(...children) {
 /*
 # Private
 */
-const childrenLogKey = Symbol();
 
-function updateTemplatedChildren(container, template, children) {
-  if (!(childrenLogKey in container)) {
-    container[childrenLogKey] = new Map();
-  }
-  const childrenLog = container[childrenLogKey];
+const containerSpanKey = Symbol();
 
-  if (!childrenLog.has(template)) {
-    childrenLog.set(template, {
-      index: container.childNodes.length,
-      length: children.length,
-    });
-    container.append(...children);
-    return;
-  }
+function renderString(container, string, parentSpan) {
+  container[containerSpanKey].push(new SpanLeaf(1))
+  container.append(document.createTextNode(string));
+}
 
-  const childLog = childrenLog.get(template);
-  const oldLength = childLog.length;
-  for (let i = 0; i < oldLength; ++i) {
-    container.removeChild(container.childNodes[childLog.index]);
-  }
-  const referenceNode = childLog.index >= container.childNodes.length ? null : container.childNodes[childLog.index];
-  for (let i = 0; i < children.length; ++i) {
-    container.insertBefore(children[i], referenceNode);
-  }
+function renderProxy(container, proxy, parentSpan) {
+  container[containerSpanKey].push(new SpanLeaf(1))
 
-  childLog.length = children.length;
-  const delta = childLog.length - oldLength;
-  for (const otherChildLog of Object.values(childrenLog)) {
-    if (otherChildLog.index > childLog.index) {
-      otherChildLog.index += delta;
+  const textNode = document.createTextNode('');
+  container.append(textNode);
+  watch(proxy, value => {
+    textNode.textContent = value;
+  });
+}
+
+function renderArray(container, arrayTemplate, parentSpan) {
+  // for (const template of arrayTemplate) {
+  //   render(container, template);
+  // }
+  // TODO
+}
+
+function renderFunction(container, f, parentSpan) {
+  const containerSegment = createContainerSegment(0);
+  watch(f, template => {
+    clearContainerSegment(container, containerSegment);
+  });
+  // TODO
+}
+
+function renderIf(container, ifTemplate, parentSpan) {
+  // TODO
+}
+
+function renderSwitch(container, switchTemplate, parentSpan) {
+  // TODO
+}
+
+function renderMap(container, mapTemplate, parentSpan) {
+  // TODO
+}
+
+function renderElement(container, elementTemplate, parentSpan) {
+  let {
+    tag='div',
+    style={},
+    // TODO: events={},
+    children=[],
+  } = elementTemplate;
+
+  console.assert(typeof tag === 'string');
+  const element = document.createElement(tag);
+
+  watch(style, style => {
+    element.style.cssText = '';
+    for (const [property, readingValue] of Object.entries(style)) {
+      watch(readingValue, value => {
+        if (property.startsWith('-')) {
+          element.style.setProperty(property, value);
+        } else {
+          element.style[property] = value;
+        }
+      });
     }
+  });
+
+  // TODO: events
+
+  for (let [attribute, readingValue] of Object.entries(elementTemplate)) {
+    switch (attribute) {
+    case 'tag':
+    case 'style':
+    case 'events':
+    case 'children':
+      break;
+    default:
+      watch(readingValue, value => {
+        element[attribute] = value
+      });
+      break;
+    }
+  }
+
+  if (!(children instanceof Array)) {
+    children = [children];
+  }
+  for (const childTemplate of children) {
+    render(element, childTemplate);
+  }
+
+  container.append(element);
+}
+
+class Span {
+  constructor() {
+    this.key = Symbol();
+  }
+}
+
+class SpanLeaf {
+  constructor(size) {
+    super();
+    this.size = size;
+  }
+
+  size() {
+    return size;
+  }
+}
+
+class SpanBranch {
+  constructor() {
+    super();
+    this.children = [];
+  }
+
+  size() {
+    let size = 0;
+    for (const childSpan of this.children) {
+      size += childSpan.size();
+    }
+    return size;
   }
 }

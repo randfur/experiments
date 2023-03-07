@@ -1,3 +1,11 @@
+# 2023-03-08
+- Pulled dogcow example out into separate function to preserve while other examples are created.
+- Started creating a data type to store on the container element to keep track of template instantiation segments.
+  - Unsure if it should be a tree structure or flat.
+  - If it's flat it will be a tree structure anyway with parent pointers.
+  - Should probably just be a tree, this makes subtree updates easier.
+  - Keeping track of the span tree and where the span nodes exist as elements in the container is tricky.
+
 # 2023-03-07
 - Template types.
   - Came up with a few more types to support.
