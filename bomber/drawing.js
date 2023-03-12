@@ -1,3 +1,4 @@
+import {Pool} from './pool.js';
 import {Vec3} from './vec3.js';
 import {Camera} from './camera.js';
 
@@ -26,7 +27,13 @@ export class Drawing {
     `;
     this.context = this.canvas.getContext('2d');
 
-    this.linePool = [];
+    this.linePool = new Pool(() => ({
+      start: new Vec3(),
+      end: new Vec3(),
+      width: 0,
+      colour: '',
+      midZ: 0,
+    }));
     this.lines = [];
 
     this.camera = new Camera();
@@ -34,31 +41,40 @@ export class Drawing {
 
   static clear() {
     this.lines.length = 0;
+    this.linePool.releaseAll();
     this.context.clearRect(0, 0, this.width, this.height);
   }
 
   static addLine() {
-    if (this.lines.length >= this.linePool.length) {
-      this.linePool.push({
-        start: new Vec3(),
-        end: new Vec3(),
-        size: new Vec3(),
-        colour: new Vec3(),
-        midZ: 0,
-      });
-    }
-    const line = this.linePool[this.lines.length];
+    const line = this.linePool.acquire();
     this.lines.push(line);
     return line;
   }
 
   static draw() {
+    for (let i = 0; i < this.lines.length;) {
+      const line = this.lines[i];
+      if (this.camera.transformLine(line)) {
+        ++i;
+      } else {
+        this.lines[i] = this.lines[this.lines.length - 1];
+        this.lines.length -= 1;
+      }
+    }
+    this.lines.sort((a, b) => a.z - b.z);
+
     for (const line of this.lines) {
       this.context.strokeStyle = line.colour;
       this.context.lineWidth = line.width;
       this.context.beginPath();
-      this.context.moveTo(line.start.x, line.start.y);
-      this.context.lineTo(line.end.x, line.end.y);
+      this.context.moveTo(
+        this.width / 2 + line.start.x,
+        this.height / 2 + line.start.y,
+      );
+      this.context.lineTo(
+        this.width / 2 + line.end.x,
+        this.height / 2 + line.end.y,
+      );
       this.context.stroke();
     }
   }
