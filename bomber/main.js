@@ -1,14 +1,16 @@
 import {Drawing} from './drawing.js';
 import {Ground} from './ground.js';
 
+const TAU = Math.PI * 2;
+
 async function main() {
   Drawing.init();
   const camera = Drawing.camera;
 
   while (true) {
     const time = await new Promise(requestAnimationFrame);
-    camera.position.setPolar(time / 1000, 10, -100);
-    camera.position.addXyz(0, -50, 0);
+    camera.position.setYPolar(time / 1000, 400, -120);
+    camera.rotateYAngle = -time / 1000 - TAU / 8;
 
     Drawing.clear();
     Ground.addLines();

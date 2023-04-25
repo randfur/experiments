@@ -3,6 +3,8 @@ import {Vec3} from './vec3.js';
 export class Camera {
   constructor() {
     this.position = new Vec3();
+    // this.orientation = new Quat();
+    this.rotateYAngle = 0;
     this.perspective = 800;
     this.minZ = 1;
   }
@@ -33,6 +35,7 @@ export class Camera {
 
   transformPoint(point) {
     point.subtract(this.position);
+    point.rotateYAngle(this.rotateYAngle);
   }
 
   clip(near, far) {

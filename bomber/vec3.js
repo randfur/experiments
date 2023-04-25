@@ -19,10 +19,16 @@ export class Vec3 {
     this.z = z;
   }
 
-  setPolar(angle, radius, z) {
+  setZPolar(angle, radius, z) {
     this.x = Math.cos(angle) * radius;
     this.y = Math.sin(angle) * radius;
     this.z = z;
+  }
+
+  setYPolar(angle, radius, y) {
+    this.x = Math.cos(angle) * radius;
+    this.y = y;
+    this.z = Math.sin(angle) * radius;
   }
 
   add(v) {
@@ -53,5 +59,18 @@ export class Vec3 {
     this.x = a.x + b.x;
     this.y = a.y + b.y;
     this.z = a.z + b.z;
+  }
+
+  rotateYAngle(angle) {
+    this.rotateY(Math.cos(angle), Math.sin(angle));
+  }
+
+  rotateY(rx, rz) {
+    // (x + i.z) * (rx + i.rz)
+    // x.rx - z.rz + i(x.rz + z.rx)
+    [this.x, this.z] = [
+      this.x * rx - this.z * rz,
+      this.x * rz + this.z * rx,
+    ];
   }
 }

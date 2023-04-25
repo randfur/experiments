@@ -13,8 +13,8 @@ export class Ground {
     for (let x = -size / 2; x < size / 2; x += step) {
       for (let z = -size / 2; z < size / 2; z += step) {
         const line = Drawing.addLine();
-        line.start.setXyz(x, 0, z);
-        line.end.setXyz(x, -getGroundHeight(x, z), z);
+        line.start.setXyz(x, -getGroundHeight(x, z), z);
+        line.end.setXyz(x, line.start.y - 1, z);
         line.width = 1;
         line.colour = 'white';
       }
@@ -23,7 +23,7 @@ export class Ground {
 }
 
 function getGroundHeight(x, y) {
-  const scale = 0.05;
+  const scale = 0.02;
   x *= scale;
   y *= scale;
   return (((

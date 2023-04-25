@@ -1,4 +1,16 @@
-# 2023-03-11 Saturday
+# 2023-04-26
+- Rendered the ground.
+  - Scaled the x/y to be much wider.
+  - Amplified the height a bit.
+- Added Vec3.setPolar() for easier circular test motions.
+- Added Vec3.rotateY().
+- Made camera fly in circles looking ahead to where it's going.
+- Next to do:
+  - Make the camera rotate.
+  - Make the camera fly across the ground.
+  - Put things on top of the ground height.
+
+# 2023-03-11
 - Came up with equation for the ground height:
   float rsin(vec2 p) { return sin(length(p)); }
   void mainImage( out vec4 fragColor, in vec2 fragCoord )
@@ -16,7 +28,7 @@
   }
 
 
-# 2023-03-09 Thursday
+# 2023-03-09
 - Bomber 3D lines animation.
 - Visual components:
   - White lines on black.
