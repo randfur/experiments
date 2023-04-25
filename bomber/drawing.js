@@ -32,7 +32,6 @@ export class Drawing {
       end: new Vec3(),
       width: 0,
       colour: '',
-      midZ: 0,
     }));
     this.lines = [];
 

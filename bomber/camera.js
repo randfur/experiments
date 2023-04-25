@@ -15,8 +15,8 @@ export class Camera {
       return false;
     }
 
-    line.midZ = (line.start.z + line.end.z) / 2;
-    line.width *= this.perspective / line.midZ;
+    const midZ = (line.start.z + line.end.z) / 2;
+    line.width *= this.perspective / midZ;
 
     if (line.start.z < this.minZ) {
       this.clip(line.start, line.end);

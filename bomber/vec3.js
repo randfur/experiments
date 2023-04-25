@@ -19,6 +19,12 @@ export class Vec3 {
     this.z = z;
   }
 
+  setPolar(angle, radius, z) {
+    this.x = Math.cos(angle) * radius;
+    this.y = Math.sin(angle) * radius;
+    this.z = z;
+  }
+
   add(v) {
     this.x += v.x;
     this.y += v.y;
