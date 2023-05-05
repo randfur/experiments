@@ -1,0 +1,7 @@
+# 2023-05-05
+- Goal:
+  - Take as input Array<Array<{colour: vec3, size: number, points: Array<vec2>}>>.
+  - Draw a diamond at each point and two rectangles joining the diamonds, see lines.png for diagram.
+  - Use WebGPU to do it.
+  - Use compute to generate the triangles from the raw input.
+  - Generate lots of these as an animation on the CPU, upload all the frame data to the GPU and render the animation.
