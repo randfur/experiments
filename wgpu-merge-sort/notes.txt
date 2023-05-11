@@ -1,0 +1,30 @@
+# 2023-05-12
+- Turns out you can't use mapAsync() to read data out of storage buffers, it has to be a special dedicated buffer with MAP_READ and COPY_DST usage flags so you can copy the data out to it from another buffer for reading by the CPU.
+  - Much GPU memory management.
+
+# 2023-05-07
+- Should be able to do bottom up merge sort on the GPU using logn parallel compute passes.
+- Can benchmark it against Array.sort() and compare results for different sized lists.
+- High level algorithm:
+  - Have unsorted list size n.
+  - For i in range(ceil(log2(n))):
+    - Window width = 2 ** (i + 1).
+    - Spawn compute ceil(n / window width) times.
+    - Each compute merges the two halves of its window width with bounds checking.
+- Bounds checking might slow things down, can try padding with infinity and compare speed.
+- What's the inplace merge algorithm?
+  - Probably just swapping the pointer values if the RHS is less than the LHS pointer.
+  - How to merge 1 3 5 7 with 2 4?
+  - SO says it's possible but not fun and not great.
+  - Probably instead have another n sized buffer to use as merge output and swap between the two each level.
+- Alternatively use quicksort for inplace sorting?
+  - Doesn't have nice divisions like merge sort has, resulting LHS and RHS are arbitrary portions of the original array.
+  - Could communicate where the resulting bounds are each level.
+  - This requires buffer swapping all over again probably, each level invocation generates two more.
+  - Could use the one buffer and just keep growing the portion of it that gets used.
+    - Complicated index tracking, similar to a flat heap scheme.
+- Wrote some starter code.
+- Started some GPU compute set up.
+  - Learned about @binding() and @group().
+  - @binding() is for the device.createBindGroup() binding numbers.
+  - @group() is for the GPU*PassEncoder.setBindGroup()
