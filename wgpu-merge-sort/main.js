@@ -97,6 +97,7 @@ function cpuSort(input) {
 }
 
 async function wgpuSort(input) {
+  console.log('wgpuSort:', 'start');
   const adapter = await navigator.gpu.requestAdapter();
   const device = await adapter.requestDevice();
 
@@ -112,6 +113,7 @@ async function wgpuSort(input) {
   });
   new Float32Array(bufferA.getMappedRange()).set(input);
   bufferA.unmap();
+  console.log('wgpuSort:', 'write data');
 
   const bufferB = device.createBuffer({
     size: input.length * 4,
@@ -151,11 +153,14 @@ async function wgpuSort(input) {
               right < uniforms.length &&
               right < rightEnd) {
 
-              if (input[left] < input[right]) {
-                output[out] = input[left];
+              let leftValue = input[left];
+              let rightValue = input[right];
+
+              if (leftValue < rightValue) {
+                output[out] = leftValue;
                 left += 1;
               } else {
-                output[out] = input[right];
+                output[out] = rightValue;
                 right += 1;
               }
               out += 1;
@@ -219,6 +224,7 @@ async function wgpuSort(input) {
     }],
   });
 
+  console.log('wgpuSort:', 'created buffers');
   let mergeWidth = 1;
   let inputBuffer = bufferB;
   let outputBuffer = bufferA;
@@ -238,12 +244,15 @@ async function wgpuSort(input) {
   const commandEncoder = device.createCommandEncoder();
   commandEncoder.copyBufferToBuffer(outputBuffer, 0, bufferOut, 0, input.length * 4);
   device.queue.submit([commandEncoder.finish()]);
+  console.log('wgpuSort:', 'awaiting queue work');
   await device.queue.onSubmittedWorkDone();
+  console.log('wgpuSort:', 'queue work done');
 
   await bufferOut.mapAsync(GPUMapMode.READ);
   const result = new Float32Array(bufferOut.getMappedRange().slice());
 
   device.destroy();
+  console.log('wgpuSort:', 'returning');
 
   return Array.from(result);
 }
