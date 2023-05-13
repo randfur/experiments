@@ -1,11 +1,22 @@
 async function main() {
-  const input = createRandomList(100);
+  console.log('Sanity check.');
+  const input = createRandomList(80);
   console.log(input);
   console.log(await wgpuSort(input));
   console.log(await cpuSort(input));
-  return;
 
 
+  console.log('Perf test.');
+  (async () => {
+    const ticker = document.createElement('pre');
+    document.body.append(ticker);
+    let count = 0;
+    while (true) {
+      await new Promise(requestAnimationFrame);
+      count = (count + 1) % 4;
+      ticker.textContent = 'Main thread liveliness: ' + '.'.repeat(count);
+    }
+  })();
 
   const canvas = document.createElement('canvas');
   canvas.width = 1000;
@@ -24,15 +35,23 @@ async function main() {
     results: [],
   }];
 
+  for (let i = 0; i < variants.length; ++i) {
+    const {sort, colour} = variants[i];
+    context.fillStyle = colour;
+    context.fillText(sort.name, 0, 10 + i * 10);
+  }
+
   let n = 1_000;
   const nMax = 10_000_000;
   const yScale = 1 / 20;
+  const barWidth = 4;
   while (n <= nMax) {
-    console.log(n);
+    console.log('Array length:', n);
     await new Promise(requestAnimationFrame);
 
     const input = createRandomList(n);
-    for (const {sort, colour, results} of variants) {
+    for (let i = 0; i < variants.length; ++i) {
+      const {sort, colour, results} = variants[i];
       const startTime = performance.now();
       let output = sort(input);
       if (output instanceof Promise) {
@@ -48,7 +67,11 @@ async function main() {
       console.log(sort.name, delta);
 
       context.fillStyle = colour;
-      context.fillRect(n / nMax * canvas.width, canvas.height - 1 - delta * yScale, 4, 4);
+      context.fillRect(
+        n / nMax * canvas.width + i * barWidth,
+        canvas.height - 1 - delta * yScale,
+        barWidth,
+        canvas.height);
     }
 
     n = Math.ceil(n * 1.5);
