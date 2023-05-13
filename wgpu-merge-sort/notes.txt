@@ -11,6 +11,11 @@
   - GPU wasn't faster than CPU for lists up to ~10M elements.
   - See graph.png for snapshot.
     - CPU is blue, GPU is orange.
+- UI
+  - Added colour legend for CPU/WGPU.
+  - Added liveliness indicator for main thread.
+    - Surprisingly dead during the WPGU sorting.
+      - Maybe code is all in copying data across.
 
 # 2023-05-12
 - Turns out you can't use mapAsync() to read data out of storage buffers, it has to be a special dedicated buffer with MAP_READ and COPY_DST usage flags so you can copy the data out to it from another buffer for reading by the CPU.
