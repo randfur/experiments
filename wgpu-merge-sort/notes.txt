@@ -1,3 +1,17 @@
+# 2023-05-13
+- Had some weird errors with bind group layout.
+  - Seemed to not work with layout: 'auto'.
+  - Tried with manual bind group layout specification, that worked.
+  - Then layout: 'auto' worked, not sure what changed.
+- Automatic bind group layouts don't include unused vars.
+  - Have to use it in the WGSL otherwise setting those vars in the bind group will fail as it won't expect it to be there.
+- device.queue.submit() doesn't return a promise.
+  - Have to await onSubmittedWorkDone() instead.
+- Finished GPU merge sort.
+  - GPU wasn't faster than CPU for lists up to ~10M elements.
+  - See graph.png for snapshot.
+    - CPU is blue, GPU is orange.
+
 # 2023-05-12
 - Turns out you can't use mapAsync() to read data out of storage buffers, it has to be a special dedicated buffer with MAP_READ and COPY_DST usage flags so you can copy the data out to it from another buffer for reading by the CPU.
   - Much GPU memory management.

@@ -1,11 +1,16 @@
 async function main() {
-  const input = createRandomList(10);
+  const input = createRandomList(100);
+  console.log(input);
   console.log(await wgpuSort(input));
+  console.log(await cpuSort(input));
   return;
 
 
 
   const canvas = document.createElement('canvas');
+  canvas.width = 1000;
+  canvas.height = 400;
+  canvas.style.border = 'solid';
   document.body.append(canvas);
   const context = canvas.getContext('2d');
 
@@ -20,8 +25,8 @@ async function main() {
   }];
 
   let n = 1_000;
-  const nMax = 1_000;//_000;
-  const yScale = 1 / 4;
+  const nMax = 10_000_000;
+  const yScale = 1 / 20;
   while (n <= nMax) {
     console.log(n);
     await new Promise(requestAnimationFrame);
@@ -48,6 +53,7 @@ async function main() {
 
     n = Math.ceil(n * 1.5);
   }
+  console.log('Done');
 }
 
 function isSorted(array) {
@@ -60,7 +66,7 @@ function isSorted(array) {
 }
 
 function createRandomList(n) {
-  return Array(n).fill(0).map(() => Math.random());
+  return Array(n).fill(0).map(() => Math.round(100 * Math.random()));
 }
 
 function cpuSort(input) {
@@ -71,9 +77,14 @@ async function wgpuSort(input) {
   const adapter = await navigator.gpu.requestAdapter();
   const device = await adapter.requestDevice();
 
+  const bufferUniforms = device.createBuffer({
+    size: 2 * 4,
+    usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+  });
+
   const bufferA = device.createBuffer({
     size: input.length * 4,
-    usage: GPUBufferUsage.STORAGE,
+    usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC,
     mappedAtCreation: true,
   });
   new Float32Array(bufferA.getMappedRange()).set(input);
@@ -81,21 +92,63 @@ async function wgpuSort(input) {
 
   const bufferB = device.createBuffer({
     size: input.length * 4,
-    usage: GPUBufferUsage.STORAGE,
+    usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC,
   });
 
+  const bufferOut = device.createBuffer({
+    size: input.length * 4,
+    usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST,
+  });
+
+  const workgroupSize = 64;
   const pipeline = device.createComputePipeline({
     layout: 'auto',
     compute: {
       module: device.createShaderModule({
         code: `
-          // @group(0) @binding(0) var<uniform> level: u32;
+          struct Uniforms {
+            mergeWidth: u32,
+            length: u32,
+          }
+
+          @group(0) @binding(0) var<uniform> uniforms: Uniforms;
           @group(0) @binding(1) var<storage, read> input: array<f32>;
           @group(0) @binding(2) var<storage, read_write> output: array<f32>;
 
-          @compute @workgroup_size(64) fn main(@builtin(global_invocation_id) id: vec3<u32>) {
-            let i = id.x;
-            output[i] = input[i];
+          @compute @workgroup_size(${workgroupSize}) fn main(@builtin(global_invocation_id) id: vec3<u32>) {
+            var left = id.x * uniforms.mergeWidth * 2;
+            let leftEnd = left + uniforms.mergeWidth;
+            var right = leftEnd;
+            let rightEnd = right + uniforms.mergeWidth;
+            var out = left;
+
+            while (
+              left < uniforms.length &&
+              left < leftEnd &&
+              right < uniforms.length &&
+              right < rightEnd) {
+
+              if (input[left] < input[right]) {
+                output[out] = input[left];
+                left += 1;
+              } else {
+                output[out] = input[right];
+                right += 1;
+              }
+              out += 1;
+            }
+
+            while (left < uniforms.length && left < leftEnd) {
+              output[out] = input[left];
+              left += 1;
+              out += 1;
+            }
+
+            while (right < uniforms.length && right < rightEnd) {
+              output[out] = input[right];
+              right += 1;
+              out += 1;
+            }
           }
         `,
       }),
@@ -103,9 +156,14 @@ async function wgpuSort(input) {
     },
   });
 
-  const bindGroup = device.createBindGroup({
+  const bindGroupAToB = device.createBindGroup({
     layout: pipeline.getBindGroupLayout(0),
     entries: [{
+      binding: 0,
+      resource: {
+        buffer: bufferUniforms,
+      },
+    }, {
       binding: 1,
       resource: {
         buffer: bufferA,
@@ -118,19 +176,53 @@ async function wgpuSort(input) {
     }],
   });
 
+  const bindGroupBToA = device.createBindGroup({
+    layout: pipeline.getBindGroupLayout(0),
+    entries: [{
+      binding: 0,
+      resource: {
+        buffer: bufferUniforms,
+      },
+    }, {
+      binding: 1,
+      resource: {
+        buffer: bufferB,
+      },
+    }, {
+      binding: 2,
+      resource: {
+        buffer: bufferA,
+      },
+    }],
+  });
+
+  let mergeWidth = 1;
+  let inputBuffer = bufferB;
+  let outputBuffer = bufferA;
+  while (mergeWidth < input.length) {
+    [inputBuffer, outputBuffer] = [outputBuffer, inputBuffer];
+    device.queue.writeBuffer(bufferUniforms, 0, new Uint32Array([mergeWidth, input.length]));
+    const commandEncoder = device.createCommandEncoder();
+    const computePass = commandEncoder.beginComputePass();
+    computePass.setPipeline(pipeline);
+    computePass.setBindGroup(0, inputBuffer === bufferA ? bindGroupAToB : bindGroupBToA);
+    const workgroups = Math.ceil(input.length / (2 * mergeWidth) / workgroupSize);
+    computePass.dispatchWorkgroups(workgroups);
+    computePass.end();
+    device.queue.submit([commandEncoder.finish()]);
+    mergeWidth *= 2;
+  }
   const commandEncoder = device.createCommandEncoder();
-  const computePass = commandEncoder.beginComputePass();
-  computePass.setPipeline(pipeline);
-  computePass.setBindGroup(0, bindGroup);
-  await device.queue.submit([commandEncoder.finish()]);
+  commandEncoder.copyBufferToBuffer(outputBuffer, 0, bufferOut, 0, input.length * 4);
+  device.queue.submit([commandEncoder.finish()]);
+  await device.queue.onSubmittedWorkDone();
 
-  await bufferB.mapAsync(GPUMapMode.READ);
-
-  const result = new Float32Array(bufferB.getMappedRange().slice());
+  await bufferOut.mapAsync(GPUMapMode.READ);
+  const result = new Float32Array(bufferOut.getMappedRange().slice());
 
   device.destroy();
 
-  return result;
+  return Array.from(result);
 }
 
 main();
