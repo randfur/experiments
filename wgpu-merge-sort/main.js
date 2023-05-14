@@ -9,7 +9,7 @@ async function main() {
       copy.sort((a, b) => a - b);
       perfResult.measure('blue');
     },
-    // wgpuSort,
+    wgpuSort,
   ]);
 
   perfTest.run({

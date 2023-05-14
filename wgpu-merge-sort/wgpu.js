@@ -15,7 +15,7 @@ export async function wgpuSort(input, perfResult) {
   new Float32Array(bufferA.getMappedRange()).set(input);
   bufferA.unmap();
 
-  perfResult.measure('#800');
+  perfResult.measure('red');
 
   const bufferB = device.createBuffer({
     size: input.length * 4,
@@ -126,8 +126,6 @@ export async function wgpuSort(input, perfResult) {
     }],
   });
 
-  perfResult.measure('#a00');
-
   let mergeWidth = 1;
   let inputBuffer = bufferB;
   let outputBuffer = bufferA;
@@ -148,17 +146,17 @@ export async function wgpuSort(input, perfResult) {
   commandEncoder.copyBufferToBuffer(outputBuffer, 0, bufferOut, 0, input.length * 4);
   device.queue.submit([commandEncoder.finish()]);
 
-  perfResult.measure('#f00');
+  perfResult.measure('brown');
 
   await device.queue.onSubmittedWorkDone();
 
-  perfResult.measure('#fa0');
+  perfResult.measure('orange');
 
   await bufferOut.mapAsync(GPUMapMode.READ);
   const result = Array.from(new Float32Array(bufferOut.getMappedRange().slice()));
   device.destroy();
 
-  perfResult.measure('#f00');
+  perfResult.measure('red');
 }
 
 // TODO: Use, plumb failures through perfResult.

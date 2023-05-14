@@ -87,9 +87,10 @@ export class PerfTest {
       }
     }.call(this));
 
-    const barWidth = 4;
-    const nScale = (this.canvas.width - this.variants.length * barWidth) / maxN;
-    const deltaScale = this.canvas.height / maxTotal;
+    const barWidth = 6;
+    const padding = 20;
+    const nScale = (this.canvas.width - this.variants.length * barWidth - padding) / maxN;
+    const deltaScale = (this.canvas.height - padding) / maxTotal;
     for (const {n, results} of this.nResultss) {
       for (let i = 0; i < results.length; ++i) {
         const x = n * nScale + i * barWidth;
