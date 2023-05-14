@@ -63,7 +63,6 @@ export class PerfTest {
   }
 
   renderResults() {
-    console.log(this.nResultss);
     // TODO: Figure out colours now.
     // for (let i = 0; i < variants.length; ++i) {
     //   const {sort, colour} = variants[i];
