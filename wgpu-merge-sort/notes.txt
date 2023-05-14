@@ -4,6 +4,8 @@
   - Graphing is now responsive to changes in size.
   - Lost the legend at the top, need to rejig it to be based on the new multi colours.
   - Should somehow output the values the graph is depicting in x and y.
+- Need to measure GPU data copies separately.
+  - Currently measuring CPU data copies but not the copies in the GPU.
 
 # 2023-05-13
 - Had some weird errors with bind group layout.
