@@ -1,3 +1,10 @@
+# 2023-05-14
+- Refactored the perf test.
+  - Variants now accept a PerfResults object which accepts multiple checkpoints to measure.
+  - Graphing is now responsive to changes in size.
+  - Lost the legend at the top, need to rejig it to be based on the new multi colours.
+  - Should somehow output the values the graph is depicting in x and y.
+
 # 2023-05-13
 - Had some weird errors with bind group layout.
   - Seemed to not work with layout: 'auto'.
