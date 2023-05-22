@@ -1,0 +1,23 @@
+# 2023-05-23
+- Ideas/wants:
+  - ADTs (sealed classes).
+  - @ is unique_ptr.
+  - # is ref counted pointer.
+  - ~ is weak ptr.
+  - & is reference with lifetime checks.
+  - $ is GC maybe?
+  - Absence of pointer type means inline.
+  - Constructors and destructors.
+  - Classes.
+  - Inheritance.
+  - Traits.
+  - async/await.
+  - Promise.
+  - List/Map.
+  - Generators.
+  - Ranges with | syntax.
+  - mut.
+  - {u,i,f}{8,16,32,64}.
+  - Inspection mode.
+  - No exceptions, only crash.
+  - ? try operator.
