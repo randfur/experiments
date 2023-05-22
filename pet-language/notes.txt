@@ -1,11 +1,14 @@
 # 2023-05-23
 - Ideas/wants:
   - ADTs (sealed classes).
-  - @ is unique_ptr.
-  - # is ref counted pointer.
-  - ~ is weak ptr.
-  - & is reference with lifetime checks.
-  - $ is GC maybe?
+  - Reference types:
+    - @ is unique_ptr.
+    - # is ref counted pointer.
+    - ~ is weak ptr.
+    - & is reference with lifetime checks.
+    - $ is GC maybe?
+    - None of these are nullable.
+  - ? for optional?
   - Absence of pointer type means inline.
   - Constructors and destructors.
   - Classes.
@@ -21,3 +24,8 @@
   - Inspection mode.
   - No exceptions, only crash.
   - ? try operator.
+    - Can this work with the ? optional type?
+      dog : ?@Dog;
+      return dog?;
+  - Types are move/copy like Rust?
+    - Explicit clone() for move types.
