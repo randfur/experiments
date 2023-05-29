@@ -6,6 +6,10 @@
     - # is ref counted pointer.
     - ~ is weak ptr.
     - & is reference with lifetime checks.
+      - No lifetime syntax, same as elided lifetimes.
+      - Maybe can't exist in structs.
+      - Not sure about mutations causing destructions during reference lifetime, might break this idea.
+      - Want a solution for referencing stack values to avoid heap costs where important e.g. vector math.
     - $ is GC maybe?
     - None of these are nullable.
   - ? for optional?
