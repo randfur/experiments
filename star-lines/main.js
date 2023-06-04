@@ -1,10 +1,10 @@
 async function main() {
   // Data
-  const scale = 1;
+  const scale = 4;
   const width = Math.ceil(window.innerWidth / scale);
   const height = Math.ceil(window.innerHeight / scale);
-  const length = 4;
-  const size = 100;
+  const length = 20;
+  const size = 4;
   const points = new Float32Array(length * 2);
   for (let i = 0; i < length; ++i) {
     points[i * 2 + 0] = width / 2 + deviate(width / 2);
