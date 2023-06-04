@@ -6,10 +6,6 @@ async function main() {
   const length = 10;
   const size = 4;
   const points = new Float32Array(length * 2);
-  for (let i = 0; i < length; ++i) {
-    points[i * 2 + 0] = width / 2 + deviate(width / 8);
-    points[i * 2 + 1] = height / 2 + deviate(height / 8);
-  }
 
   // DOM
   document.body.style = `
@@ -44,7 +40,6 @@ async function main() {
         width: f32,
         height: f32,
         size: f32,
-        colour: vec3f,
       }
 
       @group(0) @binding(0) var<uniform> uniforms: Uniforms;
@@ -114,9 +109,6 @@ async function main() {
     width,
     height,
     size,
-    1,
-    0,
-    0.5,
   ]);
   uniformBuffer.unmap();
   const uniformBindGroup = device.createBindGroup({
@@ -132,31 +124,43 @@ async function main() {
   const pointsBuffer = device.createBuffer({
     size: length * 2 * 4,
     usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.VERTEX,
-    mappedAtCreation: true,
   });
-  new Float32Array(pointsBuffer.getMappedRange()).set(points);
-  pointsBuffer.unmap();
 
 
-  const commandEncoder = device.createCommandEncoder();
-  const renderPass = commandEncoder.beginRenderPass({
-    colorAttachments: [{
-      view: context.getCurrentTexture().createView(),
-      loadOp: 'clear',
-      storeOp: 'store',
-    }],
-  });
-  renderPass.setPipeline(pipeline);
-  renderPass.setBindGroup(0, uniformBindGroup);
-  renderPass.setVertexBuffer(0, pointsBuffer);
-  renderPass.setVertexBuffer(1, pointsBuffer, 2 * 4);
-  renderPass.draw(3, length - 1);
-  renderPass.end();
-  device.queue.submit([commandEncoder.finish()]);
+  let frame = 0;
+  while (true) {
+    for (let i = 0; i < length; ++i) {
+      points[i * 2 + 0] = width / 2 + deviate(width / 8);
+      points[i * 2 + 1] = height / 2 + deviate(height / 8);
+    }
+    device.queue.writeBuffer(pointsBuffer, 0, points);
+    const commandEncoder = device.createCommandEncoder();
+    const renderPass = commandEncoder.beginRenderPass({
+      colorAttachments: [{
+        view: context.getCurrentTexture().createView(),
+        loadOp: 'clear',
+        storeOp: 'store',
+      }],
+    });
+    renderPass.setPipeline(pipeline);
+    renderPass.setBindGroup(0, uniformBindGroup);
+    renderPass.setVertexBuffer(0, pointsBuffer);
+    renderPass.setVertexBuffer(1, pointsBuffer, 2 * 4);
+    renderPass.draw(3, length - 1);
+    renderPass.end();
+    device.queue.submit([commandEncoder.finish()]);
+
+    await sleep((1 - Math.cos(frame / 10)) * 1000);
+    ++frame;
+  }
 }
 
 function deviate(x) {
   return (Math.random() * 2 - 1) * x;
+}
+
+function sleep(n) {
+  return new Promise(resolve => setTimeout(resolve, n));
 }
 
 main();

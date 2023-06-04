@@ -1,3 +1,13 @@
+# 2023-06-04
+- Decided to detect in the vertex shader which angle the line body should be instead of drawing redundant overdraws doing every different angle.
+- Maybe don't need to draw the point at all, just the line body.
+- Made a cool looking red rune thing, forked it off as 'runes'.
+
+# 2023-06-03
+- Switched to hard coded triangle vertices in the vertex code.
+  - Avoids needing a compute pass to generate the vertices.
+- Got something rendering.
+
 # 2023-05-05
 - Goal:
   - Take as input Array<Array<{colour: vec3, size: number, points: Array<vec2>}>>.
