@@ -1,14 +1,14 @@
 async function main() {
   // Data
-  const scale = 4;
-  const width = Math.ceil(window.innerWidth / 4);
-  const height = Math.ceil(window.innerHeight / 4);
-  const length = 10;
-  const size = 4;
+  const scale = 1;
+  const width = Math.ceil(window.innerWidth / scale);
+  const height = Math.ceil(window.innerHeight / scale);
+  const length = 4;
+  const size = 100;
   const points = new Float32Array(length * 2);
   for (let i = 0; i < length; ++i) {
-    points[i * 2 + 0] = width / 2 + deviate(width / 8);
-    points[i * 2 + 1] = height / 2 + deviate(height / 8);
+    points[i * 2 + 0] = width / 2 + deviate(width / 2);
+    points[i * 2 + 1] = height / 2 + deviate(height / 2);
   }
 
   // DOM
@@ -49,17 +49,51 @@ async function main() {
 
       @group(0) @binding(0) var<uniform> uniforms: Uniforms;
 
+      struct Coefficients {
+        pos: f32,
+        nextPos: f32,
+        side: f32,
+        right: f32,
+        down: f32,
+      }
+
+      const DIAG = sqrt(2) / 2 / 2;
+
+      const coefficientsList = array<Coefficients, 3 * 6>(
+        Coefficients(1, 0, 0, 0, -0.5),
+        Coefficients(1, 0, 0, 0.5, 0),
+        Coefficients(1, 0, 0, 0, 0.5),
+        Coefficients(1, 0, 0, 0, 0.5),
+        Coefficients(1, 0, 0, -0.5, 0),
+        Coefficients(1, 0, 0, 0, -0.5),
+
+        Coefficients(1, 0, 0, -DIAG, -DIAG),
+        Coefficients(1, 0, 0, DIAG, -DIAG),
+        Coefficients(1, 0, 0, DIAG, DIAG),
+        Coefficients(1, 0, 0, DIAG, DIAG),
+        Coefficients(1, 0, 0, -DIAG, -DIAG),
+        Coefficients(1, 0, 0, -DIAG, DIAG),
+
+        Coefficients(1, 0, -0.5, 0, 0),
+        Coefficients(0, 1, -0.5, 0, 0),
+        Coefficients(1, 0, 0.5, 0, 0),
+        Coefficients(1, 0, 0.5, 0, 0),
+        Coefficients(0, 1, 0.5, 0, 0),
+        Coefficients(0, 1, -0.5, 0, 0),
+      );
+
       @vertex fn vertex(
         @builtin(vertex_index) index: u32,
         @location(0) pos: vec2f,
         @location(1) nextPos: vec2f,
       ) -> @builtin(position) vec4f {
-        var vertices = array<vec2f, 3>(
-          pos,
-          nextPos,
-          pos + uniforms.size * normalize(turn(nextPos - pos)),
-        );
-        var vertex = vertices[index];
+        var coefficients = coefficientsList[index];
+        var side = uniforms.size * normalize(turn(nextPos - pos));
+        var vertex =
+          coefficients.pos * pos +
+          coefficients.nextPos * nextPos +
+          coefficients.side * side +
+          vec2f(coefficients.right, coefficients.down) * uniforms.size;
         vertex = ((vertex / vec2f(uniforms.width, uniforms.height)) - vec2f(0.5, 0.5)) * 2;
         return vec4(vertex, 0, 1);
       }
@@ -114,9 +148,6 @@ async function main() {
     width,
     height,
     size,
-    1,
-    0,
-    0.5,
   ]);
   uniformBuffer.unmap();
   const uniformBindGroup = device.createBindGroup({
@@ -150,7 +181,7 @@ async function main() {
   renderPass.setBindGroup(0, uniformBindGroup);
   renderPass.setVertexBuffer(0, pointsBuffer);
   renderPass.setVertexBuffer(1, pointsBuffer, 2 * 4);
-  renderPass.draw(3, length - 1);
+  renderPass.draw(3 * 6, length - 1);
   renderPass.end();
   device.queue.submit([commandEncoder.finish()]);
 }
