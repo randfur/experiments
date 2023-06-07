@@ -2,6 +2,7 @@
 - Updated star to be hexagon.
   - Less overdraw.
   - Same number of triangles.
+  - Renamed from star-lines to hex-lines.
 - Added gap.
   - Using special gapNumber sentinal 12345678.
   - Added rendering of hex cap before the gap.

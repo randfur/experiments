@@ -14,6 +14,8 @@ async function main() {
   }
   points[length * 2 + 0] = gapNumber;
   points[Math.floor(length / 2) * 2 + 0] = gapNumber;
+  points[(Math.floor(length / 2) + 2) * 2 + 0] = gapNumber;
+  points[(Math.floor(length / 2) + 5) * 2 + 0] = gapNumber;
 
   // DOM
   document.body.style = `
