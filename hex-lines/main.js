@@ -2,10 +2,10 @@ const gapNumber = 12345678;
 
 async function main() {
   // Data
-  const scale = 2;
+  const scale = 4;
   const width = Math.ceil(window.innerWidth / scale);
   const height = Math.ceil(window.innerHeight / scale);
-  const size = 10;
+  const size = 4;
   const length = 20;
   const points = new Float32Array(length * 2 + 1);
   for (let i = 0; i < length; ++i) {
@@ -66,21 +66,21 @@ async function main() {
       const SQRT3_4 = sqrt(3) / 4;
 
       const coefficientsList = array<Coefficients, 6 * 3>(
-        Coefficients(1, 0, 0, -0.5, 0),
-        Coefficients(1, 0, 0, -0.25, SQRT3_4),
-        Coefficients(1, 0, 0, -0.25, -SQRT3_4),
+        Coefficients(1, 0, 0, -SQRT3_4, 0.25),
+        Coefficients(1, 0, 0, 0, 0.5),
+        Coefficients(1, 0, 0, SQRT3_4, 0.25),
 
-        Coefficients(1, 0, 0, -0.25, -SQRT3_4),
-        Coefficients(1, 0, 0, -0.25, SQRT3_4),
-        Coefficients(1, 0, 0, 0.25, SQRT3_4),
+        Coefficients(1, 0, 0, SQRT3_4, 0.25),
+        Coefficients(1, 0, 0, -SQRT3_4, -0.25),
+        Coefficients(1, 0, 0, -SQRT3_4, 0.25),
 
-        Coefficients(1, 0, 0, -0.25, -SQRT3_4),
-        Coefficients(1, 0, 0, 0.25, SQRT3_4),
-        Coefficients(1, 0, 0, 0.25, -SQRT3_4),
+        Coefficients(1, 0, 0, -SQRT3_4, -0.25),
+        Coefficients(1, 0, 0, SQRT3_4, 0.25),
+        Coefficients(1, 0, 0, SQRT3_4, -0.25),
 
-        Coefficients(1, 0, 0, 0.25, -SQRT3_4),
-        Coefficients(1, 0, 0, 0.25, SQRT3_4),
-        Coefficients(1, 0, 0, 0.5, 0),
+        Coefficients(1, 0, 0, -SQRT3_4, -0.25),
+        Coefficients(1, 0, 0, SQRT3_4, -0.25),
+        Coefficients(1, 0, 0, 0, -0.5),
 
         Coefficients(1, 0, -0.5, 0, 0),
         Coefficients(0, 1, -0.5, 0, 0),
