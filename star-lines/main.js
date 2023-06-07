@@ -1,15 +1,19 @@
+const gapNumber = 12345678;
+
 async function main() {
   // Data
-  const scale = 4;
+  const scale = 2;
   const width = Math.ceil(window.innerWidth / scale);
   const height = Math.ceil(window.innerHeight / scale);
+  const size = 10;
   const length = 20;
-  const size = 4;
-  const points = new Float32Array(length * 2);
+  const points = new Float32Array(length * 2 + 1);
   for (let i = 0; i < length; ++i) {
     points[i * 2 + 0] = width / 2 + deviate(width / 2);
     points[i * 2 + 1] = height / 2 + deviate(height / 2);
   }
+  points[length * 2 + 0] = gapNumber;
+  points[Math.floor(length / 2) * 2 + 0] = gapNumber;
 
   // DOM
   document.body.style = `
@@ -57,26 +61,29 @@ async function main() {
         down: f32,
       }
 
-      const DIAG = sqrt(2) / 2 / 2;
+      const SQRT3_4 = sqrt(3) / 4;
 
-      const coefficientsList = array<Coefficients, 3 * 6>(
-        Coefficients(1, 0, 0, 0, -0.5),
-        Coefficients(1, 0, 0, 0.5, 0),
-        Coefficients(1, 0, 0, 0, 0.5),
-        Coefficients(1, 0, 0, 0, 0.5),
+      const coefficientsList = array<Coefficients, 6 * 3>(
         Coefficients(1, 0, 0, -0.5, 0),
-        Coefficients(1, 0, 0, 0, -0.5),
+        Coefficients(1, 0, 0, -0.25, SQRT3_4),
+        Coefficients(1, 0, 0, -0.25, -SQRT3_4),
 
-        Coefficients(1, 0, 0, -DIAG, -DIAG),
-        Coefficients(1, 0, 0, DIAG, -DIAG),
-        Coefficients(1, 0, 0, DIAG, DIAG),
-        Coefficients(1, 0, 0, DIAG, DIAG),
-        Coefficients(1, 0, 0, -DIAG, -DIAG),
-        Coefficients(1, 0, 0, -DIAG, DIAG),
+        Coefficients(1, 0, 0, -0.25, -SQRT3_4),
+        Coefficients(1, 0, 0, -0.25, SQRT3_4),
+        Coefficients(1, 0, 0, 0.25, SQRT3_4),
+
+        Coefficients(1, 0, 0, -0.25, -SQRT3_4),
+        Coefficients(1, 0, 0, 0.25, SQRT3_4),
+        Coefficients(1, 0, 0, 0.25, -SQRT3_4),
+
+        Coefficients(1, 0, 0, 0.25, -SQRT3_4),
+        Coefficients(1, 0, 0, 0.25, SQRT3_4),
+        Coefficients(1, 0, 0, 0.5, 0),
 
         Coefficients(1, 0, -0.5, 0, 0),
         Coefficients(0, 1, -0.5, 0, 0),
         Coefficients(1, 0, 0.5, 0, 0),
+
         Coefficients(1, 0, 0.5, 0, 0),
         Coefficients(0, 1, 0.5, 0, 0),
         Coefficients(0, 1, -0.5, 0, 0),
@@ -95,7 +102,11 @@ async function main() {
           coefficients.side * side +
           vec2f(coefficients.right, coefficients.down) * uniforms.size;
         vertex = ((vertex / vec2f(uniforms.width, uniforms.height)) - vec2f(0.5, 0.5)) * 2;
-        return vec4(vertex, 0, 1);
+        return select(
+          vec4f(0),
+          vec4f(vertex, 0, 1),
+          pos.x != ${gapNumber} && (nextPos.x != ${gapNumber} || index <= 4 * 3),
+        );
       }
 
       fn turn(v: vec2f) -> vec2f {
@@ -161,7 +172,7 @@ async function main() {
   });
 
   const pointsBuffer = device.createBuffer({
-    size: length * 2 * 4,
+    size: (length + 1) * 2 * 4,
     usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.VERTEX,
     mappedAtCreation: true,
   });
@@ -181,7 +192,7 @@ async function main() {
   renderPass.setBindGroup(0, uniformBindGroup);
   renderPass.setVertexBuffer(0, pointsBuffer);
   renderPass.setVertexBuffer(1, pointsBuffer, 2 * 4);
-  renderPass.draw(3 * 6, length - 1);
+  renderPass.draw(6 * 3, length);
   renderPass.end();
   device.queue.submit([commandEncoder.finish()]);
 }

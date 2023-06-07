@@ -1,3 +1,13 @@
+# 2023-06-07
+- Updated star to be hexagon.
+  - Less overdraw.
+  - Same number of triangles.
+- Added gap.
+  - Using special gapNumber sentinal 12345678.
+  - Added rendering of hex cap before the gap.
+  - Added gap at end of points to cap of end of line.
+  - Using select(f, t, b) instead of an if to avoid branching.
+
 # 2023-06-04
 - Decided to detect in the vertex shader which angle the line body should be instead of drawing redundant overdraws doing every different angle.
 - Maybe don't need to draw the point at all, just the line body.
