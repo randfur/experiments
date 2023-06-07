@@ -12,10 +12,10 @@ async function main() {
     points[i * 2 + 0] = width / 2 + deviate(width / 2);
     points[i * 2 + 1] = height / 2 + deviate(height / 2);
   }
-  points[length * 2 + 0] = gapNumber;
+  points[1 * 2 + 0] = gapNumber;
+  points[4 * 2 + 0] = gapNumber;
   points[Math.floor(length / 2) * 2 + 0] = gapNumber;
-  points[(Math.floor(length / 2) + 2) * 2 + 0] = gapNumber;
-  points[(Math.floor(length / 2) + 5) * 2 + 0] = gapNumber;
+  points[length * 2 + 0] = gapNumber;
 
   // DOM
   document.body.style = `
