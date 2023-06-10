@@ -8,12 +8,9 @@ async function main() {
   // struct Point {
   //   x: f32,
   //   y: f32,
-  //   r: u8,
-  //   g: u8,
-  //   b: u8,
-  //   size: u8,
+  //   colourSize: u32,
   // }
-  const pointBytes = 4 + 4 + 3 + 1;
+  const pointBytes = 4 + 4 + 4;
   const pointColourSizeOffsetBytes = 4 + 4;
   const points = new ArrayBuffer(length * pointBytes);
   function setPoint(index, {x, y, r, g, b, size}) {
@@ -35,7 +32,7 @@ async function main() {
       r: random(256),
       g: random(256),
       b: random(256),
-      size: random(20),
+      size: 1 + random(20),
     });
   }
   clearPoint(0);
@@ -130,12 +127,11 @@ async function main() {
         var nextSize = getSize(nextColourSize);
 
         var coefficients = coefficientsList[index];
-        var unitSide = normalize(turn(nextPosition - position));
 
         var clipPosition =
           coefficients.position * position +
           coefficients.nextPosition * nextPosition +
-          coefficients.side * unitSide * (coefficients.position * size + coefficients.nextPosition * nextSize) +
+          coefficients.side * normalize(turn(nextPosition - position)) * (coefficients.position * size + coefficients.nextPosition * nextSize) +
           vec2f(coefficients.right, coefficients.down) * size;
         clipPosition = ((clipPosition / vec2f(width, height)) - vec2f(0.5, 0.5)) * 2;
         clipPosition *= f32(size > 0 && (nextSize > 0 || index <= 4 * 3));
@@ -163,7 +159,6 @@ async function main() {
       }
 
       @fragment fn fragment(vertexOutput: VertexOutput) -> @location(0) vec4f {
-        // return vec4f(1, 0, 0, 1);
         return vec4f(vertexOutput.colour, 1);
       }
     `,

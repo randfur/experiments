@@ -1,3 +1,13 @@
+# 2023-06-10
+- Added size and colour to all points.
+  - WGSL doesn't support u8.
+  - Packed the rgb and size values into a u32 for size efficiency.
+  - Originally used a Uint8Array to set the bytes individually.
+  - WGSL seems to be little endian which messed with the ordering of the u8s.
+  - Used Uint32Array instead with bit shifting instead to be endian agnostic.
+- Copying from one ArrayBuffer to another is ugly.
+  - new Uint8Array(pointsBuffer.getMappedRange()).set(new Uint8Array(points));
+
 # 2023-06-07
 - Updated star to be hexagon.
   - Less overdraw.
