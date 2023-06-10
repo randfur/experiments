@@ -1,21 +1,48 @@
-const gapNumber = 12345678;
-
 async function main() {
-  // Data
   const scale = 4;
   const width = Math.ceil(window.innerWidth / scale);
   const height = Math.ceil(window.innerHeight / scale);
-  const size = 4;
+
+  // Point data
   const length = 20;
-  const points = new Float32Array(length * 2 + 1);
-  for (let i = 0; i < length; ++i) {
-    points[i * 2 + 0] = width / 2 + deviate(width / 2);
-    points[i * 2 + 1] = height / 2 + deviate(height / 2);
+  // struct Point {
+  //   x: f32,
+  //   y: f32,
+  //   r: u8,
+  //   g: u8,
+  //   b: u8,
+  //   size: u8,
+  // }
+  const pointBytes = 4 + 4 + 3 + 1;
+  const pointColourSizeOffsetBytes = 4 + 4;
+  const points = new ArrayBuffer(length * pointBytes);
+  function setPoint(index, {x, y, r, g, b, size}) {
+    new Float32Array(points, index * pointBytes).set([x, y]);
+    new Uint32Array(points, index * pointBytes + pointColourSizeOffsetBytes).set([
+      ((r & 0xff) << 24) +
+      ((g & 0xff) << 16) +
+      ((b & 0xff) << 8) +
+      (size & 0xff)
+    ]);
   }
-  points[1 * 2 + 0] = gapNumber;
-  points[4 * 2 + 0] = gapNumber;
-  points[Math.floor(length / 2) * 2 + 0] = gapNumber;
-  points[length * 2 + 0] = gapNumber;
+  function clearPoint(index) {
+    new Uint32Array(points, index * pointBytes + pointColourSizeOffsetBytes).set([0]);
+  }
+  for (let i = 0; i < length; ++i) {
+    setPoint(i, {
+      x: random(width),
+      y: random(height),
+      r: random(256),
+      g: random(256),
+      b: random(256),
+      size: random(20),
+    });
+  }
+  clearPoint(0);
+  clearPoint(Math.floor(length / 2));
+  clearPoint(length - 1);
+  console.log(new Float32Array(points));
+  console.log(new Uint8Array(points));
 
   // DOM
   document.body.style = `
@@ -46,18 +73,12 @@ async function main() {
 
   const module = device.createShaderModule({
     code: `
-      struct Uniforms {
-        width: f32,
-        height: f32,
-        size: f32,
-        colour: vec3f,
-      }
-
-      @group(0) @binding(0) var<uniform> uniforms: Uniforms;
+      const width = ${width};
+      const height = ${height};
 
       struct Coefficients {
-        pos: f32,
-        nextPos: f32,
+        position: f32,
+        nextPosition: f32,
         side: f32,
         right: f32,
         down: f32,
@@ -91,32 +112,59 @@ async function main() {
         Coefficients(0, 1, -0.5, 0, 0),
       );
 
+      struct VertexOutput {
+        @builtin(position) position: vec4f,
+        @location(0) colour: vec3f,
+      }
+
       @vertex fn vertex(
         @builtin(vertex_index) index: u32,
-        @location(0) pos: vec2f,
-        @location(1) nextPos: vec2f,
-      ) -> @builtin(position) vec4f {
+        @location(0) position: vec2f,
+        @location(1) colourSize: u32,
+        @location(2) nextPosition: vec2f,
+        @location(3) nextColourSize: u32,
+      ) -> VertexOutput {
+        var colour = getColour(colourSize);
+        var size = getSize(colourSize);
+        var nextColour = getColour(nextColourSize);
+        var nextSize = getSize(nextColourSize);
+
         var coefficients = coefficientsList[index];
-        var side = uniforms.size * normalize(turn(nextPos - pos));
-        var vertex =
-          coefficients.pos * pos +
-          coefficients.nextPos * nextPos +
-          coefficients.side * side +
-          vec2f(coefficients.right, coefficients.down) * uniforms.size;
-        vertex = ((vertex / vec2f(uniforms.width, uniforms.height)) - vec2f(0.5, 0.5)) * 2;
-        return select(
-          vec4f(0),
-          vec4f(vertex, 0, 1),
-          pos.x != ${gapNumber} && (nextPos.x != ${gapNumber} || index <= 4 * 3),
+        var unitSide = normalize(turn(nextPosition - position));
+
+        var clipPosition =
+          coefficients.position * position +
+          coefficients.nextPosition * nextPosition +
+          coefficients.side * unitSide * (coefficients.position * size + coefficients.nextPosition * nextSize) +
+          vec2f(coefficients.right, coefficients.down) * size;
+        clipPosition = ((clipPosition / vec2f(width, height)) - vec2f(0.5, 0.5)) * 2;
+        clipPosition *= f32(size > 0 && (nextSize > 0 || index <= 4 * 3));
+
+        return VertexOutput(
+          vec4(clipPosition, 0, 1),
+          coefficients.position * colour + coefficients.nextPosition * nextColour,
         );
+      }
+
+      fn getColour(colourSize: u32) -> vec3f {
+        return vec3f(
+          f32((colourSize >> 24) & 0xff) / 255,
+          f32((colourSize >> 16) & 0xff) / 255,
+          f32((colourSize >> 8) & 0xff) / 255,
+        );
+      }
+
+      fn getSize(colourSize: u32) -> f32 {
+        return f32(colourSize & 0xff);
       }
 
       fn turn(v: vec2f) -> vec2f {
         return vec2f(-v.y, v.x);
       }
 
-      @fragment fn fragment() -> @location(0) vec4f {
-        return vec4f(1, 0, 0, 1);
+      @fragment fn fragment(vertexOutput: VertexOutput) -> @location(0) vec4f {
+        // return vec4f(1, 0, 0, 1);
+        return vec4f(vertexOutput.colour, 1);
       }
     `,
   });
@@ -126,20 +174,28 @@ async function main() {
       module,
       entryPoint: 'vertex',
       buffers: [{
-        arrayStride: 2 * 4,
+        arrayStride: pointBytes,
         stepMode: 'instance',
         attributes: [{
           shaderLocation: 0,
           offset: 0,
           format: 'float32x2',
+        }, {
+          shaderLocation: 1,
+          offset: pointColourSizeOffsetBytes,
+          format: 'uint32',
         }],
       }, {
-        arrayStride: 2 * 4,
+        arrayStride: pointBytes,
         stepMode: 'instance',
         attributes: [{
-          shaderLocation: 1,
+          shaderLocation: 2,
           offset: 0,
           format: 'float32x2',
+        }, {
+          shaderLocation: 3,
+          offset: pointColourSizeOffsetBytes,
+          format: 'uint32',
         }],
       }],
     },
@@ -152,33 +208,12 @@ async function main() {
     },
   });
 
-  const uniformBuffer = device.createBuffer({
-    size: 8 * 4,
-    usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.UNIFORM,
-    mappedAtCreation: true,
-  });
-  new Float32Array(uniformBuffer.getMappedRange()).set([
-    width,
-    height,
-    size,
-  ]);
-  uniformBuffer.unmap();
-  const uniformBindGroup = device.createBindGroup({
-    layout: pipeline.getBindGroupLayout(0),
-    entries: [{
-      binding: 0,
-      resource: {
-        buffer: uniformBuffer,
-      },
-    }],
-  });
-
   const pointsBuffer = device.createBuffer({
-    size: (length + 1) * 2 * 4,
+    size: length * pointBytes,
     usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.VERTEX,
     mappedAtCreation: true,
   });
-  new Float32Array(pointsBuffer.getMappedRange()).set(points);
+  new Uint8Array(pointsBuffer.getMappedRange()).set(new Uint8Array(points));
   pointsBuffer.unmap();
 
 
@@ -191,12 +226,15 @@ async function main() {
     }],
   });
   renderPass.setPipeline(pipeline);
-  renderPass.setBindGroup(0, uniformBindGroup);
   renderPass.setVertexBuffer(0, pointsBuffer);
-  renderPass.setVertexBuffer(1, pointsBuffer, 2 * 4);
-  renderPass.draw(6 * 3, length);
+  renderPass.setVertexBuffer(1, pointsBuffer, pointBytes);
+  renderPass.draw(6 * 3, length - 1);
   renderPass.end();
   device.queue.submit([commandEncoder.finish()]);
+}
+
+function random(x) {
+  return Math.random() * x;
 }
 
 function deviate(x) {
