@@ -8,7 +8,7 @@ async function main() {
   // struct Point {
   //   x: f32,
   //   y: f32,
-  //   colourSize: u32,
+  //   colourSize: u32, // 0xRRGGBBSS
   // }
   const pointBytes = 4 + 4 + 4;
   const pointColourSizeOffsetBytes = 4 + 4;
