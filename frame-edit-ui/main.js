@@ -1,21 +1,46 @@
 import {render, htmlSwitch} from './third-party/rojs/src/render.js';
+import {button, tag} from './third-party/rojs/src/render-helpers.js';
 import {createObservableJsonProxy, write} from './third-party/rojs/src/observable-json.js';
 
-const proxy = createObservableJsonProxy({hello: true});
+const width = 640;
+const height = 480;
+
+const frames = [
+  new OffscreenCanvas(width, height),
+];
+
+const uiProxy = createObservableJsonProxy({
+  selectedFrame: 0,
+  playing: false,
+});
 
 const canvas = document.createElement('canvas');
-const context = canvas.getContext('2d');
-context.fillRect(30, 40, 100, 100);
+canvas.width = width;
+canvas.height = height;
+canvas.style.borderStyle = 'solid';
 
-setTimeout(() => write(proxy.hello, false), 1000);
+render(document.body, [
+  canvas,
+  tag('br'),
+  button('<<', prevFrame),
+  htmlSwitch(uiProxy.playing, {
+    true: button('Pause', pause),
+    false: button('Play', play),
+  }),
+  button('>>', nextFrame),
+]);
 
-render(app, htmlSwitch(proxy.hello, {
-  true: canvas,
-  false: {
-    tag: 'ol',
-    children: [{
-      tag: 'li',
-      children: [canvas],
-    }],
-  },
-}));
+
+function prevFrame() {
+}
+
+function nextFrame() {
+}
+
+function pause() {
+  write(uiProxy.playing, false);
+}
+
+function play() {
+  write(uiProxy.playing, true);
+}
