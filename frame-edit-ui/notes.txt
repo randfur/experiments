@@ -1,0 +1,30 @@
+# 2023-06-14
+- Experimenting with HTML UI architecture.
+- Trying out pure stateless UI to build a frame animation editor.
+- Spawned from hex-lines.
+- Aiming for an AnimationPack editor one day, aiming lower for this experiment.
+  - Just a multi frame single animation editor.
+- Data structure:
+  - List of frames.
+- Controls:
+  - CRUD?
+    - Create frame.
+    - Show frame.
+    - Play animation.
+    - Seek animation.
+    - Update frame.
+    - Delete frame.
+- Just testing UI, not going to do fancy GPU rendering of points for frames, just store canvases.
+- Would like to try adding layers to this next, including a sketch layer that can be drawn to during playback.
+- Would like to eventually add auto toggle: https://www.youtube.com/watch?v=56Ui6ljAy3w&t=439s
+- UI viewing state has a data structure.
+  - struct Model {
+      framesPerSecond: u8;
+      frames: Array<struct Frame {
+
+      }>;
+      player: Option<Player>;
+      editor: struct Editor {
+        frameIndex: u32;
+      };
+    }

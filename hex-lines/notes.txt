@@ -1,3 +1,22 @@
+# 2023-06-12
+- Frame editing UI.
+  - How to use rojs?
+  - Can MVC the UI?
+  - How to make rojs MVC componentised instead of different parts all split up into separate M, V and C sections?
+  - Would become an MVC joining framework.
+    - A bit heavyweight.
+  - What if just canvas UI, pure drawing no state?
+    - Should be able to do that with rojs anyway if used in the right way.
+    - No need for references to UI elements via IDs if UI has no state.
+  - What if keyboard controls only?
+    - Can have a cursor to traverse the animation pack data structure.
+    - Can show keyboard controls always.
+    - Use a similar system to https://github.com/randfur/notes-graph ?
+    - Controls conditions got messy as more controls were added, maybe a lifetime system would be better.
+    - Maybe a key collision disambiguation system would be good to not have to think about collisions.
+  - Should fork off as a different experiment, this one is in a good state to reference.
+    - Started frame-edit-ui, will try using rojs in a pure stateless UI way for a very basic multi frame animation editor.
+
 # 2023-06-10
 - Added size and colour to all points.
   - WGSL doesn't support u8.
