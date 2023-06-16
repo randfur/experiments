@@ -1,5 +1,5 @@
 import {render, htmlSwitch} from './third-party/rojs/src/render.js';
-import {button, tag} from './third-party/rojs/src/render-helpers.js';
+import {button, brJoin} from './third-party/rojs/src/render-helpers.js';
 import {createObservableJsonProxy, write} from './third-party/rojs/src/observable-json.js';
 
 const width = 640;
@@ -19,16 +19,17 @@ canvas.width = width;
 canvas.height = height;
 canvas.style.borderStyle = 'solid';
 
-render(document.body, [
+render(document.body, brJoin(
   canvas,
-  tag('br'),
-  button('<<', prevFrame),
-  htmlSwitch(uiProxy.playing, {
-    true: button('Pause', pause),
-    false: button('Play', play),
-  }),
-  button('>>', nextFrame),
-]);
+  [
+    button('<<', prevFrame),
+    htmlSwitch(uiProxy.playing, {
+      true: button('Pause', pause),
+      false: button('Play', play),
+    }),
+    button('>>', nextFrame),
+  ],
+));
 
 
 function prevFrame() {
