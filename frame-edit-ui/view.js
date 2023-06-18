@@ -35,9 +35,9 @@ export class View {
         button('Play', Controller.play),
       ),
       button('>>', Controller.nextFrame),
-      button('🞧️', Controller.addFrame),
-      button('🗐', Controller.duplicateFrame),
-      button('🞮️', Controller.deleteFrame),
+      button('Add️', Controller.addFrame),
+      button('Duplicate', Controller.duplicateFrame),
+      button('Delete', Controller.deleteFrame),
     ];
 
     const colourButtons = Model.colours.map(colour => ({
