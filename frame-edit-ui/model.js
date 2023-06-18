@@ -1,9 +1,9 @@
-import {createObservableJsonProxy} from './third-party/rojs/src/observable-json.js';
+import {createObservableJsonProxy, read} from './third-party/rojs/src/observable-json.js';
 
 export class Model {
   static width = 640;
   static height = 480;
-  static framesPerSecond = 3;
+  static framesPerSecond = 6;
   static colours = [
     'white',
     'grey',
@@ -19,6 +19,7 @@ export class Model {
     'pink',
     'purple',
   ];
+  static penSize = 4;
 
   static frames = [
     this.createFrame(),
@@ -36,6 +37,10 @@ export class Model {
       canvas,
       context: canvas.getContext('2d'),
     };
+  }
+
+  static getSelectedFrame() {
+    return this.frames[read(this.ui.selectedFrame)];
   }
 }
 
