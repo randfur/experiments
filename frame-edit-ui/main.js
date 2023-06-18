@@ -1,4 +1,4 @@
-import {render, htmlSwitch} from './third-party/rojs/src/render.js';
+import {render, htmlIf} from './third-party/rojs/src/render.js';
 import {button, brJoin} from './third-party/rojs/src/render-helpers.js';
 import {createObservableJsonProxy, write} from './third-party/rojs/src/observable-json.js';
 
@@ -10,8 +10,8 @@ const frames = [
 ];
 
 const uiProxy = createObservableJsonProxy({
-  selectedFrame: 0,
   playing: false,
+  selectedFrame: 0,
 });
 
 const canvas = document.createElement('canvas');
@@ -23,10 +23,10 @@ render(document.body, brJoin(
   canvas,
   [
     button('<<', prevFrame),
-    htmlSwitch(uiProxy.playing, {
-      true: button('Pause', pause),
-      false: button('Play', play),
-    }),
+    htmlIf(uiProxy.playing,
+      button('Pause', pause),
+      button('Play', play),
+    ),
     button('>>', nextFrame),
   ],
 ));
