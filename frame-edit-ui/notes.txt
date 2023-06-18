@@ -1,3 +1,18 @@
+# 2023-06-18
+- Split UI up into Model, View and Controller parts.
+- Can see that view.js doesn't import write().
+- Fleshed out UI more, added colour buttons.
+- Added frame rendering to canvas.
+- Added frame button functionality.
+- Added drawing.
+- Added animation playback.
+- Very basic animation frame editor works now.
+
+# 2023-06-16
+- Started on the UI using rojs.
+- Using new element insertion, needed to fix bug where reparenting left behind stale flatTree data.
+- Very basic hello world UI created.
+
 # 2023-06-14
 - Experimenting with HTML UI architecture.
 - Trying out pure stateless UI to build a frame animation editor.
