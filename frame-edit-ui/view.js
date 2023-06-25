@@ -8,12 +8,6 @@ import {Controller} from './controller.js';
 
 export class View {
   static init() {
-    const canvas = document.createElement('canvas');
-    canvas.width = Model.width;
-    canvas.height = Model.height;
-    canvas.style.borderStyle = 'solid';
-    this.context = canvas.getContext('2d');
-
     const statusText = joinSpace(
       array`Frame: ${Model.ui.selectedFrame}`,
       array`Colour: ${{

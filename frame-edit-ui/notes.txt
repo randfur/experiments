@@ -1,3 +1,8 @@
+# 2023-06-23
+- Having everything partitioned into Model, View and Controller makes each of the three very messy.
+- Better to split up by components e.g. frame controls, status bar, colour picker etc.
+- Having many little MVC units would be more scalable and manageable.
+
 # 2023-06-18
 - Split UI up into Model, View and Controller parts.
 - Can see that view.js doesn't import write().
