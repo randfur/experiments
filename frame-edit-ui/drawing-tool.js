@@ -1,4 +1,5 @@
 import {createObservableJsonProxy, read} from './third-party/rojs/src/observable-json.js';
+
 import {FrameViewer} from './frame-viewer.js';
 
 export class DrawingTool {

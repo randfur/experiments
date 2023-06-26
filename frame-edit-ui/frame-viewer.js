@@ -1,4 +1,5 @@
 import {createObservableJsonProxy, read} from './third-party/rojs/src/observable-json.js';
+
 import {AnimationData} from './animation-data.js';
 
 export class FrameViewer {

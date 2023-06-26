@@ -1,8 +1,9 @@
 import {createObservableJsonProxy, read, write} from './third-party/rojs/src/observable-json.js';
 import {htmlIf} from './third-party/rojs/src/render.js';
 import {button} from './third-party/rojs/src/render-helpers.js';
-import {FrameViewer} from './frame-viewer.js';
+
 import {AnimationData} from './animation-data.js';
+import {FrameViewer} from './frame-viewer.js';
 
 export class AnimationPlayer {
   static model = createObservableJsonProxy({

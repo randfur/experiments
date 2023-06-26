@@ -1,4 +1,5 @@
 import {createObservableJsonProxy, write} from './third-party/rojs/src/observable-json.js';
+
 import {DrawingTool} from './drawing-tool.js';
 
 export class ColourPicker {

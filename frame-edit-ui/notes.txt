@@ -1,3 +1,46 @@
+# 2023-06-25
+- Completed migration into components.
+- There a several, now each component is a reasonable scale but the overall directory is now a flat mess.
+- Would be good to have some overall structure to the application, MVC was originally going to be it but something more in tune with how the components themselves mesh together might actually work.
+- Components:
+  - AnimationData
+  - FrameViewer
+  - DrawingTool
+  - ColourPicker
+  - StatusText
+  - AnimationPlayer
+  - FrameControls
+- Each of these might get more complex or get siblings, e.g. add PenSizePicker or FramesPerSecondPicker.
+- Group into:
+  - Animation data.
+  - Main viewport.
+  - Drawing tools.
+  - Shared tool parameters.
+  - Animation playback.
+  - Keyframe management.
+- What would the full animation pack UI be grouped into?
+  - Missing parts:
+    - Layers.
+    - Keyframe lengths.
+    - Animation references.
+    - Element transforms.
+    - Animation library.
+    - Animation settings.
+  - What UI parts would be present on the screen (possibly minimized)?
+    - Main menu.
+    - Animation pack library editor.
+    - Layer editor.
+    - Keyframe editor.
+    - Frame editor.
+    - Animation properties editor.
+    - Editing stack viewer.
+    - Tool selection and properties.
+
+# 2023-06-24
+- Started migrating code into separate components.
+- Using static classes, seems to work well, can use `this` to refer to current class.
+- Using model and uiTemplate static members for the model and view parts of each component.
+
 # 2023-06-23
 - Having everything partitioned into Model, View and Controller makes each of the three very messy.
 - Better to split up by components e.g. frame controls, status bar, colour picker etc.

@@ -1,8 +1,9 @@
-import {AnimationPlayer} from './animation-player.js';
-import {read, write, readWrite} from './third-party/rojs/src/observable-json.js';
 import {button} from './third-party/rojs/src/render-helpers.js';
-import {FrameViewer} from './frame-viewer.js';
+import {read, write, readWrite} from './third-party/rojs/src/observable-json.js';
+
 import {AnimationData} from './animation-data.js';
+import {AnimationPlayer} from './animation-player.js';
+import {FrameViewer} from './frame-viewer.js';
 
 export class FrameControls {
   static uiTemplate = [
