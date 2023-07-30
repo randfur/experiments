@@ -1,3 +1,17 @@
+# 2023-07-29
+- Added bomber class with model.
+- Added enumerate() helper function for transforming the model (essentially a vertex shader).
+- Added rotation around x axis so camera can look down.
+- Line widths seem to glitch out when they get too close to the minZ.
+  - Updated perspective width calculation to use midZ post clipping, pre clipping would involve positive and negative z values which can average out close to 0 which explains the glitchy behaviour.
+- Things for next time:
+  - Quaternion orientation.
+  - Bomber position, orientation, speed and turning.
+  - Similar for camera.
+  - Compute turning to face a target position.
+  - Bomber target world location, camera target bomber.
+  - Will need ground avoidance turning behaviour too.
+
 # 2023-04-26
 - Rendered the ground.
   - Scaled the x/y to be much wider.

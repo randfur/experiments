@@ -9,7 +9,6 @@ export class Drawing {
   static height;
   static linePool;
   static lines;
-  static camera;
 
   static init() {
     this.width = window.innerWidth;
@@ -34,8 +33,6 @@ export class Drawing {
       colour: '',
     }));
     this.lines = [];
-
-    this.camera = new Camera();
   }
 
   static clear() {
@@ -50,10 +47,21 @@ export class Drawing {
     return line;
   }
 
+  static addPath(vs, width, colour, closed=false) {
+    const end = vs.length + (closed ? 0 : -1);
+    for (let i = 0; i < end; ++i) {
+      const line = this.addLine();
+      line.start.set(vs[i]);
+      line.end.set(vs[(i + 1) % vs.length]);
+      line.width = width;
+      line.colour = colour;
+    }
+  }
+
   static draw() {
     for (let i = 0; i < this.lines.length;) {
       const line = this.lines[i];
-      if (this.camera.transformLine(line)) {
+      if (Camera.transformLine(line)) {
         ++i;
       } else {
         this.lines[i] = this.lines[this.lines.length - 1];

@@ -1,19 +1,25 @@
+import {Camera} from './camera.js';
 import {Drawing} from './drawing.js';
 import {Ground} from './ground.js';
-
-const TAU = Math.PI * 2;
+import {Bomber} from './bomber.js';
 
 async function main() {
   Drawing.init();
-  const camera = Drawing.camera;
+  Bomber.init();
+  Camera.init();
 
+  let previousTime = null;
   while (true) {
     const time = await new Promise(requestAnimationFrame);
-    camera.position.setYPolar(time / 1000, 400, -120);
-    camera.rotateYAngle = -time / 1000 - TAU / 8;
+    const timeDelta = previousTime !== null ? time - previousTime : 0;
+    previousTime = time;
+
+    Camera.update(timeDelta, time);
+    Bomber.update(timeDelta, time);
 
     Drawing.clear();
     Ground.addLines();
+    Bomber.addLines();
     Drawing.draw();
   }
 }

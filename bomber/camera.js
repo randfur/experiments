@@ -1,15 +1,30 @@
 import {Vec3} from './vec3.js';
+import {TAU} from './utils.js';
 
 export class Camera {
-  constructor() {
+  static position;
+  static rotateYAngle;
+  static perspective;
+  static minZ;
+
+  static init() {
     this.position = new Vec3();
     // this.orientation = new Quat();
     this.rotateYAngle = 0;
+    this.rotateXAngle = TAU * 0.05;
     this.perspective = 800;
-    this.minZ = 1;
+    this.minZ = 20;
   }
 
-  transformLine(line) {
+  static update(timeDelta, time) {
+    // this.position.setYPolar(TAU * 3 / 4, 400, -120);
+    // const angle = TAU * 0.85 - time / 1000;
+    const angle = - TAU * 0.25;
+    this.position.setYPolar(angle, 400, -200);
+    this.rotateYAngle = -angle - TAU * 0.25;
+  }
+
+  static transformLine(line) {
     this.transformPoint(line.start);
     this.transformPoint(line.end);
 
@@ -17,14 +32,14 @@ export class Camera {
       return false;
     }
 
-    const midZ = (line.start.z + line.end.z) / 2;
-    line.width *= this.perspective / midZ;
-
     if (line.start.z < this.minZ) {
       this.clip(line.start, line.end);
     } else if (line.end.z < this.minZ) {
       this.clip(line.end, line.start);
     }
+
+    const midZ = (line.start.z + line.end.z) / 2;
+    line.width *= this.perspective / midZ;
 
     line.start.x *= this.perspective / line.start.z;
     line.start.y *= this.perspective / line.start.z;
@@ -33,12 +48,13 @@ export class Camera {
     return true;
   }
 
-  transformPoint(point) {
+  static transformPoint(point) {
     point.subtract(this.position);
     point.rotateYAngle(this.rotateYAngle);
+    point.rotateXAngle(this.rotateXAngle);
   }
 
-  clip(near, far) {
+  static clip(near, far) {
     const delta = Vec3.pool.acquire();
     delta.assignSubtract(near, far);
     const desiredZ = this.minZ - far.z;
