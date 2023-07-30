@@ -1,10 +1,13 @@
 import {Vec3} from './vec3.js';
 
+const TAU = Math.PI * 2;
+
 export class Camera {
   constructor() {
     this.position = new Vec3();
     // this.orientation = new Quat();
     this.rotateYAngle = 0;
+    this.rotateXAngle = TAU * 0.05;
     this.perspective = 800;
     this.minZ = 1;
   }
@@ -36,6 +39,7 @@ export class Camera {
   transformPoint(point) {
     point.subtract(this.position);
     point.rotateYAngle(this.rotateYAngle);
+    point.rotateXAngle(this.rotateXAngle);
   }
 
   clip(near, far) {

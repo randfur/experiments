@@ -73,4 +73,17 @@ export class Vec3 {
       this.x * rz + this.z * rx,
     ];
   }
+
+  rotateXAngle(angle) {
+    this.rotateX(Math.cos(angle), Math.sin(angle));
+  }
+
+  rotateX(ry, rz) {
+    // (y + i.z) * (ry + i.rz)
+    // y.ry - z.rz + i(y.rz + z.ry)
+    [this.y, this.z] = [
+      this.y * ry - this.z * rz,
+      this.y * rz + this.z * ry,
+    ];
+  }
 }
