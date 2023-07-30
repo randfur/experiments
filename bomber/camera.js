@@ -9,7 +9,6 @@ export class Camera {
 
   static init() {
     this.position = new Vec3();
-    // this.orientation = new Quat();
     this.rotateYAngle = 0;
     this.rotateXAngle = TAU * 0.05;
     this.perspective = 800;
@@ -18,8 +17,7 @@ export class Camera {
 
   static update(timeDelta, time) {
     const angle = TAU * 0.85 - time / 10000;
-    // const angle = - TAU * 0.25;
-    this.position.setYPolar(angle, 400, -200);
+    this.position.setYPolar(angle, 600, -200);
     this.rotateYAngle = -angle - TAU * 0.25;
   }
 

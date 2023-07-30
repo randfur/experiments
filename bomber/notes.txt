@@ -1,5 +1,11 @@
+# 2023-07-31
+- Added position and velocity to bomber, it now flies around.
+- Need to make it control its roll and pitch to go towards a target destination.
+- Added colour trails to the bomber.
+  - Weird glitches appear at the end of the trails.
+
 # 2023-07-30
-- Quaternions!
+- Quaternions.
 - Added quaternion rotation.
   - Added new relativeRotate() method, rotates the axis vector by the quaternion before rotating the quaternion by the axis vector.
     - Makes it easier to rotate by the object local co-ordinate basis vectors.

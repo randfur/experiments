@@ -110,4 +110,8 @@ export class Vec3 {
     this.z = result.d;
     Quat.pool.release(2);
   }
+
+  length() {
+    return Math.sqrt(this.x ** 2 + this.y ** 2 + this.z ** 2);
+  }
 }
