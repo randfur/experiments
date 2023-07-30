@@ -1,0 +1,57 @@
+# 2023-07-09
+- Forked from bomber/.
+
+# 2023-04-26
+- Rendered the ground.
+  - Scaled the x/y to be much wider.
+  - Amplified the height a bit.
+- Added Vec3.setPolar() for easier circular test motions.
+- Added Vec3.rotateY().
+- Made camera fly in circles looking ahead to where it's going.
+- Next to do:
+  - Make the camera rotate.
+  - Make the camera fly across the ground.
+  - Put things on top of the ground height.
+
+# 2023-03-11
+- Came up with equation for the ground height:
+  float rsin(vec2 p) { return sin(length(p)); }
+  void mainImage( out vec4 fragColor, in vec2 fragCoord )
+  {
+      vec2 pos = 100.*(fragCoord/iResolution.xy - vec2(0.5, 0.5));
+      float t = iTime / 6.;
+      pos -= vec2(sin(t), cos(t)) * 100.;
+      float col =
+          rsin(pos + vec2(100., 200.)) +
+          rsin(pos + vec2(300., 300.)) +
+          rsin(pos + vec2(-200., 700.))
+      ;
+      col = (col / 3.) + 0.5;
+      fragColor = vec4(col, col, col, 1.0);
+  }
+
+
+# 2023-03-09
+- Bomber 3D lines animation.
+- Visual components:
+  - White lines on black.
+  - Invisible hilly ground.
+  - Stick trees and random bumps on ground to show its elevation.
+  - Camera flying in a direction, meandering around the focus point.
+  - White line bomber plane flying in, delivering payload, flying out, maybe twirls.
+  - Payload is visible on plane before dropping, 6 trails of colour. Red, orange, yellow, green, blue, purple.
+  - Payload turns into vertical arrow ribbons that disperse randomly as if in the wind when dropped.
+  - Explosions of colour on impact with the ground, affected targets become painted with the colour.
+  - Camera traverses a persistent area, past hit targets visible when they come into view again after a few minutes.
+- Code components:
+  - 3D lines.
+  - 3D vectors.
+  - Drawing.
+  - Bomber.
+  - Payloads.
+  - Ground elevation.
+  - Ground objects.
+  - Explosions.
+  - Camera.
+  - Focus path.
+  - Director.
