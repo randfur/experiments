@@ -1,3 +1,14 @@
+# 2023-07-30
+- Quaternions!
+- Added quaternion rotation.
+  - Added new relativeRotate() method, rotates the axis vector by the quaternion before rotating the quaternion by the axis vector.
+    - Makes it easier to rotate by the object local co-ordinate basis vectors.
+  - Polarity:
+    - Using q*v*conj(q) form of rotation.
+    - This wants rotations to be composed with left side multiplication.
+    - Tested rotations about (1, 0, 0) gives y -> z, (0, 1, 0) gives z -> x and (0, 0, 1) gives x -> y.
+  - Made the bomber rotate about its local co-ordinate basis vectors to roll and pitch.
+
 # 2023-07-29
 - Added bomber class with model.
 - Added enumerate() helper function for transforming the model (essentially a vertex shader).

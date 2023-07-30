@@ -1,3 +1,6 @@
+# 2023-07-30
+- Updated ground to use hex grid points.
+
 # 2023-07-09
 - Forked from bomber/.
 

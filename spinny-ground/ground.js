@@ -10,8 +10,10 @@ export class Ground {
   static addLines() {
     const size = 2000;
     const step = 20;
+    let shift = false;
     for (let x = -size / 2; x < size / 2; x += step) {
-      for (let z = -size / 2; z < size / 2; z += step) {
+      shift ^= true;
+      for (let z = -size / 2 + (shift ? step / 2 : 0); z < size / 2; z += step * Math.sqrt(3) / 2) {
         const line = Drawing.addLine();
         line.start.setXyz(x, -getGroundHeight(x, z), z);
         line.end.setXyz(x, line.start.y - 1, z);
