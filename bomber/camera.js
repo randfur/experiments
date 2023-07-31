@@ -35,8 +35,8 @@ export class Camera {
       this.clip(line.end, line.start);
     }
 
-    const midZ = (line.start.z + line.end.z) / 2;
-    line.width *= this.perspective / midZ;
+    line.midZ = (line.start.z + line.end.z) / 2;
+    line.width *= this.perspective / line.midZ;
 
     line.start.x *= this.perspective / line.start.z;
     line.start.y *= this.perspective / line.start.z;

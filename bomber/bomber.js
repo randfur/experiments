@@ -4,7 +4,7 @@ import {Quat} from './quat.js';
 import {TAU, enumerate} from './utils.js';
 
 export class Bomber {
-  static init() {
+  constructor() {
     this.model = [
       new Vec3(2, 0, 0),
       new Vec3(-1, 0, 3),
@@ -35,16 +35,17 @@ export class Bomber {
     this.trailWidth = 4;
     this.trails = this.trailPoints.map(_ => []);
 
+    this.timeShift = Math.random() * 1000;
     this.orientation = new Quat();
-    this.orientation.rotate(0, 1, 0, TAU * 0.5);
-    this.position = new Vec3(0, 0, 0);
+    this.orientation.rotate(0, 1, 0, TAU * Math.random());
+    this.position = new Vec3(0, 100, 0);
     this.velocity = new Vec3();
     this.speed = 0.3;
   }
 
-  static update(timeDelta, time) {
-    this.orientation.relativeRotate(1, 0, 0, Math.sin(time * 0.002) * 0.03);
-    this.orientation.relativeRotate(0, 0, 1, -0.025 + Math.sin(time * 0.001) * 0.0025);
+  update(timeDelta, time) {
+    this.orientation.relativeRotate(1, 0, 0, Math.sin((time + this.timeShift) * 0.002) * 0.03);
+    this.orientation.relativeRotate(0, 0, 1, -0.025 + Math.sin((time + this.timeShift) * 0.001) * 0.0025);
     this.orientation.normalise();
 
     this.velocity.setXyz(this.speed * timeDelta, 0, 0);
@@ -66,13 +67,13 @@ export class Bomber {
     }
   }
 
-  static assignLocalTransform(v, modelV, time) {
+  assignLocalTransform(v, modelV, time) {
     v.assignScale(modelV, 20);
     v.rotateQuat(this.orientation);
     v.add(this.position);
   }
 
-  static addLines() {
+  addLines() {
     Drawing.addPath(this.transformedModel, 2, 'white', true);
     for (const [i, trail] of enumerate(this.trails)) {
       const colour = this.trailColours[i];

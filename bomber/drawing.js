@@ -31,6 +31,7 @@ export class Drawing {
       end: new Vec3(),
       width: 0,
       colour: '',
+      midZ: 0,
     }));
     this.lines = [];
   }
@@ -68,7 +69,7 @@ export class Drawing {
         this.lines.length -= 1;
       }
     }
-    this.lines.sort((a, b) => a.z - b.z);
+    this.lines.sort((a, b) => a.midZ - b.midZ);
 
     const diff = Vec3.pool.acquire();
     for (const line of this.lines) {
