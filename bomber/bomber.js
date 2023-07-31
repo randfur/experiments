@@ -1,7 +1,7 @@
 import {Drawing} from './drawing.js';
 import {Vec3} from './vec3.js';
 import {Quat} from './quat.js';
-import {TAU, enumerate} from './utils.js';
+import {TAU, enumerate, deviate} from './utils.js';
 
 export class Bomber {
   constructor() {
@@ -35,17 +35,18 @@ export class Bomber {
     this.trailWidth = 4;
     this.trails = this.trailPoints.map(_ => []);
 
-    this.timeShift = Math.random() * 1000;
+    this.timeShift = deviate(1000);
+    this.timeScale = 1 + deviate(0.01);
     this.orientation = new Quat();
-    this.orientation.rotate(0, 1, 0, TAU * Math.random());
+    this.orientation.rotate(0, 1, 0, deviate(TAU));
     this.position = new Vec3(0, 0, 0);
     this.velocity = new Vec3();
-    this.speed = 0.3;
+    this.speed = 0.4 + deviate(0.2);
   }
 
   update(timeDelta, time) {
-    this.orientation.relativeRotate(1, 0, 0, Math.sin((time + this.timeShift) * 0.002) * 0.03);
-    this.orientation.relativeRotate(0, 0, 1, -0.025 + Math.sin((time + this.timeShift * 2) * 0.001) * 0.0025);
+    this.orientation.relativeRotate(1, 0, 0, Math.sin((time * this.timeScale + this.timeShift) * 0.002) * 0.03);
+    this.orientation.relativeRotate(0, 0, 1, -0.025 + Math.sin((time * this.timeScale + this.timeShift * 2) * 0.001) * 0.0025);
     this.orientation.normalise();
 
     this.velocity.setXyz(this.speed * timeDelta, 0, 0);

@@ -13,3 +13,7 @@ export function range(n) {
   }
   return result;
 }
+
+export function deviate(x) {
+  return (Math.random() * 2 - 1) * x;
+}

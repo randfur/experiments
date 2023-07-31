@@ -12,7 +12,7 @@ export class Camera {
     this.rotateYAngle = 0;
     this.rotateXAngle = TAU * 0.005;
     this.perspective = 800;
-    this.minZ = 20;
+    this.minZ = 1;
   }
 
   static update(timeDelta, time) {
