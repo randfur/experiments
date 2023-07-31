@@ -44,7 +44,7 @@ export class Bomber {
 
   static update(timeDelta, time) {
     this.orientation.relativeRotate(1, 0, 0, Math.sin(time * 0.002) * 0.03);
-    this.orientation.relativeRotate(0, 0, 1, -0.02);
+    this.orientation.relativeRotate(0, 0, 1, -0.025 + Math.sin(time * 0.003) * 0.005);
     this.orientation.normalise();
 
     this.velocity.setXyz(this.speed * timeDelta, 0, 0);
