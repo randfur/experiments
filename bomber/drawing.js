@@ -69,7 +69,7 @@ export class Drawing {
         this.lines.length -= 1;
       }
     }
-    this.lines.sort((a, b) => a.midZ - b.midZ);
+    this.lines.sort((a, b) => b.midZ - a.midZ);
 
     const diff = Vec3.pool.acquire();
     for (const line of this.lines) {

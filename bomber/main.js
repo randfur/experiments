@@ -7,7 +7,14 @@ import {range} from './utils.js';
 async function main() {
   Drawing.init();
   Camera.init();
-  const bombers = range(3).map(_ => new Bomber());
+  let bombers = range(1).map(_ => new Bomber());
+
+  window.addEventListener('keydown', event => {
+    const count = Number(event.key);
+    if (!isNaN(count)) {
+      bombers = range(count).map(_ => new Bomber());
+    }
+  });
 
   let previousTime = null;
   while (true) {
