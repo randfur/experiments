@@ -10,7 +10,7 @@ export class Camera {
   static init() {
     this.position = new Vec3();
     this.rotateYAngle = 0;
-    this.rotateXAngle = TAU * 0.05;
+    this.rotateXAngle = TAU * 0.005;
     this.perspective = 800;
     this.minZ = 20;
   }
