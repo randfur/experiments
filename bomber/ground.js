@@ -14,6 +14,9 @@ export class Ground {
     for (let x = -size / 2; x < size / 2; x += step) {
       shift ^= true;
       for (let z = -size / 2 + (shift ? step / 2 : 0); z < size / 2; z += step * Math.sqrt(3) / 2) {
+        if (x ** 2 + z ** 2 > (size / 2) ** 2) {
+          continue;
+        }
         const line = Drawing.addLine();
         line.start.setXyz(x, -getGroundHeight(x, z), z);
         line.end.setXyz(x, line.start.y - 1, z);
