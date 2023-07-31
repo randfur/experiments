@@ -70,7 +70,16 @@ export class Drawing {
     }
     this.lines.sort((a, b) => a.z - b.z);
 
+    const diff = Vec3.pool.acquire();
     for (const line of this.lines) {
+      if (line.width === 0) {
+        continue;
+      }
+      diff.assignSubtract(line.end, line.start);
+      const length = diff.length();
+      if (length === 0) {
+        continue;
+      }
       this.context.strokeStyle = line.colour;
       this.context.lineWidth = line.width;
       this.context.beginPath();
@@ -79,11 +88,12 @@ export class Drawing {
         this.height / 2 + line.start.y,
       );
       this.context.lineTo(
-        this.width / 2 + line.end.x,
-        this.height / 2 + line.end.y,
+        this.width / 2 + line.end.x + diff.x / length,
+        this.height / 2 + line.end.y + diff.y / length,
       );
       this.context.stroke();
     }
+    Vec3.pool.release(1);
   }
 }
 
