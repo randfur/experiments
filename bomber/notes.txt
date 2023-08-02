@@ -1,8 +1,24 @@
+# 2023-08-02
+- Game idea:
+  - Mouse controls:
+    - Left/right movement: roll
+    - Up/down movement: pitch
+    - Left click: shoot
+    - Right click: flip
+    - Wheel: change speed
+    - Middle click: alt fire
+    - Right click wheel: change weapon
+
 # 2023-07-31
 - Added position and velocity to bomber, it now flies around.
 - Need to make it control its roll and pitch to go towards a target destination.
 - Added colour trails to the bomber.
   - Weird glitches appear at the end of the trails.
+- Made multiple bombers.
+  - Deviated their timing and initial rotation.
+- Fixed line sorting, it was reading the wrong key, now storing midZ on each line to sort by.
+- Made the ground round rather than square.
+- Recorded video for YouTube: https://www.youtube.com/watch?v=3bi42Cx3Vng
 
 # 2023-07-30
 - Quaternions.
