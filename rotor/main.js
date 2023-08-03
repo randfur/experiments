@@ -25,9 +25,9 @@ function wedgeVec3Vec3(a/*: Vec3*/, b/*: Vec3*/)/*: Bivec3*/ {
   const [ax, ay, az] = a;
   const [bx, by, bz] = b;
   return [
-    ay * bz - az * by, // x yz
-    az * bx - ax * bz, // y zx
-    ax * by - ay * bx, // z xy
+    ay * bz - az * by, // x -> yz
+    az * bx - ax * bz, // y -> zx
+    ax * by - ay * bx, // z -> xy
   ];
 }
 
