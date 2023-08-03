@@ -32,12 +32,21 @@ function wedgeVec3Vec3(a/*: Vec3*/, b/*: Vec3*/)/*: Bivec3*/ {
 }
 
 function bivec3FromAxis(axis/*: Vec3*/)/*: Bivec3*/ {
+  // Treat x, y, z basis vectors in axis as normals and reinterpret_cast them as their corresponding planes:
+  // x -> yz
+  // y -> zx
+  // z -> xy
+  // The order of elements in Bivec3 have been arranged to match Vec3 for this cast.
   return axis;
 }
 
 function rot3FromBivec3Angle(bv/*: Bivec3*/, angle/*: radians*/)/*: Rot3*/ {
   const [yz, zx, xy] = bv;
   const k = Math.sin(angle / 2);
+  // Real component is no rotation.
+  // Bivec3 component is planar rotation.
+  // Weigh them proportionally according to angle / 2.
+  // Use angle / 2 due to the double planar rotation in rotateVec3() that's used to cancel out the trivector extrusion.
   return [
     Math.cos(angle / 2),
     k * xy,
