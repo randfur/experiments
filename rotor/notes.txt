@@ -1,0 +1,34 @@
+# 2023-08-03
+- Quaternion/rotor code reference: https://marctenbosch.com/quaternions/code.htm
+- Rotors can just use regular algebra on vectors.
+- Vectors are just basis vectors multiplied by co-efficients.
+- Special sauce comes from when basis vectors are multiplied together.
+- Orthogonal basis vectors stay put in the order in which they were multiplied.
+- They can swap one place at a time with negating the co-efficient.
+- If a pair of parallel basis vectors are adjacent they cancel out as 1.
+- Real numbers represent no rotation.
+- A pair of orthogonal basis vectors represent a right angle rotation in that plane e.g. xy rotates from x to y.
+- A wedge product between two 3D vectors has a funny property with rotation axis.
+  - This is a cross product in 3D.
+  - The wedge product takes vectors a and b and for each xy, yz and zx plane multiplies the parts from a and b minus the alternate parts multiplied.
+    - For xy it's a.x * b.y - a.y * b.x.
+    - In 3D you do the planes yz, zx and xy:
+      - yz: a.y * b.z - a.z * b.y
+      - zx: a.z * b.x - a.x * b.z
+      - xy: a.x * b.x - a.x * b.x
+      - The normal to these planes yz, zx and xy are x, y and z.
+      - Through dark magic you can replace the planes with their normal basis vectors to get the normal vector to a and b.
+      - This is a cross product.
+- Creating a rotor from an axis angle.
+  - Using the axis/bivector equivalence dark magic the axis can be used as a bivector.
+  - The real number is the "no rotation" component.
+  - The bivector is the "rotate" component.
+  - cos(angle / 2) the real component and sin(angle / 2) the bivector component.
+- angle / 2
+  - The rotation equation is conj(rotor) * vector * rotor.
+  - If you do vector * rotor then vector will be rotated in the plane of rotation but outside of the plane of rotation the values end up with a trivector component.
+  - If you flip the order to be rotor * vector then the rotation in the plane of rotation will be reversed but not the part that ends up with the trivector component.
+  - If you conj(rotor) the rotation will be reversed including the part that ends up with the trivector component.
+  - By flipping the order and conjugating the planar rotation is applied while the trivector part is applied in reverse.
+  - Then multiplying by the rotor on the right will apply the rotation again and apply the trivector part which cancels out with the previous reverse trivector part.
+  - This is why angle / 2 is used, because the planar rotation is applied twice in order to make the trivector part cancel out.
