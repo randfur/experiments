@@ -1,3 +1,8 @@
+# 2023-08-06
+- Drawing some strokes.
+  - Made them wiggle.
+- Need to add colour.
+
 # 2023-08-05
 - Started WebGL2 implementation of WebGPU hex lines.
 - Using https://seemly-meter.glitch.me/main.js as an API guide.
@@ -9,3 +14,4 @@
   - Will see what happens when the next hexagon is oriented differently.
   - Maybe should join to the lesser radius.
     - Nah that looks off too.
+  - Going to just draw each hex twice.

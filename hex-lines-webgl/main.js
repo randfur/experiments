@@ -121,13 +121,6 @@ async function main() {
 
   const buffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-    0, 0, 0,
-    100, 200, 50,
-    500, 400, 40,
-    0, 0, 0,
-  ]), gl.STATIC_DRAW);
-
   const posAttrib = gl.getAttribLocation(program, 'pos');
   const sizeAttrib = gl.getAttribLocation(program, 'size');
   const nextPosAttrib = gl.getAttribLocation(program, 'nextPos');
@@ -148,7 +141,73 @@ async function main() {
   gl.vertexAttribDivisor(nextPosAttrib, 1);
   gl.vertexAttribDivisor(nextSizeAttrib, 1);
 
-  gl.drawArraysInstanced(gl.TRIANGLES, 0, 30, 3);
+  const strokes = [];
+  for (const i of range(20)) {
+    let x = Math.random() * canvas.width;
+    let y = Math.random() * canvas.height;
+    let size = 10 + Math.random() * 50;
+    const length = 4 + Math.random(10);
+    const stroke = [];
+    for (const j of range(length)) {
+      stroke.push(x, y, size);
+      x += (Math.random() * 2 - 1) * 50;
+      y += Math.random() * 100;
+      size *= 0.8;
+    }
+    strokes.push(stroke);
+  }
+
+  for (const i of range(100)) {
+    (async () => {
+      while (true) {
+        await sleep(Math.random() * 2000);
+        const stroke = pickItem(strokes);
+        const index = Math.floor(Math.floor(Math.random() * stroke.length) / 3) * 3;
+        const targetX = stroke[index + 0] + (Math.random() * 2 - 1) * 50;
+        const targetY = stroke[index + 1] + (Math.random() * 2 - 1) * 50;
+        const factor = Math.random() * 0.1;
+        const frames = 50 + Math.random() * 100;
+        for (const i of range(frames)) {
+          await new Promise(requestAnimationFrame);
+          stroke[index + 0] += (targetX - stroke[index + 0]) * factor * i / frames;
+          stroke[index + 1] += (targetY - stroke[index + 1]) * factor * i / frames;
+        }
+      }
+    })();
+  }
+
+  while (true) {
+    await new Promise(requestAnimationFrame);
+
+    const bufferData = [
+      0, 0, 0,
+      ...strokes.flatMap(stroke => [
+        ...stroke,
+        0, 0, 0,
+      ]),
+    ];
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(bufferData), gl.DYNAMIC_DRAW);
+
+    gl.drawArraysInstanced(gl.TRIANGLES, 0, 30, bufferData.length / 3 - 1);
+  }
+}
+
+function range(n) {
+  const result = [];
+  for (let i = 0; i < n; ++i) {
+    result.push(i);
+  }
+  return result;
+}
+
+function pickItem(list) {
+  return list[Math.floor(Math.random() * list.length)];
+}
+
+function sleep(n) {
+  return new Promise(resolve => {
+    setTimeout(resolve, n);
+  });
 }
 
 main();
