@@ -1,0 +1,11 @@
+# 2023-08-05
+- Started WebGL2 implementation of WebGPU hex lines.
+- Using https://seemly-meter.glitch.me/main.js as an API guide.
+- Turns out GLSL supports arrays and structs, not too bad.
+- Rendered triangles with no buffers in WebGL for the first time.
+- Yet to hook up any buffers, will need to make sure the vertex attribute pointers can be offset.
+- Not doing pixelly rendering this time, the join bar really sticks out of the sides of the hexagon and doesn't look good.
+  - Rotated the hexagon to match the direction of the bar, lines up nicely now, at least on one side.
+  - Will see what happens when the next hexagon is oriented differently.
+  - Maybe should join to the lesser radius.
+    - Nah that looks off too.

@@ -1,3 +1,9 @@
+# 2023-08-05
+- Forked this project idea. This is now called hex-lines-wgpu and the fork is hex-lines-webgl.
+- Redoing this concept in hex-lines-webgl because WebGPU support is far from widespread.
+  - Many people don't use Chrome.
+  - Even on Chrome, Android, Linux and configurations of ChromeOS don't work with WebGPU.
+
 # 2023-06-12
 - Frame editing UI.
   - How to use rojs?
