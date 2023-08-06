@@ -98,7 +98,7 @@ async function main() {
         screenPos.x * 2. / width - 1.,
         1. - screenPos.y * 2. / height,
         0, 1);
-      vertexOutColour = vec4(colour, nextColour, 0, 1);
+      vertexOutColour = vec4(colour + nextColour, 0, 0, 1);
     }
   `);
   gl.compileShader(vertexShader);
@@ -143,10 +143,10 @@ async function main() {
 
   gl.vertexAttribPointer(posAttrib, 2, gl.FLOAT, gl.FALSE, 4 * 4, 0 * 4);
   gl.vertexAttribPointer(sizeAttrib, 1, gl.FLOAT, gl.FALSE, 4 * 4, 2 * 4);
-  gl.vertexAttribPointer(colourAttrib, 1, gl.UNSIGNED_INT, gl.FALSE, 4 * 4, 3 * 4);
+  gl.vertexAttribIPointer(colourAttrib, 1, gl.UNSIGNED_INT, gl.FALSE, 4 * 4, 3 * 4);
   gl.vertexAttribPointer(nextPosAttrib, 2, gl.FLOAT, gl.FALSE, 4 * 4, 4 * 4);
   gl.vertexAttribPointer(nextSizeAttrib, 1, gl.FLOAT, gl.FALSE, 4 * 4, 6 * 4);
-  gl.vertexAttribPointer(nextColourAttrib, 1, gl.UNSIGNED_INT, gl.FALSE, 4 * 4, 7 * 4);
+  gl.vertexAttribIPointer(nextColourAttrib, 1, gl.UNSIGNED_INT, gl.FALSE, 4 * 4, 7 * 4);
 
   gl.vertexAttribDivisor(posAttrib, 1);
   gl.vertexAttribDivisor(sizeAttrib, 1);
@@ -163,7 +163,7 @@ async function main() {
     const length = 4 + Math.random(10);
     const stroke = [];
     for (const j of range(length)) {
-      stroke.push(x, y, size, 0);
+      stroke.push(x, y, size, 1);
       x += (Math.random() * 2 - 1) * 50;
       y += Math.random() * 100;
       size *= 0.8;
@@ -176,7 +176,7 @@ async function main() {
       while (true) {
         await sleep(Math.random() * 2000);
         const stroke = pickItem(strokes);
-        const index = Math.floor(Math.floor(Math.random() * stroke.length) / 3) * 3;
+        const index = Math.floor(Math.floor(Math.random() * stroke.length) / 4) * 4;
         const targetX = stroke[index + 0] + (Math.random() * 2 - 1) * 50;
         const targetY = stroke[index + 1] + (Math.random() * 2 - 1) * 50;
         const factor = Math.random() * 0.1;
@@ -202,7 +202,7 @@ async function main() {
     ];
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(bufferData), gl.DYNAMIC_DRAW);
 
-    gl.drawArraysInstanced(gl.TRIANGLES, 0, 30, bufferData.length / 3 - 1);
+    gl.drawArraysInstanced(gl.TRIANGLES, 0, 30, bufferData.length / 4 - 1);
   }
 }
 
