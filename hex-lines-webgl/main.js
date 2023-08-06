@@ -64,14 +64,18 @@ async function main() {
       Vertex(0., 1., 0., vec2(1, 0)),
       Vertex(0., 1., 0., vec2(0.5, -sqrt3_2)),
 
-      // For some reason the last element is garbage so leave a sacrificial one at the end.
+      // For some reason the last element is corrupted so leave a sacrificial one at the end.
       Vertex(0., 0., 0., vec2(0, 0))
     );
 
     in vec2 pos;
     in float size;
+    in uint colour;
     in vec2 nextPos;
     in float nextSize;
+    in uint nextColour;
+
+    out vec4 vertexOutColour;
 
     vec2 rotate(vec2 v, vec2 r) {
       return vec2(
@@ -94,52 +98,62 @@ async function main() {
         screenPos.x * 2. / width - 1.,
         1. - screenPos.y * 2. / height,
         0, 1);
+      vertexOutColour = vec4(colour, nextColour, 0, 1);
     }
   `);
   gl.compileShader(vertexShader);
-  console.log(gl.getShaderInfoLog(vertexShader));
+  logIf(gl.getShaderInfoLog(vertexShader));
 
   const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
   gl.shaderSource(fragmentShader, `#version 300 es
     precision mediump float;
 
-    out vec4 col;
+    in vec4 vertexOutColour;
+    out vec4 fragmentOutColour;
 
     void main() {
-      col = vec4(1, 0, 0, 1);
+      fragmentOutColour = vertexOutColour;
     }
   `);
   gl.compileShader(fragmentShader);
-  console.log(gl.getShaderInfoLog(fragmentShader));
+  logIf(gl.getShaderInfoLog(fragmentShader));
 
   const program = gl.createProgram();
   gl.attachShader(program, vertexShader);
   gl.attachShader(program, fragmentShader);
   gl.linkProgram(program);
   gl.useProgram(program);
-  console.log(gl.getProgramInfoLog(program));
+  logIf(gl.getProgramInfoLog(program));
 
   const buffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
   const posAttrib = gl.getAttribLocation(program, 'pos');
   const sizeAttrib = gl.getAttribLocation(program, 'size');
+  const colourAttrib = gl.getAttribLocation(program, 'colour');
   const nextPosAttrib = gl.getAttribLocation(program, 'nextPos');
   const nextSizeAttrib = gl.getAttribLocation(program, 'nextSize');
+  const nextColourAttrib = gl.getAttribLocation(program, 'nextColour');
 
   gl.enableVertexAttribArray(posAttrib);
   gl.enableVertexAttribArray(sizeAttrib);
+  gl.enableVertexAttribArray(colourAttrib);
   gl.enableVertexAttribArray(nextPosAttrib);
   gl.enableVertexAttribArray(nextSizeAttrib);
+  gl.enableVertexAttribArray(nextColourAttrib);
 
-  gl.vertexAttribPointer(posAttrib, 2, gl.FLOAT, gl.FALSE, 12, 0);
-  gl.vertexAttribPointer(sizeAttrib, 1, gl.FLOAT, gl.FALSE, 12, 8);
-  gl.vertexAttribPointer(nextPosAttrib, 2, gl.FLOAT, gl.FALSE, 12, 12);
-  gl.vertexAttribPointer(nextSizeAttrib, 1, gl.FLOAT, gl.FALSE, 12, 20);
+  gl.vertexAttribPointer(posAttrib, 2, gl.FLOAT, gl.FALSE, 4 * 4, 0 * 4);
+  gl.vertexAttribPointer(sizeAttrib, 1, gl.FLOAT, gl.FALSE, 4 * 4, 2 * 4);
+  gl.vertexAttribPointer(colourAttrib, 1, gl.UNSIGNED_INT, gl.FALSE, 4 * 4, 3 * 4);
+  gl.vertexAttribPointer(nextPosAttrib, 2, gl.FLOAT, gl.FALSE, 4 * 4, 4 * 4);
+  gl.vertexAttribPointer(nextSizeAttrib, 1, gl.FLOAT, gl.FALSE, 4 * 4, 6 * 4);
+  gl.vertexAttribPointer(nextColourAttrib, 1, gl.UNSIGNED_INT, gl.FALSE, 4 * 4, 7 * 4);
 
   gl.vertexAttribDivisor(posAttrib, 1);
   gl.vertexAttribDivisor(sizeAttrib, 1);
+  gl.vertexAttribDivisor(colourAttrib, 1);
   gl.vertexAttribDivisor(nextPosAttrib, 1);
   gl.vertexAttribDivisor(nextSizeAttrib, 1);
+  gl.vertexAttribDivisor(nextColourAttrib, 1);
 
   const strokes = [];
   for (const i of range(20)) {
@@ -149,7 +163,7 @@ async function main() {
     const length = 4 + Math.random(10);
     const stroke = [];
     for (const j of range(length)) {
-      stroke.push(x, y, size);
+      stroke.push(x, y, size, 0);
       x += (Math.random() * 2 - 1) * 50;
       y += Math.random() * 100;
       size *= 0.8;
@@ -180,15 +194,21 @@ async function main() {
     await new Promise(requestAnimationFrame);
 
     const bufferData = [
-      0, 0, 0,
+      0, 0, 0, 0,
       ...strokes.flatMap(stroke => [
         ...stroke,
-        0, 0, 0,
+        0, 0, 0, 0,
       ]),
     ];
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(bufferData), gl.DYNAMIC_DRAW);
 
     gl.drawArraysInstanced(gl.TRIANGLES, 0, 30, bufferData.length / 3 - 1);
+  }
+}
+
+function logIf(text) {
+  if (text !== '') {
+    console.log(text);
   }
 }
 
