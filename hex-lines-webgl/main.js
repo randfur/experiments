@@ -151,10 +151,10 @@ async function main() {
 
   gl.vertexAttribPointer(posAttrib, 2, gl.FLOAT, gl.FALSE, 4 * 4, 0 * 4);
   gl.vertexAttribPointer(sizeAttrib, 1, gl.FLOAT, gl.FALSE, 4 * 4, 2 * 4);
-  gl.vertexAttribIPointer(colourAttrib, 1, gl.UNSIGNED_INT, gl.FALSE, 4 * 4, 3 * 4);
+  gl.vertexAttribIPointer(colourAttrib, 1, gl.UNSIGNED_INT, 4 * 4, 3 * 4);
   gl.vertexAttribPointer(nextPosAttrib, 2, gl.FLOAT, gl.FALSE, 4 * 4, 4 * 4);
   gl.vertexAttribPointer(nextSizeAttrib, 1, gl.FLOAT, gl.FALSE, 4 * 4, 6 * 4);
-  gl.vertexAttribIPointer(nextColourAttrib, 1, gl.UNSIGNED_INT, gl.FALSE, 4 * 4, 7 * 4);
+  gl.vertexAttribIPointer(nextColourAttrib, 1, gl.UNSIGNED_INT, 4 * 4, 7 * 4);
 
   gl.vertexAttribDivisor(posAttrib, 1);
   gl.vertexAttribDivisor(sizeAttrib, 1);

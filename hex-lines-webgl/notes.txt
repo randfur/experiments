@@ -1,8 +1,12 @@
+# 2023-08-12
+- Used fix from u32-to-f32-webgl experiment, colours work now.
+
 # 2023-08-11
 - Fixing up colour.
   - Added u32ToF32() and rgbaToU32() conversions.
   - Hopefully reinterpret casting a u32 to f32 on the CPU will allow it to be reinterpret casted back to the original u32 on the GPU.
   - Not working.
+  - Created u32-to-f32-webgl experiment to work out the problem in isolation.
 
 # 2023-08-06
 - Drawing some strokes.

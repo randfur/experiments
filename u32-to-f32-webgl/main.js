@@ -54,8 +54,8 @@ function main() {
   const yAttrib = gl.getAttribLocation(program, 'y');
   gl.enableVertexAttribArray(xAttrib);
   gl.enableVertexAttribArray(yAttrib);
-  gl.vertexAttribIPointer(xAttrib, 1, gl.UNSIGNED_INT, gl.FALSE, 8, 0);
-  gl.vertexAttribIPointer(yAttrib, 1, gl.UNSIGNED_INT, gl.FALSE, 8, 4);
+  gl.vertexAttribIPointer(xAttrib, 1, gl.UNSIGNED_INT, 8, 0);
+  gl.vertexAttribIPointer(yAttrib, 1, gl.UNSIGNED_INT, 8, 4);
 
   const typedBuffer = new Uint32Array([
     0, 0,
