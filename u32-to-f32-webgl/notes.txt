@@ -1,0 +1,3 @@
+# 2023-08-11
+- Trying to work out how to pass an RGBA through a Float32Array to a uint in GLSL.
+- DataView.setUint32() doesn't use the architecture's endianness, it defaults to big endian while my computer is little endian.

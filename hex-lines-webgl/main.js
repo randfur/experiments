@@ -83,6 +83,14 @@ async function main() {
         v.x * r.y + v.y * r.x);
     }
 
+    vec4 u32ToRgba(uint rgba) {
+      return vec4(
+        float(rgba >> 24) / 255.,
+        float((rgba >> 16) & 0xffu) / 255.,
+        float((rgba >> 8) & 0xffu) / 255.,
+        float(rgba & 0xffu) / 255.);
+    }
+
     void main() {
       Vertex vertex = vertices[gl_VertexID];
       float hexRadius = vertex.pos * size + vertex.nextPos * nextSize;
@@ -98,7 +106,7 @@ async function main() {
         screenPos.x * 2. / width - 1.,
         1. - screenPos.y * 2. / height,
         0, 1);
-      vertexOutColour = vec4(colour + nextColour, 0, 0, 1);
+      vertexOutColour = vertex.pos * u32ToRgba(colour) + vertex.nextPos * u32ToRgba(nextColour);
     }
   `);
   gl.compileShader(vertexShader);
@@ -160,13 +168,19 @@ async function main() {
     let x = Math.random() * canvas.width;
     let y = Math.random() * canvas.height;
     let size = 10 + Math.random() * 50;
+    let r = Math.random() * 256;
+    let g = Math.random() * 256;
+    let b = Math.random() * 256;
     const length = 4 + Math.random(10);
     const stroke = [];
     for (const j of range(length)) {
-      stroke.push(x, y, size, 1);
+      stroke.push(x, y, size, u32ToF32(rgbaToU32(r, g, b, 255)));
       x += (Math.random() * 2 - 1) * 50;
       y += Math.random() * 100;
       size *= 0.8;
+      r *= 0.8;
+      g *= 0.8;
+      b *= 0.8;
     }
     strokes.push(stroke);
   }
@@ -193,16 +207,15 @@ async function main() {
   while (true) {
     await new Promise(requestAnimationFrame);
 
-    const bufferData = [
+    const float32Buffer = new Float32Array([
       0, 0, 0, 0,
       ...strokes.flatMap(stroke => [
         ...stroke,
         0, 0, 0, 0,
       ]),
-    ];
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(bufferData), gl.DYNAMIC_DRAW);
-
-    gl.drawArraysInstanced(gl.TRIANGLES, 0, 30, bufferData.length / 4 - 1);
+    ]);
+    gl.bufferData(gl.ARRAY_BUFFER, float32Buffer, gl.DYNAMIC_DRAW);
+    gl.drawArraysInstanced(gl.TRIANGLES, 0, 30, float32Buffer.length / 4 - 1);
   }
 }
 
@@ -228,6 +241,17 @@ function sleep(n) {
   return new Promise(resolve => {
     setTimeout(resolve, n);
   });
+}
+
+function rgbaToU32(r, g, b, a) {
+  return ((r & 0xff) << 24) + ((g & 0xff) << 16) + ((b & 0xff) << 8) + (a & 0xff);
+}
+
+const conversionBuffer = new ArrayBuffer(4);
+const conversionView = new DataView(conversionBuffer);
+function u32ToF32(x) {
+  conversionView.setUint32(0, x);
+  return conversionView.getFloat32(0);
 }
 
 main();
