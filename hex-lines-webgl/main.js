@@ -20,7 +20,7 @@ async function main() {
       vec2 hex;
     };
 
-    const Vertex vertices[] = Vertex[31](
+    const Vertex vertices[] = Vertex[30](
       // Hex
       Vertex(1., 0., 0., vec2(-0.5, sqrt3_2)),
       Vertex(1., 0., 0., vec2(-1, 0)),
@@ -62,10 +62,7 @@ async function main() {
 
       Vertex(0., 1., 0., vec2(0.5, sqrt3_2)),
       Vertex(0., 1., 0., vec2(1, 0)),
-      Vertex(0., 1., 0., vec2(0.5, -sqrt3_2)),
-
-      // For some reason the last element is corrupted so leave a sacrificial one at the end.
-      Vertex(0., 0., 0., vec2(0, 0))
+      Vertex(0., 1., 0., vec2(0.5, -sqrt3_2))
     );
 
     in vec2 pos;
@@ -164,13 +161,13 @@ async function main() {
   gl.vertexAttribDivisor(nextColourAttrib, 1);
 
   const strokes = [];
-  for (const i of range(20)) {
+  for (const i of range(200)) {
     let x = Math.random() * canvas.width;
     let y = Math.random() * canvas.height;
     let size = 10 + Math.random() * 50;
     let r = Math.random() * 256;
-    let g = Math.random() * 256;
-    let b = Math.random() * 256;
+    let g = 0;Math.random() * 256;
+    let b = 0;Math.random() * 256;
     const length = 4 + Math.random(10);
     const stroke = [];
     for (const j of range(length)) {
@@ -185,7 +182,7 @@ async function main() {
     strokes.push(stroke);
   }
 
-  for (const i of range(100)) {
+  for (const i of range(strokes.length)) {
     (async () => {
       while (true) {
         await sleep(Math.random() * 2000);
