@@ -57,15 +57,19 @@ function main() {
   gl.vertexAttribIPointer(xAttrib, 1, gl.UNSIGNED_INT, 8, 0);
   gl.vertexAttribIPointer(yAttrib, 1, gl.UNSIGNED_INT, 8, 4);
 
-  const typedBuffer = new Uint32Array([
+  const typedBuffer = new Float32Array([
     0, 0,
-    100, 0,
-    0, 100,
+    u32ToF32(100), 0,
+    0, u32ToF32(100),
   ]);
 
   gl.bufferData(gl.ARRAY_BUFFER, typedBuffer, gl.STATIC_DRAW);
 
   gl.drawArrays(gl.TRIANGLES, 0, 3);
+}
+
+function u32ToF32(x) {
+  return new DataView(new Uint32Array([x]).buffer).getFloat32(0);
 }
 
 function logIf(text) {

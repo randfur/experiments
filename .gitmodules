@@ -1,3 +1,3 @@
 [submodule "frame-edit-ui/third-party/rojs"]
-	path = frame-edit-ui/third-party/rojs
+	path = 2023/frame-edit-ui/third-party/rojs
 	url = git@github.com:randfur/rojs.git

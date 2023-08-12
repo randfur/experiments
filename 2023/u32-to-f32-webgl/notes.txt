@@ -1,5 +1,6 @@
 # 2023-08-12
 - Figured it out. vertexAttribIPointer() doesn't take a normalise parameter like vertexAttribPointer() does.
+- Updated example to actually do full u32 -> f32 -> u32 conversion.
 
 # 2023-08-11
 - Trying to work out how to pass an RGBA through a Float32Array to a uint in GLSL.

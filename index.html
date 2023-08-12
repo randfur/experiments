@@ -1,18 +1,28 @@
 <body></body>
 <script>
-const directory = [
-  '2d-matrix-transforms',
-  'bomber',
-  'fill-tool',
-  'frame-edit-ui',
-  'hex-lines-wgpu',
-  'hex-lines-webgl',
-  'rotor',
-  'runes',
-  'spinny-ground',
-  'u32-to-f32-webgl',
-  'wgpu-example',
-  'wgpu-merge-sort',
-];
-document.body.innerHTML = directory.map(folder => `<a href="${folder}/">${folder}/</a>`).join('<br>');
+const directory = {
+  '2023': [
+    'u32-to-f32-webgl',
+    'hex-lines-webgl',
+    'rotor',
+    'bomber',
+    'frame-edit-ui',
+    'hex-lines-wgpu',
+    'runes',
+    'pet-language',
+    'wgpu-merge-sort',
+    'wgpu-example',
+    'spinny-ground',
+    'fill-tool',
+    '2d-matrix-transforms',
+  ],
+};
+document.body.innerHTML = Object.entries(directory).map(([year, experiments]) => `
+  ${year}<br>
+  <ul>
+    ${experiments.map(experiment => `
+      <li><a href="${year}/${experiment}">${experiment}</a></li>
+    `).join('')}
+  </ul>
+`).join('');
 </script>
