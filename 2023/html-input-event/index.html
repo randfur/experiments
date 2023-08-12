@@ -1,0 +1,14 @@
+<!-- Testing out how change and input events fire w.r.t. JS mutations vs user mutations to the input element. -->
+<input id="input" type="range">
+<button id="button">Set</button>
+<script>
+input.addEventListener('change', event => {
+  console.log('Change:', event);
+});
+input.addEventListener('input', event => {
+  console.log('Input:', event);
+});
+button.addEventListener('click', event => {
+  input.value = Math.random() * 100;
+});
+</script>
