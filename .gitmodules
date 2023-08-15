@@ -1,3 +1,6 @@
 [submodule "frame-edit-ui/third-party/rojs"]
 	path = 2023/frame-edit-ui/third-party/rojs
 	url = git@github.com:randfur/rojs.git
+[submodule "2023/html-input-event/third_party/rojs"]
+	path = 2023/html-input-event/third-party/rojs
+	url = git@github.com:randfur/rojs.git

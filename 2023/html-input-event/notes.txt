@@ -1,0 +1,7 @@
+# 2023-08-15
+- Rewrote using Rojs.
+- Works dandy.
+- Rojs nice and concise to use.
+
+# 2023-08-12
+- Testing out how change and input events fire w.r.t. JS mutations vs user mutations to the input element.
