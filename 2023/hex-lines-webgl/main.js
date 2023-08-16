@@ -1,7 +1,13 @@
 async function main() {
+  const scale = 4;
   const canvas = document.getElementById('canvas');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  canvas.width = Math.floor(window.innerWidth / scale);
+  canvas.height = Math.floor(window.innerHeight / scale);
+  canvas.style = `
+    transform-origin: top left;
+    transform: scale(${scale});
+    image-rendering: pixelated;
+  `;
   const gl = canvas.getContext('webgl2');
 
   const vertexShader = gl.createShader(gl.VERTEX_SHADER);
@@ -164,20 +170,22 @@ async function main() {
   for (const i of range(200)) {
     let x = Math.random() * canvas.width;
     let y = Math.random() * canvas.height;
-    let size = 10 + Math.random() * 50;
+    let size = 5 + Math.random() * 10;
     let r = Math.random() * 256;
-    let g = 0;Math.random() * 256;
-    let b = 0;Math.random() * 256;
+    let g = 0;
+    let b = 0;
     const length = 4 + Math.random(10);
     const stroke = [];
     for (const j of range(length)) {
       stroke.push(x, y, size, u32ToF32(rgbaToU32(r, g, b, 255)));
-      x += (Math.random() * 2 - 1) * 50;
-      y += Math.random() * 100;
+      x += (Math.random() * 2 - 1) * 10;
+      y += Math.random() * 25;
       size *= 0.8;
-      r *= 0.8;
-      g *= 0.8;
-      b *= 0.8;
+      if (j < length - 1) {
+        r *= 0.8;
+        g *= 0.8;
+        b *= 0.8;
+      }
     }
     strokes.push(stroke);
   }
@@ -188,8 +196,8 @@ async function main() {
         await sleep(Math.random() * 2000);
         const stroke = pickItem(strokes);
         const index = Math.floor(Math.floor(Math.random() * stroke.length) / 4) * 4;
-        const targetX = stroke[index + 0] + (Math.random() * 2 - 1) * 50;
-        const targetY = stroke[index + 1] + (Math.random() * 2 - 1) * 50;
+        const targetX = stroke[index + 0] + (Math.random() * 2 - 1) * 10;
+        const targetY = stroke[index + 1] + (Math.random() * 2 - 1) * 10;
         const factor = Math.random() * 0.1;
         const frames = 50 + Math.random() * 100;
         for (const i of range(frames)) {

@@ -1,3 +1,7 @@
+# 2023-08-16
+- Added pixel scaling.
+- Made the end point of the worms not have their own colour.
+
 # 2023-08-12
 - Used fix from u32-to-f32-webgl experiment, colours work now.
 
