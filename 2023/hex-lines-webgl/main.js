@@ -8,7 +8,9 @@ async function main() {
     transform: scale(${scale});
     image-rendering: pixelated;
   `;
-  const gl = canvas.getContext('webgl2');
+  const gl = canvas.getContext('webgl2', {
+    antialias: false,
+  });
 
   const vertexShader = gl.createShader(gl.VERTEX_SHADER);
   gl.shaderSource(vertexShader, `#version 300 es
