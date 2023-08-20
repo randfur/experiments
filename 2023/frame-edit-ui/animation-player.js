@@ -1,26 +1,25 @@
-import {createObservableJsonProxy, read, write} from './third-party/rojs/src/observable-json.js';
-import {htmlIf} from './third-party/rojs/src/render.js';
-import {button} from './third-party/rojs/src/render-helpers.js';
+import {read, write, htmlIf, Component, button} from './third-party/rojs/src/rojs.js';
 
-import {AnimationData} from './animation-data.js';
-import {FrameViewer} from './frame-viewer.js';
+export class AnimationPlayer extends Component {
+  constructor() {
+    super({
+      model: {
+        playing: false,
+        framesPerSecond: 6,
+      },
+    });
 
-export class AnimationPlayer {
-  static model = createObservableJsonProxy({
-    playing: false,
-    framesPerSecond: 6,
-  });
+    this.view = htmlIf(this.model.playing,
+      button('Pause', () => this.pause()),
+      button('Play', () => this.play()),
+    );
+  }
 
-  static uiTemplate = htmlIf(this.model.playing,
-    button('Pause', this.pause.bind(this)),
-    button('Play', this.play.bind(this)),
-  );
-
-  static pause() {
+  pause() {
     write(this.model.playing, false);
   }
 
-  static play() {
+  play() {
     if (read(this.model.playing)) {
       return;
     }
@@ -37,13 +36,13 @@ export class AnimationPlayer {
           startTime = time;
         }
         const currentFrame = Math.floor((time - startTime) / 1000 * read(this.model.framesPerSecond));
-        if (currentFrame >= AnimationData.frames.length) {
+        if (currentFrame >= this.bundle.animationData.frames.length) {
           write(this.model.playing, false);
           break;
         }
-        FrameViewer.renderFrame(currentFrame);
+        this.bundle.frameViewer.renderFrame(currentFrame);
       }
-      FrameViewer.renderFrame();
+      this.bundle.frameViewer.renderFrame();
     })();
   }
 }

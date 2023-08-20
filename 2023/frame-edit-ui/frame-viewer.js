@@ -1,31 +1,31 @@
-import {createObservableJsonProxy, read} from './third-party/rojs/src/observable-json.js';
+import {read, Component} from './third-party/rojs/src/rojs.js';
 
-import {AnimationData} from './animation-data.js';
+export class FrameViewer extends Component {
+  constructor() {
+    super({
+      model: {
+        selectedFrameIndex: 0,
+      },
+    });
+    this.canvas = document.createElement('canvas');
+    this.canvas.style.borderStyle = 'solid';
+    this.context = this.canvas.getContext('2d');
+    this.view = this.canvas;
+  }
 
-export class FrameViewer {
-  static model = createObservableJsonProxy({
-    selectedFrameIndex: 0,
-  });
+  bundleInit() {
+    this.canvas.width = this.bundle.animationData.width;
+    this.canvas.height = this.bundle.animationData.height;
+  }
 
-  static view = (() => {
-    const canvas = document.createElement('canvas');
-    canvas.width = AnimationData.width;
-    canvas.height = AnimationData.height;
-    canvas.style.borderStyle = 'solid';
-    return {
-      canvas,
-      context: canvas.getContext('2d'),
-    };
-  })();
-
-  static mutateSelectedFrame(f) {
+  mutateSelectedFrame(f) {
     const selectedFrameIndex = read(this.model.selectedFrameIndex);
-    f(AnimationData.frames[selectedFrameIndex].context);
+    f(this.bundle.animationData.frames[selectedFrameIndex].context);
     this.renderFrame(selectedFrameIndex);
   }
 
-  static renderFrame(frameIndex=read(this.model.selectedFrameIndex)) {
-    this.view.context.clearRect(0, 0, this.view.canvas.width, this.view.canvas.height);
-    this.view.context.drawImage(AnimationData.frames[frameIndex].canvas, 0, 0);
+  renderFrame(frameIndex=read(this.model.selectedFrameIndex)) {
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.context.drawImage(this.bundle.animationData.frames[frameIndex].canvas, 0, 0);
   }
 }

@@ -1,62 +1,59 @@
-import {button} from './third-party/rojs/src/render-helpers.js';
-import {read, write, readWrite} from './third-party/rojs/src/observable-json.js';
+import {button, Component, read, write, readWrite} from './third-party/rojs/src/rojs.js';
 
-import {AnimationData} from './animation-data.js';
-import {AnimationPlayer} from './animation-player.js';
-import {FrameViewer} from './frame-viewer.js';
+export class FrameControls extends Component {
+  bundleInit() {
+    this.view = [
+      button('<<', () => this.prevFrame()),
+      this.bundle.animationPlayer,
+      button('>>', () => this.nextFrame()),
+      button('Add️', () => this.addFrame()),
+      button('Duplicate', () => this.duplicateFrame()),
+      button('Delete', () => this.deleteFrame()),
+    ];
+   }
 
-export class FrameControls {
-  static uiTemplate = [
-    button('<<', this.prevFrame),
-    AnimationPlayer.uiTemplate,
-    button('>>', this.nextFrame),
-    button('Add️', this.addFrame),
-    button('Duplicate', this.duplicateFrame),
-    button('Delete', this.deleteFrame),
-  ];
-
-  static prevFrame() {
-    readWrite(FrameViewer.model.selectedFrameIndex, x => {
+  prevFrame() {
+    readWrite(this.bundle.frameViewer.model.selectedFrameIndex, x => {
       return Math.max(x - 1, 0);
     });
-    FrameViewer.renderFrame();
+    this.bundle.frameViewer.renderFrame();
   }
 
-  static nextFrame() {
+  nextFrame() {
     readWrite(
-      FrameViewer.model.selectedFrameIndex,
-      x => Math.min(x + 1, AnimationData.frames.length - 1));
-    FrameViewer.renderFrame();
+      this.bundle.frameViewer.model.selectedFrameIndex,
+      x => Math.min(x + 1, this.bundle.animationData.frames.length - 1));
+    this.bundle.frameViewer.renderFrame();
   }
 
-  static addFrame() {
+  addFrame() {
     const newIndex = readWrite(
-      FrameViewer.model.selectedFrameIndex,
+      this.bundle.frameViewer.model.selectedFrameIndex,
       x => x + 1);
-    AnimationData.frames.splice(newIndex, 0, AnimationData.createFrame());
-    FrameViewer.renderFrame();
+    this.bundle.animationData.frames.splice(newIndex, 0, this.bundle.animationData.createFrame());
+    this.bundle.frameViewer.renderFrame();
   }
 
-  static duplicateFrame() {
-    const oldIndex = read(FrameViewer.model.selectedFrameIndex);
-    const oldFrame = AnimationData.frames[oldIndex];
-    const newIndex = write(FrameViewer.model.selectedFrameIndex, oldIndex + 1);
-    AnimationData.frames.splice(newIndex, 0, AnimationData.createFrame());
-    FrameViewer.mutateSelectedFrame(context => {
+  duplicateFrame() {
+    const oldIndex = read(this.bundle.frameViewer.model.selectedFrameIndex);
+    const oldFrame = this.bundle.animationData.frames[oldIndex];
+    const newIndex = write(this.bundle.frameViewer.model.selectedFrameIndex, oldIndex + 1);
+    this.bundle.animationData.frames.splice(newIndex, 0, this.bundle.animationData.createFrame());
+    this.bundle.frameViewer.mutateSelectedFrame(context => {
       context.drawImage(oldFrame.canvas, 0, 0);
     });
   }
 
-  static deleteFrame() {
-    if (AnimationData.frames.length === 1) {
-      AnimationData.frames[0] = AnimationData.createFrame();
-      FrameViewer.renderFrame();
+  deleteFrame() {
+    if (this.bundle.animationData.frames.length === 1) {
+      this.bundle.animationData.frames[0] = this.bundle.animationData.createFrame();
+      this.bundle.frameViewer.renderFrame();
       return;
     }
-    AnimationData.frames.splice(read(FrameViewer.model.selectedFrameIndex), 1);
-    readWrite(FrameViewer.model.selectedFrameIndex, selectedFrame => {
-      return Math.min(selectedFrame, AnimationData.frames.length - 1);
+    this.bundle.animationData.frames.splice(read(this.bundle.frameViewer.model.selectedFrameIndex), 1);
+    readWrite(this.bundle.frameViewer.model.selectedFrameIndex, selectedFrame => {
+      return Math.min(selectedFrame, this.bundle.animationData.frames.length - 1);
     });
-    FrameViewer.renderFrame();
+    this.bundle.frameViewer.renderFrame();
   }
 }

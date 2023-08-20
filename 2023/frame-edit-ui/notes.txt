@@ -1,3 +1,18 @@
+# 2023-08-20
+- Refactored into using Components from rojs.
+  - All seems to work.
+  - this.bundle.thing is a bit verbose compared with Thing (which also got syntax highlighted differently which was nice for seeing external dependency usage).
+- Components have a model and a view property.
+- Components are now all instances.
+- Added bundle pattern inspired by WebAppProvider and SetProvider().
+  - All components are given a bundle object which has named references to all components in the bundle.
+  - This allows arbitrary interbundle dependencies.
+  - Components implement a bundleInit() method for any init work that requires referencing other bundle components.
+  - Could maybe use a better name than bundle.
+- The separate files to import from in rojs is a bit unfortunate, probably reasonable to have a rojs.js target that exports all the things.
+  - Can structure them at a high level and provide documentation that won't get lost among lots of implementation definitions.
+  - Done.
+
 # 2023-06-25
 - Completed migration into components.
 - There a several, now each component is a reasonable scale but the overall directory is now a flat mess.

@@ -1,15 +1,17 @@
-import {createObservableJsonProxy, read} from './third-party/rojs/src/observable-json.js';
+import {read, Component} from './third-party/rojs/src/rojs.js';
 
-import {FrameViewer} from './frame-viewer.js';
+export class DrawingTool extends Component {
+  constructor() {
+    super({
+      model: {
+        colour: 'white',
+        penSize: 4,
+      },
+    });
+  }
 
-export class DrawingTool {
-  static model = createObservableJsonProxy({
-    colour: 'white',
-    penSize: 4,
-  });
-
-  static init() {
-    registerPointerEvents(FrameViewer.view.canvas, {
+  bundleInit() {
+    registerPointerEvents(this.bundle.frameViewer.canvas, {
       click: this.drawDot.bind(this),
       dragStart: this.drawStart.bind(this),
       dragMove: this.drawMove.bind(this),
@@ -17,9 +19,9 @@ export class DrawingTool {
     });
   }
 
-  static drawDot(x, y) {
+  drawDot(x, y) {
     const penSize = read(this.model.penSize);
-    FrameViewer.mutateSelectedFrame(context => {
+    this.bundle.frameViewer.mutateSelectedFrame(context => {
       context.fillStyle = read(this.colour);
       context.fillRect(
         x - penSize / 2,
@@ -30,11 +32,11 @@ export class DrawingTool {
     });
   }
 
-  static drawStart(x, y) {
+  drawStart(x, y) {
   }
 
-  static drawMove(x, y, prevX, prevY) {
-    FrameViewer.mutateSelectedFrame(context => {
+  drawMove(x, y, prevX, prevY) {
+    this.bundle.frameViewer.mutateSelectedFrame(context => {
       context.strokeStyle = read(this.model.colour);
       context.lineWidth = read(this.model.penSize);
       context.beginPath();
@@ -44,7 +46,7 @@ export class DrawingTool {
     });
   }
 
-  static drawEnd(x, y) {
+  drawEnd(x, y) {
   }
 }
 

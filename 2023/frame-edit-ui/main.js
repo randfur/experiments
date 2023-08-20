@@ -1,38 +1,31 @@
-import {render} from './third-party/rojs/src/render.js';
-import {joinBr} from './third-party/rojs/src/render-helpers.js';
+import {render, joinBr} from './third-party/rojs/src/rojs.js';
 
-import {FrameViewer} from './frame-viewer.js';
-import {DrawingTool} from './drawing-tool.js';
-import {StatusText} from './status-text.js';
-import {FrameControls} from './frame-controls.js';
+import {bundleBundle} from './bundle.js';
+import {AnimationData} from './animation-data.js';
+import {AnimationPlayer} from './animation-player.js';
 import {ColourPicker} from './colour-picker.js';
-
-/*
-# Components
-- AnimationData:
-  - Storage of animation frames.
-- FrameViewer:
-  - The display canvas, shows animation frames.
-- DrawingTool:
-  - Applies drawing edits to animation frames via the FrameViewer.
-- StatusText:
-  - Display editor state as text.
-- AnimationPlayer:
-  - Controls animation playback shown via the FrameViewer.
-- FrameControls:
-  - Controls for which animation frame is displayed for editing in the FrameViewer as well as adding/removing frames.
-- ColourPicker:
-  - Controls for changing the DrawingTool colour.
-*/
+import {DrawingTool} from './drawing-tool.js';
+import {FrameControls} from './frame-controls.js';
+import {FrameViewer} from './frame-viewer.js';
+import {StatusText} from './status-text.js';
 
 function main() {
-  DrawingTool.init();
+  const bundle = bundleBundle({
+    animationData: new AnimationData(),
+    animationPlayer: new AnimationPlayer(),
+    colourPicker: new ColourPicker(),
+    drawingTool: new DrawingTool(),
+    frameControls: new FrameControls(),
+    frameViewer: new FrameViewer(),
+    statusText: new StatusText(),
+  });
 
   render(document.body, joinBr(
-    FrameViewer.view.canvas,
-    StatusText.uiTemplate,
-    FrameControls.uiTemplate,
-    ColourPicker.uiTemplate,
+    bundle.frameViewer,
+    bundle.statusText,
+    bundle.frameControls,
+    bundle.colourPicker,
   ));
 }
+
 main();
