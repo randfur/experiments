@@ -1,0 +1,4 @@
+# 2023-08-24
+- Copied from bomber.
+- Intended to rewrite the drawing module to use https://github.com/randfur/hex-lines.
+- Used to test out using the library and also hopefully improve the performance significantly (it struggles on mobile).
