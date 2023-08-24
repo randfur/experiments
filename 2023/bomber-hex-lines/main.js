@@ -10,7 +10,7 @@ async function main() {
   let bombers = range(10).map(_ => new Bomber());
 
   window.addEventListener('keydown', event => {
-    const count = Number(event.key);
+    const count = Number(event.key) ** 2;
     if (!isNaN(count)) {
       bombers = range(count).map(_ => new Bomber());
     }

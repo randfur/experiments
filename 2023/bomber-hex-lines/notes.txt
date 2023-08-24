@@ -9,3 +9,9 @@
 - Playing around with pixelSize.
   - Pixel size 6 looks good after increasing the width of everything in the scene.
   - Pixel size 1 is the best because anything above 1 has flickering in the ground background sadly, would prefer to have 6.
+- 10 bombers runs smoothly on phone yay.
+- Updated number keys to spawn n^2 bombers.
+  - Home computer with 1060 card stuggles on 7^2 bombers.
+  - DevTools performance tab points at the sorting taking up the most time along with line transforming taking up a lot as well.
+  - If this was using a depth buffer then that would be much less of an issue.
+    - A 3D version of hex-lines would be the right solution here.
