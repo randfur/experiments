@@ -2,3 +2,10 @@
 - Copied from bomber.
 - Intended to rewrite the drawing module to use https://github.com/randfur/hex-lines.
 - Used to test out using the library and also hopefully improve the performance significantly (it struggles on mobile).
+- Finished implementation.
+  - Had to replace CSS string colour with RGBA.
+  - Replacing 2D canvas rendering was not hard at all, no major refactoring required.
+  - Found antialiasing was really needed to avoid the ground dots from popping in and out constantly, added that as a parameter in the library.
+- Playing around with pixelSize.
+  - Pixel size 6 looks good after increasing the width of everything in the scene.
+  - Pixel size 1 is the best because anything above 1 has flickering in the ground background sadly, would prefer to have 6.

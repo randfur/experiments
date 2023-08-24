@@ -32,7 +32,7 @@ export class Bomber {
       {r: 127, g: 0, b: 255, a: 255},
     ];
     this.trailLength = 100;
-    this.trailWidth = 4;
+    this.trailWidth = 8;
     this.trails = this.trailPoints.map(_ => []);
 
     this.timeShift = deviate(1000);
@@ -75,7 +75,7 @@ export class Bomber {
   }
 
   addLines() {
-    Drawing.addPath(this.transformedModel, 2, 255, 255, 255, 255, true);
+    Drawing.addPath(this.transformedModel, 4, 255, 255, 255, 255, true);
     for (const [i, trail] of enumerate(this.trails)) {
       const colour = this.trailColours[i];
       for (const [j, v] of enumerate(trail)) {

@@ -28,6 +28,7 @@ export class Drawing {
     `;
     this.hexLinesHandle = new HexLinesContext({
       canvas: this.canvas,
+      pixelSize: 1,
     }).add(new Float32Array());
 
     this.linePool = new Pool(() => ({
@@ -43,7 +44,6 @@ export class Drawing {
   static clear() {
     this.lines.length = 0;
     this.linePool.releaseAll();
-    // this.context.clearRect(0, 0, this.width, this.height);
   }
 
   static addLine() {
