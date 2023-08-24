@@ -1,4 +1,4 @@
-import {HexLinesContext, rgbaToFloat32} from './third-party/hex-lines/src/hex-lines.js';
+import {HexLinesContext, kBytesPerHexPoint, setHexPoint} from './third-party/hex-lines/src/hex-lines.js';
 
 import {Pool} from './pool.js';
 import {Vec3} from './vec3.js';
@@ -39,6 +39,8 @@ export class Drawing {
       midZ: 0,
     }));
     this.lines = [];
+
+    this.buffer = null;
   }
 
   static clear() {
@@ -78,9 +80,14 @@ export class Drawing {
     }
     this.lines.sort((a, b) => b.midZ - a.midZ);
 
-    const diff = Vec3.pool.acquire();
-    const buffer = new Float32Array(this.lines.length * 3 * 4);
+    const requiredByteLength = kBytesPerHexPoint * this.lines.length * 3;
+    if (this.buffer == null || this.buffer.byteLength < requiredByteLength) {
+      this.buffer = new ArrayBuffer(requiredByteLength);
+    }
+    const dataView = new DataView(this.buffer, 0, requiredByteLength);
+
     let i = 0;
+    const diff = Vec3.pool.acquire();
     for (const line of this.lines) {
       if (line.width === 0) {
         i += 3;
@@ -92,20 +99,32 @@ export class Drawing {
         i += 3;
         continue;
       }
-      buffer[i * 4 + 0] = this.width / 2 + line.start.x;
-      buffer[i * 4 + 1] = this.height / 2 + line.start.y;
-      buffer[i * 4 + 2] = line.width;
-      buffer[i * 4 + 3] = rgbaToFloat32(line);
+
+      setHexPoint(dataView, i, {
+        position: {
+          x: this.width / 2 + line.start.x,
+          y: this.height / 2 + line.start.y,
+        },
+        size: line.width,
+        colour: line,
+      });
       ++i;
-      buffer[i * 4 + 0] = this.width / 2 + line.end.x + diff.x / length;
-      buffer[i * 4 + 1] = this.height / 2 + line.end.y + diff.y / length;
-      buffer[i * 4 + 2] = line.width;
-      buffer[i * 4 + 3] = rgbaToFloat32(line);
+
+      setHexPoint(dataView, i, {
+        position: {
+          x: this.width / 2 + line.end.x + diff.x / length,
+          y: this.height / 2 + line.end.y + diff.y / length,
+        },
+        size: line.width,
+        colour: line,
+      });
       ++i;
+
+      setHexPoint(dataView, i, null);
       ++i;
     }
     Vec3.pool.release(1);
-    this.hexLinesHandle.update(buffer);
+    this.hexLinesHandle.update(dataView);
     this.hexLinesHandle.draw();
   }
 }
