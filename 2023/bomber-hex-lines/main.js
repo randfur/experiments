@@ -7,7 +7,7 @@ import {range} from './utils.js';
 async function main() {
   Drawing.init();
   Camera.init();
-  let bombers = range(10).map(_ => new Bomber());
+  let bombers = range(100).map(_ => new Bomber());
 
   window.addEventListener('keydown', event => {
     const count = Number(event.key) ** 3;
