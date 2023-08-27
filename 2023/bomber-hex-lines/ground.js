@@ -19,7 +19,7 @@ export class Ground {
         }
         const line = Drawing.addLine();
         line.start.setXyz(x, -getGroundHeight(x, z), z);
-        line.end.setXyz(x, line.start.y - 1, z);
+        line.end.setXyz(x, line.start.y, z);
         line.width = 4;
         line.r = 255;
         line.g = 255;

@@ -1,3 +1,15 @@
+# 2023-08-27
+- Updated to use hex-lines-3d.js.
+  - Works!
+  - Flipped the bomber angle to match flipped Y axis.
+  - TODO:
+    - Camera transform now needs to output a matrix.
+      - There's no matrix code here so that'll be fun to write from scratch.
+  - Hacked a hard coded camera transform in there, works pretty well actually lol.
+  - Bumped up the number keys to do n^3.
+  - Computer can handle hundreds of bombers now.
+  - Got glitches when switching out bombers, seems like stale line segments are hanging around, may be an issue with the line pool.
+
 # 2023-08-26
 - Want to redo this using a 3D version of hex-lines.
   - Won't keep this version around, just upgrade in place once it exists.
