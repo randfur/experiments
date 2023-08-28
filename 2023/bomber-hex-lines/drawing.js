@@ -96,11 +96,6 @@ export class Drawing {
 
     let i = 0;
     for (const line of this.lines) {
-      if (line.width === 0) {
-        i += 3;
-        continue;
-      }
-
       setHexPoint3d(dataView, i, {
         position: {
           x: line.start.x,
