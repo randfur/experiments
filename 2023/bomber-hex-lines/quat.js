@@ -49,6 +49,7 @@ export class Quat {
     axis.setXyz(x, y, z);
     axis.rotateQuat(this);
     this.rotate(axis.x, axis.y, axis.z, angle);
+    Vec3.pool.release(1);
   }
 
   multiplyLeft(other) {

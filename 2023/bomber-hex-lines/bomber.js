@@ -1,7 +1,7 @@
 import {Drawing} from './drawing.js';
 import {Vec3} from './vec3.js';
 import {Quat} from './quat.js';
-import {TAU, enumerate, deviate} from './utils.js';
+import {TAU, deviate} from './utils.js';
 
 export class Bomber {
   constructor() {
@@ -53,11 +53,12 @@ export class Bomber {
     this.velocity.rotateQuat(this.orientation);
     this.position.add(this.velocity);
 
-    for (const [i, v] of enumerate(this.transformedModel)) {
-      this.assignLocalTransform(v, this.model[i], time);
+    for (let i = 0; i < this.transformedModel.length; ++i) {
+      this.assignLocalTransform(this.transformedModel[i], this.model[i], time);
     }
 
-    for (const [i, trailPoint] of enumerate(this.trailPoints)) {
+    for (let i = 0; i < this.trailPoints.length; ++i) {
+      const trailPoint = this.trailPoints[i];
       const trail = this.trails[i];
       if (trail.length === this.trailLength) {
         trail.splice(0, 1);
@@ -76,16 +77,17 @@ export class Bomber {
 
   addLines() {
     Drawing.addPath(this.transformedModel, 4, 255, 255, 255, 255, true);
-    for (const [i, trail] of enumerate(this.trails)) {
+    for (let i = 0; i < this.trails.length; ++i) {
+      const trail = this.trails[i];
       const colour = this.trailColours[i];
-      for (const [j, v] of enumerate(trail)) {
+      for (let j = 0; j < trail.length; ++j) {
         if (j == 0) {
           continue;
         }
         const prevV = trail[j - 1];
         const line = Drawing.addLine();
         line.start.set(prevV);
-        line.end.set(v);
+        line.end.set(trail[j]);
         line.r = colour.r;
         line.g = colour.g;
         line.b = colour.b;
