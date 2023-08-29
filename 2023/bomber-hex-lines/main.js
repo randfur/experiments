@@ -11,7 +11,6 @@ async function main() {
 
   window.addEventListener('keydown', event => {
     const count = Number(event.key) ** 3;
-    console.log(count);
     if (!isNaN(count)) {
       bombers = range(count).map(_ => new Bomber());
     }
