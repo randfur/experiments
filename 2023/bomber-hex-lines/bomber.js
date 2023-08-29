@@ -95,7 +95,7 @@ export class Bomber {
           colour,
         });
       }
+      Drawing.hexLinesHandle.addPoint(null);
     }
-    Drawing.hexLinesHandle.addPoint(null);
   }
 }
