@@ -9,6 +9,14 @@
 - Future aspiration:
   - Run computation entirely in WebGPU.
   - Should probably be able to do thousands of bombers.
+- Alpha
+  - Tried using alpha fade out on trail.
+  - Doesn't look that great.
+  - Depth culling is broken obviously.
+  - Layering of hexes inside the line looks bad.
+  - Sometimes the depth culling prevents them from layering and it looks okay but only about 10% of the time does it line up.
+  - Transparency in 3D hard.
+  - Considering dropping the option from hex-lines-3d but it consumes so little extra to have, may as well leave it there.
 
 # 2023-08-29
 - Updated to render points directly into the HexLinesHandle3d array buffer.
