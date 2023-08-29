@@ -1,3 +1,6 @@
+# 2023-08-29
+- Updated to render points directly into the HexLinesHandle3d array buffer.
+
 # 2023-08-28
 - Memory analysis.
   - Dev tools performance tab and memory tab good to spotting memory allocations.

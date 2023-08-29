@@ -28,7 +28,7 @@ async function main() {
       bomber.update(timeDelta, time);
     }
 
-    Drawing.clear();
+    Drawing.hexLinesHandle.clear();
     Ground.addLines();
     for (const bomber of bombers) {
       bomber.addLines();
