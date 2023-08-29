@@ -23,7 +23,7 @@ export class Drawing {
 
     this.hexContext = new HexContext3d({
       canvas: this.canvas,
-      pixelSize: 4,
+      pixelSize: 1,
     });
     this.hexLines = this.hexContext.createLines();
   }
