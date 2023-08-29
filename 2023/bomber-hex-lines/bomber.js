@@ -77,25 +77,20 @@ export class Bomber {
 
   addLines() {
     for (let i = 0; i <= this.transformedModel.length; ++i) {
-      Drawing.hexLinesHandle.addPoint({
-        position: this.transformedModel[i % this.transformedModel.length],
-        size: 4,
-        colour: {r: 255, g: 255, b: 255, a: 255},
-      });
+      const {x, y, z} = this.transformedModel[i % this.transformedModel.length];
+      Drawing.hexLines.addPointFlat(x, y, z, 4, 255, 255, 255, 255);
     }
-    Drawing.hexLinesHandle.addPoint(null);
+    Drawing.hexLines.addNull();
 
     for (let i = 0; i < this.trails.length; ++i) {
       const trail = this.trails[i];
       const colour = this.trailColours[i];
       for (let j = 0; j < trail.length; ++j) {
-        Drawing.hexLinesHandle.addPoint({
-          position: trail[j],
-          size: this.trailWidth * ((j - 1) / this.trailLength),
-          colour,
-        });
+        const {x, y, z} = trail[j];
+        const {r, g, b, a} = colour;
+        Drawing.hexLines.addPointFlat(x, y, z, this.trailWidth * ((j - 1) / this.trailLength), r, g, b, a);
       }
-      Drawing.hexLinesHandle.addPoint(null);
+      Drawing.hexLines.addNull();
     }
   }
 }

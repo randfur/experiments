@@ -17,18 +17,10 @@ export class Ground {
         if (x ** 2 + z ** 2 > (size / 2) ** 2) {
           continue;
         }
-        const point = {
-          position: {
-            x,
-            y: -getGroundHeight(x, z),
-            z,
-          },
-          size: 4,
-          colour: {r: 255, g: 255, b: 255, a: 255},
-        };
-        Drawing.hexLinesHandle.addPoint(point);
-        Drawing.hexLinesHandle.addPoint(point);
-        Drawing.hexLinesHandle.addPoint(null);
+        const y = -getGroundHeight(x, z);
+        Drawing.hexLines.addPointFlat(x, y, z, 4, 255, 255, 255, 255);
+        Drawing.hexLines.addPointFlat(x, y, z, 4, 255, 255, 255, 255);
+        Drawing.hexLines.addNull();
       }
     }
   }

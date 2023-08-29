@@ -1,5 +1,22 @@
+# 2023-08-30
+- Updated to use flat point add method.
+  - Marginal improvement.
+- Memory allocation:
+  - Main allocation is happening in bomber update.
+  - This is because we're creating a Vec3 every frame per trail instead of recycling them.
+  - Could be improved by using a ring buffer.
+  - Probably not that worth it since adding the lines is what dominates (21ms) rather than the update step (2ms).
+- Future aspiration:
+  - Run computation entirely in WebGPU.
+  - Should probably be able to do thousands of bombers.
+
 # 2023-08-29
 - Updated to render points directly into the HexLinesHandle3d array buffer.
+  - Improved performance substantially, can do 9^3 smoothly on i7 Chromebook now.
+  - Nearly smooth on home computer (AMD chip).
+  - Still CPU bound.
+  - Still seeing heap allocations.
+  - Should try making the addPoint() function not use destructuring.
 
 # 2023-08-28
 - Memory analysis.
