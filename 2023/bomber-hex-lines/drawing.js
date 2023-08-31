@@ -1,4 +1,4 @@
-import {HexContext3d} from './third-party/hex-lines/src/hex-lines-3d.js';
+import {HexLinesContext} from './third-party/hex-lines/src/hex-lines.js';
 
 import {Pool} from './pool.js';
 import {Vec3} from './vec3.js';
@@ -21,20 +21,25 @@ export class Drawing {
     `;
     document.body.appendChild(this.canvas);
 
-    this.hexContext = new HexContext3d({
+    this.hexLinesContext = new HexLinesContext({
       canvas: this.canvas,
       pixelSize: 1,
+      is3d: true,
     });
-    this.hexLines = this.hexContext.createLines();
+    this.hexLines = this.hexLinesContext.createLines();
   }
 
   static draw() {
-    this.hexContext.gl.uniformMatrix4fv(this.hexContext.uniformLocations.cameraTransform, this.hexContext.gl.FALSE, new Float32Array([
-      Math.cos(Camera.rotateYAngle), 0, -Math.sin(Camera.rotateYAngle), 0,
-      0, 1, 0, -300,
-      Math.sin(Camera.rotateYAngle), 0, Math.cos(Camera.rotateYAngle), 800,
-      0, 0, 0, 1,
-    ]));
+    this.hexLinesContext.gl.uniformMatrix4fv(
+      this.hexLinesContext.uniformLocations.cameraTransform,
+      this.hexLinesContext.gl.FALSE,
+      new Float32Array([
+        Math.cos(Camera.rotateYAngle), 0, -Math.sin(Camera.rotateYAngle), 0,
+        0, 1, 0, -300,
+        Math.sin(Camera.rotateYAngle), 0, Math.cos(Camera.rotateYAngle), 800,
+        0, 0, 0, 1,
+      ]),
+    );
     this.hexLines.draw();
   }
 }
