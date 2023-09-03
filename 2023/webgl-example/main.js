@@ -12,10 +12,10 @@ async function main() {
 
     void main() {
       gl_Position = vec4(
-        300. * float(gl_VertexID) / 5.,
-        300. * float(gl_VertexID * gl_VertexID) / 5.,
+        float(gl_VertexID - 1) / 2.,
+        float(gl_VertexID % 2) - 0.5,
         0,
-        ${canvas.width});
+        1);
     }
   `);
   gl.compileShader(vertexShader);
