@@ -1,0 +1,21 @@
+#2023-09-04
+- Making spiral visualisation similar to: https://www.youtube.com/watch?v=kPUdhm2VE-o
+- Nested spirals.
+- How to nest?
+  - Inner spirals would be working on a co-ordinate system local to that point in the ring and just doing regular cos, sin on whatever right and up are.
+- Working out function that produces the first ring given forward, right, up vectors and produces the new forward, right and up vectors for each angle in the ring to give to the nested spiral call.
+  - Seems to work.
+  - Number of turns needs to be a high multiple of the previous number.
+  - Radius needs to be a small fraction of the previous number.
+  - Needs more and more points rendered to have fidelity in the deep nesting.
+- Performance isn't great.
+  - Using objects heavily.
+  - Maybe switch to one ArrayBuffer for all vectors.
+  - Recycle array buffer growth used in HexLines.
+  - Switching to ArrayBuffer vectors didn't really seem to help that much strangely.
+  - Having ArrayBuffer pointer vectors is pretty neat though.
+    - Will use this again in future.
+    - Feels very efficient.
+- Added animation to the level turns and radii.
+  - Animating turns is discontinuous inbetween integer values.
+    - Can maybe smooth out the ring path towards angle 0 if the number of turns is fractional.
