@@ -111,7 +111,7 @@ function nestedSpiral(levels, progress, forward, right, up, depth=0) {
     return vec3Literal(0, 0, 0);
   }
 
-  const angle = levels[depth].turns * (depth % 2 == 0 ? progress : (1 - progress)) * TAU;
+  const angle = levels[depth].turns * (progress - 0.5) * TAU;
   const radius = levels[depth].radius;
   return vec3Add(
     vec3Scale(right, Math.cos(angle) * radius),
