@@ -16,29 +16,40 @@ async function main() {
   });
 
 
-  const pointCount = 10000;
+  const pointCount = 8000;
   const hexLines = hexLinesContext.createLines();
   const levels = [
     {turns: 1, radius: 2000},
-    {turns: 1, radius: 0},
-    {turns: 1, radius: 0},
-    {turns: 1, radius: 0},
-    {turns: 1, radius: 0},
+    {turns: 1, radius: 1000},
+    {turns: 1, radius: 500},
+    {turns: 1, radius: 250},
+    {turns: 1, radius: 100},
   ];
 
   for (let i = 1; i < levels.length; ++i) {
-    (async () => {
       const level = levels[i];
+    (async () => {
       while (true) {
-        await sleep(Math.random() * 1000);
-        const {turns, radius} = level;
-        const targetTurns = Math.ceil(Math.random() * (2 + 5 ** i));
-        const targetRadius = Math.random() * 3000 * 0.6 ** i;
-        const steps = Math.random() * 5000;
+        await sleep(Math.random() * 500);
+        const turns = level.turns;
+        const targetTurns = Math.ceil(middledRandom() * (2 + 5 ** i));
+        const steps = Math.random() * (targetTurns - turns) * 250 / i + 1000;
         for (let step = 0; step <= steps; ++step) {
           await new Promise(requestAnimationFrame);
           const progress = step / steps;
           level.turns = slerp(turns, targetTurns, progress);
+        }
+      }
+    })();
+    (async () => {
+      while (true) {
+        await sleep(Math.random() * 1000);
+        const radius = level.radius;
+        const targetRadius = flaredRandom() * 3000 * 0.6 ** i;
+        const steps = Math.random() * 1000 + 1000;
+        for (let step = 0; step <= steps; ++step) {
+          await new Promise(requestAnimationFrame);
+          const progress = step / steps;
           level.radius = slerp(radius, targetRadius, progress);
         }
       }
@@ -51,7 +62,7 @@ async function main() {
   let cameraZxAngle = 0;
 
   window.addEventListener('click', event => {
-    targetCameraZ = -5000 * event.clientY / window.innerHeight;
+    targetCameraZ = -6000 * event.clientY / window.innerHeight;
   });
 
   while (true) {
@@ -114,6 +125,14 @@ function nestedSpiral(levels, progress, forward, right, up, depth=0) {
       depth + 1,
     ),
   );
+}
+
+function middledRandom() {
+  return (Math.random() + Math.random()) / 2;
+}
+
+function flaredRandom() {
+  return 1 - middledRandom();
 }
 
 function sleep(n) {
