@@ -32,7 +32,7 @@ async function main() {
       while (true) {
         await sleep(Math.random() * 1000);
         const {turns, radius} = level;
-        const targetTurns = Math.ceil(Math.random() * (4 + 4 ** i));
+        const targetTurns = Math.ceil(Math.random() * (2 + 5 ** i));
         const targetRadius = Math.random() * 3000 * 0.6 ** i;
         const steps = Math.random() * 5000;
         for (let step = 0; step <= steps; ++step) {
@@ -45,31 +45,38 @@ async function main() {
     })();
   }
 
-  let zxAngle = 0;
-  let yzAngle = 0;
+  let cameraZ = 0;
+  let targetCameraZ = 0;
+  let cameraYzAngle = 0;
+  let cameraZxAngle = 0;
+
+  window.addEventListener('click', event => {
+    targetCameraZ = -20000 * event.offsetY / window.innerHeight;
+  });
 
   while (true) {
     await new Promise(requestAnimationFrame);
     clearVec3s();
-    yzAngle += 0.001;
-    zxAngle -= 0.005;
+    cameraYzAngle += 0.005;
+    cameraZxAngle -= 0.001;
+    cameraZ += (targetCameraZ - cameraZ) * 0.25;
     hexLines.clear();
     for (let i = 0; i <= pointCount; ++i) {
       const progress = i / pointCount;
       const position = vec3Add(
-        vec3Literal(0, 0, 3000),
-        vec3RotateZx(
-          ver3RotateYz(
+        vec3Literal(0, 0, -cameraZ),
+        vec3RotateYz(
+          vec3RotateZx(
             nestedSpiral(
               levels,
               progress,
-              vec3Literal(0, -1, 0),
               vec3Literal(1, 0, 0),
+              vec3Literal(0, -1, 0),
               vec3Literal(0, 0, 1),
             ),
-            yzAngle,
+            cameraZxAngle,
           ),
-          zxAngle,
+          cameraYzAngle,
         ),
       );
       hexLines.addPointFlat(
@@ -178,7 +185,7 @@ function vec3RotateZx(v, angle) {
   return result;
 }
 
-function ver3RotateYz(v, angle) {
+function vec3RotateYz(v, angle) {
   const result = nextVec3();
   vec3Buffer[result + 0] = vec3Buffer[v + 0];
   vec3Buffer[result + 1] = vec3Buffer[v + 1] * Math.cos(angle) - vec3Buffer[v + 2] * Math.sin(angle);
