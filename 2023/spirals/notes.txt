@@ -1,3 +1,10 @@
+#2023-09-05
+- Back to green.
+- Added camera controls to zoom in and out.
+- Made ring vertical to suit my half browser windows.
+- Lots of tweaks to the random parameters.
+- Made turn interpolation duration proportional to the delta.
+
 #2023-09-04
 - Making spiral visualisation similar to: https://www.youtube.com/watch?v=kPUdhm2VE-o
 - Nested spirals.
