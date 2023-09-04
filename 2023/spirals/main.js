@@ -55,16 +55,16 @@ async function main() {
     hexLines.clear();
     for (let i = 0; i <= pointCount; ++i) {
       const progress = i / pointCount;
-      const position = add(
-        literal(0, 0, 3000),
-        rotateZx(
-          rotateYz(
+      const position = vec3Add(
+        vec3Literal(0, 0, 3000),
+        vec3RotateZx(
+          ver3RotateYz(
             nestedSpiral(
               levels,
               progress,
-              literal(0, -1, 0),
-              literal(1, 0, 0),
-              literal(0, 0, 1),
+              vec3Literal(0, -1, 0),
+              vec3Literal(1, 0, 0),
+              vec3Literal(0, 0, 1),
             ),
             yzAngle,
           ),
@@ -89,20 +89,20 @@ async function main() {
 
 function nestedSpiral(levels, progress, forward, right, up, depth=0) {
   if (depth >= levels.length) {
-    return literal(0, 0, 0);
+    return vec3Literal(0, 0, 0);
   }
 
   const angle = levels[depth].turns * progress * TAU;
   const radius = levels[depth].radius;
-  return add(
-    scale(right, Math.cos(angle) * radius),
-    scale(up, Math.sin(angle) * radius),
+  return vec3Add(
+    vec3Scale(right, Math.cos(angle) * radius),
+    vec3Scale(up, Math.sin(angle) * radius),
     nestedSpiral(
       levels,
       progress,
-      add(scale(up, Math.cos(angle)), scale(right, -Math.sin(angle))),
-      add(scale(right, Math.cos(angle)), scale(up, Math.sin(angle))),
-      scale(forward, -1),
+      vec3Add(vec3Scale(up, Math.cos(angle)), vec3Scale(right, -Math.sin(angle))),
+      vec3Add(vec3Scale(right, Math.cos(angle)), vec3Scale(up, Math.sin(angle))),
+      vec3Scale(forward, -1),
       depth + 1,
     ),
   );
@@ -118,7 +118,7 @@ function slerp(a, b, t) {
 
 let vec3Buffer = new Float32Array(3);
 let vec3Count = 0;
-function getVec3() {
+function nextVec3() {
   if ((vec3Count + 1) * 3 >= vec3Buffer.length) {
     if (vec3Buffer.buffer.transfer) {
       vec3Buffer = new Float32Array(vec3Buffer.buffer.transfer(vec3Buffer.buffer.byteLength * 2));
@@ -134,7 +134,7 @@ function clearVec3s() {
   vec3Count = 0;
 }
 
-function debug(v) {
+function vec3Debug(v) {
   return [
     v,
     vec3Buffer[v + 0],
@@ -143,16 +143,16 @@ function debug(v) {
   ];
 }
 
-function literal(x, y, z) {
-  const result = getVec3();
+function vec3Literal(x, y, z) {
+  const result = nextVec3();
   vec3Buffer[result + 0] = x;
   vec3Buffer[result + 1] = y;
   vec3Buffer[result + 2] = z;
   return result;
 }
 
-function add(...vs) {
-  const result = literal(0, 0, 0);
+function vec3Add(...vs) {
+  const result = vec3Literal(0, 0, 0);
   for (const v of vs) {
     vec3Buffer[result + 0] += vec3Buffer[v + 0];
     vec3Buffer[result + 1] += vec3Buffer[v + 1];
@@ -161,27 +161,35 @@ function add(...vs) {
   return result;
 }
 
-function scale(v, k) {
-  const result = getVec3();
+function vec3Scale(v, k) {
+  const result = nextVec3();
   vec3Buffer[result + 0] = vec3Buffer[v + 0] * k;
   vec3Buffer[result + 1] = vec3Buffer[v + 1] * k;
   vec3Buffer[result + 2] = vec3Buffer[v + 2] * k;
   return result;
 }
 
-function rotateZx(v, angle) {
-  const result = getVec3();
+function vec3RotateZx(v, angle) {
+  const result = nextVec3();
   vec3Buffer[result + 0] = vec3Buffer[v + 2] * Math.sin(angle) + vec3Buffer[v + 0] * Math.cos(angle);
   vec3Buffer[result + 1] = vec3Buffer[v + 1];
   vec3Buffer[result + 2] = vec3Buffer[v + 2] * Math.cos(angle) - vec3Buffer[v + 0] * Math.sin(angle);
   return result;
 }
 
-function rotateYz(v, angle) {
-  const result = getVec3();
+function ver3RotateYz(v, angle) {
+  const result = nextVec3();
   vec3Buffer[result + 0] = vec3Buffer[v + 0];
   vec3Buffer[result + 1] = vec3Buffer[v + 1] * Math.cos(angle) - vec3Buffer[v + 2] * Math.sin(angle);
   vec3Buffer[result + 2] = vec3Buffer[v + 1] * Math.sin(angle) + vec3Buffer[v + 2] * Math.cos(angle);
+  return result;
+}
+
+function vec3Lerp(a, b, t) {
+  const result = nextVec3();
+  vec3Buffer[result + 0] = vec3Buffer[a + 0] + t * (vec3Buffer[b + 0] - vec3Buffer[a + 0]);
+  vec3Buffer[result + 1] = vec3Buffer[a + 1] + t * (vec3Buffer[b + 1] - vec3Buffer[a + 1]);
+  vec3Buffer[result + 2] = vec3Buffer[a + 2] + t * (vec3Buffer[b + 2] - vec3Buffer[a + 2]);
   return result;
 }
 

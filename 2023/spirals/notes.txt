@@ -19,3 +19,5 @@
 - Added animation to the level turns and radii.
   - Animating turns is discontinuous inbetween integer values.
     - Can maybe smooth out the ring path towards angle 0 if the number of turns is fractional.
+    - Tried lerping to a whole number of turns thoughout the progress.
+    - Couldn't get it to smoothly connect.
