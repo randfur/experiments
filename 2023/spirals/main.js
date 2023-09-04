@@ -51,7 +51,7 @@ async function main() {
   let cameraZxAngle = 0;
 
   window.addEventListener('click', event => {
-    targetCameraZ = -20000 * event.offsetY / window.innerHeight;
+    targetCameraZ = -5000 * event.clientY / window.innerHeight;
   });
 
   while (true) {
