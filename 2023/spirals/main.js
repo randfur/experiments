@@ -12,6 +12,7 @@ async function main() {
     canvas,
     pixelSize: 4,
     is3d: true,
+    depthTest: false,
   });
 
 
@@ -31,8 +32,8 @@ async function main() {
       while (true) {
         await sleep(Math.random() * 1000);
         const {turns, radius} = level;
-        const targetTurns = Math.ceil(Math.random() * 6 ** i);
-        const targetRadius = Math.random() * 2000 * 0.6 ** i;
+        const targetTurns = Math.ceil(Math.random() * (4 + 4 ** i));
+        const targetRadius = Math.random() * 3000 * 0.6 ** i;
         const steps = Math.random() * 5000;
         for (let step = 0; step <= steps; ++step) {
           await new Promise(requestAnimationFrame);
@@ -75,9 +76,9 @@ async function main() {
         vec3Buffer[position + 0],
         vec3Buffer[position + 1],
         vec3Buffer[position + 2],
-        10,
-        255,
+        16,
         0,
+        255,
         0,
         255,
       );
