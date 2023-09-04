@@ -19,7 +19,7 @@ async function main() {
   const pointCount = 8000;
   const hexLines = hexLinesContext.createLines();
   const levels = [
-    {turns: 1, radius: 2000},
+    {turns: 1, radius: 2500},
     {turns: 1, radius: 1000},
     {turns: 1, radius: 500},
     {turns: 1, radius: 250},
@@ -33,7 +33,7 @@ async function main() {
         await sleep(Math.random() * 500);
         const turns = level.turns;
         const targetTurns = Math.ceil(middledRandom() * (2 + 5 ** i));
-        const steps = Math.random() * (targetTurns - turns) * 250 / i + 1000;
+        const steps = Math.random() * (targetTurns - turns) * 100 / i + 1000;
         for (let step = 0; step <= steps; ++step) {
           await new Promise(requestAnimationFrame);
           const progress = step / steps;
@@ -45,7 +45,7 @@ async function main() {
       while (true) {
         await sleep(Math.random() * 1000);
         const radius = level.radius;
-        const targetRadius = flaredRandom() * 3000 * 0.6 ** i;
+        const targetRadius = Math.random() * 3000 * 0.65 ** i;
         const steps = Math.random() * 1000 + 1000;
         for (let step = 0; step <= steps; ++step) {
           await new Promise(requestAnimationFrame);
@@ -62,13 +62,13 @@ async function main() {
   let cameraZxAngle = 0;
 
   window.addEventListener('click', event => {
-    targetCameraZ = -6000 * event.clientY / window.innerHeight;
+    targetCameraZ = -7000 * event.clientY / window.innerHeight;
   });
 
   while (true) {
     await new Promise(requestAnimationFrame);
     clearVec3s();
-    cameraYzAngle += 0.005;
+    cameraYzAngle -= 0.005;
     cameraZxAngle -= 0.001;
     cameraZ += (targetCameraZ - cameraZ) * 0.25;
     hexLines.clear();
