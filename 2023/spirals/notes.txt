@@ -4,6 +4,9 @@
 - Made ring vertical to suit my half browser windows.
 - Lots of tweaks to the random parameters.
 - Made turn interpolation duration proportional to the delta.
+- More tweaks to parameters.
+- Added deviate() random to turns, should have it spend more time around 0.
+- Recorded and uploaded screencast: https://www.youtube.com/watch?v=3coA4lSqaNs
 
 #2023-09-04
 - Making spiral visualisation similar to: https://www.youtube.com/watch?v=kPUdhm2VE-o

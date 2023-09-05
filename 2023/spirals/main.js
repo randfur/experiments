@@ -33,7 +33,7 @@ async function main() {
         await sleep(Math.random() * 500);
         const turns = level.turns;
         const targetTurns = Math.round(deviate() * (2 + 3 ** i));
-        const steps = (targetTurns - turns) * (Math.random() * 100 + 50) / i + 1000;
+        const steps = Math.abs(targetTurns - turns) * (Math.random() * 100 + 50) / i + 1000;
         for (let step = 0; step <= steps; ++step) {
           await new Promise(requestAnimationFrame);
           const progress = step / steps;
