@@ -32,8 +32,8 @@ async function main() {
       while (true) {
         await sleep(Math.random() * 500);
         const turns = level.turns;
-        const targetTurns = Math.ceil(middledRandom() * (2 + 2 ** i));
-        const steps = (targetTurns - turns) * (Math.random() * 500 + 200) / i + 1000;
+        const targetTurns = Math.round(deviate() * (2 + 3 ** i));
+        const steps = (targetTurns - turns) * (Math.random() * 100 + 50) / i + 1000;
         for (let step = 0; step <= steps; ++step) {
           await new Promise(requestAnimationFrame);
           const progress = step / steps;
@@ -68,7 +68,7 @@ async function main() {
   while (true) {
     await new Promise(requestAnimationFrame);
     clearVec3s();
-    cameraYzAngle -= 0.0017;
+    cameraYzAngle -= 0.005;
     cameraZxAngle -= 0.001;
     cameraZ += (targetCameraZ - cameraZ) * 0.25;
     hexLines.clear();
@@ -127,12 +127,8 @@ function nestedSpiral(levels, progress, forward, right, up, depth=0) {
   );
 }
 
-function middledRandom() {
-  return (Math.random() + Math.random()) / 2;
-}
-
-function flaredRandom() {
-  return 1 - middledRandom();
+function deviate() {
+  return Math.random() * 2 - 1;
 }
 
 function sleep(n) {
