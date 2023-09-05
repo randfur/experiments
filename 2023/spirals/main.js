@@ -20,10 +20,10 @@ async function main() {
   const hexLines = hexLinesContext.createLines();
   const levels = [
     {turns: 1, radius: 2500},
-    {turns: 1, radius: 1000},
-    {turns: 1, radius: 500},
-    {turns: 1, radius: 250},
-    {turns: 1, radius: 100},
+    {turns: 0, radius: 1000},
+    {turns: 0, radius: 500},
+    {turns: 0, radius: 250},
+    {turns: 0, radius: 100},
   ];
 
   for (let i = 1; i < levels.length; ++i) {
@@ -32,7 +32,7 @@ async function main() {
       while (true) {
         await sleep(Math.random() * 500);
         const turns = level.turns;
-        const targetTurns = Math.ceil(middledRandom() * (2 + 5 ** i));
+        const targetTurns = Math.ceil(middledRandom() * (2 + 2 ** i));
         const steps = (targetTurns - turns) * (Math.random() * 500 + 200) / i + 1000;
         for (let step = 0; step <= steps; ++step) {
           await new Promise(requestAnimationFrame);
