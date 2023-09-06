@@ -59,7 +59,7 @@ async function main() {
   let cameraZ = 0;
   let targetCameraZ = 0;
   let cameraYzAngle = 0;
-  let cameraZxAngle = -TAU * 0.05;
+  let cameraZxAngle = TAU * 0.05;
 
   window.addEventListener('click', event => {
     targetCameraZ = -10000 * event.clientY / window.innerHeight;
@@ -69,7 +69,7 @@ async function main() {
     await new Promise(requestAnimationFrame);
     clearVec3s();
     cameraYzAngle -= 0.004;
-    cameraZxAngle += 0.0008;
+    cameraZxAngle -= 0.0008;
     cameraZ += (targetCameraZ - cameraZ) * 0.25;
     hexLines.clear();
     for (let i = 0; i <= pointCount; ++i) {
