@@ -19,9 +19,9 @@ async function main() {
   const pointCount = 8000;
   const hexLines = hexLinesContext.createLines();
   const levels = [
-    {turns: 1, radius: 2500},
+    {turns: 1, radius: 3000},
     {turns: 0, radius: 1000},
-    {turns: 0, radius: 500},
+    {turns: 1, radius: 500},
     {turns: 0, radius: 250},
     {turns: 0, radius: 100},
   ];
@@ -32,8 +32,8 @@ async function main() {
       while (true) {
         await sleep(Math.random() * 500);
         const turns = level.turns;
-        const targetTurns = Math.round(deviate() * (2 + 3 ** i));
-        const steps = Math.abs(targetTurns - turns) * (Math.random() * 100 + 50) / i + 1000;
+        const targetTurns = Math.round(deviate() * (4 + 4 * i + 3 ** i));
+        const steps = Math.abs(targetTurns - turns) * (Math.random() * 100 + 100) / i + 1000;
         for (let step = 0; step <= steps; ++step) {
           await new Promise(requestAnimationFrame);
           const progress = step / steps;
@@ -62,14 +62,14 @@ async function main() {
   let cameraZxAngle = 0;
 
   window.addEventListener('click', event => {
-    targetCameraZ = -7000 * event.clientY / window.innerHeight;
+    targetCameraZ = -10000 * event.clientY / window.innerHeight;
   });
 
   while (true) {
     await new Promise(requestAnimationFrame);
     clearVec3s();
-    cameraYzAngle -= 0.005;
-    cameraZxAngle -= 0.001;
+    cameraYzAngle -= 0.004;
+    cameraZxAngle -= 0.0008;
     cameraZ += (targetCameraZ - cameraZ) * 0.25;
     hexLines.clear();
     for (let i = 0; i <= pointCount; ++i) {
