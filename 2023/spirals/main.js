@@ -94,7 +94,7 @@ async function main() {
         vec3Buffer[position + 0],
         vec3Buffer[position + 1],
         vec3Buffer[position + 2],
-        16,
+        32,
         0,
         255,
         0,
