@@ -66,10 +66,10 @@ async function main() {
   });
 
   while (true) {
-    await new Promise(requestAnimationFrame);
+    const time = await new Promise(requestAnimationFrame);
     clearVec3s();
     cameraYzAngle -= 0.004;
-    cameraZxAngle -= 0.0008;
+    cameraZxAngle = Math.sin(time / 10000) * TAU * 0.06;// -= 0.0008;
     cameraZ += (targetCameraZ - cameraZ) * 0.25;
     hexLines.clear();
     for (let i = 0; i <= pointCount; ++i) {

@@ -1,3 +1,6 @@
+#2023-09-11
+- Changed turning into wobble to keep on screen.
+
 #2023-09-05
 - Back to green.
 - Added camera controls to zoom in and out.
