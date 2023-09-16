@@ -1,3 +1,27 @@
+#2023-09-17
+- Want editable objects that can be moved around.
+- How to manage the objects?
+- Example flow:
+  - Create new thing.
+  - Draw.
+  - Select lines.
+  - Modify line size/colour/position.
+  - Delete lines.
+  - Exit editing.
+  - Transform thing.
+  - Duplicate thing (linked or deep copy).
+  - Reorder layering of thing.
+  - Select things.
+  - Edit thing.
+- UI for selection and editing.
+  - Need overlay canvas to draw non-pixelated lines.
+  - Start with rectangle around lines.
+- Drawing.
+  - Should optimise pointer points to omit those running in a straight line with the previous two lines.
+  - Will likely need larger angle slack when very close to previous point.
+- High level aim:
+  - Quickly be able to sketch little drawings, arrange and animate them to convey scenes like a storyboard.
+
 #2023-09-09
 - Draw hex lines on canvas.
 - Have options to set size and colour.
