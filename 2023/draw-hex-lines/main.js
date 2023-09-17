@@ -8,6 +8,16 @@ async function main() {
   } = HexLinesContext.setupFullPageContext();
   const hexLines = hexLinesContext.createLines();
 
+  const hudCanvas = document.createElement('canvas');
+  hudCanvas.width = width;
+  hudCanvas.height = height;
+  hudCanvas.style.cssText += `
+    position: absolute;
+    top: 0px;
+    left: 0px;
+  `;
+  document.body.append(hudCanvas);
+
   let size = null;
   let colour = null;
   function setRandomSizeColour() {
@@ -33,10 +43,20 @@ async function main() {
   const lines = [];
   let currentLine = null;
   let pointerDown = false;
+
+  function addPoint(event) {
+    currentLine.push({
+      position: {x: event.clientX - width / 2, y: height / 2 - event.clientY},
+      size,
+      colour,
+    });
+  }
+
   window.addEventListener('pointerdown', event => {
     pointerDown = true;
     currentLine = [];
     lines.push(currentLine);
+    addPoint(event);
   });
   window.addEventListener('pointerup', event => {
     pointerDown = false;
@@ -45,11 +65,7 @@ async function main() {
     if (!pointerDown) {
       return;
     }
-    currentLine.push({
-      position: {x: event.clientX - width / 2, y: height / 2 - event.clientY},
-      size,
-      colour,
-    });
+    addPoint(event);
   });
 
   while (true) {
@@ -58,6 +74,9 @@ async function main() {
     for (const line of lines) {
       for (const point of line) {
         hexLines.addPoint(point);
+      }
+      if (line.length == 1) {
+        hexLines.addPoint(line[0]);
       }
       hexLines.addNull();
     }

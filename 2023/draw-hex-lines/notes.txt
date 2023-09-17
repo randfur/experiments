@@ -21,6 +21,15 @@
   - Will likely need larger angle slack when very close to previous point.
 - High level aim:
   - Quickly be able to sketch little drawings, arrange and animate them to convey scenes like a storyboard.
+  - Should be able to record manual transforms live into keyframes.
+  - Would be nice to have declarative transform interpolations and intermingle them with live recorded keyframing.
+- High level code sketch:
+  - Canvases.
+  - Selected tool with settings.
+  - Drawing data.
+  - Right click menu state.
+  - Input handling.
+  - Editing context.
 
 #2023-09-09
 - Draw hex lines on canvas.
