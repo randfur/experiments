@@ -1,3 +1,26 @@
+#2023-09-19
+- App:
+  - Drawing hex lines and Hud.
+  - Drawing data:
+    - Layers.
+    - Drawings.
+    - History.
+  - Tool:
+    - Active tool.
+      - Input events.
+      - Hud.
+    - Previously active tool.
+      - Can switch back to e.g. after colour picker.
+    - Toolset:
+      - Drawing.
+      - Selecting.
+  - Menu:
+    - Tool menu.
+    - App menu.
+  - Keyboard shortcuts:
+    - Colour picker.
+    - Tools.
+
 #2023-09-17
 - Want editable objects that can be moved around.
 - How to manage the objects?
