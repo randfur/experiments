@@ -1,7 +1,69 @@
 #2023-09-24
 - Right click menu
-  - Use hexagon with flat top.
-  - 5 options per layer.
+  - Use hexagon.
+  - 5 options per layer, one to go backwards.
+  - Building hexagons off each other into a path seems like a potential game idea.
+  - Exploring a hexagonal cave.
+- Animation data types:
+  - Animation:
+    - Sprite map
+    - Root sprite
+    - Audio track
+  - Sprite:
+    - Id
+    - Layers
+    - Audio track offset?
+    - Preview time
+  - Layer:
+    - Keyframes
+  - Keyframe
+    - Start
+    - Duration
+    - Items
+  - Drawing(Item):
+    - Lines
+    - Transform
+  - Line:
+    - Points
+  - Point:
+    - X
+    - Y
+    - Size
+    - Colour
+  - SubSprite(Item):
+    - Id
+    - Start frame
+    - Transform
+- Editing levels:
+  - Sprite
+    - Layers and keyframes
+    - Keyframe items
+  - Drawing
+- Editing states:
+  - Editor
+    - Sprite edit stack
+  - Sprite edit
+    - Layers view translate
+    - Layers view zoom
+    - Selected layer
+    - Selected frame time
+    - Selected keyframe duration size
+    - Camera translate
+    - Camera zoom
+    - Selected items
+    - Playing
+    - Play range
+    - Tool states
+
+- Right click hexagon
+  - Drawing
+    - Erasing
+  - Picking
+  - Undo
+  - Selecting
+  - Transforming
+  - Menu
+    - Delete
 
 #2023-09-19
 - App:
