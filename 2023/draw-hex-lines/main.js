@@ -5,7 +5,7 @@ async function main() {
     width,
     height,
     hexLinesContext,
-  } = HexLinesContext.setupFullPageContext();
+  } = HexLinesContext.setupFullPageContext({pixelSize: 4});
   const hexLines = hexLinesContext.createLines();
 
   const hudCanvas = document.createElement('canvas');
