@@ -34,11 +34,6 @@
     - Id
     - Start frame
     - Transform
-- Editing levels:
-  - Sprite
-    - Layers and keyframes
-    - Keyframe items
-  - Drawing
 - Editing states:
   - Editor
     - Sprite edit stack
@@ -47,6 +42,7 @@
     - Layers view zoom
     - Selected layer
     - Selected frame time
+    - Background frame time
     - Selected keyframe duration size
     - Camera translate
     - Camera zoom
@@ -54,6 +50,7 @@
     - Playing
     - Play range
     - Tool states
+- Instead of translucent backgrounds use diagonal black lines.
 
 - Right click hexagon
   - Drawing
