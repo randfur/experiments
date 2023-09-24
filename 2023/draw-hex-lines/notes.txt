@@ -1,3 +1,8 @@
+#2023-09-24
+- Right click menu
+  - Use hexagon with flat top.
+  - 5 options per layer.
+
 #2023-09-19
 - App:
   - Drawing hex lines and Hud.
