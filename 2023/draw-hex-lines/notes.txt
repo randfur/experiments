@@ -1,3 +1,33 @@
+#2023-09-25
+- Editor high level structure.
+  - Should be able to just be a sprite editor with nesting to cover entire animation.
+  - Just edit root sprite.
+  - Main parts of sprite editor:
+    - Layers and keyframes:
+      - Selection
+      - Adding
+      - Playback
+    - Tool controls:
+      - Drawing:
+        - Size
+          - Thinning
+            - Secondary marker trailing behind main marker.
+          - Separate magnitude discrete control for 10x previous size.
+        - Colour
+        - History
+          - Recorded on draw.
+    - Right click hex
+    - Drawing view:
+      - Selection
+      - Drawing
+      - Transforming
+  - Hud drawing:
+    - Use pixelSize 2 for lines.
+    - Have random wobble in line drawing.
+    - Random seed is manually reset and based on the initial x, y co-ordinate.
+    - Size of wobble manually set.
+    - Long lines get extra inbetween points to add wobble.
+
 #2023-09-24
 - Right click menu
   - Use hexagon.
