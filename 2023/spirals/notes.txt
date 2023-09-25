@@ -1,7 +1,7 @@
-#2023-09-11
+# 2023-09-11
 - Changed turning into wobble to keep on screen.
 
-#2023-09-05
+# 2023-09-05
 - Back to green.
 - Added camera controls to zoom in and out.
 - Made ring vertical to suit my half browser windows.
@@ -11,7 +11,7 @@
 - Added deviate() random to turns, should have it spend more time around 0.
 - Recorded and uploaded screencast: https://www.youtube.com/watch?v=3coA4lSqaNs
 
-#2023-09-04
+# 2023-09-04
 - Making spiral visualisation similar to: https://www.youtube.com/watch?v=kPUdhm2VE-o
 - Nested spirals.
 - How to nest?

@@ -1,7 +1,7 @@
-#2023-09-26
+# 2023-09-26
 - Splitting off into animate-hex-lines
 
-#2023-09-25
+# 2023-09-25
 - Editor high level structure.
   - Should be able to just be a sprite editor with nesting to cover entire animation.
   - Just edit root sprite.
@@ -37,7 +37,7 @@
       - Line separation and occlusion percentage given.
       - X, y, width, height given.
 
-#2023-09-24
+# 2023-09-24
 - Right click menu
   - Use hexagon.
   - 5 options per layer, one to go backwards.
@@ -101,7 +101,7 @@
   - Menu
     - Delete
 
-#2023-09-19
+# 2023-09-19
 - App:
   - Drawing hex lines and Hud.
   - Drawing data:
@@ -124,7 +124,7 @@
     - Colour picker.
     - Tools.
 
-#2023-09-17
+# 2023-09-17
 - Want editable objects that can be moved around.
 - How to manage the objects?
 - Example flow:
@@ -157,7 +157,7 @@
   - Input handling.
   - Editing context.
 
-#2023-09-09
+# 2023-09-09
 - Draw hex lines on canvas.
 - Have options to set size and colour.
   - Maybe just a randomise button to start with.
