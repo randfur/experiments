@@ -1,8 +1,12 @@
+#2023-09-26
+- Splitting off into animate-hex-lines
+
 #2023-09-25
 - Editor high level structure.
   - Should be able to just be a sprite editor with nesting to cover entire animation.
   - Just edit root sprite.
   - Main parts of sprite editor:
+    - Input routing.
     - Layers and keyframes:
       - Selection
       - Adding
@@ -22,11 +26,16 @@
       - Drawing
       - Transforming
   - Hud drawing:
-    - Use pixelSize 2 for lines.
-    - Have random wobble in line drawing.
-    - Random seed is manually reset and based on the initial x, y co-ordinate.
-    - Size of wobble manually set.
-    - Long lines get extra inbetween points to add wobble.
+    - Line wobble:
+      - Use pixelSize 2 for lines.
+      - Have random wobble in line drawing.
+      - Random seed is manually reset and based on the initial x, y co-ordinate, continuous as things translate.
+      - Size of wobble manually set.
+      - Long lines get extra inbetween points to add wobble.
+    - Backdrop:
+      - Diagonal black lines.
+      - Line separation and occlusion percentage given.
+      - X, y, width, height given.
 
 #2023-09-24
 - Right click menu
