@@ -1,3 +1,55 @@
 # 2023-09-26
 - Split off from draw-hex-lines.
   - Keep draw-hex-lines preserved.
+- Editor architecture:
+  - Animation editor
+    - Animation data
+      - Sprite map
+      - Audio track
+      - Root sprite
+    - Root sprite editor
+      - Editing state
+        - Focus
+          - Time
+          - Background time
+          - Layers selected
+          - Keyframes selected
+          - Items selected
+          - Drawing item
+          - Selected tool
+          - Tool state
+        - Viewport
+          - Timeline camera
+          - Display camera
+      - Nested overlay sprite editor
+- Editor state is key to architecture.
+  - Might be better as ADT.
+  - ADT state space:
+    struct EditorState {
+      sprite: SpriteId,
+      timelineCamera: CameraState,
+      displayCamera: CameraState,
+      selection: SelectionState,
+      selectedTool: ToolId,
+      nestedEditor: Option<EditorState>,
+    }
+    struct CameraState {
+      x: f32,
+      y: f32,
+      zoom: f32,
+    }
+    enum SelectionState {
+      LayerSelect(Vec<LayerId>),
+      MultiKeyframeSelect(Vec<KeyframeId>),
+      FrameTimeSelect {
+        time: u32,
+        selectedItems: Vec<ItemId>,
+        drawingItem: Option<ItemId>,
+      },
+      SingleKeyframeSelect {
+        keyframe: KeyframeId,
+        selectedItems: Vec<ItemId>,
+        drawingItem: Option<ItemId>,
+      },
+    }
+
