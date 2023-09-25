@@ -27,11 +27,20 @@
   - ADT state space:
     struct EditorState {
       sprite: SpriteId,
+      playState: PlayState,
       timelineCamera: CameraState,
       displayCamera: CameraState,
+      currentFrame: u32,
+      backgroundFrame: Option<u32>,
       selection: SelectionState,
       selectedTool: ToolId,
       nestedEditor: Option<EditorState>,
+    }
+    struct PlayState {
+      playing: bool,
+      currentFrame: u32,
+      startFrame: Option<u32>,
+      endFrame: Option<u32>,
     }
     struct CameraState {
       x: f32,
@@ -41,13 +50,8 @@
     enum SelectionState {
       LayerSelect(Vec<LayerId>),
       MultiKeyframeSelect(Vec<KeyframeId>),
-      FrameTimeSelect {
-        time: u32,
-        selectedItems: Vec<ItemId>,
-        drawingItem: Option<ItemId>,
-      },
-      SingleKeyframeSelect {
-        keyframe: KeyframeId,
+      FrameSelect {
+        keyframe: Option<KeyframeId>,
         selectedItems: Vec<ItemId>,
         drawingItem: Option<ItemId>,
       },
