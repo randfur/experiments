@@ -1,0 +1,9 @@
+# 2023-09-28
+- 2048 but you rotate your phone to have pieces merge.
+- Using GravitySensor.
+- Drawing simple blocks for now.
+- Need to work out collision physics.
+  - Because small number of blocks just going to iterate over everything.
+  - Can probably cheat and sort elements by direction of gravity to process them in order of which ones are going to hit the wall first.
+  - Kind of working, simple collision tells blocks to stop but need to work out how to let them slide.
+  - Maybe need to iterate over edges and deal with them individually.

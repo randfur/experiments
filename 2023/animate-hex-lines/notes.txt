@@ -1,3 +1,7 @@
+# 2023-09-29
+- Started writing main.
+  - Has editor state and animation data and render loop.
+
 # 2023-09-26
 - Split off from draw-hex-lines.
   - Keep draw-hex-lines preserved.
