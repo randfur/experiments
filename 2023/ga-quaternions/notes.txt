@@ -1,0 +1,44 @@
+# 2023-10-21
+- Objective: Turn an orientation about its local co-ordinate basis vectors.
+  - Rotate global basis vectors by orientation before rotating orientation around basis vector.
+  - Quaternion method:
+    - rotation quaternion = cos(a/2) + sin(a/2) * (xi + yj + zk)
+    - rotated orientation quaternion = orientation quaternion * rotation quaternion
+    - oriented vector = conjugate(orientation quaternion) * (vector.x * i + vector.y * j + vector.z * k) * orientation quaternion
+    - Quaternion multiplication:
+      - (a + bi + cj + dk) * (e + fi + gj + hk)
+      - ae + afi + agj + ahk +
+        bei + bfii + bgij + bhik +
+        ceji + cfji + cgjj + chjk +
+        dek + dfki + dgkj + dhkk
+      - ae + afi + agj + ahk +
+        bei + -bf + bgk + -bhj +
+        cej + -cfk + -cg + chi +
+        dek + dfj + -dgi + -dh
+      - (ae - bf - cg - dh) +
+        i * (af + be + ch - dg) +
+        j * (ag - bh + ce + df) +
+        k * (ah + bg - cf + de)
+  - GA method:
+    - Rotation no longer around a axis vector but instead from one vector to another vector.
+  - Quaternions in GA:
+    - Wiki says that you can use i = xy, j = xz, k = yz which works equivalently to quaternions.
+    - I want j to be zx instead of xz to maintain the symmetry of rotating from the next basis vector to the one after (with wrapping).
+    - ChatGPT suggested that using j = xz vs j = zx doesn't matter because the negation cancels out in the end.
+    - Try quaternion multiplication with negated j:
+      - (a + bi - cj + dk) * (e + fi - gj + hk)
+      - ae + afi + -agj + ahk +
+        bei + bfii + -bgij + bhik +
+        -cej + -cfji + cgjj + -chjk +
+        dek + dfki + -dgkj + dhkk
+      - ae + afi + -agj + ahk +
+        bei + -bf + -bgk + -bhj +
+        -cej + cfk + -cg + -chi +
+        dek + dfj + dgi + -dh
+      - (ae - bf - cg - dh) +
+        i * (af + be - ch + dg) +
+        -j * (ag + bh + ce - df) +
+        k * (ah - bg + cf + de)
+    - Turns out it's not the same, maybe it becomes equivalent with more multiplications when doing the full rotations.
+    - Needs testing out.
+
