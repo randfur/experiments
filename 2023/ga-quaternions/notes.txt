@@ -41,4 +41,18 @@
         k * (ah - bg + cf + de)
     - Turns out it's not the same, maybe it becomes equivalent with more multiplications when doing the full rotations.
     - Needs testing out.
+  - Construction equivalence.
+    - Constructing a quaternion from axis angle and a rotor from a matching vector to vector produces the same values if you map i = yz, j = zx, k = xy.
+    - Code:
+      function rotate(v) {
+        return rotateY(rotateX(v, 1), 2);
+      }
+      console.log(quaternionFromAxisAngle(rotate([0, 0, 1]), TAU / 4));
+      // [0.7071067811865476, -0.34739837709480914, 0.5950098395293859, -0.1589894916499427]
+      console.log(rotorFromVectorToVector(rotate([1, 0, 0]), rotate([0, 1, 0])));
+      // [0.7071067811865475, -0.34739837709480914, 0.5950098395293859, -0.1589894916499427]
+  - Quaternions don't follow GA rules.
+    - Given i is yz, j is zx and k is xy; ij should = -k not k.
+    - Ditch quaternions and just use yz, zx and xy coefficients.
+
 
