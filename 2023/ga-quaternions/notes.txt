@@ -1,3 +1,51 @@
+# 2023-10-23
+- Check if there are negative co-efficients when using xz instead of zx.
+  - (arr + bxy + cxz + dyz) * (err + fxy + gxz + hyz)
+    = aerrrr + afrrxy + agrrxz + ahrryz +
+      bexyrr + bfxyxy + bgxyxz + bhxyyz +
+      cexzrr + cfxzxy + cgxzxz + chxzyz +
+      deyzrr + dfyzxy + dgyzxz + dhyzyz
+    = aerr + afxy + agxz + ahyz +
+      bexy + -bfrr + -bgyz + bhxz +
+      cexz + cfyz + -cgrr + -chxy +
+      deyz + -dfxz + dgxy + -dhrr
+    = (ae - bf - cg - dh) +
+      (af + be - ch + dg)xy +
+      (ag + bh + ce - df)xz +
+      (ah - bg + cf + de)yz
+  - Yes.
+  - Surprisingly the co-efficients are the same as when using zx.
+    - (arr + byz + czx + dxy) * (err + fyz + gzx + hxy)
+      = aerrrr + afrryz + agrrzx + ahrrxy +
+        beyzrr + bfyzyz + bgyzzx + bhyzxy +
+        cezxrr + cfzxyz + cgzxzx + chzxxy +
+        dexyrr + dfxyyz + dgxyzx + dhxyxy
+      = aerr + afyz + agzx + ahxy +
+        beyz + -bfrr + -bgxy + bhzx +
+        cezx + cfxy + -cgrr + -chyz +
+        dexy + -dfzx + dgyz + -dhrr
+      = (ae - bf - cg - dh) +
+        (af + be - ch + dg)yz +
+        (ag + bh + ce - df)zx +
+        (ah - bg + cf + de)xy
+
+# 2022-10-22
+- Construction equivalence.
+  - Constructing a quaternion from axis angle and a rotor from a matching vector to vector produces the same values if you map i = yz, j = zx, k = xy.
+  - Code:
+    function rotate(v) {
+      return rotateY(rotateX(v, 1), 2);
+    }
+    console.log(quaternionFromAxisAngle(rotate([0, 0, 1]), TAU / 4));
+    // [0.7071067811865476, -0.34739837709480914, 0.5950098395293859, -0.1589894916499427]
+    console.log(rotorFromVectorToVector(rotate([1, 0, 0]), rotate([0, 1, 0])));
+    // [0.7071067811865475, -0.34739837709480914, 0.5950098395293859, -0.1589894916499427]
+- Quaternions don't follow GA rules.
+  - Given i is yz, j is zx and k is xy; ij should = -k not k.
+  - Ditch quaternions and just use yz, zx and xy coefficients.
+
+
+
 # 2023-10-21
 - Objective: Turn an orientation about its local co-ordinate basis vectors.
   - Rotate global basis vectors by orientation before rotating orientation around basis vector.
@@ -41,18 +89,3 @@
         k * (ah - bg + cf + de)
     - Turns out it's not the same, maybe it becomes equivalent with more multiplications when doing the full rotations.
     - Needs testing out.
-  - Construction equivalence.
-    - Constructing a quaternion from axis angle and a rotor from a matching vector to vector produces the same values if you map i = yz, j = zx, k = xy.
-    - Code:
-      function rotate(v) {
-        return rotateY(rotateX(v, 1), 2);
-      }
-      console.log(quaternionFromAxisAngle(rotate([0, 0, 1]), TAU / 4));
-      // [0.7071067811865476, -0.34739837709480914, 0.5950098395293859, -0.1589894916499427]
-      console.log(rotorFromVectorToVector(rotate([1, 0, 0]), rotate([0, 1, 0])));
-      // [0.7071067811865475, -0.34739837709480914, 0.5950098395293859, -0.1589894916499427]
-  - Quaternions don't follow GA rules.
-    - Given i is yz, j is zx and k is xy; ij should = -k not k.
-    - Ditch quaternions and just use yz, zx and xy coefficients.
-
-
