@@ -1,32 +1,33 @@
-import {HexLinesContext} from './third-party/hex-lines/src/hex-lines.js';
+import {Engine} from './engine.js';
 
-const entityList = [];
-
-async function spawn(run) {
-  const entity = {};
-  entityList.push(entity);
-  await run(entity);
-  entityList.splice(entityList.indexOf(entity), 1);
+function main() {
+  Engine.init();
+  Engine.spawn(Thing);
+  Engine.run();
 }
 
-async function main() {
-  const {
-    width,
-    height,
-    hexLinesContext,
-  } = HexLinesContext.setupFullPageContext({
-    is3d: true,
-    pixelSize: 1,
-  });
-  const hexLines = hexLinesContext.createLines();
+class Thing {
+  constructor() {
+    this.start = {
+      position: {x: 0, y: 0, z: 1000},
+      size: 10,
+      colour: {r: 255, g: 255, b: 255},
+    };
+    this.end = {
+      position: {x: 100, y: 100, z: 1000},
+      size: 10,
+      colour: {r: 255, g: 255, b: 255},
+    };
+  }
 
-  while (true) {
-    await new Promise(requestAnimationFrame);
-    hexLines.clear();
-    for (const entity of entityList) {
-      entity.draw?.(hexLines);
-    }
-    hexLines.draw();
+  async run() {
+    await new Promise(() => {});
+  }
+
+  draw(hexLines) {
+    hexLines.addPoint(this.start);
+    hexLines.addPoint(this.end);
+    hexLines.addNull();
   }
 }
 
