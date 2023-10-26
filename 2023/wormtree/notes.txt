@@ -8,3 +8,7 @@
   - Loop that calls draw on a list of objects.
   - Objects spawned via async function call and removed when complete.
   - Lightweight version of async-game-engine that doesn't support object removal during its lifetime.
+- Initial set up:
+  - Got test white line drawing.
+  - Co-ordinate system is left handed: x right, y up, z in.
+  - Pulled run loop into static Engine class, a 37 line game engine.
