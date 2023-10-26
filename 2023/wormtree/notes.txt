@@ -1,0 +1,10 @@
+# 2023-10-27
+- Moving through 3D wormhole that spawns infront of the camera and has branches spawning off (tree).
+- One main hole that the camera sticks to.
+- Hole surface interior and outlined by floating 3D coloured shapes.
+  - Simple geometric shapes, maybe 2D maybe 3D prisms.
+  - Flying into position from nothing and dispersing out behind the camera.
+- Engine loop:
+  - Loop that calls draw on a list of objects.
+  - Objects spawned via async function call and removed when complete.
+  - Lightweight version of async-game-engine that doesn't support object removal during its lifetime.

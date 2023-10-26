@@ -44,8 +44,6 @@
   - Given i is yz, j is zx and k is xy; ij should = -k not k.
   - Ditch quaternions and just use yz, zx and xy coefficients.
 
-
-
 # 2023-10-21
 - Objective: Turn an orientation about its local co-ordinate basis vectors.
   - Rotate global basis vectors by orientation before rotating orientation around basis vector.

@@ -13,3 +13,6 @@
 [submodule "2023/draw-hex-lines/third-party/hex-lines"]
 	path = 2023/draw-hex-lines/third-party/hex-lines
 	url = git@github.com:randfur/hex-lines.git
+[submodule "2023/wormtree/third-party/hex-lines"]
+	path = 2023/wormtree/third-party/hex-lines
+	url = git@github.com:randfur/hex-lines.git
