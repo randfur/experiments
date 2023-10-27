@@ -62,10 +62,10 @@
       (adg + bdd + -cde + -bee + aef + -ced + afe + bff + cfg + agd + -bgg + cgf)y +
       (bde + -adf + cdd + aeg + bed + -cee + -afd + bfg + -cff + age + bgf + cgg)z
     = ((dd + ee - ff - gg)a + (ef + fe - dg - gd)b + (df + eg + fd + ge)c)x +
-      ((dg + ef + fe + gd)a + (dd + ff - ee - gg)b + (fg + gf - de - ed)c)y +
-      ((eg - df - fd + ge)a + (de + ed + fg + gf)b + (dd + gg - ee - ff)c)z
+      ((dg + ef + fe + gd)a + (dd - ee + ff - gg)b + (fg + gf - de - ed)c)y +
+      ((eg - df - fd + ge)a + (de + ed + fg + gf)b + (dd - ee - ff + gg)c)z
     = ((dd + ee - ff - gg)a + (2ef - 2dg)b + (2df + 2eg)c)x +
-      ((2dg + 2ef)a + (dd + ff - ee - gg)b + (2fg - 2de)c)y +
-      ((2eg - 2df)a + (2de + 2fg)b + (dd + gg - ee - ff)c)z
+      ((2dg + 2ef)a + (dd - ee + ff - gg)b + (2fg - 2de)c)y +
+      ((2eg - 2df)a + (2de + 2fg)b + (dd - ee - ff + gg)c)z
 
 
