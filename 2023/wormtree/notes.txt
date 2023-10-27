@@ -12,3 +12,60 @@
   - Got test white line drawing.
   - Co-ordinate system is left handed: x right, y up, z in.
   - Pulled run loop into static Engine class, a 37 line game engine.
+- Camera:
+  - Camera intended to be flying through space.
+  - HexLinesContext has a transform matrix, this can cause all world co-ordinates to be relative to camera position and orientation.
+  - Need to work out how to turn the camera orientation into a matrix.
+  - vector = ax + by + cz
+    rotor = d + eyz + fzx + gxy
+    rotated vector = unqunge(conjugate(rotor) * qunge(vector) * rotor)
+    qunge(vector) = ayz + bzx + cxy
+    qunge(vector) * rotor = (ayz + bzx + cxy) * (d + eyz + fzx + gxy)
+    = adyz + aeyzyz + afyzzx + agyzxy +
+      bdzx + bezxyz + bfzxzx + bgzxxy +
+      cdxy + cexyyz + cfxyzx + cgxyxy
+    = adyz + -ae + -afxy + agzx +
+      bdzx + bexy + -bf + -bgyz +
+      cdxy + -cezx + cfyz + -cg
+    = (-ae - bf - cg) +
+      (ad - bg + cf)yz +
+      (ag + bd - ce)zx +
+      (be - af + cd)xy
+    h = -ae - bf - cg
+    i = ad - bg + cf
+    j = ag + bd - ce
+    k = be - af + cd
+    conjugate(rotor) * qunge(vector) * rotor = (d + -eyz + -fzx + -gxy) * (h + iyz + jzx + kxy)
+    = dh + diyz + djzx + dkxy +
+      -ehyz + -eiyzyz + -ejyzzx + -ekyzxy +
+      -fhzx + -fizxyz + -fjzxzx + -fkzxxy +
+      -ghxy + -gixyyz + -gjxyzx + -gkxyxy
+    = dh + diyz + djzx + dkxy +
+      -ehyz + ei + ejxy + -ekzx +
+      -fhzx + -fixy + fj + fkyz +
+      -ghxy + gizx + -gjyz + gk
+    = (dh + ei + fj + gk) +
+      (di - eh + fk - gj)yz +
+      (dj - ek - fh + gi)zx +
+      (dk + ej - fi - gh)xy
+    rotated vector = (di - eh + fk - gj)x + (dj - ek - fh + gi)y + (dk + ej - fi - gh)z
+    = (d(ad - bg + cf) - e(-ae - bf - cg) + f(be - af + cd) - g(ag + bd - ce))x +
+      (d(ag + bd - ce) - e(be - af + cd) - f(-ae - bf - cg) + g(ad - bg + cf))y +
+      (d(be - af + cd) + e(ag + bd - ce) - f(ad - bg + cf) - g(-ae - bf - cg))z
+    = (dad - dbg + dcf + eae + ebf + ecg + fbe - faf + fcd - gag - gbd + gce)x +
+      (dag + dbd - dce - ebe + eaf - ecd + fae + fbf + fcg + gad - gbg + gcf)y +
+      (dbe - daf + dcd + eag + ebd - ece - fad + fbg - fcf + gae + gbf + gcg)z
+    = (dad + -dbg + dcf + eae + ebf + ecg + fbe + -faf + fcd + -gag + -gbd + gce)x +
+      (dag + dbd + -dce + -ebe + eaf + -ecd + fae + fbf + fcg + gad + -gbg + gcf)y +
+      (dbe + -daf + dcd + eag + ebd + -ece + -fad + fbg + -fcf + gae + gbf + gcg)z
+    = (add + -bdg + cdf + aee + bef + ceg + bfe + -aff + cfd + -agg + -bgd + cge)x +
+      (adg + bdd + -cde + -bee + aef + -ced + afe + bff + cfg + agd + -bgg + cgf)y +
+      (bde + -adf + cdd + aeg + bed + -cee + -afd + bfg + -cff + age + bgf + cgg)z
+    = ((dd + ee - ff - gg)a + (ef + fe - dg - gd)b + (df + eg + fd + ge)c)x +
+      ((dg + ef + fe + gd)a + (dd + ff - ee - gg)b + (fg + gf - de - ed)c)y +
+      ((eg - df - fd + ge)a + (de + ed + fg + gf)b + (dd + gg - ee - ff)c)z
+    = ((dd + ee - ff - gg)a + (2ef - 2dg)b + (2df + 2eg)c)x +
+      ((2dg + 2ef)a + (dd + ff - ee - gg)b + (2fg - 2de)c)y +
+      ((2eg - 2df)a + (2de + 2fg)b + (dd + gg - ee - ff)c)z
+
+
