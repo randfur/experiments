@@ -1,4 +1,4 @@
-export class Rows {
+export class Ordered {
   static init(poolCells) {
     for (let i = 0; i < 81; ++i) {
       const cell = poolCells[i];

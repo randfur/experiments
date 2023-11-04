@@ -6,6 +6,9 @@
 - Manually confirmed it detects solved sudoku boards too.
 - Used color-mix() CSS function for the first time.
 - Added all the other game modes, they ought to work hopefully.
+- Added ability to reselect a pool cell.
+- Moved conditional event firing into the match class.
+- Renamed Rows to Ordered.
 
 # 2023-11-03
 - Two player sudoku.

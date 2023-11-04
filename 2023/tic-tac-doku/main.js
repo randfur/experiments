@@ -1,5 +1,5 @@
 import {gameCells, poolCells} from './cells.js';
-import {Rows, Rounds, OrderedRounds, FreeForAll, RandomSequence} from './game-modes.js';
+import {Ordered, Rounds, OrderedRounds, FreeForAll, RandomSequence} from './game-modes.js';
 import {Match} from './match.js';
 
 
@@ -7,7 +7,7 @@ function main() {
   let currentMatch = null;
 
   const modes = [
-    Rows,
+    Ordered,
     Rounds,
     OrderedRounds,
     FreeForAll,
@@ -34,7 +34,7 @@ function main() {
     });
   }
 
-  currentMatch = new Match(Rows);
+  currentMatch = new Match(Ordered);
 }
 
 main();
