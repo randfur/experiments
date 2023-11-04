@@ -69,17 +69,20 @@ export class Match {
       return;
     }
 
-    if (this.poolCells.every(poolCell =>
-          poolCell.dataset.available !== 'true' ||
-          this.gameCells.every(gameCell => this.findCollidingCell(gameCell, poolCell.textContent) !== null)
-        )) {
+    const noMovesAvailable = this.poolCells.every(poolCell =>
+      poolCell.dataset.available !== 'true' ||
+      this.gameCells.every(gameCell => this.findCollidingCell(gameCell, poolCell.textContent) !== null)
+    );
+
+    if (noMovesAvailable) {
       gameStatus.textContent = `Game over: No remaining moves. Player ${this.playerTurn + 1} wins!`;
-      return;
     }
 
     this.playerTurn = (this.playerTurn + 1) % 2;
-    gameStatus.dataset.player = this.playerTurn;
-    gameStatus.textContent = `Player ${this.playerTurn + 1}'s turn.`;
+    if (!noMovesAvailable) {
+      gameStatus.dataset.player = this.playerTurn;
+      gameStatus.textContent = `Player ${this.playerTurn + 1}'s turn.`;
+    }
   }
 
   findCollidingCell(cell, potentialNumber) {
