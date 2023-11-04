@@ -15,20 +15,24 @@ export class Engine {
     this.height = height;
     this.hexLinesContext = hexLinesContext;
     this.hexLines = hexLinesContext.createLines();
+    this.nextFrame = new Promise(requestAnimationFrame);
   }
 
-  static async spawn(EntityType) {
-    const entity = new EntityType();
+  static async add(entity) {
     this.entityList.push(entity);
+    entity.done = false;
     await entity.run();
-    this.entityList.splice(entityList.indexOf(entity), 1);
+    entity.done = true;
+    this.entityList.splice(this.entityList.indexOf(entity), 1);
   }
 
   static async run() {
     while (true) {
-      await new Promise(requestAnimationFrame);
+      await this.nextFrame;
+      this.nextFrame = new Promise(requestAnimationFrame);
       this.hexLines.clear();
       for (const entity of this.entityList) {
+        entity.step?.();
         entity.draw?.(this.hexLines);
       }
       this.hexLines.draw();

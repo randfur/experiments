@@ -1,0 +1,14 @@
+# 2023-11-03
+- Two player sudoku.
+- Take turns placing numbers in an empty grid.
+- Only valid placements allowed.
+- When player can't place they lose.
+- If the board is fully solved both players win.
+- Different rules about what numbers players can place on their turn.
+  - Rows: Place all 1s, then 2s, then 3s etc.
+  - Rounds: Place numbers 1-9 in any order, repeat until done.
+  - Ordered rounds: Place numbers 1-9 in order, repeat until done.
+  - Free for all: Place any number.
+  - Random sequence: Fixed random sequence of numbers, can see which numbers are next.
+- Wrote the HTML and CSS for showing the grids.
+- Added sections for the game info.
