@@ -1,40 +1,105 @@
-import {gameCells, pickCells} from './cells.js';
+import {gameCells, poolCells} from './cells.js';
 
 /*
 interface GameMode {
-  init(pickCells);
+  init(poolCells);
 }
 */
 
 export class Match {
   constructor(mode) {
     this.mode = mode;
-    this.awaitingPickCell = true;
-    this.awaitingGameCell = true;
 
-    for (const cell of [...gameCells, ...pickCells]) {
-      cell.style = '';
+    for (const cell of [...gameCells, ...poolCells]) {
       cell.textContent = '';
+      for (const key in cell.dataset) {
+        delete cell.dataset[key];
+      }
     }
 
     gameStatus.textContent = '';
-    inputFeedback.textContent = '';
 
-    this.mode.init(pickCells);
+    this.mode.init(poolCells);
 
-    this.selectedPickCell = null;
+    this.playerTurn = -1;
+    this.selectedCell = null;
+    this.startNextTurn();
   }
 
-  pickCellSelected(cell) {
-    if (cell.available) {
-      cell.classList = ['selected'];
-      this.selectedPickCell = cell;
+  poolCellChosen(cell) {
+    if (cell.dataset.available !== 'true') {
+      return;
     }
-    cell.textContent = Math.ceil(Math.random() * 9);
+    cell.dataset.selected = true;
+    cell.dataset.player = this.playerTurn;
+    this.selectedCell = cell;
   }
 
-  gameCellSelected(cell) {
-    cell.textContent = Math.ceil(Math.random() * 9);
+  gameCellChosen(cell) {
+    const collidingCell = this.findCollidingCell(cell, this.selectedCell.textContent);
+    if (collidingCell) {
+      collidingCell.animate([{backgroundColor: 'red'}, {}], {duration: 1000});
+      return;
+    }
+
+    cell.textContent = this.selectedCell.textContent;
+    cell.dataset.player = this.playerTurn;
+    this.selectedCell.textContent = '';
+    this.selectedCell.dataset.available = false;
+    this.selectedCell.dataset.used = true;
+
+    this.mode.updateAvailable(poolCells);
+
+    this.startNextTurn();
+  }
+
+  startNextTurn() {
+    if (this.selectedCell) {
+      delete this.selectedCell.dataset.selected;
+    }
+    this.selectedCell = null;
+
+    if (gameCells.every(cell => cell.textContent !== '')) {
+      gameStatus.textContent = 'Game over: Sudoku solved! Both players win!';
+      return;
+    }
+
+    if (poolCells.every(poolCell =>
+          poolCell.dataset.available !== 'true' ||
+          gameCells.every(gameCell => this.findCollidingCell(gameCell, poolCell.textContent) !== null)
+        )) {
+      gameStatus.textContent = `Game over: No remaining moves. Player ${this.playerTurn + 1} wins!`;
+      return;
+    }
+
+    this.playerTurn = (this.playerTurn + 1) % 2;
+    gameStatus.textContent = `Player ${this.playerTurn + 1}'s turn`;
+  }
+
+  findCollidingCell(cell, potentialNumber) {
+    if (cell.textContent !== '') {
+      return cell;
+    }
+
+    const index = gameCells.indexOf(cell);
+    const gridX = index % 9;
+    const gridY = Math.floor(index / 9);
+    const subGridX = Math.floor(gridX / 3) * 3;
+    const subGridY = Math.floor(gridY / 3) * 3;
+    for (let i = 0; i < 9; ++i) {
+      const otherCells = [
+        gameCells[i * 9 + gridX],
+        gameCells[gridY * 9 + i],
+        gameCells[(subGridY + Math.floor(i / 3)) * 9 + (subGridX + (i % 3))],
+      ];
+      for (const otherCell of otherCells) {
+        if (potentialNumber === otherCell.textContent) {
+          return otherCell;
+        }
+      }
+    }
+
+    return null;
   }
 }
 

@@ -2,8 +2,10 @@
 <style>
 body {
   --cell-size: 5vmax;
-  --thick-border: 5px solid;
-  --half-thick-border: 3px solid;
+  --thick-border: 5px solid black;
+  --half-thick-border: 3px solid black;
+  font-family: sans-serif;
+  font-weight: bold;
 }
 
 @media (aspect-ratio >= 1) {
@@ -38,12 +40,16 @@ body {
   box-sizing: border-box;
   width: var(--cell-size);
   height: var(--cell-size);
-  border: solid 1px;
+  border: solid black 1px;
   font-family: sans-serif;
   font-size: calc(var(--cell-size) * 0.8);
   font-weight: bold;
   text-align: center;
   user-select: none;
+}
+
+#info {
+  height: 5em;
 }
 
 #gameGrid .row:nth-child(-3n + 7) > .cell {
@@ -72,19 +78,31 @@ body {
   border-right: var(--thick-border);
 }
 
-.selected {
-  background-color: pink;
+.cell[data-selected="true"] {
+  background-color: color-mix(in srgb, currentColor, transparent 75%);
+}
+.cell[data-available="false"] {
+  background-color: grey;
+}
+.cell[data-used="true"] {
+  display: none;
+}
+
+[data-player="0"] {
+  color: red;
+}
+[data-player="1"] {
+  color: blue;
 }
 </style>
 
 <script type="module" src="main.js"></script>
 
 <div id="info">
-  <div id="modeButtonContainer"></div>
+  <div id="modeButtonContainer">New game: </div>
+  <div>Players: <span data-player="0">1</span>, <span data-player="1">2</span></div>
   <div id="gameStatus"></div>
-  <div id="inputFeedback"></div>
 </div>
-<div class="padding"></div>
 <div id="gridContainer">
   <div id="gameGrid" class="grid">
     <div class="row">
@@ -198,7 +216,7 @@ body {
 
   <div class="padding"></div>
 
-  <div id="pickGrid" class="grid">
+  <div id="poolGrid" class="grid">
     <div class="row">
       <div class="cell"></div>
       <div class="cell"></div>

@@ -1,3 +1,12 @@
+# 2023-11-04
+- Adding random click behaviour to test out event handling.
+- Added game logic into Match class.
+- Got basic game mode working.
+- Game loop seems to work, detects game over.
+- Manually confirmed it detects solved sudoku boards too.
+- Used color-mix() CSS function for the first time.
+- Added all the other game modes, they ought to work hopefully.
+
 # 2023-11-03
 - Two player sudoku.
 - Take turns placing numbers in an empty grid.
