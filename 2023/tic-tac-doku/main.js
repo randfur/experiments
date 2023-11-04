@@ -24,17 +24,13 @@ function main() {
 
   for (const cell of poolCells) {
     cell.addEventListener('click', () => {
-      if (currentMatch && currentMatch.selectedCell === null) {
-        currentMatch.poolCellChosen(cell);
-      }
+      currentMatch?.poolCellChosen(cell);
     });
   }
 
   for (const cell of gameCells) {
     cell.addEventListener('click', () => {
-      if (currentMatch?.selectedCell) {
-        currentMatch.gameCellChosen(cell);
-      }
+      currentMatch?.gameCellChosen(cell);
     });
   }
 

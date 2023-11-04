@@ -30,12 +30,17 @@ export class Match {
     if (cell.dataset.available !== 'true') {
       return;
     }
+    this.clearSelectedCell();
     cell.dataset.selected = true;
     cell.dataset.player = this.playerTurn;
     this.selectedCell = cell;
   }
 
   gameCellChosen(cell) {
+    if (this.selectedCell === null) {
+      return;
+    }
+
     const collidingCell = this.findCollidingCell(cell, this.selectedCell.textContent);
     if (collidingCell) {
       collidingCell.animate([{backgroundColor: 'red'}, {}], {duration: 1000});
@@ -53,13 +58,19 @@ export class Match {
     this.startNextTurn();
   }
 
-  startNextTurn() {
+  clearSelectedCell() {
     if (this.selectedCell) {
       delete this.selectedCell.dataset.selected;
+      delete this.selectedCell.dataset.player;
     }
     this.selectedCell = null;
+  }
+
+  startNextTurn() {
+    this.clearSelectedCell();
 
     if (gameCells.every(cell => cell.textContent !== '')) {
+      delete gameStatus.dataset.player;
       gameStatus.textContent = 'Game over: Sudoku solved! Both players win!';
       return;
     }
@@ -73,6 +84,7 @@ export class Match {
     }
 
     this.playerTurn = (this.playerTurn + 1) % 2;
+    gameStatus.dataset.player = this.playerTurn;
     gameStatus.textContent = `Player ${this.playerTurn + 1}'s turn`;
   }
 
