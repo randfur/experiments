@@ -1,16 +1,10 @@
-import {gameCells, poolCells} from './cells.js';
-
-/*
-interface GameMode {
-  init(poolCells);
-}
-*/
-
 export class Match {
-  constructor(mode) {
+  constructor(mode, gameCells, poolCells) {
     this.mode = mode;
+    this.gameCells = gameCells;
+    this.poolCells = poolCells;
 
-    for (const cell of [...gameCells, ...poolCells]) {
+    for (const cell of [...this.gameCells, ...this.poolCells]) {
       cell.textContent = '';
       for (const key in cell.dataset) {
         delete cell.dataset[key];
@@ -19,7 +13,7 @@ export class Match {
 
     gameStatus.textContent = '';
 
-    this.mode.init(poolCells);
+    this.mode.init(this.poolCells);
 
     this.playerTurn = -1;
     this.selectedCell = null;
@@ -53,7 +47,7 @@ export class Match {
     this.selectedCell.dataset.available = false;
     this.selectedCell.dataset.used = true;
 
-    this.mode.updateAvailable(poolCells);
+    this.mode.updateAvailable(this.poolCells);
 
     this.startNextTurn();
   }
@@ -69,15 +63,15 @@ export class Match {
   startNextTurn() {
     this.clearSelectedCell();
 
-    if (gameCells.every(cell => cell.textContent !== '')) {
+    if (this.gameCells.every(cell => cell.textContent !== '')) {
       delete gameStatus.dataset.player;
       gameStatus.textContent = 'Game over: Sudoku solved! Both players win!';
       return;
     }
 
-    if (poolCells.every(poolCell =>
+    if (this.poolCells.every(poolCell =>
           poolCell.dataset.available !== 'true' ||
-          gameCells.every(gameCell => this.findCollidingCell(gameCell, poolCell.textContent) !== null)
+          this.gameCells.every(gameCell => this.findCollidingCell(gameCell, poolCell.textContent) !== null)
         )) {
       gameStatus.textContent = `Game over: No remaining moves. Player ${this.playerTurn + 1} wins!`;
       return;
@@ -85,7 +79,7 @@ export class Match {
 
     this.playerTurn = (this.playerTurn + 1) % 2;
     gameStatus.dataset.player = this.playerTurn;
-    gameStatus.textContent = `Player ${this.playerTurn + 1}'s turn`;
+    gameStatus.textContent = `Player ${this.playerTurn + 1}'s turn.`;
   }
 
   findCollidingCell(cell, potentialNumber) {
@@ -93,16 +87,16 @@ export class Match {
       return cell;
     }
 
-    const index = gameCells.indexOf(cell);
+    const index = this.gameCells.indexOf(cell);
     const gridX = index % 9;
     const gridY = Math.floor(index / 9);
     const subGridX = Math.floor(gridX / 3) * 3;
     const subGridY = Math.floor(gridY / 3) * 3;
     for (let i = 0; i < 9; ++i) {
       const otherCells = [
-        gameCells[i * 9 + gridX],
-        gameCells[gridY * 9 + i],
-        gameCells[(subGridY + Math.floor(i / 3)) * 9 + (subGridX + (i % 3))],
+        this.gameCells[i * 9 + gridX],
+        this.gameCells[gridY * 9 + i],
+        this.gameCells[(subGridY + Math.floor(i / 3)) * 9 + (subGridX + (i % 3))],
       ];
       for (const otherCell of otherCells) {
         if (potentialNumber === otherCell.textContent) {

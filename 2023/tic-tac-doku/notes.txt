@@ -9,6 +9,7 @@
 - Added ability to reselect a pool cell.
 - Moved conditional event firing into the match class.
 - Renamed Rows to Ordered.
+- Generate the cells.
 
 # 2023-11-03
 - Two player sudoku.
