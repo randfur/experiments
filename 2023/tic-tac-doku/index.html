@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta charset="utf-8">
 <style>
 body {
   --cell-size: 5vmax;
@@ -93,7 +94,7 @@ body {
   color: brown;
 }
 [data-player="1"] {
-  color: navy;
+  color: blue;
 }
 </style>
 
@@ -102,7 +103,22 @@ body {
 <div id="info">
   <h1>Tic-Tac-Doku</h1>
   <div id="modeButtonContainer">New game: </div>
-  <div>Players: <span data-player="0">1</span> and <span data-player="1">2</span></div>
+  <div>
+    <span data-player="0">
+      Player 1
+      <input type="radio" name="player-0-type" id="player0Oi" checked />
+      <label for="player0Oi">😐</label>
+      <input type="radio" name="player-0-type" id="player0Ai" />
+      <label for="player0Ai">💻</label>
+    </span> |
+    <span data-player="1">
+      Player 2
+      <input type="radio" name="player-1-type" id="player1Oi" checked />
+      <label for="player1Oi">😐</label>
+      <input type="radio" name="player-1-type" id="player1Ai" />
+      <label for="player1Ai">💻</label>
+    </span>
+  </div>
   <div>Rules: First to have no valid moves available loses. Both players win if the board is completed.</div>
   <div id="gameStatus"></div>
 </div>

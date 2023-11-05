@@ -1,3 +1,15 @@
+# 2023-11-05
+- Restructure things to support AI players.
+- Move to async await game loop model?
+- Turn click events into promise.
+- Add promise select util maybe.
+- Still needs manual checking to cancel a match properly.
+- Rewrote game loop as async await.
+- Moved selection logic into player class.
+- Added promise select logic, just Promise.race() but with a tag on the output to say which one.
+- Added AI player, fairly simple random selection.
+- All seems to work, no logic errors just typos and missed refactors.
+
 # 2023-11-04
 - Adding random click behaviour to test out event handling.
 - Added game logic into Match class.

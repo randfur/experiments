@@ -1,3 +1,5 @@
+import {randomiseList} from './utils.js';
+
 export class Ordered {
   static init(poolCells) {
     for (let i = 0; i < 81; ++i) {
@@ -86,7 +88,7 @@ export class RandomSequence {
     for (let i = 0; i < 81; ++i) {
       numberList.push(i % 9 + 1);
     }
-    numberList.sort(() => Math.random() - 0.5);
+    randomiseList(numberList);
 
     for (let i = 0; i < 81; ++i) {
       const cell = poolCells[i];

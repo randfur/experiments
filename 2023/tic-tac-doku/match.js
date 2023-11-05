@@ -1,10 +1,10 @@
-export class Match {
-  constructor(mode, gameCells, poolCells) {
-    this.mode = mode;
-    this.gameCells = gameCells;
-    this.poolCells = poolCells;
+import {findCollidingCell} from './utils.js';
 
-    for (const cell of [...this.gameCells, ...this.poolCells]) {
+export class Match {
+  constructor(mode, gameCells, poolCells, player0, player1) {
+    this.done = false;
+
+    for (const cell of [...gameCells, ...poolCells]) {
       cell.textContent = '';
       for (const key in cell.dataset) {
         delete cell.dataset[key];
@@ -13,102 +13,46 @@ export class Match {
 
     gameStatus.textContent = '';
 
-    this.mode.init(this.poolCells);
+    mode.init(poolCells);
 
-    this.playerTurn = -1;
-    this.selectedCell = null;
-    this.startNextTurn();
-  }
+    const players = [player0, player1];
+    let playerTurn = -1;
 
-  poolCellChosen(cell) {
-    if (cell.dataset.available !== 'true') {
-      return;
-    }
-    this.clearSelectedCell();
-    cell.dataset.selected = true;
-    cell.dataset.player = this.playerTurn;
-    this.selectedCell = cell;
-  }
-
-  gameCellChosen(cell) {
-    if (this.selectedCell === null) {
-      return;
-    }
-
-    const collidingCell = this.findCollidingCell(cell, this.selectedCell.textContent);
-    if (collidingCell) {
-      collidingCell.animate([{backgroundColor: 'red'}, {}], {duration: 1000});
-      return;
-    }
-
-    cell.textContent = this.selectedCell.textContent;
-    cell.dataset.player = this.playerTurn;
-    this.selectedCell.textContent = '';
-    this.selectedCell.dataset.available = false;
-    this.selectedCell.dataset.used = true;
-
-    this.mode.updateAvailable(this.poolCells);
-
-    this.startNextTurn();
-  }
-
-  clearSelectedCell() {
-    if (this.selectedCell) {
-      delete this.selectedCell.dataset.selected;
-      delete this.selectedCell.dataset.player;
-    }
-    this.selectedCell = null;
-  }
-
-  startNextTurn() {
-    this.clearSelectedCell();
-
-    if (this.gameCells.every(cell => cell.textContent !== '')) {
-      delete gameStatus.dataset.player;
-      gameStatus.textContent = 'Game over: Sudoku solved! Both players win!';
-      return;
-    }
-
-    const noMovesAvailable = this.poolCells.every(poolCell =>
-      poolCell.dataset.available !== 'true' ||
-      this.gameCells.every(gameCell => this.findCollidingCell(gameCell, poolCell.textContent) !== null)
-    );
-
-    if (noMovesAvailable) {
-      gameStatus.textContent = `Game over: No remaining moves. Player ${this.playerTurn + 1} wins!`;
-    }
-
-    this.playerTurn = (this.playerTurn + 1) % 2;
-    if (!noMovesAvailable) {
-      gameStatus.dataset.player = this.playerTurn;
-      gameStatus.textContent = `Player ${this.playerTurn + 1}'s turn.`;
-    }
-  }
-
-  findCollidingCell(cell, potentialNumber) {
-    if (cell.textContent !== '') {
-      return cell;
-    }
-
-    const index = this.gameCells.indexOf(cell);
-    const gridX = index % 9;
-    const gridY = Math.floor(index / 9);
-    const subGridX = Math.floor(gridX / 3) * 3;
-    const subGridY = Math.floor(gridY / 3) * 3;
-    for (let i = 0; i < 9; ++i) {
-      const otherCells = [
-        this.gameCells[i * 9 + gridX],
-        this.gameCells[gridY * 9 + i],
-        this.gameCells[(subGridY + Math.floor(i / 3)) * 9 + (subGridX + (i % 3))],
-      ];
-      for (const otherCell of otherCells) {
-        if (potentialNumber === otherCell.textContent) {
-          return otherCell;
+    (async () => {
+      while (!this.done) {
+        if (gameCells.every(cell => cell.textContent !== '')) {
+          delete gameStatus.dataset.player;
+          gameStatus.textContent = 'Game over: Sudoku solved! Both players win!';
+          return;
         }
-      }
-    }
 
-    return null;
+        const noMovesAvailable = poolCells.every(poolCell =>
+          poolCell.dataset.available !== 'true' ||
+          gameCells.every(gameCell => findCollidingCell(gameCell, poolCell.textContent, gameCells) !== null)
+        );
+        if (noMovesAvailable) {
+          gameStatus.textContent = `Game over: No remaining moves. Player ${playerTurn + 1} wins!`;
+          return;
+        }
+
+        playerTurn = (playerTurn + 1) % 2;
+        gameStatus.dataset.player = playerTurn;
+        gameStatus.textContent = `Player ${playerTurn + 1}'s turn.`;
+
+        const {poolCell, gameCell} = await players[playerTurn].selectCells(playerTurn, poolCells, gameCells);
+        if (this.done) {
+          return;
+        }
+        gameCell.textContent = poolCell.textContent;
+        gameCell.dataset.player = playerTurn;
+        poolCell.textContent = '';
+        poolCell.dataset.available = false;
+        poolCell.dataset.used = true;
+
+        mode.updateAvailable(poolCells);
+      }
+      this.done = true;
+    })();
   }
 }
 
