@@ -12,6 +12,7 @@
 - Added animation to show where a piece was placed.
   - Helps to see where the AI went.
   - Fun to see the entire board light up when it's AI vs AI.
+- Made FreeForAll's pool layout work better for both horizontal and vertical aspect ratios.
 
 # 2023-11-04
 - Adding random click behaviour to test out event handling.

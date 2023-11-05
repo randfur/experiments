@@ -74,7 +74,7 @@ export class FreeForAll {
   static init(poolCells) {
     for (let i = 0; i < 81; ++i) {
       const cell = poolCells[i];
-      cell.textContent = Math.floor(i / 9) + 1;
+      cell.textContent = ((i + Math.floor(i / 9)) % 9) + 1;
       cell.dataset.available = true;
     }
   }
