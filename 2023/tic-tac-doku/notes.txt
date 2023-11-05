@@ -9,6 +9,9 @@
 - Added promise select logic, just Promise.race() but with a tag on the output to say which one.
 - Added AI player, fairly simple random selection.
 - All seems to work, no logic errors just typos and missed refactors.
+- Added animation to show where a piece was placed.
+  - Helps to see where the AI went.
+  - Fun to see the entire board light up when it's AI vs AI.
 
 # 2023-11-04
 - Adding random click behaviour to test out event handling.

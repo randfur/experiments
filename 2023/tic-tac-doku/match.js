@@ -45,6 +45,7 @@ export class Match {
         }
         gameCell.textContent = poolCell.textContent;
         gameCell.dataset.player = playerTurn;
+        gameCell.animate([{backgroundColor: 'orange'}, {}], {duration: 1000});
         poolCell.textContent = '';
         poolCell.dataset.available = false;
         poolCell.dataset.used = true;
