@@ -1,0 +1,4 @@
+# 2023-11-06
+- Start with a solved sudoku board.
+- Take the 3x3 grid of 3x3 squares like they're squares of a Rubik's cube.
+- Rotate the rows and columns with wrapping.
