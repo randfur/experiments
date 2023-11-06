@@ -1,5 +1,6 @@
 # 2023-11-06
 - Idea from loubrett: Prefill the board with some values since the start of the game doesn't have much threat.
+  - Added this.
 - Added frame delay to AI, makes it more entertaining.
 
 # 2023-11-05

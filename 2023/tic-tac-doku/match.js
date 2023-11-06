@@ -1,7 +1,8 @@
+import {ArtificialPlayer} from './players.js';
 import {findCollidingCell} from './utils.js';
 
 export class Match {
-  constructor(mode, gameCells, poolCells, player0, player1) {
+  constructor(mode, gameCells, poolCells, player0, player1, prefillCount) {
     this.done = false;
 
     for (const cell of [...gameCells, ...poolCells]) {
@@ -15,6 +16,7 @@ export class Match {
 
     mode.init(poolCells);
 
+    const prefillPlayers = [ArtificialPlayer, ArtificialPlayer];
     const players = [player0, player1];
     let playerTurn = -1;
 
@@ -38,8 +40,9 @@ export class Match {
         playerTurn = (playerTurn + 1) % 2;
         gameStatus.dataset.player = playerTurn;
         gameStatus.textContent = `Player ${playerTurn + 1}'s turn.`;
+        const player = ((prefillCount-- > 0) ? prefillPlayers : players)[playerTurn];
 
-        const {poolCell, gameCell} = await players[playerTurn].selectCells(playerTurn, poolCells, gameCells);
+        const {poolCell, gameCell} = await player.selectCells(playerTurn, poolCells, gameCells);
         if (this.done) {
           return;
         }

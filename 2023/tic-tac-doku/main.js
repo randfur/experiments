@@ -15,6 +15,7 @@ function main() {
       poolCells,
       player0Oi.checked ? OrganicPlayer : ArtificialPlayer,
       player1Oi.checked ? OrganicPlayer : ArtificialPlayer,
+      parseInt(prefillCount.value),
     );
   }
 
