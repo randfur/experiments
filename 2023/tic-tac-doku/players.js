@@ -42,12 +42,13 @@ export class OrganicPlayer {
 }
 
 export class ArtificialPlayer {
-  static selectCells(playerTurn, poolCells, gameCells) {
+  static async selectCells(playerTurn, poolCells, gameCells) {
     const availablePoolCells = poolCells.filter(poolCell => poolCell.dataset.available === 'true');
     randomiseList(availablePoolCells);
     for (const poolCell of poolCells) {
       const validGameCells = gameCells.filter(gameCell => findCollidingCell(gameCell, poolCell.textContent, gameCells) === null);
       if (validGameCells.length > 0) {
+        await new Promise(requestAnimationFrame);
         return {
           poolCell,
           gameCell: pickRandom(validGameCells),

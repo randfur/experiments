@@ -1,3 +1,7 @@
+# 2023-11-06
+- Idea from loubrett: Prefill the board with some values since the start of the game doesn't have much threat.
+- Added frame delay to AI, makes it more entertaining.
+
 # 2023-11-05
 - Restructure things to support AI players.
 - Move to async await game loop model?
