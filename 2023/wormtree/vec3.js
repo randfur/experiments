@@ -1,22 +1,24 @@
+import {Rotor3} from './rotor3.js';
+
 export class Vec3 {
   // TODO:
   // - rotateRotor
   // - rotateAxisAngle
   // - rotateAToB
 
-  static pool = {
-    buffer: [],
-    used: 0,
-    get() {
-      if (this.buffer.length === this.used) {
-        this.buffer.push(new Vec3());
-      }
-      return this.buffer[++this.used];
-    },
-    clear() {
-      this.used = 0;
-    },
-  };
+  static tempBuffer = [];
+  static tempsUsed = 0;
+
+  static getTemp(x=0, y=0, z=0) {
+    if (this.tempBuffer.length === this.tempsUsed) {
+      this.tempBuffer.push(new Vec3());
+    }
+    return this.tempBuffer[this.tempsUsed++].setXyz(x, y, z);
+  }
+
+  static clearTemps() {
+    this.tempsUsed = 0;
+  }
 
   constructor(x, y, z) {
     this.x = x;
@@ -40,6 +42,13 @@ export class Vec3 {
     return this.x * v.x + this.y * v.y + this.z * v.z;
   }
 
+  set(v) {
+    this.x = v.x;
+    this.y = v.y;
+    this.z = v.z;
+    return this;
+  }
+
   setXyz(x, y, z) {
     this.x = x;
     this.y = y;
@@ -47,10 +56,10 @@ export class Vec3 {
     return this;
   }
 
-  set(v) {
-    this.x = v.x;
-    this.y = v.y;
-    this.z = v.z;
+  setScale(k, v) {
+    this.x = k * v.x;
+    this.y = k * v.y;
+    this.z = k * v.z;
     return this;
   }
 
@@ -82,4 +91,22 @@ export class Vec3 {
     this.z = v.z / length;
     return this;
   }
+
+  setRotateRotor(v, r) {
+    const {yz: x, zx: y, xy: z} =
+      Rotor3.getTemp(r.rr, -r.yz, -r.zx, -r.xy)
+        .inplaceMultiply(Rotor3.getTemp(0, v.x, v.y, v.z))
+        .inplaceMultiply(r);
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    return this;
+  }
+
+  inplaceScale(k) { return this.setScale(k, this); }
+  inplaceAdd(v) { return this.setAdd(this, v); }
+  inplaceSum(ka, kb, vb) { return this.setSum(ka, this, kb, vb); }
+  inplaceDelta(v) { return this.setDelta(this, v); }
+  inplaceNormalise() { return this.setNormalise(this); }
+  inplaceRotateRotor(r) { return this.setRotateRotor(this, r); }
 }

@@ -1,11 +1,17 @@
 import {Engine} from './engine.js';
 
+export const TAU = Math.PI * 2;
+
 export function random(x) {
   return Math.random() * x;
 }
 
+export function deviate(x) {
+  return Math.random() * x * 2 - x;
+}
+
 export function randomRange(a, b) {
-  return a + random(b - a);
+  return a + Math.random() * (b - a);
 }
 
 export async function* frameRange(n) {
@@ -13,6 +19,20 @@ export async function* frameRange(n) {
     yield i;
     await Engine.nextFrame;
   }
+}
+
+export async function* frameRangeProgress(n) {
+  for await (const i of frameRange(n)) {
+    yield i / n;
+  }
+}
+
+export function progressSmooth(x) {
+  return x < 0.5 ? x ** 2 * 2 : 1 - (1 - x) ** 2 * 2;
+}
+
+export function progressUpDown(x) {
+  return x < 0.5 ? x * 2 : 1 - (1 - x) * 2;
 }
 
 export function* range(n) {
@@ -25,4 +45,4 @@ export function sleep(milliseconds) {
   return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
 
-export never = new Promise(resolve => {});
+export const never = new Promise(resolve => {});

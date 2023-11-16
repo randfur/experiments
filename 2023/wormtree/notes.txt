@@ -2,6 +2,19 @@
 - Need vector and rotor classes.
   - Maybe pretend to use them to work out what the API needs to be.
   - Downside: Won't be able to incrementally prototype the creation.
+- New developments in vector class design.
+  - setOperation() methods sets an expression to this.
+    - setOperation() returns this for easy chaining.
+    - inplaceOperation() calls setOperation() with this as a parameter.
+  - Pool no longer has manual releasing, only release all to be done every frame.
+    - Can no longer hold temp vectors beyond a yield.
+    - No longer has risk of temp vector leakage.
+- Rotation.
+  - The rotation algorithm is very easy with inline mutations and chaining.
+  - The multiplication of rotors is also very easy.
+  - Just works.
+  - Messed up the implementation of inplaceScale() rather than inplaceRotateRotor() lol.
+  - Engine made it very easy to have 100 test dots flying around randomly.
 
 # 2023-10-27
 - Moving through 3D wormhole that spawns infront of the camera and has branches spawning off (tree).
