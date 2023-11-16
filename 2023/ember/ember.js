@@ -63,7 +63,12 @@ export class Ember {
   }
 
   step() {
-    this.orientation.inplaceTurnTo(this.position, this.baseForward, Vec3.getTemp(0, 0, 100), 0.01);
+    this.orientation.inplaceTurnTo(
+      this.position,
+      this.baseForward,
+      Vec3.getTemp(0, 0, 50),
+      0.01,
+    );
     this.position.inplaceAdd(
       Vec3.getTemp().set(this.baseForward).inplaceRotateRotor(this.orientation).inplaceScale(this.speed),
     );
