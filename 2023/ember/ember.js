@@ -18,7 +18,7 @@ export class Ember {
   constructor(position=null, orientation=null) {
     this.primary = position === null;
     this.position = position ?? new Vec3(0, 0, 0);
-    this.speed = this.primary ? 1 : 0.9;
+    this.speed = this.primary ? 1 : 0.3;
     this.baseForward = new Vec3(0, 0, 1);
     this.orientation = orientation ?? new Rotor3();
     this.size = 10;
