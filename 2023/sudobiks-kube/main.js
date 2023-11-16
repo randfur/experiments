@@ -20,11 +20,16 @@ async function main() {
   ];
 
   const dragging = {
-    x: 0,
-    y: 0,
-    dx: 50,
-    dy: 0,
+    gridX: 0,
+    gridY: 0,
   };
+
+  window.addEventListener('pointerdown', event => {
+  });
+
+  function getCanvasXy(event) {
+
+  }
 
   function render() {
     const size = 300;

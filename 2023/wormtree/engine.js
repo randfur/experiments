@@ -1,4 +1,5 @@
 import {HexLinesContext} from './third-party/hex-lines/src/hex-lines.js';
+import {Vec3} from './vec3.js';
 
 export class Engine {
   static init() {
@@ -30,6 +31,7 @@ export class Engine {
     while (true) {
       await this.nextFrame;
       this.nextFrame = new Promise(requestAnimationFrame);
+      Vec3.pool.clear();
       this.hexLines.clear();
       for (const entity of this.entityList) {
         entity.step?.();

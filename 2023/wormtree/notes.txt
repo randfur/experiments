@@ -1,3 +1,8 @@
+# 2023-11-16
+- Need vector and rotor classes.
+  - Maybe pretend to use them to work out what the API needs to be.
+  - Downside: Won't be able to incrementally prototype the creation.
+
 # 2023-10-27
 - Moving through 3D wormhole that spawns infront of the camera and has branches spawning off (tree).
 - One main hole that the camera sticks to.
