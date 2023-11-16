@@ -1,5 +1,5 @@
 import {Engine} from './engine.js';
-import {Ember} from './worm.js';
+import {Ember} from './ember.js';
 import {range} from './utils.js';
 
 function main() {
