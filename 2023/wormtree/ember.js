@@ -14,7 +14,7 @@ import {
   TAU,
 } from './utils.js';
 
-export class Worm {
+export class Ember {
   constructor(position=null, orientation=null) {
     this.primary = position === null;
     this.position = position ?? new Vec3(0, 0, 100);
@@ -50,7 +50,7 @@ export class Worm {
       (async () => {
         while (!this.done) {
           await sleep(randomRange(100, 300));
-          Engine.add(new Worm(this.position.clone(), this.orientation.clone()));
+          Engine.add(new Ember(this.position.clone(), this.orientation.clone()));
         }
       })();
       await never;

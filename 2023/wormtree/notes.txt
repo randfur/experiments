@@ -18,6 +18,11 @@
   - Angle difference much more pronouced now.
   - Maybe better if rotational differences are subtle? Not sure, depends on how glitchy things ought to look.
   - Can make it a hex-lines construction option later if needed.
+- Renamed experiment to ember and making snapshot here since it looks cool on its own.
+  - Wormtree can start up again in a different experiment.
+  - Will probably pull Vec3 and Rotor3 out into a ga.js library.
+  - Tempted to pull Engine out as well but nah, too small, will just recreate from scratch again.
+    - Just consists of add() { add to lists, await run, remove from lists } and run { render lists each frame }.
 
 # 2023-11-16
 - Need vector and rotor classes.
