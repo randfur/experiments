@@ -1,3 +1,24 @@
+# 2023-11-17
+- Added setTurnTo() to Rotor3.
+  - The ability to turn towards something was the reason for using rotors over quaternions, finally using it.
+  - No bugs in the math, only bugs in the order of parameters.
+  - Works well.
+  - Added a concept of reduceRatio to Rotor3's setVecToVec(va, vb).
+    - 1 doesn't alter the rotation (it still gets halving internally though).
+    - 0.5 skews it towards va.
+    - 2 skews it towards vb.
+    - Not actually sure what values > 1 actually mean in practice, overturning?
+- Made the test dot turn towards its creation point.
+  - Stays in view much more now.
+- Made the colours like fire embers.
+- The hexagons slowly rotate as old ones are cleaned up from the start of the list.
+  - The random angle isn't random enough.
+  - Hexagons have somewhat high rotational symmetry.
+  - Halved the angle rotation per instance.
+  - Angle difference much more pronouced now.
+  - Maybe better if rotational differences are subtle? Not sure, depends on how glitchy things ought to look.
+  - Can make it a hex-lines construction option later if needed.
+
 # 2023-11-16
 - Need vector and rotor classes.
   - Maybe pretend to use them to work out what the API needs to be.

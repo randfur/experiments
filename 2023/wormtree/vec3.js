@@ -70,6 +70,13 @@ export class Vec3 {
     return this;
   }
 
+  setScaleAdd(va, kb, vb) {
+    this.x = va.x + kb * vb.x;
+    this.y = va.y + kb * vb.y;
+    this.z = va.z + kb * vb.z;
+    return this;
+  }
+
   setSum(ka, va, kb, vb) {
     this.x = ka * va.x + kb * vb.x;
     this.y = ka * va.y + kb * vb.y;
@@ -86,6 +93,10 @@ export class Vec3 {
 
   setNormalise(v) {
     const length = v.length();
+    if (length === 0) {
+      this.setXyz(0, 0, 0);
+      return this;
+    }
     this.x = v.x / length;
     this.y = v.y / length;
     this.z = v.z / length;
@@ -93,18 +104,19 @@ export class Vec3 {
   }
 
   setRotateRotor(v, r) {
-    const {yz: x, zx: y, xy: z} =
+    const rotated =
       Rotor3.getTemp(r.rr, -r.yz, -r.zx, -r.xy)
         .inplaceMultiply(Rotor3.getTemp(0, v.x, v.y, v.z))
         .inplaceMultiply(r);
-    this.x = x;
-    this.y = y;
-    this.z = z;
+    this.x = rotated.yz;
+    this.y = rotated.zx;
+    this.z = rotated.xy;
     return this;
   }
 
   inplaceScale(k) { return this.setScale(k, this); }
   inplaceAdd(v) { return this.setAdd(this, v); }
+  inplaceScaleAdd(k, v) { return this.setScaleAdd(this, k, v); }
   inplaceSum(ka, kb, vb) { return this.setSum(ka, this, kb, vb); }
   inplaceDelta(v) { return this.setDelta(this, v); }
   inplaceNormalise() { return this.setNormalise(this); }

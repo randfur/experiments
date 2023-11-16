@@ -1,3 +1,5 @@
+import {Vec3} from './vec3.js';
+
 export class Rotor3 {
   static tempBuffer = [];
   static tempsUsed = 0;
@@ -65,20 +67,19 @@ export class Rotor3 {
     return this;
   }
 
-  setVecToVec(va, vb) {
-    const {x: a, y: b, z: c} = va;
-    const {x: d, y: e, z: f} = vb;
-    d += a;
-    e += b;
-    f += c;
-    const lengthA = va.length();
-    const lengthB = (d ** 2 + e ** 2 + f ** 2) ** 0.5;
-    a /= lengthA;
-    b /= lengthA;
-    c /= lengthA;
-    d /= lengthB;
-    e /= lengthB;
-    f /= lengthB;
+  setVecToVec(va, vb, reduceRatio=1) {
+    if (reduceRatio <= 0) {
+      this.setIdentity();
+      return this;
+    }
+
+    const directionA = Vec3.getTemp().setNormalise(va);
+    const directionB = Vec3.getTemp()
+      .setNormalise(vb)
+      .inplaceScaleAdd(1 / reduceRatio, directionA)
+      .inplaceNormalise();
+    const {x: a, y: b, z: c} = directionA;
+    const {x: d, y: e, z: f} = directionB;
     // (ax + by + cz) * (dx + ey + fz)
     // = adxx + aexy + afxz +
     //   bdyx + beyy + bfyz +
@@ -90,10 +91,10 @@ export class Rotor3 {
     //   (bf - ce)yz +
     //   (-af + cd)zx +
     //   (ae - bd)xy
-    this.rr = ad + be + cf;
-    this.yz = bf - ce;
-    this.zx = -af + cd;
-    this.xy = ae - bd;
+    this.rr = a * d + b * e + c * f;
+    this.yz = b * f - c * e;
+    this.zx = -a * f + c * d;
+    this.xy = a * e - b * d;
     return this;
   }
 
@@ -107,6 +108,10 @@ export class Rotor3 {
 
   setNormalise(r) {
     const length = r.length();
+    if (length === 0) {
+      this.setIdentity();
+      return this;
+    }
     this.rr = r.rr / length;
     this.yz = r.yz / length;
     this.zx = r.zx / length;
@@ -137,7 +142,29 @@ export class Rotor3 {
     return this;
   }
 
+  setReduce(r, ratio) {
+    if (ratio <= 0) {
+      this.setIdentity();
+    } else {
+      this.rr = r.rr + (1 / ratio) - 1;
+      this.yz = r.yz;
+      this.zx = r.zx;
+      this.xy = r.xy;
+      this.inplaceNormalise();
+    }
+    return this;
+  }
+
+  setTurnTo(vPosition, vBaseForward, rOrientation, vTarget, reduceRatio) {
+    const delta = Vec3.getTemp().setDelta(vPosition, vTarget);
+    const forward = Vec3.getTemp().set(vBaseForward).inplaceRotateRotor(rOrientation);
+    const turn = Rotor3.getTemp().setVecToVec(forward, delta, reduceRatio);
+    return this.setMultiply(rOrientation, turn);
+  }
+
   inplaceConjugate() { return this.setConjugate(this); }
   inplaceNormalise() { return this.setNormalise(this); }
   inplaceMultiply(r) { return this.setMultiply(this, r); }
+  inplaceReduce(ratio) { return this.setReduce(this, ratio); }
+  inplaceTurnTo(vPosition, vBaseForward, vTarget, reduceRatio) { return this.setTurnTo(vPosition, vBaseForward, this, vTarget, reduceRatio); }
 }

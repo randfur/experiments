@@ -19,6 +19,7 @@ export class Worm {
     this.primary = position === null;
     this.position = position ?? new Vec3(0, 0, 100);
     this.speed = this.primary ? 1 : 0.9;
+    this.baseForward = new Vec3(0, 0, 1);
     this.orientation = orientation ?? new Rotor3();
     this.size = 10;
     this.maxLife = 1000;
@@ -62,8 +63,9 @@ export class Worm {
   }
 
   step() {
+    this.orientation.inplaceTurnTo(this.position, this.baseForward, Vec3.getTemp(0, 0, 100), 0.01);
     this.position.inplaceAdd(
-      Vec3.getTemp(0, 0, 1).inplaceRotateRotor(this.orientation).inplaceScale(this.speed),
+      Vec3.getTemp().set(this.baseForward).inplaceRotateRotor(this.orientation).inplaceScale(this.speed),
     );
   }
 
@@ -72,7 +74,13 @@ export class Worm {
     hexLines.addDot({
       position: this.position,
       size: this.size * lifeProgress,
-      colour: this.primary ? {r: 255, g: 255, b: 255} : {r: 255 * lifeProgress, g: 0, b: 0},
+      colour: this.primary
+        ? {r: 255, g: 255, b: 0}
+        : {
+          r: 255 * lifeProgress,
+          g: Math.max(255 * (lifeProgress - 1 + 0.1) / 0.1, 0),
+          b: 0,
+        },
     });
   }
 }
