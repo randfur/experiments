@@ -41,7 +41,7 @@ export function* range(n) {
   }
 }
 
-export function sleepFrames(n) {
+export async function sleepFrames(n) {
   for (let i = 0; i < n; ++i) {
     await Engine.nextFrame;
   }
