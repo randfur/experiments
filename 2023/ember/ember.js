@@ -33,6 +33,9 @@ export class Ember {
           const axis = new Vec3(deviate(1), deviate(1), deviate(1)).inplaceNormalise();
           const maxAngle = TAU * 0.001 * randomRange(1, 5);
           for await (const progress of frameRangeProgress(randomRange(300, 1000))) {
+            if (this.done) {
+              return;
+            }
             this.orientation.inplaceMultiply(
               Rotor3.getTemp().setAxisAngle(
                 axis,
