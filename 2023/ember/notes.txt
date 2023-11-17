@@ -23,6 +23,9 @@
   - Will probably pull Vec3 and Rotor3 out into a ga.js library.
   - Tempted to pull Engine out as well but nah, too small, will just recreate from scratch again.
     - Just consists of add() { add to lists, await run, remove from lists } and run { render lists each frame }.
+- Changed sleep() to sleepFrames().
+  - When locking the computer the frames would stop processing but the setTimeouts would keep going resulting in a massive pileup of sub particles getting created but not progressing their lifespan which decrements based on frame ticks.
+  - Thought things were leaking but performance slowly got back to normal as the flood dissipated.
 
 # 2023-11-16
 - Need vector and rotor classes.

@@ -41,8 +41,10 @@ export function* range(n) {
   }
 }
 
-export function sleep(milliseconds) {
-  return new Promise(resolve => setTimeout(resolve, milliseconds));
+export function sleepFrames(n) {
+  for (let i = 0; i < n; ++i) {
+    await Engine.nextFrame;
+  }
 }
 
 export const never = new Promise(resolve => {});

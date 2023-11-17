@@ -7,7 +7,7 @@ import {
   randomRange,
   deviate,
   range,
-  sleep,
+  sleepFrames,
   random,
   progressSmooth,
   progressUpDown,
@@ -45,14 +45,14 @@ export class Ember {
           }
         })();
 
-        await sleep(randomRange(500, 1000));
+        await sleepFrames(randomRange(50, 100));
       }
     })();
 
     if (this.primary) {
       (async () => {
         while (!this.done) {
-          await sleep(randomRange(100, 300));
+          await sleepFrames(randomRange(10, 30));
           Engine.add(new Ember(this.position.clone(), this.orientation.clone()));
         }
       })();
