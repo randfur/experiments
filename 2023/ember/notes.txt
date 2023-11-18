@@ -6,6 +6,8 @@
     - Currently position * transform * cameraTransform.
     - Will probably be using Mat4 * Vec3 in JS code.
     - Should Mat4s accumulate on the left in this case? Probably.
+  - Currently no nice way to update the uniform ArrayBuffer, need to create that interface.
+    - Not even being updated on draw either.
 
 # 2023-11-17
 - Added setTurnTo() to Rotor3.
