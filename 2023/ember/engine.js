@@ -4,7 +4,7 @@ import {Rotor3} from './rotor3.js';
 
 export class Engine {
   static init() {
-    this.entityList = [];
+    this.entities = new Set();
     const {
       width,
       height,
@@ -21,11 +21,11 @@ export class Engine {
   }
 
   static async add(entity) {
-    this.entityList.push(entity);
+    this.entities.add(entity);
     entity.done = false;
     await entity.run();
     entity.done = true;
-    this.entityList.splice(this.entityList.indexOf(entity), 1);
+    this.entities.delete(entity);
   }
 
   static async run() {
@@ -35,7 +35,7 @@ export class Engine {
       Vec3.clearTemps();
       Rotor3.clearTemps();
       this.hexLines.clear();
-      for (const entity of this.entityList) {
+      for (const entity of this.entities) {
         entity.step?.();
         entity.draw?.(this.hexLines);
       }
