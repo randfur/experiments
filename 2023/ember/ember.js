@@ -1,6 +1,7 @@
 import {Engine} from './engine.js';
-import {Vec3} from './vec3.js';
-import {Rotor3} from './rotor3.js';
+import {Vec3} from './third-party/ga/vec3.js';
+import {Rotor3} from './third-party/ga/rotor3.js';
+import {Temp} from './third-party/ga/temp.js';
 import {
   frameRangeProgress,
   never,
@@ -37,7 +38,7 @@ export class Ember {
               return;
             }
             this.orientation.inplaceMultiply(
-              Rotor3.getTemp().setAxisAngle(
+              Temp.rotor3().setAxisAngle(
                 axis,
                 progressSmooth(progressUpDown(progress)) * maxAngle,
               )
@@ -69,11 +70,11 @@ export class Ember {
     this.orientation.inplaceTurnTo(
       this.position,
       this.baseForward,
-      Vec3.getTemp(0, 0, 50),
+      Temp.vec3(0, 0, 50),
       0.01,
     );
     this.position.inplaceAdd(
-      Vec3.getTemp().set(this.baseForward).inplaceRotateRotor(this.orientation).inplaceScale(this.speed),
+      Temp.vec3().set(this.baseForward).inplaceRotateRotor(this.orientation).inplaceScale(this.speed),
     );
   }
 

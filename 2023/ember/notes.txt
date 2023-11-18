@@ -1,3 +1,12 @@
+# 2023-11-18
+- Extracted geometric algebra classes into new repo: git@github.com:randfur/ga.git
+  - Using new library.
+- Want to add camera movement, follow primary ember riding its trail and following its orientation.
+  - Not sure about the order of matrix multiplication in the hex lines shader.
+    - Currently position * transform * cameraTransform.
+    - Will probably be using Mat4 * Vec3 in JS code.
+    - Should Mat4s accumulate on the left in this case? Probably.
+
 # 2023-11-17
 - Added setTurnTo() to Rotor3.
   - The ability to turn towards something was the reason for using rotors over quaternions, finally using it.
