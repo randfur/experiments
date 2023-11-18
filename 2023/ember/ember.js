@@ -52,7 +52,7 @@ export class Ember {
     if (this.primary) {
       (async () => {
         while (!this.done) {
-          await sleepFrames(randomRange(10, 30));
+          await sleepFrames(randomRange(5, 20));
           Engine.add(new Ember(this.position.clone(), this.orientation.clone()));
         }
       })();
