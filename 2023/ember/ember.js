@@ -79,40 +79,40 @@ export class Ember {
   }
 
   draw(hexLinesContext, hexLines) {
-    if (this.primary) {
-      const trailPosition = Temp.vec3().inplaceMultiplyMat4Left(
-        Temp.mat4()
-          .setIdentity()
-          .inplaceMultiplyLeft(
-            Temp.mat4().setTranslateVec3(
-              Temp.vec3()
-                .setScale(1, this.position)
-                .inplaceAdd(
-                  Temp.vec3()
-                    .set(this.baseForward)
-                    .inplaceRotateRotor(this.orientation)
-                    .inplaceScale(-40),
-                ),
-            ),
-          ),
-      );
-      // hexLines.addDot({
-      //   position: trailPosition,
-      //   size: 5,
-      //   colour: {r: 255, g: 255, b: 255},
-      // });
-        // .inplaceMultiplyLeft(
-        //   Temp.mat4().setRotateRotor(
-        //     Temp.rotor3().set(this.orientation).inplaceConjugate(),
-        //   ),
-        // )
-        // .exportToArrayBuffer(hexLinesContext.cameraTransformMatrix);
-      Temp.mat4()
-        .setTranslateVec3(
-          Temp.vec3().setScale(-1, trailPosition),
-        )
-        .exportToArrayBuffer(hexLinesContext.globalTransformMatrix);
-    }
+    // if (this.primary) {
+    //   const trailPosition = Temp.vec3().inplaceMultiplyMat4Left(
+    //     Temp.mat4()
+    //       .setIdentity()
+    //       .inplaceMultiplyLeft(
+    //         Temp.mat4().setTranslateVec3(
+    //           Temp.vec3()
+    //             .setScale(1, this.position)
+    //             .inplaceAdd(
+    //               Temp.vec3()
+    //                 .set(this.baseForward)
+    //                 .inplaceRotateRotor(this.orientation)
+    //                 .inplaceScale(-40),
+    //             ),
+    //         ),
+    //       ),
+    //   );
+    //   // hexLines.addDot({
+    //   //   position: trailPosition,
+    //   //   size: 5,
+    //   //   colour: {r: 255, g: 255, b: 255},
+    //   // });
+    //     // .inplaceMultiplyLeft(
+    //     //   Temp.mat4().setRotateRotor(
+    //     //     Temp.rotor3().set(this.orientation).inplaceConjugate(),
+    //     //   ),
+    //     // )
+    //     // .exportToArrayBuffer(hexLinesContext.cameraTransformMatrix);
+    //   Temp.mat4()
+    //     .setTranslateVec3(
+    //       Temp.vec3().setScale(-1, trailPosition),
+    //     )
+    //     .exportToArrayBuffer(hexLinesContext.globalTransformMatrix);
+    // }
     const lifeProgress = this.life / this.maxLife;
     hexLines.addDot({
       position: this.position,
