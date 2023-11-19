@@ -1,0 +1,20 @@
+# 2023-11-19
+- Want to investigate how to use WebGL matrices in hex-lines to do camera transforms.
+- Create 3D grid of points colour coded to show which octant is which.
+- Got grid going, colour setting a little bit complex.
+- Got camera transform going. Is really world transform, need to do the reverse to the transform that's happening to the camera.
+  - Inverting the translation and orientation should do the trick and seems to.
+- Need to try adding movement controls.
+  - Mouse left click drag to rotate.
+  - Mouse right click drag to pan.
+  - Mouse middle click drag to forwards/backwards.
+  - TODO.
+    - Done.
+- It all works as expected.
+  - Matrix passing to WebGL is working as expected.
+  - Nothing is reversed unexpectedly.
+- Rotor concern.
+  - Rotors stack by multiplying on the right.
+  - Matrices stack by multiplying on the left.
+  - Would be nice for them to be consistent...
+    - Not sure which one should win.

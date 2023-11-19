@@ -19,3 +19,9 @@
 [submodule "2023/ember/third-party/ga"]
 	path = 2023/ember/third-party/ga
 	url = git@github.com:randfur/ga.git
+[submodule "2023/grid-transform/third-party/hex-lines"]
+	path = 2023/grid-transform/third-party/hex-lines
+	url = git@github.com:randfur/hex-lines.git
+[submodule "2023/grid-transform/third-party/ga"]
+	path = 2023/grid-transform/third-party/ga
+	url = git@github.com:randfur/ga.git
