@@ -13,6 +13,12 @@ async function main() {
   const position = new Vec3();
   const orientation = new Rotor3();
   const dragState = {};
+  let invert = false;
+  window.addEventListener('keydown', event => {
+    if (event.key === 'i') {
+      invert ^= true;
+    }
+  });
   window.addEventListener('contextmenu', event => event.preventDefault());
   window.addEventListener('mousedown', event => {
     event.preventDefault();
@@ -25,8 +31,8 @@ async function main() {
     const x = event.offsetX;
     const y = event.offsetY;
     for (const [button, lastPosition] of Object.entries(dragState)) {
-      const deltaX = x - lastPosition.x;
-      const deltaY = y - lastPosition.y;
+      const deltaX = (x - lastPosition.x) * (invert ? 1 : -1);
+      const deltaY = (y - lastPosition.y) * (invert ? 1 : -1);
       lastPosition.x = x;
       lastPosition.y = y;
       switch (button) {

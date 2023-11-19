@@ -20,3 +20,4 @@
     - Not sure which one should win.
 - Switched from pointer events to mouse events.
   - Pointer events don't support multiple mouse buttons being pressed.
+- Added ability to invert camera control with I key.
