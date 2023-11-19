@@ -127,7 +127,7 @@ export class Ember {
       position: this.position,
       size: this.size * lifeProgress,
       colour: this.primary
-        ? {r: 255, g: 255, b: 0}
+        ? {r: 255, g: 255, b: 200}
         : {
           r: 255 * lifeProgress,
           g: Math.max(255 * (lifeProgress - 1 + 0.1) / 0.1, 0),
