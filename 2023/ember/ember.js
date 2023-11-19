@@ -19,11 +19,22 @@ export class Ember {
   constructor(position=null, orientation=null) {
     this.primary = position === null;
     this.position = position ?? new Vec3(0, 0, 0);
-    this.speed = this.primary ? 1 : 0.3;
+    this.speed = this.primary ? 1.5 : 0.3;
     this.orientation = orientation ?? new Rotor3();
     this.size = 10;
     this.maxLife = 1000;
     this.life = this.maxLife;
+    if (this.primary) {
+      this.cameraBehind = false;
+      window.addEventListener('keydown', event => {
+        if (event.code === 'Space') {
+          this.cameraBehind ^= true;
+        }
+      });
+      window.addEventListener('pointerdown', event => {
+        this.cameraBehind ^= true;
+      });
+    }
   }
 
   async run() {
@@ -70,7 +81,7 @@ export class Ember {
       this.position,
       Temp.z(),
       Temp.vec3(0, 0, 50),
-      0.01,
+      this.primary ? 0.01 : 0.001,
     );
     this.position.inplaceAdd(
       Temp.z().inplaceRotateRotor(this.orientation).inplaceScale(this.speed),
@@ -79,23 +90,36 @@ export class Ember {
 
   draw(hexLines) {
     if (this.primary) {
-      const trailPosition = Temp.vec3(0, 10, 50)
-        .inplaceRotateRotor(this.orientation)
-        .inplaceAdd(this.position);
-      Temp.mat4()
-        .setTranslateVec3(Temp.vec3().setScale(-1, trailPosition))
-        .inplaceMultiplyLeft(
-          Temp.mat4().setRotateRotor(
-            Temp.rotor3().setMultiply(
-              this.orientation,
-              Temp.rotor3().setTurnAround(
-                Temp.z().inplaceRotateRotor(this.orientation),
-                Temp.x().inplaceRotateRotor(this.orientation),
-              ),
+      if (this.cameraBehind) {
+        const trailPosition = Temp.vec3(0, 20, -100)
+          .inplaceRotateRotor(this.orientation)
+          .inplaceAdd(this.position);
+        Temp.mat4()
+          .setTranslateVec3(Temp.vec3().setScale(-1, trailPosition))
+          .inplaceMultiplyLeft(
+            Temp.mat4().setRotateRotor(
+              Temp.rotor3()
+                .inplaceMultiplyRight(this.orientation)
+                .inplaceConjugate()
             )
           )
-        )
-        .exportToArrayBuffer(hexLines.transformMatrix);
+          .exportToArrayBuffer(hexLines.transformMatrix);
+      } else {
+        const trailPosition = Temp.vec3(0, 20, 50)
+          .inplaceRotateRotor(this.orientation)
+          .inplaceAdd(this.position);
+        Temp.mat4()
+          .setTranslateVec3(Temp.vec3().setScale(-1, trailPosition))
+          .inplaceMultiplyLeft(
+            Temp.mat4().setRotateRotor(
+              Temp.rotor3()
+                .setTurnAround(Temp.z(), Temp.x())
+                .inplaceMultiplyRight(this.orientation)
+                .inplaceConjugate()
+            )
+          )
+          .exportToArrayBuffer(hexLines.transformMatrix);
+      }
     }
 
     const lifeProgress = this.life / this.maxLife;

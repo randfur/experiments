@@ -32,7 +32,7 @@ export function progressSmooth(x) {
 }
 
 export function progressUpDown(x) {
-  return x < 0.5 ? x * 2 : 1 - (1 - x) * 2;
+  return x < 0.5 ? x * 2 : (1 - x) * 2;
 }
 
 export function* range(n) {

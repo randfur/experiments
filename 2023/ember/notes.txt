@@ -8,6 +8,11 @@
 - Added scale to mat4.
   - Works a bit weird when used for the camera transform.
   - Probably because it's not affecting the size of the hexagons, only the position.
+- Updated ember to have camera infront/behind.
+  - Probably don't need to split out the arrow demo since it looks pretty similar.
+  - Made the non-primary embers not stick to the middle as much.
+  - Should have the stationary camera as an option as well, maybe assign to number keys.
+    - TODO.
 
 # 2023-11-19
 - hex-lines can now have its camera transform set each frame.
