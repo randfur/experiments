@@ -1,5 +1,17 @@
+# 2023-11-20
+- Added arrow demo to test camera orientation in a more simple set up.
+  - Seems to work as expected.
+    - The issue before was the use of x as forward when the camera is locked to using z as forward.
+    - Things need to be rotated into using z as forward or just use z forward to begin with.
+    - Updated ember to use z as forward.
+  - Should break out into separate experiment.
+- Added scale to mat4.
+  - Works a bit weird when used for the camera transform.
+  - Probably because it's not affecting the size of the hexagons, only the position.
+
 # 2023-11-19
 - hex-lines can now have its camera transform set each frame.
+
 # 2023-11-18
 - Extracted geometric algebra classes into new repo: git@github.com:randfur/ga.git
   - Using new library.
