@@ -1,3 +1,5 @@
+# 2023-11-19
+- hex-lines can now have its camera transform set each frame.
 # 2023-11-18
 - Extracted geometric algebra classes into new repo: git@github.com:randfur/ga.git
   - Using new library.

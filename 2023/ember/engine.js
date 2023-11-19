@@ -35,7 +35,7 @@ export class Engine {
       this.hexLines.clear();
       for (const entity of this.entities) {
         entity.step?.();
-        entity.draw?.(this.hexLines);
+        entity.draw?.(this.hexLinesContext, this.hexLines);
       }
       this.hexLines.draw();
     }
