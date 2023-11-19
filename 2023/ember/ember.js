@@ -25,7 +25,7 @@ export class Ember {
     this.maxLife = 1000;
     this.life = this.maxLife;
     if (this.primary) {
-      this.cameraBehind = false;
+      this.cameraBehind = true;
       window.addEventListener('keydown', event => {
         if (event.code === 'Space') {
           this.cameraBehind ^= true;
