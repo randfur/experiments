@@ -14,14 +14,14 @@ async function main() {
   const orientation = new Rotor3();
   const dragState = {};
   window.addEventListener('contextmenu', event => event.preventDefault());
-  window.addEventListener('pointerdown', event => {
+  window.addEventListener('mousedown', event => {
     event.preventDefault();
     dragState[event.button] = {
       x: event.offsetX,
       y: event.offsetY,
     };
   });
-  window.addEventListener('pointermove', event => {
+  window.addEventListener('mousemove', event => {
     const x = event.offsetX;
     const y = event.offsetY;
     for (const [button, lastPosition] of Object.entries(dragState)) {
@@ -51,7 +51,7 @@ async function main() {
       }
     }
   });
-  window.addEventListener('pointerup', event => {
+  window.addEventListener('mouseup', event => {
     delete dragState[event.button];
   });
 
