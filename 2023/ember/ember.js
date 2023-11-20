@@ -21,7 +21,7 @@ export class Ember {
     this.position = position ?? new Vec3(0, 0, 0);
     this.speed = this.primary ? 1.5 : 0.1;
     this.orientation = orientation ?? new Rotor3();
-    this.size = 6;
+    this.size = 10;
     this.maxLife = 1000;
     this.life = this.maxLife;
     if (this.primary) {
@@ -82,7 +82,7 @@ export class Ember {
         this.position,
         Temp.z(),
         Temp.vec3(),
-        0.001,
+        0.002,
       );
     }
     this.position.inplaceAdd(
@@ -93,7 +93,7 @@ export class Ember {
   draw(hexLines) {
     if (this.primary) {
       if (this.cameraBehind) {
-        const trailPosition = Temp.vec3(0, 20, -100)
+        const trailPosition = Temp.vec3(0, 30, -150)
           .inplaceRotateRotor(this.orientation)
           .inplaceAdd(this.position);
         Temp.mat4()
@@ -107,7 +107,7 @@ export class Ember {
           )
           .exportToArrayBuffer(hexLines.transformMatrix);
       } else {
-        const trailPosition = Temp.vec3(0, 20, 50)
+        const trailPosition = Temp.vec3(0, 20, 60)
           .inplaceRotateRotor(this.orientation)
           .inplaceAdd(this.position);
         Temp.mat4()
