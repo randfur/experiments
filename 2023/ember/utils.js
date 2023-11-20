@@ -14,16 +14,18 @@ export function randomRange(a, b) {
   return a + Math.random() * (b - a);
 }
 
-export async function* frameRange(n) {
-  for (let i = 0; i < n; ++i) {
-    yield i;
-    await Engine.nextFrame;
-  }
-}
-
-export async function* frameRangeProgress(n) {
-  for await (const i of frameRange(n)) {
-    yield i / n;
+export async function* secondsRange(durationSeconds) {
+  let elapsedSeconds = 0;
+  while (true) {
+    const secondsDelta = await Engine.nextFrame;
+    elapsedSeconds += secondsDelta;
+    if (elapsedSeconds >= durationSeconds) {
+      break;
+    }
+    yield {
+      progress: elapsedSeconds / durationSeconds,
+      secondsDelta,
+    };
   }
 }
 
@@ -41,9 +43,13 @@ export function* range(n) {
   }
 }
 
-export async function sleepFrames(n) {
-  for (let i = 0; i < n; ++i) {
-    await Engine.nextFrame;
+export async function sleepSeconds(durationSeconds) {
+  let elapsedSeconds = 0;
+  while (true) {
+    elapsedSeconds += await Engine.nextFrame;
+    if (elapsedSeconds >= durationSeconds) {
+      break;
+    }
   }
 }
 
