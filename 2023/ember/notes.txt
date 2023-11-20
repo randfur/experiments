@@ -13,6 +13,14 @@
   - Made the non-primary embers not stick to the middle as much.
   - Should have the stationary camera as an option as well, maybe assign to number keys.
     - TODO.
+- Moar embers.
+- Updated engine to return seconds between frames.
+  - Made time util functions time based instead of frame based.
+    - Mobile was running faster than desktop and looking cooler.
+    - Should try to make them both look cool.
+- Split Flame class out of Ember, no more this.primary.
+  - Flame much much simpler now, fewer async processes going on.
+- Made embers start slow and speed up gradually, allows for a tight cluster in the beginning.
 
 # 2023-11-19
 - hex-lines can now have its camera transform set each frame.
