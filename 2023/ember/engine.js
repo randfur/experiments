@@ -10,7 +10,7 @@ export class Engine {
       hexLinesContext,
     } = HexLinesContext.setupFullPageContext({
       is3d: true,
-      pixelSize: 1,
+      pixelSize: 4,
     });
     this.width = width;
     this.height = height;

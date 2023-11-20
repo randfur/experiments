@@ -19,9 +19,9 @@ export class Ember {
   constructor(position=null, orientation=null) {
     this.primary = position === null;
     this.position = position ?? new Vec3(0, 0, 0);
-    this.speed = this.primary ? 1.5 : 0.3;
+    this.speed = this.primary ? 1.5 : 0.1;
     this.orientation = orientation ?? new Rotor3();
-    this.size = 10;
+    this.size = 6;
     this.maxLife = 1000;
     this.life = this.maxLife;
     if (this.primary) {
@@ -63,7 +63,7 @@ export class Ember {
     if (this.primary) {
       (async () => {
         while (!this.done) {
-          await sleepFrames(randomRange(5, 20));
+          await sleepFrames(randomRange(5, 10));
           Engine.add(new Ember(this.position.clone(), this.orientation.clone()));
         }
       })();
@@ -77,12 +77,14 @@ export class Ember {
   }
 
   step() {
-    this.orientation.inplaceTurnTo(
-      this.position,
-      Temp.z(),
-      Temp.vec3(0, 0, 50),
-      this.primary ? 0.01 : 0.001,
-    );
+    if (this.primary) {
+      this.orientation.inplaceTurnTo(
+        this.position,
+        Temp.z(),
+        Temp.vec3(),
+        0.001,
+      );
+    }
     this.position.inplaceAdd(
       Temp.z().inplaceRotateRotor(this.orientation).inplaceScale(this.speed),
     );
