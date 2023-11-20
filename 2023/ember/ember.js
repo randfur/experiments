@@ -82,7 +82,7 @@ export class Ember {
         this.position,
         Temp.z(),
         Temp.vec3(),
-        0.002,
+        0.005,
       );
     }
     this.position.inplaceAdd(
