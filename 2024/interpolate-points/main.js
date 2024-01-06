@@ -52,6 +52,9 @@ async function main() {
       debug ^= true;
     }
   });
+  window.addEventListener('click', event => {
+    debug ^= true;
+  });
 
   document.body.style = `
     padding: 0;
