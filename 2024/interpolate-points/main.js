@@ -61,7 +61,7 @@ async function main() {
   const fromPoint = new Vec2();
   const toPoint = new Vec2();
 
-  const travelSteps = 100;
+  const travelSteps = 200;
   const pointSize = 10;
   context.lineWidth = 3;
   while (true) {
