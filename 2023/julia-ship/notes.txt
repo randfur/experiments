@@ -1,0 +1,69 @@
+# 2024-01-06
+- Added the 4D plane x/y direction.
+  - Picking two random 4D unit vectors A and B and making a right angle out of them.
+  - A stays put and B gets shifted to be a right angle.
+  - B' = normalise(B - A * dot(A, B))
+  - Have a C point as the centre around which the plane and rendering happens.
+  - Pixel position P = Ax + By + C.
+  - P.xy is the initial Z0 value and P.zw is the complex constant to add each iteration.
+  - Could have gone through geometric algebra to do fancy 4D plane rotations but picking random points and interpolating between them works well enough.
+- Using hard coded ABC values, the image is very stretchy looking, a bit eh TBH.
+  - Animates all weird warpy though which is fine.
+- How to vary ABC.
+  - Want smooth interpolations across a series of random points.
+  - Can use the previous two points as influence over the current ones.
+  - Just continue the previous trajectory as if nothing changed and smooth interpolate to the new trajectory.
+  - Should test out in separate project.
+
+# 2023-12-31
+- Added basic mandlebrot rendering in fragment shader.
+
+# 2023-12-30
+- Working on basic WebGPU rendering.
+  - Following: https://webgpufundamentals.org/webgpu/lessons/webgpu-from-webgl.html
+- Trajectory algorithm:
+  - First thing to work out.
+  - Use a simple mandlebrot.
+  - While traversing test various random possible new trajectories from the end point.
+  - Will need to make the motion smooth somehow also, trajectories will have to account for existing velocity.
+  - Test n points along the random path under consideration.
+  - For each score them based on how often the mandlebrot value flips direction.
+  - Eg. 1, 3, 6, 4, 5, 2, 8, 0, 1 flips 6 times and would score better than 0, 1, 2, 3, 4, 5, 6, 7 which flips 0 times.
+  - The magnitude of the flipping can be tracked e.g. sum of the slopes between each point and used as a tie breaker.
+
+
+# 2023-12-27
+- https://www.shadertoy.com/view/MffGRX
+- Want to make a screensaver that traverses z' = z^2 + c.
+- Traversal through 4D space: (z0.r, z0.i, c.r, c.i)
+- Have the plane of rendering in an arbitrary orientation in that space.
+  - Can do fancy 4D rotations with GA.
+- Need an algorithm that finds interesting regions to traverse through.
+  - Can probe points along a random direction, count the number of times the derivative changes sign, prefer higher.
+  - Need to test it out in a simple space.
+  - What to do with zoom/rotation?
+    - Can probably animate independently from translation.
+- Releaning WebGPU.
+  - navigator.gpu.requestAdapter().
+    - Adapters list features and limits.
+    - Can be fallback (probably software).
+  - adapter.requestDevice().
+    - Device is the device.
+    - requestDevice() can specify features and limits required.
+  - canvas.getContext('webgpu').configure({device, format: navigator.gpu.getPreferredCanvasFormat()}).
+  - Pipeline.
+    - Vertex shader.
+      - Shader code.
+      - Buffers.
+    - Primitive options (topology, depth testing, stencilling).
+    - Fragment shader.
+      - Shader code.
+      - Targets with format.
+  - Render pass.
+    - Color attachments.
+      - The textures to write into.
+    - Pipeline.
+    - Vertex buffers.
+    - Draw vertex+instance counts.
+  - webgpufundamentals.org exists!
+    - https://webgpufundamentals.org/webgpu/lessons/webgpu-fundamentals.html#:~:text=Maybe%20a-,picture,-will%20help.%20Here

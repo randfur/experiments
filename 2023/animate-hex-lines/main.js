@@ -1,13 +1,17 @@
-import {HexLinesContext} from './third-party/hex-lines/src/hex-lines.js'
+import {AnimationPack} from './animation-pack.js'
+import {Editor} from './editor.js'
 
 async function main() {
-  const {width, height, hexLinesContext} = HexLinesContext.setupFullPageContext();
-  const animation = new Animation();
-  const editorState = new EditorState(animation);
+  const animationPack = new AnimationPack();
+  const animationEditor = new AnimationEditor(animationPack);
+
+  window.addEventListener('keypress', event => {
+    editor.keyPress(event);
+  });
 
   while (true) {
     await new Promise(requestAnimationFrame);
-    editorState.render(width, height, hexLinesContext);
+    animationEditor.render();
   }
 }
 

@@ -1,3 +1,20 @@
+# 2023-12-10
+- Continued this a bit.
+- Updated to AnimationEditor and AnimationPack.
+- Added cursor concept to editor.
+  - Selects the current animation, its layer, keyframe and element to edit.
+  - Can recurse into another animation like a stack.
+  - Probably need a separate cursor for which property of the selected element is being modified.
+  - Can you edit the layer name without losing the element selection? Should be able to but requires this secondary cursor probably.
+- Controls
+  - Considering keyboard controls only for now for simplicity.
+  - Makes the UI simpler probably if there's no hit detection needed yet.
+  - Maybe keys like A/L/K/E for cycling selection of the animation/layer/keyframe/element properties to edit.
+  - Need navigation keys for traversing which ALKE is selected.
+    - Left/right to select sibling, up to go to parent, down to go to child.
+    - Remember which child was previously selected? Probably.
+      - Throw it into a temporary map of serialised cursor state to child index.
+
 # 2023-09-29
 - Started writing main.
   - Has editor state and animation data and render loop.
