@@ -45,6 +45,14 @@ function smooth(x) {
 }
 
 async function main() {
+  let debug = true;
+
+  window.addEventListener('keydown', event => {
+    if (event.key == 'd') {
+      debug ^= true;
+    }
+  });
+
   document.body.style = `
     padding: 0;
     margin: 0;
@@ -62,7 +70,7 @@ async function main() {
   const toPoint = new Vec2();
 
   const travelSteps = 200;
-  const pointSize = 10;
+  const pointSize = 20;
   context.lineWidth = 3;
   while (true) {
     prevFromPoint.copy(fromPoint);
@@ -80,12 +88,14 @@ async function main() {
       const smoothPoint = projectedPoint.interpolateTo(trajectoryPoint, smooth(progress));
 
       context.clearRect(0, 0, innerWidth, innerHeight);
-      for (const point of [prevFromPoint, fromPoint, toPoint]) {
-        context.strokeRect(point.x, point.y, pointSize, pointSize);
-      }
-      context.fillStyle = '#0002';
-      for (const point of [projectedPoint, trajectoryPoint]) {
-        context.fillRect(point.x, point.y, pointSize, pointSize);
+      if (debug) {
+        for (const point of [prevFromPoint, fromPoint, toPoint]) {
+          context.strokeRect(point.x, point.y, pointSize, pointSize);
+        }
+        context.fillStyle = '#0002';
+        for (const point of [projectedPoint, trajectoryPoint]) {
+          context.fillRect(point.x, point.y, pointSize, pointSize);
+        }
       }
       context.fillStyle = 'blue';
       context.fillRect(smoothPoint.x, smoothPoint.y, pointSize, pointSize);
