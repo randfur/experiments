@@ -1,0 +1,6 @@
+# 2024-01-06
+- Testing out a smooth point interpolation algorithm for julia-ship.
+- Smoothly interpolate from projection of the previous trajectory to the new trajectory.
+- Works great.
+- Looks like someone constantly rushing from place to place.
+- Managed to remember the smoothing function in one try.
