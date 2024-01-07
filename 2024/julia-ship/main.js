@@ -47,20 +47,18 @@ async function main() {
     fragment: {
       module: device.createShaderModule({
         code: `
+        // TODO: Replace with uniforms from main thread.
         const a = vec4f(3, 4, -2, 9);
         const b = vec4f(-1, 0, 1, 4);
-        // const a = vec4f(1, 0, 0, 0);
-        // const b = vec4f(0, 1, 0, 0);
-        // const a = vec4f(1, 0, 0, 0);
-        // const b = vec4f(0, 0, 0, 1);
-        const c = vec4f(0.1, -0.7, 0.4, 0.2);
+        // const c = vec4f(0.1, -0.7, 0.4, 0.2);
+        @group(0) @binding(0) var<uniform> c: vec4f;
+        const zoom = 0.3;
 
         @fragment
         fn main(@builtin(position) position: vec4f, @location(0) vertex: vec2f) -> @location(0) vec4f {
           let xDir = normalize(a);
           let yDir = normalize(b - xDir * dot(xDir, b));
-          // let centralPosition = vec4f(0, 0, -1.17, 0.187);
-          let pixelPosition = c + xDir * vertex.x + yDir * vertex.y;
+          let pixelPosition = c + (xDir * vertex.x + yDir * vertex.y) * zoom;
 
           var z = pixelPosition.xy;
           var c = pixelPosition.zw;
@@ -82,21 +80,43 @@ async function main() {
     },
   });
 
-  // const uniformBuffer = device.createBuffer({
-  // });
+  const uniformBuffer = device.createBuffer({
+    size: 3 * 4 * 32 / 8,
+    usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+  });
 
-  const commandEncoder = device.createCommandEncoder();
-  const renderPass = commandEncoder.beginRenderPass({
-    colorAttachments: [{
-      view: context.getCurrentTexture().createView(),
-      loadOp: 'clear',
-      storeOp: 'store',
+  const uniformBindGroup = device.createBindGroup({
+    layout: pipeline.getBindGroupLayout(0),
+    entries: [{
+      binding: 0,
+      resource: {
+        buffer: uniformBuffer,
+      },
     }],
   });
-  renderPass.setPipeline(pipeline);
-  renderPass.draw(6);
-  renderPass.end();
-  device.queue.submit([commandEncoder.finish()]);
+
+  while (true) {
+    const time = await new Promise(requestAnimationFrame);
+    device.queue.writeBuffer(
+      uniformBuffer,
+      0,
+      new Float32Array([0.1, -0.5 + 0.5 * Math.sin(time / 10000), 0.4 + 0.1 * Math.cos(time / 6000), 0.2]),
+    );
+
+    const commandEncoder = device.createCommandEncoder();
+    const renderPass = commandEncoder.beginRenderPass({
+      colorAttachments: [{
+        view: context.getCurrentTexture().createView(),
+        loadOp: 'clear',
+        storeOp: 'store',
+      }],
+    });
+    renderPass.setPipeline(pipeline);
+    renderPass.setBindGroup(0, uniformBindGroup);
+    renderPass.draw(6);
+    renderPass.end();
+    device.queue.submit([commandEncoder.finish()]);
+  }
 }
 
 main();

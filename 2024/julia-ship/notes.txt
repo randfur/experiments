@@ -1,3 +1,6 @@
+# 2024-01-07
+- Got uniform buffer transferring data to GPU, can animate now.
+
 # 2024-01-06
 - Added the 4D plane x/y direction.
   - Picking two random 4D unit vectors A and B and making a right angle out of them.
