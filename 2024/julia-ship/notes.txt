@@ -1,5 +1,10 @@
 # 2024-01-07
 - Got uniform buffer transferring data to GPU, can animate now.
+- Extracted WebGPU stuff into separate class.
+- Added aspect ratio handling, works very easily.
+- Getting ready to do fancy movement stuff.
+- Still unsure about constraining it to interesting locations.
+- Idea: Click to set next waypoint.
 
 # 2024-01-06
 - Added the 4D plane x/y direction.
