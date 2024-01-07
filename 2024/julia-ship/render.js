@@ -60,7 +60,7 @@ export class Render {
             c: vec4f,
           };
           @group(0) @binding(0) var<uniform> uniforms: Uniforms;
-          const zoom = 0.3;
+          const zoom = 1.0;
 
           @fragment
           fn main(@builtin(position) position: vec4f, @location(0) vertex: vec2f) -> @location(0) vec4f {
@@ -78,7 +78,7 @@ export class Render {
               count = select(count, i, length(z) < 2);
             }
 
-            return vec4f(vec3(1, 0, 0) * f32(count) / f32(countDivisor), 1);
+            return vec4f(vec3(0, 0, 1) * min(1, f32(count) / f32(countDivisor)), 1);
           }
           `,
         }),

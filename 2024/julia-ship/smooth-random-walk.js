@@ -1,19 +1,19 @@
 export class SmoothRandomWalk {
   static init() {
     this.a = new Wanderer({
-      maxSteps: 410,
+      maxSteps: 810,
       minSize: 0,
       maxSize: 1,
     });
     this.b = new Wanderer({
-      maxSteps: 670,
+      maxSteps: 1670,
       minSize: 0,
       maxSize: 1,
     });
     this.c = new Wanderer({
-      maxSteps: 1000,
-      minSize: 0.6,
-      maxSize: 1.2,
+      maxSteps: 2000,
+      minSize: 0.5,
+      maxSize: 1.0,
     });
   }
 
