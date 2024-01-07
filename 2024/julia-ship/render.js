@@ -78,7 +78,7 @@ export class Render {
               count = select(count, i, length(z) < 2);
             }
 
-            return vec4f(vec3(0, 0, 1) * min(1, f32(count) / f32(countDivisor)), 1);
+            return vec4f(vec3(1, 0, 0) * min(1, f32(count) / f32(countDivisor)), 1);
           }
           `,
         }),
