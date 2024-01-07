@@ -1,3 +1,9 @@
+# 2024-01-08
+- Added 4D random walk.
+  - No detection of interesting features.
+  - More or less works, has a lot of dead space though.
+  - More interesting and dynamic than the trig, can see the plane rotations pretty clearly.
+
 # 2024-01-07
 - Got uniform buffer transferring data to GPU, can animate now.
 - Extracted WebGPU stuff into separate class.
