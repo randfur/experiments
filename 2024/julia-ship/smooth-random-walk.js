@@ -135,7 +135,7 @@ export class SmoothRandomWalk {
 }
 
 function collectSamples(prevFromPoint, fromPoint, toPoint) {
-  const sampleCount = 50;
+  const sampleCount = 20;
   const maxIterationCount = 50;
   const samples = [];
   for (let i = 0; i < sampleCount; ++i) {
