@@ -97,7 +97,7 @@ export class Render {
 
             var z = pixelPosition.xy;
             var c = pixelPosition.zw;
-            const maxCount: u32 = 56;
+            const maxCount: u32 = 256;
             var count: u32 = 0;
             var escaped = false;
             var escapeLength: f32 = 0;
