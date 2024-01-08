@@ -3,7 +3,7 @@ const TAU = Math.PI * 2;
 
 export class SmoothRandomWalk {
   static init() {
-    this.zoomSetting = -200;
+    this.zoomSetting = -2000;
 
     this.centre = new Wanderer({
       maxSteps: 1000,
@@ -11,7 +11,7 @@ export class SmoothRandomWalk {
       maxSize: 1.5,
       debugColour: '#c00',
     });
-    this.centre.fromPoint.copy(this.randomVec4());
+    this.centre.fromPoint.set(-0.8, -0.1, -0.9, 0.24);
     this.centre.prevFromPoint.copy(this.centre.fromPoint.add(this.randomVec4()));
     this.centre.toPoint.copy(this.centre.fromPoint.add(this.randomVec4()));
     for (let i = 0; i < 10; ++i) {
@@ -28,9 +28,12 @@ export class SmoothRandomWalk {
       );
       this.centre.prevFromPoint.copy(clickPosition);
       this.centre.fromPoint.copy(clickPosition);
-      this.centre.toPoint.copy(this.centre.fromPoint.add(this.randomVec4()));
-      this.centre.step = 0;
+      this.centre.toPoint.copy(clickPosition);
       this.centre.nextToPoint = null;
+      for (let i = 0; i < 10; ++i) {
+        this.updateCentreNextToPoint();
+      }
+      this.centre.steps = this.centre.maxSteps;
     });
     window.addEventListener('wheel', event => {
       this.zoomSetting += event.deltaY;
@@ -116,7 +119,8 @@ export class SmoothRandomWalk {
     context.stroke();
 
     context.fillStyle = 'white';
-    context.fillText(`bestCandidateScore: ${this.bestCandidateScore}`, -debugUnitRadius, -debugUnitRadius - 10);
+    context.fillText(`bestCandidateScore: ${this.bestCandidateScore}`, -debugUnitRadius, -debugUnitRadius);
+    context.fillText(`zoom: ${this.getZoom()}`, -debugUnitRadius, -debugUnitRadius + 10);
     context.fillRect(this.clickX * debugUnitRadius, -this.clickY * debugUnitRadius, 2, 2);
 
     context.restore();
@@ -142,38 +146,28 @@ function collectSamples(prevFromPoint, fromPoint, toPoint) {
     let zi = samplePosition.y;
     const cr = samplePosition.z;
     const ci = samplePosition.w;
-    let length = 0;
+    let inside = true;
     for (let iteration = 0; iteration < maxIterationCount; ++iteration) {
       [zr, zi] = [
         zr * zr - zi * zi + cr,
         2 * zr * zi + ci,
       ];
-      length = zr * zr + zi * zi;
-      if (length >= 4) {
+      if (zr * zr + zi * zi >= 4) {
+        inside = false;
         break;
       }
     }
-    samples.push(length);
+    samples.push(inside);
   }
   return samples;
 }
 
 function gradeSamples(samples) {
+  const otherHalfSamples = samples.splice(0, samples.length / 2);
   let score = 0;
-  let count = 1;
-  let inside = null;
-  for (const sample of samples) {
-    const sampleInside = sample < 4;
-    if (inside === null) {
-      inside = sampleInside;
-    }
-    if (sampleInside === inside) {
-      ++count;
-    } else {
-      score += 1 / count;
-      count = 1;
-      inside = sampleInside;
-    }
+  for (const half of [samples, otherHalfSamples]) {
+    const insideCount = half.filter(inside => inside).length;
+    score -= Math.abs((insideCount / half.length) - 0.75);
   }
   return score;
 }
