@@ -7,6 +7,7 @@
   - User controls.
     - Click to set next waypoint.
     - Zooming.
+      - Scroll wheel and pinch zoom.
   - Colours.
     - Smooth gradient between counts.
     - Colouring the internal space.
@@ -29,6 +30,26 @@
   - Tried making the inside black.
     - Avoided too much red but the aliasing at the complex edges wasn't great.
 - Should rename ABC to something more meaningful.
+  - xDirGuide, yDirGuide, centre.
+  - The directions are just guides since they don't need to be normalised and the y guide will change directions to be orthogonal to x.
+- Added zoom to uniforms.
+  - Had to add padding to make the uniform data 64 bytes, seems to want a multiple of vec4f.
+  - WebGPU error messages are very helpful.
+- Smart waypointing.
+  - One issue is what initial value to use.
+  - If path distance is relative to zoom then being zoomed out far enough would let it find an edge to latch onto.
+  - How to prevent it from travelling too far?
+    - Penalise sum of final lengths if no inside points are found, should direct it back to the origin without missing out on the mandlebrot tip off in the negative real axis.
+  - Set up wanderers with a nextToPoint and extracted the smooth point lerping out into a separate function for simulating future trajectories.
+  - Added sampling and sampling evaluation.
+- Debug output.
+  - Added debug rendering of where the wanderers are.
+  - Flipped ordering so centre is first (red).
+- Controls.
+  - Added mouse click to set current position at click spot.
+  - Added mouse wheel to zoom.
+- Colour smoothing.
+  - Added zoom sensitive count divisor to bring out contrast at close zoom levels.
 
 # 2024-01-07
 - Got uniform buffer transferring data to GPU, can animate now.

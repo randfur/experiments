@@ -1,5 +1,7 @@
 export class Render {
   static canvas;
+  static debugCanvas;
+  static debugContext;
   static device;
   static context;
   static pipeline;
@@ -7,12 +9,37 @@ export class Render {
   static uniformBindGroup;
 
   static async init() {
-    this.canvas = document.createElement('canvas');
+    document.body.style = `
+      background-color: black;
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+      position: absolute;
+    `;
+
     this.device = await (await navigator.gpu.requestAdapter()).requestDevice();
 
+    this.canvas = document.createElement('canvas');
+    this.canvas.style = `
+      position: absolute;
+      left: 0;
+      top: 0;
+    `;
     this.canvas.width = innerWidth;
     this.canvas.height = innerHeight;
     document.body.append(this.canvas);
+
+    this.debugCanvas = document.createElement('canvas');
+    this.debugCanvas.style = `
+      position: absolute;
+      left: 0;
+      top: 0;
+    `;
+    this.debugCanvas.width = innerWidth;
+    this.debugCanvas.height = innerHeight;
+    document.body.append(this.debugCanvas);
+    this.debugContext = this.debugCanvas.getContext('2d');
+
     this.context = this.canvas.getContext('webgpu');
     this.context.configure({
       device: this.device,
@@ -55,23 +82,22 @@ export class Render {
           const xScale = ${Math.max(1, innerWidth / innerHeight)};
           const yScale = ${Math.max(1, innerHeight / innerWidth)};
           struct Uniforms {
-            a: vec4f,
-            b: vec4f,
-            c: vec4f,
+            centre: vec4f,
+            xDirGuide: vec4f,
+            yDirGuide: vec4f,
+            zoom: f32,
           };
           @group(0) @binding(0) var<uniform> uniforms: Uniforms;
-          const zoom = 0.1;
 
           @fragment
           fn main(@builtin(position) position: vec4f, @location(0) vertex: vec2f) -> @location(0) vec4f {
-            let xDir = normalize(uniforms.a);
-            let yDir = normalize(uniforms.b - xDir * dot(xDir, uniforms.b));
-            let pixelPosition = uniforms.c + (xDir * vertex.x * xScale + yDir * vertex.y * yScale) * zoom;
+            let xDir = normalize(uniforms.xDirGuide);
+            let yDir = normalize(uniforms.yDirGuide - xDir * dot(xDir, uniforms.yDirGuide));
+            let pixelPosition = uniforms.centre + (xDir * vertex.x * xScale + yDir * vertex.y * yScale) * uniforms.zoom;
 
             var z = pixelPosition.xy;
             var c = pixelPosition.zw;
             const maxCount: u32 = 256;
-            const countDivisor = 100;
             var count: u32 = 0;
             var escaped = false;
             var escapeLength: f32 = 0;
@@ -84,8 +110,9 @@ export class Render {
             }
 
             var granularCount = f32(count) + (1 - (escapeLength - 2) / 2);
+            let countDivisor = f32(maxCount) * (1 - min(1, uniforms.zoom) / 2);
             return vec4f(
-              vec3f(1, 0, 0) * select(1.0, granularCount / countDivisor, escaped),
+              vec3f(1, 0, 0) * select(1.0, min(1, granularCount / countDivisor), escaped),
               1);
           }
           `,
@@ -97,8 +124,15 @@ export class Render {
       },
     });
 
+    const f32Bytes = 32 / 8;
+    const vec4fBytes = 4 * f32Bytes;
     this.uniformBuffer = this.device.createBuffer({
-      size: 3 * 4 * 32 / 8,
+      size:
+        /*xDirGuide=*/vec4fBytes +
+        /*yDirGuide=*/vec4fBytes +
+        /*centre=*/vec4fBytes +
+        /*zoom=*/f32Bytes +
+        /*padding=*/3 * f32Bytes,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
 
