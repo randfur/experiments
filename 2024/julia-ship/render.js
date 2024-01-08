@@ -60,7 +60,7 @@ export class Render {
             c: vec4f,
           };
           @group(0) @binding(0) var<uniform> uniforms: Uniforms;
-          const zoom = 1.0;
+          const zoom = 0.1;
 
           @fragment
           fn main(@builtin(position) position: vec4f, @location(0) vertex: vec2f) -> @location(0) vec4f {
@@ -70,15 +70,23 @@ export class Render {
 
             var z = pixelPosition.xy;
             var c = pixelPosition.zw;
-            const maxCount: u32 = 100;
-            const countDivisor = 50;
+            const maxCount: u32 = 256;
+            const countDivisor = 100;
             var count: u32 = 0;
+            var escaped = false;
+            var escapeLength: f32 = 0;
             for (var i: u32 = 0; i < maxCount; i += 1) {
               z = vec2f(z.x * z.x - z.y * z.y, 2 * z.x * z.y) + c;
-              count = select(count, i, length(z) < 2);
+              let zLength = length(z);
+              escapeLength = select(zLength, escapeLength, escaped);
+              escaped = select(zLength >= 2, true, escaped);
+              count = select(i, count, escaped);
             }
 
-            return vec4f(vec3(1, 0, 0) * min(1, f32(count) / f32(countDivisor)), 1);
+            var granularCount = f32(count) + (1 - (escapeLength - 2) / 2);
+            return vec4f(
+              vec3f(1, 0, 0) * select(1.0, granularCount / countDivisor, escaped),
+              1);
           }
           `,
         }),

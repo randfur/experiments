@@ -3,6 +3,32 @@
   - No detection of interesting features.
   - More or less works, has a lot of dead space though.
   - More interesting and dynamic than the trig, can see the plane rotations pretty clearly.
+- Stuff TODO:
+  - User controls.
+    - Click to set next waypoint.
+    - Zooming.
+  - Colours.
+    - Smooth gradient between counts.
+    - Colouring the internal space.
+    - Cycling the colours over time.
+    - Maybe setting colours depending on zoom.
+  - Pick next waypoint.
+    - At all, need to restructure the wanderers a bit.
+    - Based on what looks good.
+      - Need to reimplement the shader logic.
+      - Need to implement the evaluation algorithm for a sequence of points.
+  - Move origin to different parts of the screen.
+    - Having the interesting in the middle will probably mean a 50/50 split all the time which might get boring.
+    - Can try adding another parameter for where on the screen the "middle" point of the plane is.
+  - Add debugging output.
+    - Will need to be a second overlay canvas.
+    - Hopefully doesn't mess with click events too much, shouldn't be an issue.
+- Added colour smoothing.
+  - Didn't do sqrt() like in the shadertoy version, maybe doesn't need it?
+    - Need to get much more zoomed in to really tell which needs smart waypoint picking and zooming.
+  - Tried making the inside black.
+    - Avoided too much red but the aliasing at the complex edges wasn't great.
+- Should rename ABC to something more meaningful.
 
 # 2024-01-07
 - Got uniform buffer transferring data to GPU, can animate now.
