@@ -5,6 +5,20 @@ export class SmoothRandomWalk {
   static init() {
     this.zoomSetting = -2000;
 
+    this.xDirGuide = new Wanderer({
+      maxSteps: 810,
+      minSize: 0,
+      maxSize: 1,
+      debugColour: 'lime',
+    });
+
+    this.yDirGuide = new Wanderer({
+      maxSteps: 1670,
+      minSize: 0,
+      maxSize: 1,
+      debugColour: 'blue',
+    });
+
     this.centre = new Wanderer({
       maxSteps: 1000,
       minSize: 0.5,
@@ -12,7 +26,7 @@ export class SmoothRandomWalk {
       debugColour: '#c00',
     });
     // this.centre.fromPoint.set(-0.8, -0.1, -0.9, 0.24);
-    this.centre.fromPoint.set(1.0, 0.52, -0.02, -0.67);
+    this.centre.fromPoint.set(1.05, 0.62, -0.25, -0.64);
     this.centre.prevFromPoint.copy(this.centre.fromPoint.add(this.randomVec4()));
     this.centre.toPoint.copy(this.centre.fromPoint.add(this.randomVec4()));
     for (let i = 0; i < 10; ++i) {
@@ -38,20 +52,6 @@ export class SmoothRandomWalk {
     });
     window.addEventListener('wheel', event => {
       this.zoomSetting += event.deltaY;
-    });
-
-    this.xDirGuide = new Wanderer({
-      maxSteps: 810,
-      minSize: 0,
-      maxSize: 1,
-      debugColour: 'lime',
-    });
-
-    this.yDirGuide = new Wanderer({
-      maxSteps: 1670,
-      minSize: 0,
-      maxSize: 1,
-      debugColour: 'blue',
     });
 
     this.wanderers = [
@@ -93,16 +93,17 @@ export class SmoothRandomWalk {
   static updateCentreNextToPoint() {
     const candidate = this.centre.toPoint.add(this.randomVec4());
 
-    const samples = collectSamples(
+    const candidateScores = getCandidateScores(
+      this.xDirGuide.currentPoint,
+      this.yDirGuide.currentPoint,
       this.centre.fromPoint,
       this.centre.toPoint,
       candidate,
     );
-    const candidateScore = gradeSamples(samples);
 
-    if (this.centre.nextToPoint === null || candidateScore > this.bestCandidateScore) {
+    if (this.centre.nextToPoint === null || sum(candidateScores) > sum(this.bestCandidateScores)) {
       this.centre.nextToPoint = candidate;
-      this.bestCandidateScore = candidateScore;
+      this.bestCandidateScores = candidateScores;
     }
   }
 
@@ -120,10 +121,10 @@ export class SmoothRandomWalk {
     context.stroke();
 
     context.fillStyle = 'white';
-    context.fillText(`centre: ${this.centre.currentPoint.toArray()}`, -debugUnitRadius, -debugUnitRadius - 10);
-    context.fillText(`bestCandidateScore: ${this.bestCandidateScore}`, -debugUnitRadius, -debugUnitRadius);
-    context.fillText(`zoom: ${this.getZoom()}`, -debugUnitRadius, -debugUnitRadius + 10);
-    context.fillText(`zoomSetting: ${this.zoomSetting}`, -debugUnitRadius, -debugUnitRadius + 20);
+    context.fillText(`centre: ${this.centre.currentPoint.toArray()}`, -debugUnitRadius, -debugUnitRadius - 20);
+    context.fillText(`bestCandidateScores: ${this.bestCandidateScores}`, -debugUnitRadius, -debugUnitRadius - 10);
+    context.fillText(`zoom: ${this.getZoom()}`, -debugUnitRadius, -debugUnitRadius + 0);
+    context.fillText(`zoomSetting: ${this.zoomSetting}`, -debugUnitRadius, -debugUnitRadius + 10);
     context.fillRect(this.clickX * debugUnitRadius, -this.clickY * debugUnitRadius, 2, 2);
 
     context.restore();
@@ -134,7 +135,7 @@ export class SmoothRandomWalk {
   }
 }
 
-function collectSamples(prevFromPoint, fromPoint, toPoint) {
+function collectInsideSamples(prevFromPoint, fromPoint, toPoint) {
   const sampleCount = 20;
   const maxIterationCount = 50;
   const samples = [];
@@ -165,14 +166,34 @@ function collectSamples(prevFromPoint, fromPoint, toPoint) {
   return samples;
 }
 
-function gradeSamples(samples) {
+function getCandidateScores(xDirGuidePoint, yDirGuidePoint, prevFromPoint, fromPoint, candidate) {
+  let scores = [];
+
+  const samples = collectInsideSamples(
+    prevFromPoint,
+    fromPoint,
+    candidate,
+  );
   const otherHalfSamples = samples.splice(0, samples.length / 2);
-  let score = 0;
   for (const half of [samples, otherHalfSamples]) {
     const insideCount = half.filter(inside => inside).length;
-    score -= Math.abs((insideCount / half.length) - 0.75);
+    scores.push(10 * -Math.abs((insideCount / half.length) - 0.75));
   }
-  return score;
+
+  // const direction = candidate.subtract(fromPoint).normalise();
+  // for (const dirGuidePoint of [xDirGuidePoint, yDirGuidePoint]) {
+  //   scores.push(1 * Math.abs(direction.dot(dirGuidePoint.normalise())));
+  // }
+
+  return scores;
+}
+
+function sum(xs) {
+  let result = 0;
+  for (const x of xs) {
+    result += x;
+  }
+  return result;
 }
 
 class Wanderer {
