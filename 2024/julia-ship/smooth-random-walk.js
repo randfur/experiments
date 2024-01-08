@@ -5,6 +5,13 @@ export class SmoothRandomWalk {
   static init() {
     this.zoomSetting = -2000;
 
+    this.centre = new Wanderer({
+      maxSteps: 1000,
+      minSize: 0.5,
+      maxSize: 1.5,
+      debugColour: '#c00',
+    });
+
     this.xDirGuide = new Wanderer({
       maxSteps: 810,
       minSize: 0,
@@ -19,20 +26,11 @@ export class SmoothRandomWalk {
       debugColour: 'blue',
     });
 
-    this.centre = new Wanderer({
-      maxSteps: 1000,
-      minSize: 0.5,
-      maxSize: 1.5,
-      debugColour: '#c00',
-    });
-    // this.centre.fromPoint.set(-0.8, -0.1, -0.9, 0.24);
-    this.centre.fromPoint.set(1.05, 0.62, -0.25, -0.64);
+    // this.setCentrePosition(new Vec4(-0.8, -0.1, -0.9, 0.24));
+    this.setCentrePosition(new Vec4(1.05, 0.62, -0.25, -0.64));
     this.centre.prevFromPoint.copy(this.centre.fromPoint.add(this.randomVec4()));
     this.centre.toPoint.copy(this.centre.fromPoint.add(this.randomVec4()));
-    for (let i = 0; i < 10; ++i) {
-      this.updateCentreNextToPoint();
-    }
-    this.centre.steps = this.centre.maxSteps;
+
     window.addEventListener('click', event => {
       this.clickX = ((event.offsetX / innerWidth - 0.5) * 2) * Math.max(1, innerWidth / innerHeight);
       this.clickY = ((0.5 - event.offsetY / innerHeight) * 2) * Math.max(1, innerHeight / innerWidth);
@@ -41,17 +39,20 @@ export class SmoothRandomWalk {
       const clickPosition = this.centre.currentPoint.add(
         xDir.scale(this.clickX).add(yDir.scale(this.clickY)).scale(this.getZoom())
       );
-      this.centre.prevFromPoint.copy(clickPosition);
-      this.centre.fromPoint.copy(clickPosition);
-      this.centre.toPoint.copy(clickPosition);
-      this.centre.nextToPoint = null;
-      for (let i = 0; i < 10; ++i) {
-        this.updateCentreNextToPoint();
-      }
-      this.centre.steps = this.centre.maxSteps;
+      this.setCentrePosition(clickPosition);
     });
     window.addEventListener('wheel', event => {
       this.zoomSetting += event.deltaY;
+    });
+    window.addEventListener('keydown', event => {
+      if (event.code === 'Space') {
+        this.setCentrePosition(new Vec4(
+          deviate(1),
+          deviate(1),
+          deviate(1),
+          deviate(1),
+        ));
+      }
     });
 
     this.wanderers = [
@@ -59,6 +60,17 @@ export class SmoothRandomWalk {
       this.xDirGuide,
       this.yDirGuide,
     ];
+  }
+
+  static setCentrePosition(point) {
+    this.centre.prevFromPoint.copy(point);
+    this.centre.fromPoint.copy(point);
+    this.centre.toPoint.copy(point);
+    this.centre.nextToPoint = null;
+    for (let i = 0; i < 10; ++i) {
+      this.updateCentreNextToPoint();
+    }
+    this.centre.steps = this.centre.maxSteps;
   }
 
   static update(time) {
