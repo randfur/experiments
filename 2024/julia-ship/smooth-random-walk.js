@@ -11,7 +11,8 @@ export class SmoothRandomWalk {
       maxSize: 1.5,
       debugColour: '#c00',
     });
-    this.centre.fromPoint.set(-0.8, -0.1, -0.9, 0.24);
+    // this.centre.fromPoint.set(-0.8, -0.1, -0.9, 0.24);
+    this.centre.fromPoint.set(1.0, 0.52, -0.02, -0.67);
     this.centre.prevFromPoint.copy(this.centre.fromPoint.add(this.randomVec4()));
     this.centre.toPoint.copy(this.centre.fromPoint.add(this.randomVec4()));
     for (let i = 0; i < 10; ++i) {
@@ -119,8 +120,10 @@ export class SmoothRandomWalk {
     context.stroke();
 
     context.fillStyle = 'white';
+    context.fillText(`centre: ${this.centre.currentPoint.toArray()}`, -debugUnitRadius, -debugUnitRadius - 10);
     context.fillText(`bestCandidateScore: ${this.bestCandidateScore}`, -debugUnitRadius, -debugUnitRadius);
     context.fillText(`zoom: ${this.getZoom()}`, -debugUnitRadius, -debugUnitRadius + 10);
+    context.fillText(`zoomSetting: ${this.zoomSetting}`, -debugUnitRadius, -debugUnitRadius + 20);
     context.fillRect(this.clickX * debugUnitRadius, -this.clickY * debugUnitRadius, 2, 2);
 
     context.restore();
