@@ -1,0 +1,13 @@
+# 2024-01-11
+- Want to do rotations in 4D space.
+  - Want to rotate by a rotor4.
+  - Involves many many terms to figure out.
+  - Probably still faster to compute by hand but an expander tool is more fun probably.
+- Expander tool.
+  - Will take a list of variable assignments and an expression to expand.
+  - End result should be a single multivector.
+- Parsing strings.
+  - Hardest part probably.
+  - How to distinguish scalars from bases?
+    - Have scalars lowercase and bases u
+    - Example: (aX + bY + cZ) * (dY  + eY + fZ)

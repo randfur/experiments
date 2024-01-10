@@ -1,3 +1,13 @@
+# 2024-01-11
+- Parts of the julia set are tube like.
+  - This is an issue when the cross section plane does a rotation it often looks like the image gets stretched out to infinity and back mirrored.
+  - This effect is happening too often.
+  - Maybe avoid rotating the plane on the spot.
+- FlyWalk
+  - New motion idea.
+  - Fly centre around the space as usual but keep the cross section plane orthogonal to the direction of travel.
+    - Should hopfully avoid rotating in place and the tube stretching effect.
+
 # 2024-01-08
 - Added 4D random walk.
   - No detection of interesting features.
