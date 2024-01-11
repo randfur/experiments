@@ -4,10 +4,19 @@
   - Involves many many terms to figure out.
   - Probably still faster to compute by hand but an expander tool is more fun probably.
 - Expander tool.
-  - Will take a list of variable assignments and an expression to expand.
+  - Will take a list of let assignments and an expression to expand.
   - End result should be a single multivector.
 - Parsing strings.
   - Hardest part probably.
   - How to distinguish scalars from bases?
-    - Have scalars lowercase and bases u
+    - Have scalars lowercase and basis uppercase.
     - Example: (aX + bY + cZ) * (dY  + eY + fZ)
+  - Also need conj().
+  - Tokeniser.
+    - If letters then ( treat as function open.
+    - If letters then anything else treat as multiplied letters.
+    - Let names must be single lowercase character.
+    - Will run out of letters probably, allow numbers after single scalar letter also.
+    - Can apply to basis uppercase letters also why not.
+
+
