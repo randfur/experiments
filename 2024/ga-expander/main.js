@@ -34,8 +34,10 @@ function parseAndExpand(input) {
 }
 
 function tokenise(input) {
-  const tokens = [];
-  const stack = [];
+  const stack = [{
+    ident: '',
+    children: [],
+  }];
 
   let index = 0;
 
@@ -49,9 +51,16 @@ function tokenise(input) {
     }
     return input.slice(start, index);
   }
-
   function next() {
     return index < input.length ? input[index] : null;
+  }
+  function stackFrame() {
+    return stack[stack.length - 1];
+  }
+  function popStack() {
+    const frame = stackFrame();
+    stack.length -= 1;
+    return frame;
   }
 
   while (true) {
@@ -65,27 +74,50 @@ function tokenise(input) {
     }
 
     if (isAlpha(next())) {
-      const ident = consume(isAlphaNum);
+      const ident = consume(isAlpha);
       if (next() === '(') {
-
-        stack.push(
+        const group = {
+          ident,
+          children: [],
+        };
+        stack.push(group);
+        continue;
       }
-    } else if (c === '(') {
-    } else if (c === ')') {
+
+      stackFrame.children.push({
+        ident,
+      });
+      continue;
     }
-    ++index;
+
+    if (next() === '(') {
+      const group = {
+        ident: '',
+        children: [],
+      };
+      stack.push(group);
+      continue;
+    }
+
+    if (isNumeric(next())) {
+      const number = consume(isNumeric);
+
   }
 
-  return tokens;
+  if (stack.length !== 1) {
+    return ['bad braces'];
+  }
+  return stack[0];
 }
 
 function isAlpha(char) {
   return /[A-Za-z]/.test(char);
 }
 
-function isAlphaNum(char) {
+function isNumeric(char) {
   return /[A-Za-z0-9]/.test(char);
 }
+
 function isWhitespace(char) {
   return /\s/.test(char);
 }
