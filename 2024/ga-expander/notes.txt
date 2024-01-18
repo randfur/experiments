@@ -1,3 +1,25 @@
+# 2024-01-18
+- Working on parser tokeniser.
+  - Tokeniser deals with brackets and creates tree of nesting.
+  - Seems to be working.
+  - Simple token forms:
+    - Ident
+    - Function
+    - Bracketed expression
+    - Symbol
+- Next is to turn into AST.
+  - High level form:
+    - Split by ; into assignments and expression.
+    - Split assignment by = for name and expression.
+      - Should check that assignments aren't circularly dependant.
+    - Split expressions by addition into products.
+    - Split products into numbers and idents.
+- Next expand all assigned idents.
+- Next categorise remaining idents into scalars and basis vectors.
+- Next fully expand expression.
+- Next make basis multivectors canonical.
+- Next dedupe common basis multivectors.
+
 # 2024-01-11
 - Want to do rotations in 4D space.
   - Want to rotate by a rotor4.
