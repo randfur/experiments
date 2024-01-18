@@ -27,7 +27,8 @@ export class SmoothRandomWalk {
     });
 
     // this.setCentrePosition(new Vec4(-0.8, -0.1, -0.9, 0.24));
-    this.setCentrePosition(new Vec4(1.05, 0.62, -0.25, -0.64));
+    // this.setCentrePosition(new Vec4(1.05, 0.62, -0.25, -0.64));
+    this.setCentrePosition(new Vec4(.35, .56, -.21, -.7));
     this.centre.prevFromPoint.copy(this.centre.fromPoint.add(this.randomVec4()));
     this.centre.toPoint.copy(this.centre.fromPoint.add(this.randomVec4()));
 
