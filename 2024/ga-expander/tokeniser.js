@@ -1,3 +1,14 @@
+/*
+export type Token =
+  | { number: number }
+  | { symbol: string }
+  | { ident: string }
+  | { ident: string, children: Array<Token> }
+  | { children: Array<Token> }
+
+export function tokenise(input: string): Token;
+*/
+
 export function tokenise(input) {
   const stack = [{
     children: [],
@@ -82,7 +93,7 @@ export function tokenise(input) {
     console.log(stack);
     throw 'Bad braces';
   }
-  return stack[0];
+  return stack[0].children;
 }
 
 function isAlpha(char) {

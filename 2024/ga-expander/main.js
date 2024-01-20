@@ -1,4 +1,5 @@
 import {tokenise} from './tokeniser.js';
+import {astise} from './astiser.js';
 
 function main() {
   const textarea = document.createElement('textarea');
@@ -25,19 +26,18 @@ function main() {
     output.textContent = parseAndExpand(textarea.textContent);
   });
 
-  document.body.append(parseAndExpand(`
+  parseAndExpand(`
     abc = (4*def + ghi*X) * jkl*Y;
     barkbark = abc * conjugate(abc);
     barkbark
-  `));
+  `);
 }
 
 main();
 
 function parseAndExpand(input) {
-  const tokenTree = tokenise(input);
-  console.log(tokenTree);
-  const astiser = astise(tokenTree);
+  const tokens = tokenise(input);
+  console.log(tokens);
+  const ast = astise(tokens);
   console.log(ast);
-  return JSON.stringify(ast);
 }

@@ -1,3 +1,8 @@
+# 2024-01-19
+- Working on AST parser.
+  - Defined datatype in TypeScript.
+  - Also for Tokens.
+
 # 2024-01-18
 - Working on parser tokeniser.
   - Tokeniser deals with brackets and creates tree of nesting.
