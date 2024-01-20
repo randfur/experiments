@@ -1,4 +1,16 @@
 # 2024-01-19
+- Implemented token parsing into AST.
+  - Works.
+  - Expressions are sums of products.
+  - Product terms are either base case idents/numbers or another sum nested in parens/function.
+  - Using the '()' function to mean bare parenthesis.
+- Implemented assignment inlining.
+  - Initially had cycle detection but the inlining algorithm could already detect it.
+  - Algorithm is not efficient as it redundantly re-inlines already known assignments but works.
+  - Dumb implementation is very simple.
+  - Would be easy to add memoisation of input sums.
+
+# 2024-01-19
 - Working on AST parser.
   - Defined datatype in TypeScript.
   - Also for Tokens.

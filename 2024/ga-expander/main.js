@@ -1,5 +1,7 @@
 import {tokenise} from './tokeniser.js';
 import {astise} from './astiser.js';
+import {inlineAssignments} from './inline-assignments.js';
+import {flattenSum} from './flatten-sum.js';
 
 function main() {
   const textarea = document.createElement('textarea');
@@ -23,21 +25,26 @@ function main() {
   );
 
   button.addEventListener('click', event => {
-    output.textContent = parseAndExpand(textarea.textContent);
+    output.textContent = parseAndExpand(textarea.value);
   });
 
   parseAndExpand(`
     abc = (4*def + ghi*X) * jkl*Y;
-    barkbark = abc * conjugate(abc);
-    barkbark
+    barkbark = abc * conjugate(abc + dog);
+    barkbark + abc + def
   `);
 }
 
 main();
 
 function parseAndExpand(input) {
+  console.log(input);
   const tokens = tokenise(input);
   console.log(tokens);
   const ast = astise(tokens);
   console.log(ast);
+  const inlinedSum = inlineAssignments(ast);
+  console.log(inlinedSum);
+  const flattenedSum = flattenSum(inlinedSum);
+  console.log(flattenedSum);
 }

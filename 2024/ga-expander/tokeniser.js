@@ -3,14 +3,14 @@ export type Token =
   | { number: number }
   | { symbol: string }
   | { ident: string }
-  | { ident: string, children: Array<Token> }
-  | { children: Array<Token> }
+  | { func: string, children: Array<Token> }
 
 export function tokenise(input: string): Token;
 */
 
 export function tokenise(input) {
   const stack = [{
+    func: '()',
     children: [],
   }];
 
@@ -47,7 +47,7 @@ export function tokenise(input) {
       const ident = consume(isAlpha);
       if (next() === '(') {
         stack.push({
-          ident,
+          func: ident,
           children: [],
         });
         ++index;
@@ -62,6 +62,7 @@ export function tokenise(input) {
 
     if (next() === '(') {
       stack.push({
+        func: '()',
         children: [],
       });
       ++index;

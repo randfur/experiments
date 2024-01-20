@@ -1,35 +1,91 @@
 /*
 import {Token} from './tokeniser.js';
 
-type AST = {
+export type AST = {
   assignments: Array<Assignment>,
-  expression: Sum,
+  sum: Sum,
 };
 
-type Assignment {
+export type Assignment {
   ident: string,
-  expression: Sum,
+  sum: Sum,
 };
 
-type Sum = Array<Product>;
+export type Sum = Array<Product>;
 
-type Product = {
-  number: number,
-  unknownIdents: Set<string>,
-  scalarIdents: Set<string>,
-  basisVectorIdents: Set<string>,
-};
+export type Product = number | string | {func: string, sum: Sum};
 
 export function astise(tokens: Array<Token>): AST;
 */
 
 export function astise(tokens) {
-  return null;
+  const result = {
+    assignments: [],
+    sum: null,
+  };
+  const tokenss = splitBySymbol(tokens, ';');
+  for (let i = 0; i < tokenss.length; ++i) {
+    const tokens = tokenss[i];
+    if (i < tokenss.length - 1) {
+      result.assignments.push(parseAssignment(tokens));
+    } else {
+      result.sum = parseSum(tokens);
+    }
+  }
+  return result;
 }
 
-function splitBy(tokens, predicate) {
+function parseAssignment(tokens) {
+  const tokenss = splitBySymbol(tokens, '=');
+  if (tokenss.length !== 2) {
+    throw 'Not 1 =';
+  }
+
+  const [identTokens, sumTokens] = tokenss;
+  if (identTokens.length !== 1 || !identTokens[0].ident) {
+    throw 'Bad assignment ident';
+  }
+  const ident = identTokens[0].ident;
+
+  return {
+    ident,
+    sum: parseSum(sumTokens),
+  };
 }
 
-function isSymbol(symbol, token) {
-  return 'symbol' in token && token.symbol === symbol;
+function parseSum(tokens) {
+  return splitBySymbol(tokens, '+').map(parseProduct);
+}
+
+function parseProduct(tokens) {
+  return splitBySymbol(tokens, '*').map(tokens => {
+    if (tokens.length !== 1) {
+      throw 'Bad product';
+    }
+    const token = tokens[0];
+    if (token.func) {
+      return {
+        func: token.func,
+        sum: parseSum(token.children),
+      };
+    }
+    return token;
+  });
+}
+
+function splitBySymbol(tokens, symbol) {
+  const result = [];
+  let current = [];
+  for (const token of tokens) {
+    if (token.symbol === symbol) {
+      result.push(current);
+      current = [];
+    } else {
+      current.push(token);
+    }
+  }
+  if (current.length > 0) {
+    result.push(current);
+  }
+  return result;
 }
