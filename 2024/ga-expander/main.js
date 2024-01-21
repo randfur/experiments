@@ -29,9 +29,9 @@ function main() {
   });
 
   parseAndExpand(`
-    abc = (4*def + ghi*X) * jkl*Y;
-    barkbark = abc * conjugate(abc + dog);
-    barkbark + abc + def
+    a = 1 + 2 + 3;
+    b = 4 + 5 + 6;
+    a*b
   `);
 }
 

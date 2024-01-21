@@ -1,3 +1,11 @@
+# 2024-01-22
+- Time to flatten products of sums.
+- Dealing with the associative multiplication is a bit challenging.
+  - Seems like it can be handled by reduce().
+  - Still tricky to handle the representation of x, 5*x and x+y as a product.
+  - Need to treat flattening products and terms as returning flat sums.
+  - Doesn't seem to be working yet.
+
 # 2024-01-19
 - Implemented token parsing into AST.
   - Works.

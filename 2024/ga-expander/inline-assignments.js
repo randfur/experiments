@@ -1,5 +1,5 @@
 /*
-import {AST} from './astiser.js';
+import {AST, Sum} from './astiser.js';
 
 export function inlineAssignments(ast: AST): Sum;
 */

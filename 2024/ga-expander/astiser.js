@@ -12,8 +12,8 @@ export type Assignment {
 };
 
 export type Sum = Array<Product>;
-
-export type Product = number | string | {func: string, sum: Sum};
+export type Product = Array<Term>;
+export type Term = {number: number} | {ident: string} | {func: string, sum: Sum};
 
 export function astise(tokens: Array<Token>): AST;
 */
@@ -63,6 +63,9 @@ function parseProduct(tokens) {
       throw 'Bad product';
     }
     const token = tokens[0];
+    if (token.symbol) {
+      throw 'Unexpected symbol';
+    }
     if (token.func) {
       return {
         func: token.func,
