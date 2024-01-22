@@ -11,9 +11,13 @@ export type Assignment {
   sum: Sum,
 };
 
-export type Sum = Array<Product>;
-export type Product = Array<Term>;
-export type Term = {number: number} | {ident: string} | {func: string, sum: Sum};
+export type Sum = {type: 'sum', products: Array<Product>};
+export type Product = {type: 'product', terms: Array<Term>};
+export type Term =
+  | {type: 'number', value: number}
+  | {type: 'ident', value: string}
+  | {type: 'func', ident: string, arg: Sum};
+  | {type: 'parens', sum: Sum}
 
 export function astise(tokens: Array<Token>): AST;
 */
@@ -42,10 +46,10 @@ function parseAssignment(tokens) {
   }
 
   const [identTokens, sumTokens] = tokenss;
-  if (identTokens.length !== 1 || !identTokens[0].ident) {
+  if (identTokens.length !== 1 || identTokens[0].type !== 'ident') {
     throw 'Bad assignment ident';
   }
-  const ident = identTokens[0].ident;
+  const ident = identTokens[0].value;
 
   return {
     ident,
@@ -54,33 +58,48 @@ function parseAssignment(tokens) {
 }
 
 function parseSum(tokens) {
-  return splitBySymbol(tokens, '+').map(parseProduct);
+  return {
+    type: 'sum',
+    products: splitBySymbol(tokens, '+').map(parseProduct),
+  };
 }
 
 function parseProduct(tokens) {
-  return splitBySymbol(tokens, '*').map(tokens => {
-    if (tokens.length !== 1) {
-      throw 'Bad product';
-    }
-    const token = tokens[0];
-    if (token.symbol) {
-      throw 'Unexpected symbol';
-    }
-    if (token.func) {
-      return {
-        func: token.func,
-        sum: parseSum(token.children),
-      };
-    }
-    return token;
-  });
+  return {
+    type: 'product',
+    terms: splitBySymbol(tokens, '*').map(tokens => {
+      if (tokens.length !== 1) {
+        throw 'Bad product';
+      }
+      const token = tokens[0];
+      switch (token.type) {
+      case 'symbol':
+        throw 'Unexpected symbol';
+      case 'number':
+      case 'ident':
+        return token;
+      case 'func':
+        return {
+          type: 'func',
+          ident: token.ident,
+          arg: parseSum(token.children),
+        };
+      case 'parens':
+        return {
+          type: 'parens',
+          sum: parseSum(token.children),
+        };
+      }
+      console.assert(false);
+    }),
+  };
 }
 
 function splitBySymbol(tokens, symbol) {
   const result = [];
   let current = [];
   for (const token of tokens) {
-    if (token.symbol === symbol) {
+    if (token.type === 'symbol' && token.value === symbol) {
       result.push(current);
       current = [];
     } else {

@@ -5,6 +5,10 @@
   - Still tricky to handle the representation of x, 5*x and x+y as a product.
   - Need to treat flattening products and terms as returning flat sums.
   - Doesn't seem to be working yet.
+- Added explicit type field to everything to help debugging.
+  - Rewrote all the code with new types.
+  - Surprisingly not terrible to do despite having no static type checking.
+  - Flattening works now, not sure what the problem actually was.
 
 # 2024-01-19
 - Implemented token parsing into AST.

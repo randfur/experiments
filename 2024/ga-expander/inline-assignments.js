@@ -4,8 +4,14 @@ import {AST, Sum} from './astiser.js';
 export function inlineAssignments(ast: AST): Sum;
 */
 export function inlineAssignments(ast) {
-  const assignmentMap = Object.fromEntries(ast.assignments.map(assignment => [assignment.ident, assignment.sum]));
+  const assignmentMap = Object.fromEntries(
+    ast.assignments.map(
+      assignment => [assignment.ident, assignment.sum]
+    )
+  );
+
   const inlinedAssignmentMap = inlineAssignmentsInAssignmentMap(assignmentMap);
+
   return inlineAssignmentsInSum(ast.sum, inlinedAssignmentMap, []);
 }
 
@@ -18,22 +24,47 @@ function inlineAssignmentsInAssignmentMap(assignmentMap) {
 }
 
 function inlineAssignmentsInSum(sum, assignmentMap, seenIdents) {
-  return sum.map(product => product.map(term => {
-    if (term.ident && assignmentMap[term.ident]) {
-      if (seenIdents.includes(term.ident)) {
-        throw 'Cycle found';
-      }
-      return inlineAssignmentsInSum(assignmentMap[term.ident], assignmentMap, [...seenIdents, term.ident]);
-    }
+  return {
+    type: 'sum',
+    products: sum.products.map(product => ({
+      type: 'product',
+      terms: product.terms.map(term => {
+        switch (term.type) {
+        case 'number':
+          return term;
 
-    if (term.func) {
-      return {
-        func: term.func,
-        sum: inlineAssignmentsInSum(term.sum, assignmentMap, seenIdents),
-      };
-    }
+        case 'ident':
+          const ident = term.value;
+          if (assignmentMap[ident]) {
+            if (seenIdents.includes(ident)) {
+              throw 'Cycle found';
+            }
+            return {
+              type: 'parens',
+              sum: inlineAssignmentsInSum(
+                assignmentMap[ident],
+                assignmentMap,
+                [...seenIdents, ident],
+              ),
+            };
+          }
+          return term;
 
-    return term;
-  }));
+        case 'func':
+          return {
+            ...term,
+            arg: inlineAssignmentsInSum(term.arg, assignmentMap, seenIdents),
+          };
+
+        case 'parens':
+          return {
+            ...term,
+            sum: inlineAssignmentsInSum(term.sum, assignmentMap, seenIdents),
+          };
+        }
+        console.assert(false);
+      }),
+    })),
+  };
 }
 

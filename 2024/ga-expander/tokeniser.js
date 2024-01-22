@@ -1,16 +1,17 @@
 /*
 export type Token =
-  | { number: number }
-  | { symbol: string }
-  | { ident: string }
-  | { func: string, children: Array<Token> }
+  | { type: 'symbol', value: string }
+  | { type: 'number', value: number }
+  | { type: 'ident', value: string }
+  | { type: 'func', ident: string, children: Array<Token> }
+  | { type: 'parens', children: Array<Token> }
 
 export function tokenise(input: string): Token;
 */
 
 export function tokenise(input) {
   const stack = [{
-    func: '()',
+    type: 'parens',
     children: [],
   }];
 
@@ -44,10 +45,11 @@ export function tokenise(input) {
     }
 
     if (isAlpha(next())) {
-      const ident = consume(isAlpha);
+      const ident = consume(isAlphaNumeric);
       if (next() === '(') {
         stack.push({
-          func: ident,
+          type: 'func',
+          ident,
           children: [],
         });
         ++index;
@@ -55,14 +57,15 @@ export function tokenise(input) {
       }
 
       stackFrame().children.push({
-        ident,
+        type: 'ident',
+        value: ident,
       });
       continue;
     }
 
     if (next() === '(') {
       stack.push({
-        func: '()',
+        type: 'parens',
         children: [],
       });
       ++index;
@@ -71,7 +74,8 @@ export function tokenise(input) {
 
     if (isNumeric(next())) {
       stackFrame().children.push({
-        number: parseFloat(consume(isNumeric)),
+        type: 'number',
+        value: parseFloat(consume(isNumeric)),
       });
       continue;
     }
@@ -85,7 +89,8 @@ export function tokenise(input) {
     }
 
     stackFrame().children.push({
-      symbol: next(),
+      type: 'symbol',
+      value: next(),
     });
     ++index;
   }
@@ -101,8 +106,12 @@ function isAlpha(char) {
   return /[A-Za-z]/.test(char);
 }
 
+function isAlphaNumeric(char) {
+  return /[A-Za-z0-9]/.test(char);
+}
+
 function isNumeric(char) {
-  return /[A-Za-z0-9\.]/.test(char);
+  return /[0-9\.]/.test(char);
 }
 
 function isWhitespace(char) {
