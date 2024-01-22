@@ -10,6 +10,14 @@ function main() {
     font-size: 20px;
   `;
 
+  const instructions = document.createElement('pre');
+  instructions.textContent = `
+    Identifiers on the left of an '=' assignment are aliases.
+    Identifiers that start with a lower case are scalar constants.
+    Identifiers that start with an upper case are basis vectors.
+    The last expression gets expanded.
+  `;
+
   const textarea = document.createElement('textarea');
   textarea.style = `
     width: 80vw;
@@ -23,6 +31,7 @@ function main() {
   const output = document.createElement('div');
 
   document.body.append(
+    instructions,
     textarea,
     document.createElement('br'),
     button,
