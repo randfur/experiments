@@ -35,6 +35,7 @@ function main() {
       output.textContent = parseAndExpand(textarea.value);
     } catch (error) {
       output.textContent = error;
+      throw error;
     }
   }
 
@@ -48,10 +49,17 @@ function main() {
   //   b = a*v + conjugate(a*r);
   //   a*b
   // `;
+  // textarea.value = `
+  //   v1 = a*X+b*Y+c*Z+d*W;
+  //   v2 = e*X+f*Y+g*Z+h*W;
+  //   v1*v2
+  // `;
   textarea.value = `
-    v1 = a*X+b*Y+c*Z+d*W;
-    v2 = e*X+f*Y+g*Z+h*W;
-    v1*v2
+    v1 = a*X + b*Y + c*Z + d*W;
+    v2 = e*X + f*Y + g*Z + h*W;
+    rotor = v1 * v2;
+    position = i*X + j*Y + k*Z + l*W;
+    conjugate(rotor) * position * rotor
   `;
   processInput();
 }

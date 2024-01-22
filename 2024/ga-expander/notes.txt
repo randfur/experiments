@@ -1,3 +1,13 @@
+# 2024-01-23
+- Removed the type field bloat from FlatSum.
+- Removed the 'func' type and made it 'conjugate' directly.
+- No longer supporting arbitary functions that don't expand.
+- Made FlatProduct group up terms into numbers, constants and bases.
+- Can now do proper GA basis handling with this format.
+- GA multiplication now implemented.
+- Updated stringification to handle negation signs nicely.
+- Next need grouping of common bases and elected constants.
+
 # 2024-01-22
 - Time to flatten products of sums.
 - Dealing with the associative multiplication is a bit challenging.

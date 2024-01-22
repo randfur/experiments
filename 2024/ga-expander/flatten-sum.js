@@ -1,84 +1,106 @@
 /*
 import {Sum, Product, Term} from './astiser.js';
 
-export type FlatSum = {type: 'flatSum', flatProducts: Array<FlatProduct>};
-export type FlatProduct = {type: 'flatProduct', flatTerms: Array<FlatTerm>};
-export type FlatTerm =
-  | {type: 'number', value: number}
-  | {type: 'ident', value: string}
-  | {type: 'flatFunc', ident: string, flatArg: FlatSum};
-  | {type: 'flatParens', flatSum: FlatSum};
+export type FlatSum = Array<FlatProduct>;
+export type FlatProduct = {
+  number: number,
+  constants: Array<string>,
+  bases: Array<string>,
+};
 
 export function flattenSum(sum: Sum): FlatSum;
-function joinFlatSums(flatSums: Array<FlatSum>): FlatSum;
 function flattenProduct(product: Product): FlatSum;
 function flattenTerm(term: Term): FlatSum;
 function multiplyFlatSums(lhsFlatSum: FlatSum | null, rhsFlatSum: FlatSum): FlatSum;
+function multiplyFlatProducts(lhsFlatProduct: FlatProduct, rhsFlatProduct: FlatProduct): FlatSum;
+function isBasisIdent(ident: string): boolean;
+function flattenBases(bases: Array<string>): {sign: number: bases: Array<string>};
 */
 export function flattenSum(sum) {
-  return joinFlatSums(sum.products.map(flattenProduct));
-}
-
-function joinFlatSums(flatSums) {
-  return {
-    type: 'flatSum',
-    flatProducts: flatSums.flatMap(
-      flatSum => flatSum.flatProducts
-    ),
-  };
+  return sum.products.flatMap(flattenProduct);
 }
 
 function flattenProduct(product) {
-  return product.terms.reduce(
-    (flatSum, term) => multiplyFlatSums(
-      flatSum,
-      flattenTerm(term),
-    ),
-    null,
-  );
+  return product.terms.map(flattenTerm).reduce(multiplyFlatSums);
 }
 
 function flattenTerm(term) {
-  if (term.type === 'parens') {
+  switch (term.type) {
+  case 'number':
+    return [{
+      number: term.value,
+      constants: [],
+      bases: [],
+    }];
+  case 'ident':
+    if (isBasisIdent(term.value)) {
+      return [{
+        number: 1,
+        constants: [],
+        bases: [term.value],
+      }];
+    } else {
+      return [{
+        number: 1,
+        constants: [term.value],
+        bases: [],
+      }];
+    }
+  case 'conjugate':
+    return flattenSum(term.arg).map(flatProduct => {
+      if (flatProduct.bases.length > 0) {
+        flatProduct.number *= -1;
+      }
+      return flatProduct;
+    });
+  case 'parens':
     return flattenSum(term.sum);
   }
-  return {
-    type: 'flatSum',
-    flatProducts: [{
-      type: 'flatProduct',
-      flatTerms: [(() => {
-        switch (term.type) {
-        case 'number':
-        case 'ident':
-          return term;
-        case 'func':
-          return {
-            type: 'flatFunc',
-            ident: term.ident,
-            flatArg: flattenSum(term.arg),
-          };
-        case 'parens':
-          break;
-        }
-        throw `Unknown type: ${JSON.stringify(term)}`;
-      })()],
-    }],
-  };
+  throw `Unknown type: ${JSON.stringify(term)}`;
+  return result;
 }
 
 function multiplyFlatSums(lhsFlatSum, rhsFlatSum) {
-  if (lhsFlatSum === null) {
-    return rhsFlatSum;
-  };
+  return lhsFlatSum.flatMap(
+    lhsFlatProduct => rhsFlatSum.map(
+      rhsFlatProduct => multiplyFlatProducts(lhsFlatProduct, rhsFlatProduct)
+    )
+  );
+}
+
+function multiplyFlatProducts(lhsFlatProduct, rhsFlatProduct) {
+  const {sign, bases} = flattenBases(lhsFlatProduct.bases.concat(rhsFlatProduct.bases));
   return {
-    type: 'flatSum',
-    flatProducts: lhsFlatSum.flatProducts.flatMap(
-      lhsFlatProduct => rhsFlatSum.flatProducts.map(
-        rhsFlatProduct => ({
-          type: 'flatProduct',
-          flatTerms: lhsFlatProduct.flatTerms.concat(rhsFlatProduct.flatTerms),
-        })
-      )
+    number: sign * lhsFlatProduct.number * rhsFlatProduct.number,
+    constants: lhsFlatProduct.constants.concat(rhsFlatProduct.constants),
+    bases,
+  };
+}
+
+function isBasisIdent(ident) {
+  return ident[0] === ident[0].toUpperCase();
+}
+
+function flattenBases(bases) {
+  let sign = 1;
+  const orderedBases = [];
+  while (bases.length > 0) {
+    let minIndex = 0;
+    let minBasis = bases[0];
+    for (let i = 1; i < bases.length; ++i) {
+      if (bases[i] < minBasis) {
+        minIndex = i;
+        minBasis = bases[i];
+      }
+    }
+    orderedBases.push(minBasis);
+    sign *= (-1) ** minIndex;
+    bases.splice(minIndex, 1);
+  }
+  return {
+    sign,
+    bases: orderedBases.filter(
+      (basis, i, bases) => (i === 0 || basis != bases[i - 1]) && (i === bases.length - 1 || basis != bases[i + 1])
     ),
   };
 }

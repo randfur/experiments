@@ -3,7 +3,7 @@ export type Token =
   | { type: 'symbol', value: string }
   | { type: 'number', value: number }
   | { type: 'ident', value: string }
-  | { type: 'func', ident: string, children: Array<Token> }
+  | { type: 'conjugate', children: Array<Token> }
   | { type: 'parens', children: Array<Token> }
 
 export function tokenise(input: string): Token;
@@ -47,9 +47,11 @@ export function tokenise(input) {
     if (isAlpha(next())) {
       const ident = consume(isAlphaNumeric);
       if (next() === '(') {
+        if (ident !== 'conjugate') {
+          throw `Only conjugate() function supported, got: ${ident}()`;
+        }
         stack.push({
-          type: 'func',
-          ident,
+          type: 'conjugate',
           children: [],
         });
         ++index;

@@ -50,15 +50,15 @@ function inlineAssignmentsInSum(sum, assignmentMap, seenIdents) {
           }
           return term;
 
-        case 'func':
+        case 'conjugate':
           return {
-            ...term,
+            type: 'conjugate',
             arg: inlineAssignmentsInSum(term.arg, assignmentMap, seenIdents),
           };
 
         case 'parens':
           return {
-            ...term,
+            type: 'parens',
             sum: inlineAssignmentsInSum(term.sum, assignmentMap, seenIdents),
           };
         }

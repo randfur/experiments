@@ -16,7 +16,7 @@ export type Product = {type: 'product', terms: Array<Term>};
 export type Term =
   | {type: 'number', value: number}
   | {type: 'ident', value: string}
-  | {type: 'func', ident: string, arg: Sum};
+  | {type: 'conjugate', arg: Sum};
   | {type: 'parens', sum: Sum}
 
 export function astise(tokens: Array<Token>): AST;
@@ -78,10 +78,9 @@ function parseProduct(tokens) {
       case 'number':
       case 'ident':
         return token;
-      case 'func':
+      case 'conjugate':
         return {
-          type: 'func',
-          ident: token.ident,
+          type: 'conjugate',
           arg: parseSum(token.children),
         };
       case 'parens':
