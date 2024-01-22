@@ -42,12 +42,12 @@ export function astise(tokens) {
 function parseAssignment(tokens) {
   const tokenss = splitBySymbol(tokens, '=');
   if (tokenss.length !== 2) {
-    throw 'Not 1 =';
+    throw `Wrong number of =: ${JSON.stringify(tokenss)}`;
   }
 
   const [identTokens, sumTokens] = tokenss;
   if (identTokens.length !== 1 || identTokens[0].type !== 'ident') {
-    throw 'Bad assignment ident';
+    throw `Bad assignment ident: ${JSON.stringify(identTokens)}`;
   }
   const ident = identTokens[0].value;
 
@@ -69,12 +69,12 @@ function parseProduct(tokens) {
     type: 'product',
     terms: splitBySymbol(tokens, '*').map(tokens => {
       if (tokens.length !== 1) {
-        throw 'Bad product';
+        throw `Too many tokens in product term: ${JSON.stringify(tokens)}`;
       }
       const token = tokens[0];
       switch (token.type) {
       case 'symbol':
-        throw 'Unexpected symbol';
+        throw `Unexpected symbol: ${JSON.stringify(token)}`;
       case 'number':
       case 'ident':
         return token;
@@ -90,7 +90,7 @@ function parseProduct(tokens) {
           sum: parseSum(token.children),
         };
       }
-      console.assert(false);
+      throw `Unknown type: ${JSON.stringify(token)}`;
     }),
   };
 }

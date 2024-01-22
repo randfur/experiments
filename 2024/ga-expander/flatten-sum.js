@@ -60,7 +60,7 @@ function flattenTerm(term) {
         case 'parens':
           break;
         }
-        console.assert(false);
+        throw `Unknown type: ${JSON.stringify(term)}`;
       })()],
     }],
   };

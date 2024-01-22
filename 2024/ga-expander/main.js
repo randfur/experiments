@@ -5,30 +5,38 @@ import {flattenSum} from './flatten-sum.js';
 import {stringifyFlatSum} from './stringify.js';
 
 function main() {
+  document.body.style = `
+    font-family: monospace;
+    font-size: 20px;
+  `;
+
   const textarea = document.createElement('textarea');
   textarea.style = `
     width: 80vw;
-    height: 400px;
+    height: 200px;
   `;
 
   const button = document.createElement('button');
   button.textContent = 'Expand';
+  button.addEventListener('click', processInput);
 
-  const br = document.createElement('br');
-
-  const output = document.createElement('pre');
+  const output = document.createElement('div');
 
   document.body.append(
     textarea,
+    document.createElement('br'),
     button,
-    br,
+    document.createElement('br'),
     output,
   );
 
   function processInput() {
-    output.textContent = parseAndExpand(textarea.value);
+    try {
+      output.textContent = parseAndExpand(textarea.value);
+    } catch (error) {
+      output.textContent = error;
+    }
   }
-  button.addEventListener('click', processInput);
 
   // textarea.value = `
   //   a = 1 + 2 + 3;

@@ -96,8 +96,7 @@ export function tokenise(input) {
   }
 
   if (stack.length !== 1) {
-    console.log(stack);
-    throw 'Bad braces';
+    throw `Mismatched braces: ${JSON.stringify(stack)}`;
   }
   return stack[0].children;
 }

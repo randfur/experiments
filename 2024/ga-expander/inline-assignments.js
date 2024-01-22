@@ -37,7 +37,7 @@ function inlineAssignmentsInSum(sum, assignmentMap, seenIdents) {
           const ident = term.value;
           if (assignmentMap[ident]) {
             if (seenIdents.includes(ident)) {
-              throw 'Cycle found';
+              throw `Cycle found: ${ident} -> ${seenIdents.join(', ')}`;
             }
             return {
               type: 'parens',
@@ -62,7 +62,7 @@ function inlineAssignmentsInSum(sum, assignmentMap, seenIdents) {
             sum: inlineAssignmentsInSum(term.sum, assignmentMap, seenIdents),
           };
         }
-        console.assert(false);
+        throw `Unknown type: ${JSON.stringify(term)}`;
       }),
     })),
   };
