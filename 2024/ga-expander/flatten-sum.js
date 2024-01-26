@@ -16,6 +16,7 @@ function multiplyFlatProducts(lhsFlatProduct: FlatProduct, rhsFlatProduct: FlatP
 function isBasisIdent(ident: string): boolean;
 function flattenBases(bases: Array<string>): {sign: number: bases: Array<string>};
 */
+
 export function flattenSum(sum) {
   return sum.products.flatMap(flattenProduct);
 }

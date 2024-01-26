@@ -2,7 +2,8 @@ import {tokenise} from './tokeniser.js';
 import {astise} from './astiser.js';
 import {inlineAssignments} from './inline-assignments.js';
 import {flattenSum} from './flatten-sum.js';
-import {stringifyFlatSum} from './stringify.js';
+import {groupBases} from './group-bases.js';
+import {stringifyGroupedSum} from './stringify.js';
 
 function main() {
   document.body.style = `
@@ -86,7 +87,9 @@ function parseAndExpand(input) {
   console.log(inlinedSum);
   const flatSum = flattenSum(inlinedSum);
   console.log(flatSum);
-  const result = stringifyFlatSum(flatSum);
+  const groupedSum = groupBases(flatSum);
+  console.log(groupedSum);
+  const result = stringifyGroupedSum(groupedSum);
   console.log(result);
   return result;
 }

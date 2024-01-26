@@ -3,6 +3,7 @@ import {AST, Sum} from './astiser.js';
 
 export function inlineAssignments(ast: AST): Sum;
 */
+
 export function inlineAssignments(ast) {
   const assignmentMap = Object.fromEntries(
     ast.assignments.map(

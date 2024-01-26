@@ -1,9 +1,14 @@
 /*
 import {FlatSum, FlatProduct} from './flatten-sum.js';
+import {GroupedSum, GroupedProduct} from './group-bases.js';
 
 export function stringifyFlatSum(flatSum: FlatSum): string;
 export function stringifyFlatProduct(flatProduct: FlatProduct): string;
+
+export function stringifyGroupedSum(groupedSum: GroupedSum): string;
+export function stringifyGroupedProduct(groupedProduct: GroupedProduct): string;
 */
+
 export function stringifyFlatSum(flatSum) {
   return flatSum.map((flatProduct, i) => {
     return (
