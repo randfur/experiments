@@ -16,6 +16,7 @@ export function groupBases(flatSum: FlatSum): GroupedSum;
 
 export function groupBases(flatSum) {
   const basesMap = new Map();
+
   for (const flatProduct of flatSum) {
     const basesKey = flatProduct.bases.join('*');
     if (!basesMap.has(basesKey)) {
@@ -30,8 +31,30 @@ export function groupBases(flatSum) {
 
   return Array.from(basesMap.entries()).map(
     ([basesKey, scalarSum]) => ({
-      scalarSum,
+      scalarSum: groupScalarSum(scalarSum),
       bases: basesKey.split('*'),
     })
-  );
+  ).filter(groupedProduct => groupedProduct.scalarSum.length > 0);
+}
+
+function groupScalarSum(scalarSum) {
+  const constantsMap = new Map();
+
+  for (const scalarProduct of scalarSum) {
+    const constantsKey = scalarProduct.constants.join('*');
+    if (!constantsMap.has(constantsKey)) {
+      constantsMap.set(constantsKey, 0);
+    }
+    constantsMap.set(
+      constantsKey,
+      constantsMap.get(constantsKey) + scalarProduct.number,
+    );
+  }
+
+  return Array.from(constantsMap.entries()).map(
+    ([constantsKey, number]) => ({
+      number,
+      constants: constantsKey.split('*'),
+    })
+  ).filter(scalarProduct => scalarProduct.number !== 0);
 }

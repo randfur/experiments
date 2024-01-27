@@ -43,16 +43,14 @@ function stringifyGroupedProduct(groupedProduct) {
 
 function stringifyScalarProduct(scalarProduct) {
   return [
-    ...(() => {
+    (() => {
       if (scalarProduct.number === 1) {
         return '';
       }
       if (scalarProduct.number === -1) {
         return '-';
       }
-      if (scalarProduct.number === -1) {
-        return number;
-      }
+      return scalarProduct.number + '*';
     })(),
     scalarProduct.constants.join('*'),
   ].join('');

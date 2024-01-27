@@ -23,11 +23,11 @@ export function flattenSum(sum) {
 
 function flattenProduct(product) {
   return product.terms.map(flattenTerm).reduce(multiplyFlatSums).map(
-    flatSum => flatSum.map(flatProduct => ({
+    flatProduct => ({
       number: flatProduct.number,
       constants: flatProduct.constants.sort(),
       bases: flatProduct.bases,
-    }))
+    })
   );
 }
 

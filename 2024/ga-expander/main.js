@@ -64,6 +64,13 @@ function main() {
   //   v2 = e*X+f*Y+g*Z+h*W;
   //   v1*v2
   // `;
+  // textarea.value = `
+  //   v1 = a*X + b*Y + c*Z;
+  //   v2 = d*X + e*Y + f*Z;
+  //   rotor = v1 * v2;
+  //   position = g*X + h*Y + i*Z;
+  //   conjugate(rotor) * position * rotor
+  // `;
   textarea.value = `
     v1 = a*X + b*Y + c*Z + d*W;
     v2 = e*X + f*Y + g*Z + h*W;
