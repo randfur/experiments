@@ -11,9 +11,27 @@ export type ScalarProduct = {
   constants: Array<string>,
 };
 
-function groupBases(flatSum: FlatSum): GroupedSum;
+export function groupBases(flatSum: FlatSum): GroupedSum;
 */
 
-function groupBases(flatSum) {
+export function groupBases(flatSum) {
+  const basesMap = new Map();
+  for (const flatProduct of flatSum) {
+    const basesKey = flatProduct.bases.join('*');
+    if (!basesMap.has(basesKey)) {
+      basesMap.set(basesKey, []);
+    }
+    const scalarSum = basesMap.get(basesKey);
+    scalarSum.push({
+      number: flatProduct.number,
+      constants: flatProduct.constants,
+    });
+  }
 
+  return Array.from(basesMap.entries()).map(
+    ([basesKey, scalarSum]) => ({
+      scalarSum,
+      bases: basesKey.split('*'),
+    })
+  );
 }
