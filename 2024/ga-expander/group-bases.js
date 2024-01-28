@@ -32,7 +32,7 @@ export function groupBases(flatSum) {
   return Array.from(basesMap.entries()).map(
     ([basesKey, scalarSum]) => ({
       scalarSum: groupScalarSum(scalarSum),
-      bases: basesKey.split('*'),
+      bases: splitBy(basesKey, '*'),
     })
   ).filter(groupedProduct => groupedProduct.scalarSum.length > 0);
 }
@@ -54,7 +54,14 @@ function groupScalarSum(scalarSum) {
   return Array.from(constantsMap.entries()).map(
     ([constantsKey, number]) => ({
       number,
-      constants: constantsKey.split('*'),
+      constants: splitBy(constantsKey, '*'),
     })
   ).filter(scalarProduct => scalarProduct.number !== 0);
+}
+
+function splitBy(string, separator) {
+  if (string === '') {
+    return [];
+  }
+  return string.split(separator);
 }
