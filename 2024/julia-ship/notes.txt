@@ -1,3 +1,18 @@
+# 2024-01-29
+- Started implementing the fly walker.
+  - Getting the V1*V2 4D rotation implementation in using the ga-expander.
+    - v1 = a*B0 + b*B1 + c*B2 + d*B3;
+      v2 = e*B0 + f*B1 + g*B2 + h*B3;
+      v1 * v2
+    - (a*e + b*f + c*g + d*h) + (a*f + -b*e)*B0*B1 + (a*g + -c*e)*B0*B2 + (a*h + -d*e)*B0*B3 + (b*g + -c*f)*B1*B2 + (b*h + -d*f)*B1*B3 + (c*h + -d*g)*B2*B3
+    - Using B0-3 instead of X-W because W sorts before X.
+  - Need to get the previous step and the current step to find V1 and V2.
+  - Then apply rotation to the plane.
+  - Should still clamp plane to be perpendicular to current direction to ensure rotation errors don't accumulate.
+  - Clamping ought to rotate anyway wouldn't it?
+  - Don't actually need this 4D rotation? Just clamping and normalising constantly?
+  - Seems easier as we don't need to keep track of V1 or do any V1*V2 rotation (which requires adjustments to not double rotate).
+
 # 2024-01-11
 - Parts of the julia set are tube like.
   - This is an issue when the cross section plane does a rotation it often looks like the image gets stretched out to infinity and back mirrored.

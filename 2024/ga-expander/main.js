@@ -85,18 +85,11 @@ function main() {
 setTimeout(main, 100);
 
 function parseAndExpand(input) {
-  console.log(input);
   const tokens = tokenise(input);
-  console.log(tokens);
   const ast = astise(tokens);
-  console.log(ast);
   const inlinedSum = inlineAssignments(ast);
-  console.log(inlinedSum);
   const flatSum = flattenSum(inlinedSum);
-  console.log(flatSum);
   const groupedSum = groupBases(flatSum);
-  console.log(groupedSum);
   const result = stringifyGroupedSum(groupedSum);
-  console.log(result);
   return result;
 }
