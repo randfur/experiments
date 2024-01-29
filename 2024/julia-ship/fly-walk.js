@@ -2,12 +2,26 @@ export class FlyWalk {
   static init() {
     this.zoomSetting = -1000;
 
-    this.wanderer = new Wanderer(new Vec4(.35, .56, -.21, -.7));
+    this.wanderer = new Wanderer(Vec4.newDeviate(0.5));
 
+    this.lastDirection = new Vec4();
     this.xDir = Vec4.newDeviate(1);
     this.yDir = Vec4.newDeviate(1);
 
     this.uniformData = null;
+
+    window.addEventListener('wheel', event => {
+      this.zoomSetting += event.deltaY;
+    });
+    window.addEventListener('click', event => {
+      const x = (2 * event.offsetX / window.innerWidth - 1) * Math.max(1, window.innerWidth / window.innerHeight);
+      const y = (1 - 2 * event.offsetY / window.innerHeight) * Math.max(1, window.innerHeight / window.innerWidth);
+      const newPoint = this.wanderer.currentPoint.add(
+        this.xDir.scale(x).add(this.yDir.scale(y)).scale(this.zoom())
+      );
+      this.wanderer.reset(newPoint, this.lastDirection);
+      // this.wanderer.reset(this.wanderer.currentPoint.subtract(this.lastDirection), this.wanderer.currentPoint);
+    });
   }
 
   static zoom() {
@@ -15,14 +29,20 @@ export class FlyWalk {
   }
 
   static update(time) {
+    if (this.wanderer.toPoint === null) {
+      this.wanderer.toPoint = Vec4.newDeviate(0.5);
+    }
+
     const lastPoint = this.wanderer.currentPoint.clone();
     this.wanderer.update();
     const direction = this.wanderer.currentPoint.subtract(lastPoint).normalise();
-    // const direction = this.wanderer.currentPoint.add(new Vec4(1, 0, 0, 0));
 
-    this.xDir = this.xDir.makeOrthogonalWith(direction).normalise();
-    this.yDir = this.yDir.makeOrthogonalWith(direction).normalise();
-    this.yDir = this.yDir.makeOrthogonalWith(this.xDir).normalise();
+    if (direction.length() > 0) {
+      this.lastDirection = direction;
+      this.xDir = this.xDir.makeOrthogonalWith(direction).normalise();
+      this.yDir = this.yDir.makeOrthogonalWith(direction).normalise();
+      this.yDir = this.yDir.makeOrthogonalWith(this.xDir).normalise();
+    }
 
     this.uniformData = new Float32Array([
       ...this.wanderer.currentPoint.toArray(),
@@ -33,6 +53,9 @@ export class FlyWalk {
   }
 
   static debugRender(context) {
+    context.strokeStyle = 'white';
+    context.strokeRect(window.innerWidth / 2 - 2, window.innerHeight / 2 - 2, 4, 4);
+
     context.fillStyle = 'white';
     let y = 32;
     function printVec4(v) {
@@ -52,24 +75,12 @@ class Wanderer {
 
     this.prevFromPoint = new Vec4();
     this.fromPoint = startPoint;
-    this.toPoint = this.fromPoint.add(Vec4.newDeviate(0.001));
+    this.toPoint = null;
     this.currentPoint = this.fromPoint.clone();
-    this.nextToPoint = null;
-    this.nextToPointScore = null;
   }
 
   update() {
-    ++this.step;
-    if (this.step >= this.maxStep) {
-      this.prevFromPoint = this.fromPoint;
-      this.fromPoint = this.toPoint;
-      this.toPoint = this.nextToPoint;
-      if (this.toPoint === null) {
-        this.toPoint = Vec4.newDeviate(0.5);
-      }
-      this.nextToPoint = null;
-      this.step = 0;
-    }
+    console.assert(this.toPoint);
 
     const progress = this.step / this.maxStep;
     const oldTrajectory = this.fromPoint.lerpTo(
@@ -78,6 +89,22 @@ class Wanderer {
     );
     const newTrajectory = this.fromPoint.lerpTo(this.toPoint, progress);
     this.currentPoint = oldTrajectory.lerpTo(newTrajectory, smooth(progress));
+
+    ++this.step;
+    if (this.step >= this.maxStep) {
+      this.prevFromPoint = this.fromPoint;
+      this.fromPoint = this.toPoint;
+      this.toPoint = null;
+      this.step = 0;
+    }
+  }
+
+  reset(point, direction) {
+    this.prevFromPoint = point.subtract(direction.scale(0.1));
+    this.fromPoint = point;
+    this.currentPoint = point;
+    this.toPoint = null;
+    this.step = 0;
   }
 }
 
@@ -157,7 +184,8 @@ class Vec4 {
   }
 
   normalise() {
-    return this.scale(1 / this.length());
+    const length = this.length();
+    return length > 0 ? this.scale(1 / length) : this;
   }
 
   lerpTo(v, t) {

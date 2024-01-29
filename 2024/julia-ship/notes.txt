@@ -1,3 +1,8 @@
+# 2024-01-30
+- Reimplemented clicking to go to a place.
+  - Should probably dedupe the implementation with SmoothRandomWalk but eh, not setting up dependencies that need maintenance is also nice.
+- Still need to compute a nice path to travel along.
+
 # 2024-01-29
 - Started implementing the fly walker.
   - Getting the V1*V2 4D rotation implementation in using the ga-expander.
@@ -12,6 +17,12 @@
   - Clamping ought to rotate anyway wouldn't it?
   - Don't actually need this 4D rotation? Just clamping and normalising constantly?
   - Seems easier as we don't need to keep track of V1 or do any V1*V2 rotation (which requires adjustments to not double rotate).
+- Implemented projection based rotation.
+  - Projected x and y based on travel direction then projected y based on x.
+  - Quite bumpy at times.
+  - Don't have travel path optimisation yet, can try to optimise for orthogonal turns to avoid large 180° flips.
+  - Some of the bumps are probably explained by the arbitrary choice to project y based on x.
+  - Maybe try actually implementing the 4D rotation which should put the two vectors in an already correct-ish position and avoid large y project on x corrections.
 
 # 2024-01-11
 - Parts of the julia set are tube like.

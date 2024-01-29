@@ -61,15 +61,15 @@ export class Render {
           );
 
           struct Output {
-            @location(0) vertex: vec2f,
             @builtin(position) position: vec4f,
+            @location(0) smoothPosition: vec2f,
           }
 
           @vertex
           fn main(@builtin(vertex_index) vertex_index: u32) -> Output {
             var output: Output;
-            output.vertex = vertices[vertex_index];
-            output.position = vec4f(output.vertex, 0, 1);
+            output.position = vec4f(vertices[vertex_index], 0, 1);
+            output.smoothPosition = output.position.xy;
             return output;
           }
           `,
@@ -90,10 +90,10 @@ export class Render {
           @group(0) @binding(0) var<uniform> uniforms: Uniforms;
 
           @fragment
-          fn main(@builtin(position) position: vec4f, @location(0) vertex: vec2f) -> @location(0) vec4f {
+          fn main(@builtin(position) position: vec4f, @location(0) smoothPosition: vec2f) -> @location(0) vec4f {
             let xDir = normalize(uniforms.xDirGuide);
             let yDir = normalize(uniforms.yDirGuide - xDir * dot(xDir, uniforms.yDirGuide));
-            let pixelPosition = uniforms.centre + (xDir * vertex.x * xScale + yDir * vertex.y * yScale) * uniforms.zoom;
+            let pixelPosition = uniforms.centre + (xDir * smoothPosition.x * xScale + yDir * smoothPosition.y * yScale) * uniforms.zoom;
 
             var z = pixelPosition.xy;
             var c = pixelPosition.zw;
