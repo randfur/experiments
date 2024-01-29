@@ -1,6 +1,7 @@
 import {Render} from './render.js';
 import {TrigWalk} from './trig-walk.js';
 import {SmoothRandomWalk} from './smooth-random-walk.js';
+import {FlyWalk} from './fly-walk.js';
 
 async function main() {
   let debug = false;
@@ -12,8 +13,9 @@ async function main() {
 
   await Render.init();
 
-  const walk = SmoothRandomWalk;
   // const walk = TrigWalk;
+  // const walk = SmoothRandomWalk;
+  const walk = FlyWalk;
   walk.init?.();
 
   while (true) {

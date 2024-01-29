@@ -7,4 +7,9 @@ export class TrigWalk {
       0.3,
     ]);
   }
+
+  static debugRender(context) {
+    context.fillStyle = 'white';
+    context.fillText(Array.from(this.uniformData).map(x => x.toFixed(1)).join(', '), 20, 30);
+  }
 }
