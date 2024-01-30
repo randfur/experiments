@@ -11,6 +11,7 @@ export class FlyWalk {
       new Vec4(.10, -.04, -1.76, .01),
       new Vec4(1.15, 0.15, -.78, -.24),
       new Vec4(-1.3, .11, -.75, -.1),
+      new Vec4(-.82, -.35, -.8, -.16),
     ]));
 
     this.nextToPoint = null;
