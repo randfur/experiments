@@ -288,31 +288,31 @@ class Vec4 {
   }
 }
 
-// class Rotor4 {
-//   static newV1V2(v1, v2) {
-//     const {x: a, y: b, z: c, w: d} = v1;
-//     const {x: e, y: f, z: g, w: h} = v2;
-//     return new Rotor4(
-//       /*rr=*/a*e + b*f + c*g + d*h,
-//       /*xy=*/a*f + -b*e,
-//       /*xz=*/a*g + -c*e,
-//       /*xw=*/a*h + -d*e,
-//       /*yz=*/b*g + -c*f,
-//       /*yw=*/b*h + -d*f,
-//       /*zw=*/c*h + -d*g,
-//     );
-//   }
+class Rotor4 {
+  static newFromTo(from, to) {
+    const {x: a, y: b, z: c, w: d} = from;
+    const {x: e, y: f, z: g, w: h} = to;
+    return new Rotor4(
+      /*rr=*/a*e + b*f + c*g + d*h,
+      /*xy=*/a*f + -b*e,
+      /*xz=*/a*g + -c*e,
+      /*xw=*/a*h + -d*e,
+      /*yz=*/b*g + -c*f,
+      /*yw=*/b*h + -d*f,
+      /*zw=*/c*h + -d*g,
+    );
+  }
 
-//   constructor(rr, xy, xz, xw, yz, yw, zw) {
-//     this.rr = rr;
-//     this.xy = xy;
-//     this.xz = xz;
-//     this.xw = xw;
-//     this.yz = yz;
-//     this.yw = yw;
-//     this.zw = zw;
-//   }
-// }
+  constructor(rr, xy, xz, xw, yz, yw, zw) {
+    this.rr = rr;
+    this.xy = xy;
+    this.xz = xz;
+    this.xw = xw;
+    this.yz = yz;
+    this.yw = yw;
+    this.zw = zw;
+  }
+}
 
 function deviate(x) {
   return (Math.random() * 2 - 1) * x;

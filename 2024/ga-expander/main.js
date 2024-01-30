@@ -27,7 +27,10 @@ function main() {
 
   const button = document.createElement('button');
   button.textContent = 'Expand';
-  button.addEventListener('click', processInput);
+  button.addEventListener('click', () => {
+    processInput();
+    location.hash = encodeURIComponent(textarea.value);
+  });
 
   const output = document.createElement('div');
 
@@ -49,40 +52,55 @@ function main() {
     }
   }
 
-  // textarea.value = `
-  //   a = 1 + 2 + 3;
-  //   b = 4 + 5 + 6;
-  //   a*b
-  // `;
-  // textarea.value = `
-  //   a = (1+2+3)*(dog+pants);
-  //   b = a*v + conjugate(a*r);
-  //   a*b
-  // `;
-  // textarea.value = `
-  //   v1 = a*X+b*Y+c*Z+d*W;
-  //   v2 = e*X+f*Y+g*Z+h*W;
-  //   v1*v2
-  // `;
-  // textarea.value = `
-  //   v1 = a*X + b*Y + c*Z;
-  //   v2 = d*X + e*Y + f*Z;
-  //   rotor = v1 * v2;
-  //   position = g*X + h*Y + i*Z;
-  //   conjugate(rotor) * position * rotor
-  // `;
-  textarea.value = `
-    v1 = a*X + b*Y + c*Z + d*W;
-    v2 = e*X + f*Y + g*Z + h*W;
-    rotor = v1 * v2;
-    position = i*X + j*Y + k*Z + l*W;
-    conjugate(rotor) * position * rotor
-  `;
-  processInput();
+  function processHash() {
+    textarea.value = decodeURIComponent(location.hash.slice(1));
+    processInput();
+  }
+
+  window.addEventListener('hashchange', processHash);
+
+  if (location.hash === '') {
+    // textarea.value = trim(`\
+    //   a = 1 + 2 + 3;
+    //   b = 4 + 5 + 6;
+    //
+    //   a*b
+    // `);
+    // textarea.value = trim(`\
+    //   a = (1+2+3)*(dog+pants);
+    //   b = a*v + conjugate(a*r);
+    //
+    //   a*b
+    // `);
+    // textarea.value = trim(`\
+    //   v1 = a*B0+b*B1+c*B2+d*B3;
+    //   v2 = e*B0+f*B1+g*B2+h*B3;
+    //
+    //   v1*v2
+    // `);
+    // textarea.value = trim(`\
+    //   v1 = a*B0 + b*B1 + c*B2;
+    //   v2 = d*B0 + e*B1 + f*B2;
+    //   rotor = v1 * v2;
+    //   position = g*B0 + h*B1 + i*B2;
+    //
+    //   conjugate(rotor) * position * rotor
+    // `);
+    textarea.value = trim(`\
+      v1 = a*B0 + b*B1 + c*B2 + d*B3;
+      v2 = e*B0 + f*B1 + g*B2 + h*B3;
+      rotor = v1 * v2;
+      position = i*B0 + j*B1 + k*B2 + l*B3;
+
+      conjugate(rotor) * position * rotor
+    `);
+    processInput();
+  } else {
+    processHash();
+  }
 }
 
-// DevTools attaches late.
-setTimeout(main, 100);
+main();
 
 function parseAndExpand(input) {
   const tokens = tokenise(input);
@@ -92,4 +110,8 @@ function parseAndExpand(input) {
   const groupedSum = groupBases(flatSum);
   const result = stringifyGroupedSum(groupedSum);
   return result;
+}
+
+function trim(text) {
+  return text.split('\n').map(line => line.trim()).join('\n');
 }
