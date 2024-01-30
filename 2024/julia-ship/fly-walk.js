@@ -125,7 +125,7 @@ function generateNextToPoint(fromPoint, toPoint, distance) {
   }
   const nextToPoint = toPoint.add(Vec4.newDeviate(distance));
 
-  const iterationCount = 50;
+  const iterationCount = 100;
   const probeCount = 20;
   const probes = [];
   for (let probe = 0; probe < probeCount; ++probe) {
