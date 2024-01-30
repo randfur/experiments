@@ -12,12 +12,25 @@ function main() {
   `;
 
   const instructions = document.createElement('pre');
-  instructions.textContent = `
-    Identifiers on the left of an '=' assignment are aliases.
-    Identifiers that start with a lower case are scalar constants.
-    Identifiers that start with an upper case are basis vectors.
-    The last expression gets expanded.
-  `;
+  instructions.textContent = trim(`\
+    Expression structure:
+    alias1 = expression1;
+    alias2 = expression2;
+    alias3 = expression3;
+    expressionToExpand
+
+    Expressions can use:
+    - Constants (lowercase e.g. a, b, c)
+    - Vectors (uppercase e.g. X, Y, Z)
+    - Aliases
+    - Positive integers
+    - Operations: +, *, (), conjugate(expression)
+
+    Example:
+    v1 = a*B0 + b*B1 + c*B2 + d*B3;
+    v2 = e*B0 + f*B1 + g*B2 + h*B3;
+    v1 * v2
+  `);
 
   const textarea = document.createElement('textarea');
   textarea.style = `

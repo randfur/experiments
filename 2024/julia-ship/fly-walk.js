@@ -290,6 +290,7 @@ class Vec4 {
 
 class Rotor4 {
   static newFromTo(from, to) {
+    // https://randfur.github.io/experiments/2024/ga-expander/#v1%20%3D%20a*B0%20%2B%20b*B1%20%2B%20c*B2%20%2B%20d*B3%3B%0Av2%20%3D%20e*B0%20%2B%20f*B1%20%2B%20g*B2%20%2B%20h*B3%3B%0A%0Av1%20*%20v2
     const {x: a, y: b, z: c, w: d} = from;
     const {x: e, y: f, z: g, w: h} = to;
     return new Rotor4(
