@@ -144,7 +144,7 @@ function generateNextToPoint(fromPoint, toPoint, distance) {
     score.push(-Math.abs(0.5 - inCount / (probeCount / 2)));
   }
   const dot = toPoint.subtract(fromPoint).normalise().dot(nextToPoint.subtract(toPoint).normalise());
-  score.push(dot < -0.2 ? dot * 0.1 : 0);
+  score.push(-Math.abs(dot));
 
   return {
     nextToPoint,
