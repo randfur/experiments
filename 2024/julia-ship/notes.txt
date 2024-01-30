@@ -2,6 +2,12 @@
 - Reimplemented clicking to go to a place.
   - Should probably dedupe the implementation with SmoothRandomWalk but eh, not setting up dependencies that need maintenance is also nice.
 - Still need to compute a nice path to travel along.
+  - Added this.
+  - Haven't verified the scoring is actually working properly but seems to keep it in the interesting zone.
+  - Added scoring to penalise when the nextToPoint is backwards, this should avoid big sweeping changes in direction.
+- Added more debugging text.
+- Awkward direction discontinuities still happening, need to try out 4D rotation.
+- Added a bunch of interesting starting points.
 
 # 2024-01-29
 - Started implementing the fly walker.

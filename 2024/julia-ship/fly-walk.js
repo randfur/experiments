@@ -1,8 +1,20 @@
 export class FlyWalk {
   static init() {
-    this.zoomSetting = -1000;
+    this.zoomSetting = -3200;
 
-    this.wanderer = new Wanderer(Vec4.newDeviate(0.5));
+    this.wanderer = new Wanderer(pickRandom([
+      new Vec4(.14, .65, -.22, -.73),
+      new Vec4(-.01, .18, -.03, -.76),
+      new Vec4(-.53, -.97, .31, .03),
+      new Vec4(-.32, -.52, -.75, -.13),
+      new Vec4(-.11, -.07, -1.76, -.01),
+      new Vec4(.10, -.04, -1.76, .01),
+      new Vec4(1.15, 0.15, -.78, -.24),
+      new Vec4(-1.3, .11, -.75, -.1),
+    ]));
+
+    this.nextToPoint = null;
+    this.nextToPointScore = [-Infinity];
 
     this.lastDirection = new Vec4();
     this.xDir = Vec4.newDeviate(1);
@@ -19,8 +31,9 @@ export class FlyWalk {
       const newPoint = this.wanderer.currentPoint.add(
         this.xDir.scale(x).add(this.yDir.scale(y)).scale(this.zoom())
       );
-      this.wanderer.reset(newPoint, this.lastDirection);
-      // this.wanderer.reset(this.wanderer.currentPoint.subtract(this.lastDirection), this.wanderer.currentPoint);
+      this.wanderer.reset(newPoint, this.lastDirection.scale(this.zoom() / 10));
+      this.nextToPoint = null;
+      this.nextToPointScore = [-Infinity];
     });
   }
 
@@ -29,8 +42,20 @@ export class FlyWalk {
   }
 
   static update(time) {
+    const {nextToPoint, score} = generateNextToPoint(
+      this.wanderer.fromPoint,
+      this.wanderer.toPoint,
+      this.zoom(),
+    );
+    if (sum(score) > sum(this.nextToPointScore)) {
+      this.nextToPoint = nextToPoint;
+      this.nextToPointScore = score;
+    }
+
     if (this.wanderer.toPoint === null) {
-      this.wanderer.toPoint = Vec4.newDeviate(0.5);
+      this.wanderer.toPoint = this.nextToPoint;
+      this.nextToPoint = null;
+      this.nextToPointScore = [-Infinity];
     }
 
     const lastPoint = this.wanderer.currentPoint.clone();
@@ -58,14 +83,80 @@ export class FlyWalk {
 
     context.fillStyle = 'white';
     let y = 32;
-    function printVec4(v) {
-      context.fillText(v.toArray().map(x => x.toFixed(1)).join(', '), 20, y);
+    function printText(text) {
+      context.fillText(text, 20, y);
       y += 16;
     }
-    printVec4(this.wanderer.currentPoint);
-    printVec4(this.xDir);
-    printVec4(this.yDir);
+    function printVec4(text, v) {
+      printText(`${text}: ${v ? v.toArray().map(x => x.toFixed(2)).join(', ') : null}`);
+    }
+    printText(`step: ${this.wanderer.step}`);
+    printVec4('prevFromPoint', this.wanderer.prevFromPoint);
+    printVec4('fromPoint', this.wanderer.fromPoint);
+    printVec4('currentPoint', this.wanderer.currentPoint);
+    printVec4('toPoint', this.wanderer.toPoint);
+    printVec4('nextToPoint', this.nextToPoint);
+    printText(`nextToPointScore: ${this.nextToPointScore}`);
+    printText(`nextToPoint distance: ${
+      this.wanderer.toPoint && this.nextToPoint
+      ? this.wanderer.toPoint.subtract(this.nextToPoint).length()
+      : null
+    }`);
+    printVec4('xDir', this.xDir);
+    printVec4('yDir', this.yDir);
+    printText(`zoomSetting: ${this.zoomSetting}`);
+    printText(`zoom: ${this.zoom()}`);
   }
+}
+
+function smoothTriLerp(prevFromPoint, fromPoint, toPoint, progress) {
+  const oldTrajectory = fromPoint.lerpTo(
+    fromPoint.add(fromPoint.subtract(prevFromPoint)),
+    progress,
+  );
+  const newTrajectory = fromPoint.lerpTo(toPoint, progress);
+  return oldTrajectory.lerpTo(newTrajectory, smooth(progress));
+}
+
+function generateNextToPoint(fromPoint, toPoint, distance) {
+  if (!toPoint) {
+    toPoint = fromPoint;
+  }
+  const nextToPoint = toPoint.add(Vec4.newDeviate(distance));
+
+  const iterationCount = 50;
+  const probeCount = 20;
+  const probes = [];
+  for (let probe = 0; probe < probeCount; ++probe) {
+    const point = smoothTriLerp(fromPoint, toPoint, nextToPoint, probe / probeCount);
+    let {x: zr, y: zi, z: cr, w: ci} = point;
+    for (let i = 0; i < iterationCount; ++i) {
+      [zr, zi] = [zr * zr - zi * zi + cr, 2 * zr * zi + ci];
+    }
+    probes.push(zr * zr + zi * zi < 2 * 2);
+  }
+
+  const score = [];
+  for (let half = 0; half < 2; ++half) {
+    const halfProbes = probes.slice(probeCount * half / 2, probeCount * (half + 1) / 2);
+    const inCount = halfProbes.reduce((acc, x) => acc + x, 0);
+    score.push(-Math.abs(0.5 - inCount / (probeCount / 2)));
+  }
+  const dot = toPoint.subtract(fromPoint).normalise().dot(nextToPoint.subtract(toPoint).normalise());
+  score.push(dot < -0.2 ? dot * 0.1 : 0);
+
+  return {
+    nextToPoint,
+    score,
+  };
+}
+
+function sum(list) {
+  return list.reduce((acc, x) => acc + x, 0);
+}
+
+function pickRandom(list) {
+  return list[Math.floor(Math.random() * list.length)];
 }
 
 class Wanderer {
@@ -73,7 +164,7 @@ class Wanderer {
     this.step = 0;
     this.maxStep = 1000;
 
-    this.prevFromPoint = new Vec4();
+    this.prevFromPoint = startPoint;
     this.fromPoint = startPoint;
     this.toPoint = null;
     this.currentPoint = this.fromPoint.clone();
@@ -83,12 +174,7 @@ class Wanderer {
     console.assert(this.toPoint);
 
     const progress = this.step / this.maxStep;
-    const oldTrajectory = this.fromPoint.lerpTo(
-      this.fromPoint.add(this.fromPoint.subtract(this.prevFromPoint)),
-      progress,
-    );
-    const newTrajectory = this.fromPoint.lerpTo(this.toPoint, progress);
-    this.currentPoint = oldTrajectory.lerpTo(newTrajectory, smooth(progress));
+    this.currentPoint = smoothTriLerp(this.prevFromPoint, this.fromPoint, this.toPoint, progress);
 
     ++this.step;
     if (this.step >= this.maxStep) {
@@ -100,7 +186,7 @@ class Wanderer {
   }
 
   reset(point, direction) {
-    this.prevFromPoint = point.subtract(direction.scale(0.1));
+    this.prevFromPoint = point.subtract(direction);
     this.fromPoint = point;
     this.currentPoint = point;
     this.toPoint = null;
