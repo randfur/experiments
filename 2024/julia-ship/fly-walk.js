@@ -18,8 +18,9 @@ export class FlyWalk {
     this.nextToPointScore = [-Infinity];
 
     this.lastDirection = new Vec4();
-    this.xDir = Vec4.newDeviate(1);
-    this.yDir = Vec4.newDeviate(1);
+    this.xDir = Vec4.newDeviate(1).normalise();
+    this.yDir = Vec4.newDeviate(1).normalise();
+    this.yDir = this.yDir.makeOrthogonalWith(this.xDir).normalise();
 
     this.uniformData = null;
 
@@ -64,10 +65,16 @@ export class FlyWalk {
     const direction = this.wanderer.currentPoint.subtract(lastPoint).normalise();
 
     if (direction.length() > 0) {
-      this.lastDirection = direction;
+      if (this.lastDirection.length() > 0) {
+        const rotor = Rotor4.newFromTo(this.lastDirection, direction);
+        this.xDir = rotor.rotate(this.xDir).normalise();
+        this.yDir = rotor.rotate(this.yDir).normalise();
+      }
+
       this.xDir = this.xDir.makeOrthogonalWith(direction).normalise();
       this.yDir = this.yDir.makeOrthogonalWith(direction).normalise();
       this.yDir = this.yDir.makeOrthogonalWith(this.xDir).normalise();
+      this.lastDirection = direction;
     }
 
     this.uniformData = new Float32Array([
@@ -290,9 +297,21 @@ class Vec4 {
 
 class Rotor4 {
   static newFromTo(from, to) {
-    // https://randfur.github.io/experiments/2024/ga-expander/#v1%20%3D%20a*B0%20%2B%20b*B1%20%2B%20c*B2%20%2B%20d*B3%3B%0Av2%20%3D%20e*B0%20%2B%20f*B1%20%2B%20g*B2%20%2B%20h*B3%3B%0A%0Av1%20*%20v2
+    from = from.normalise();
+    to = to.normalise();
     const {x: a, y: b, z: c, w: d} = from;
-    const {x: e, y: f, z: g, w: h} = to;
+    const {x: e, y: f, z: g, w: h} = to.add(from).normalise();
+    // https://randfur.github.io/experiments/2024/ga-expander/#v1%20%3D%20a*B0%20%2B%20b*B1%20%2B%20c*B2%20%2B%20d*B3%3B%0Av2%20%3D%20e*B0%20%2B%20f*B1%20%2B%20g*B2%20%2B%20h*B3%3B%0A%0Av1%20*%20v2
+    // v1 = a*B0 + b*B1 + c*B2 + d*B3;
+    // v2 = e*B0 + f*B1 + g*B2 + h*B3;
+    // v1 * v2
+    // = (a*e + b*f + c*g + d*h)
+    // + (a*f + -b*e)*B0*B1
+    // + (a*g + -c*e)*B0*B2
+    // + (a*h + -d*e)*B0*B3
+    // + (b*g + -c*f)*B1*B2
+    // + (b*h + -d*f)*B1*B3
+    // + (c*h + -d*g)*B2*B3
     return new Rotor4(
       /*rr=*/a*e + b*f + c*g + d*h,
       /*xy=*/a*f + -b*e,
@@ -312,6 +331,25 @@ class Rotor4 {
     this.yz = yz;
     this.yw = yw;
     this.zw = zw;
+  }
+
+  rotate(v) {
+    // https://randfur.github.io/experiments/2024/ga-expander/#rotor%20%3D%20rr%20%2B%20xy*B0*B1%20%2B%20xz*B0*B2%20%2B%20xw*B0*B3%20%2B%20yz*B1*B2%20%2B%20yw*B1*B3%20%2B%20zw*B2*B3%3B%0Aposition%20%3D%20x*B0%20%2B%20y*B1%20%2B%20z*B2%20%2B%20w*B3%3B%0A%0Aconjugate(rotor)%20*%20position%20*%20rotor
+    // rotor = rr + xy*B0*B1 + xz*B0*B2 + xw*B0*B3 + yz*B1*B2 + yw*B1*B3 + zw*B2*B3;
+    // position = x*B0 + y*B1 + z*B2 + w*B3;
+    // conjugate(rotor) * position * rotor
+    // = (rr*rr*x + -2*rr*xy*y + -2*rr*xz*z + -2*rr*w*xw + -x*xy*xy + 2*xy*yz*z + 2*w*xy*yw + -x*xz*xz + -2*xz*y*yz + 2*w*xz*zw + -x*xw*xw + -2*xw*y*yw + -2*xw*z*zw + x*yz*yz + x*yw*yw + x*zw*zw)*B0
+    // + (2*rr*x*xy + rr*rr*y + -2*rr*yz*z + -2*rr*w*yw + -xy*xy*y + -2*xy*xz*z + -2*w*xw*xy + -2*x*xz*yz + xz*xz*y + -2*x*xw*yw + xw*xw*y + -y*yz*yz + 2*w*yz*zw + -y*yw*yw + -2*yw*z*zw + y*zw*zw)*B1
+    // + (2*rr*x*xz + 2*rr*y*yz + rr*rr*z + -2*rr*w*zw + 2*x*xy*yz + -2*xy*xz*y + xy*xy*z + -xz*xz*z + -2*w*xw*xz + -2*x*xw*zw + xw*xw*z + -yz*yz*z + -2*w*yw*yz + -2*y*yw*zw + yw*yw*z + -z*zw*zw)*B2
+    // + (2*rr*x*xw + 2*rr*y*yw + 2*rr*z*zw + rr*rr*w + 2*x*xy*yw + -2*xw*xy*y + w*xy*xy + 2*x*xz*zw + -2*xw*xz*z + w*xz*xz + -w*xw*xw + 2*y*yz*zw + -2*yw*yz*z + w*yz*yz + -w*yw*yw + -w*zw*zw)*B3
+    const {x, y, z, w} = v;
+    const {rr, xy, xz, xw, yz, yw, zw} = this;
+    return new Vec4(
+      /*x=*/rr*rr*x + -2*rr*xy*y + -2*rr*xz*z + -2*rr*w*xw + -x*xy*xy + 2*xy*yz*z + 2*w*xy*yw + -x*xz*xz + -2*xz*y*yz + 2*w*xz*zw + -x*xw*xw + -2*xw*y*yw + -2*xw*z*zw + x*yz*yz + x*yw*yw + x*zw*zw,
+      /*y=*/2*rr*x*xy + rr*rr*y + -2*rr*yz*z + -2*rr*w*yw + -xy*xy*y + -2*xy*xz*z + -2*w*xw*xy + -2*x*xz*yz + xz*xz*y + -2*x*xw*yw + xw*xw*y + -y*yz*yz + 2*w*yz*zw + -y*yw*yw + -2*yw*z*zw + y*zw*zw,
+      /*z=*/2*rr*x*xz + 2*rr*y*yz + rr*rr*z + -2*rr*w*zw + 2*x*xy*yz + -2*xy*xz*y + xy*xy*z + -xz*xz*z + -2*w*xw*xz + -2*x*xw*zw + xw*xw*z + -yz*yz*z + -2*w*yw*yz + -2*y*yw*zw + yw*yw*z + -z*zw*zw,
+      /*w=*/2*rr*x*xw + 2*rr*y*yw + 2*rr*z*zw + rr*rr*w + 2*x*xy*yw + -2*xw*xy*y + w*xy*xy + 2*x*xz*zw + -2*xw*xz*z + w*xz*xz + -w*xw*xw + 2*y*yz*zw + -2*yw*yz*z + w*yz*yz + -w*yw*yw + -w*zw*zw,
+    );
   }
 }
 

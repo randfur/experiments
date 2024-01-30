@@ -1,3 +1,12 @@
+# 2024-01-31
+- Added 4D rotation of plane.
+  - Doesn't work, ends up at 0.
+   - Need to check if either of the input directions are 0.
+  - Works now.
+  - Still has rotational jerk.
+  - Probably due to the position wandering algorithm.
+    - Need to investigate its derivatives for continuity.
+
 # 2024-01-30
 - Reimplemented clicking to go to a place.
   - Should probably dedupe the implementation with SmoothRandomWalk but eh, not setting up dependencies that need maintenance is also nice.
