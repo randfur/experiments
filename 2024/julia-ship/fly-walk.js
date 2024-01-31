@@ -51,7 +51,7 @@ export class FlyWalk {
       const {nextToPoint, score} = generateNextToPoint(
         this.wanderer.fromPoint,
         this.wanderer.toPoint,
-        Math.min(this.zoom() * 3, 0.5),
+        this.zoom() * 3,
       );
       if (sum(score) > sum(this.nextToPointScore)) {
         this.nextToPoint = nextToPoint;
@@ -108,6 +108,7 @@ export class FlyWalk {
     printVec4('prevFromPoint', this.wanderer.prevFromPoint);
     printVec4('fromPoint', this.wanderer.fromPoint);
     printVec4('currentPoint', this.wanderer.currentPoint);
+    printText(`current origin distance: ${this.wanderer.currentPoint.length()}`);
     printVec4('toPoint', this.wanderer.toPoint);
     printText(`toPointScore: ${this.toPointScore}`);
     printVec4('nextToPoint', this.nextToPoint);
@@ -153,11 +154,13 @@ function generateNextToPoint(fromPoint, toPoint, distance) {
   const changeFraction = sum(probes.map((x, i) => i > 0 ? x !== probes[i - 1] : false)) / probeCount;
   score.push((changeFraction * 10) ** 2);
   const pointDeltaDirection = nextToPoint.subtract(toPoint).normalise();
-  // Favour turning.
-  score.push(-10 * Math.abs(pointDeltaDirection.dot(toPoint.subtract(fromPoint).normalise())));
-  // Go towards/away from origin if lost.
   if (changeFraction === 0) {
-    score.push(100 * pointDeltaDirection.dot(fromPoint.scale(probes[0] ? 1 : -1).normalise()));
+    // Go towards/away from origin if lost.
+    const originDistanceDelta = nextToPoint.length() - toPoint.length();
+    score.push((probes[0] ? 1 : -1) * originDistanceDelta);
+  } else {
+    // Favour turning.
+    score.push(10 * (1 - Math.abs(pointDeltaDirection.dot(toPoint.subtract(fromPoint).normalise()))));
   }
 
   return {
