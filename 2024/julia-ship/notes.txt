@@ -55,6 +55,7 @@
       c = 24
       f(x) = 3/5*x^5 - x^4 + 4*x^3
     - This is not the same answer and is wrong.
+- Updated scoring to just count how many in/out changes there are and weight it quadratically.
 
 # 2024-01-31
 - Added 4D rotation of plane.

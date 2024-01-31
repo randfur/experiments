@@ -1,6 +1,6 @@
 export class FlyWalk {
   static init() {
-    this.zoomSetting = -3200;
+    this.zoomSetting = -2500;
 
     this.wanderer = new Wanderer(pickRandom([
       new Vec4(.14, .65, -.22, -.73),
@@ -14,6 +14,7 @@ export class FlyWalk {
       new Vec4(1.14, 0.14, -.75, -.24),
     ]));
 
+    this.toPointScore = [];
     this.nextToPoint = null;
     this.nextToPointScore = [-Infinity];
 
@@ -34,6 +35,7 @@ export class FlyWalk {
         this.xDir.scale(x).add(this.yDir.scale(y)).scale(this.zoom())
       );
       this.wanderer.reset(newPoint, this.lastDirection.scale(this.zoom() / 10));
+      this.toPointScore = [];
       this.nextToPoint = null;
       this.nextToPointScore = [-Infinity];
     });
@@ -44,7 +46,7 @@ export class FlyWalk {
   }
 
   static update(time) {
-    const runs = this.nextToPoint === null && this.wanderer.toPoint === null ? 20 : 1;
+    const runs = this.nextToPoint === null && this.wanderer.toPoint === null ? 50 : 1;
     for (let run = 0; run < runs; ++run) {
       const {nextToPoint, score} = generateNextToPoint(
         this.wanderer.fromPoint,
@@ -59,6 +61,7 @@ export class FlyWalk {
 
     if (this.wanderer.toPoint === null) {
       this.wanderer.toPoint = this.nextToPoint;
+      this.toPointScore = this.nextToPointScore;
       this.nextToPoint = null;
       this.nextToPointScore = [-Infinity];
     }
@@ -106,6 +109,7 @@ export class FlyWalk {
     printVec4('fromPoint', this.wanderer.fromPoint);
     printVec4('currentPoint', this.wanderer.currentPoint);
     printVec4('toPoint', this.wanderer.toPoint);
+    printText(`toPointScore: ${this.toPointScore}`);
     printVec4('nextToPoint', this.nextToPoint);
     printText(`nextToPointScore: ${this.nextToPointScore}`);
     printText(`nextToPoint distance: ${
@@ -145,13 +149,15 @@ function generateNextToPoint(fromPoint, toPoint, distance) {
   }
 
   const score = [];
-  for (let half = 0; half < 2; ++half) {
-    const halfProbes = probes.slice(probeCount * half / 2, probeCount * (half + 1) / 2);
-    const inCount = halfProbes.reduce((acc, x) => acc + x, 0);
-    score.push(-Math.abs(0.5 - inCount / (probeCount / 2)));
-  }
+  // for (let half = 0; half < 2; ++half) {
+  //   const halfProbes = probes.slice(probeCount * half / 2, probeCount * (half + 1) / 2);
+  //   const inCount = halfProbes.reduce((acc, x) => acc + x, 0);
+  //   score.push(-((10 * Math.abs(0.5 - inCount / (probeCount / 2))) ** 2));
+  // }
+  const changeFraction = sum(probes.map((x, i) => i > 0 ? x !== probes[i - 1] : false)) / probeCount;
+  score.push((changeFraction * 10) ** 2);
   const dot = toPoint.subtract(fromPoint).normalise().dot(nextToPoint.subtract(toPoint).normalise());
-  score.push(-Math.abs(dot));
+  score.push(-10 * Math.abs(dot));
 
   return {
     nextToPoint,
