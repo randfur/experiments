@@ -160,7 +160,7 @@ function generateNextToPoint(fromPoint, toPoint, distance) {
     score.push((probes[0] ? 1 : -1) * originDistanceDelta);
   } else {
     // Favour turning.
-    score.push(10 * (1 - Math.abs(pointDeltaDirection.dot(toPoint.subtract(fromPoint).normalise()))));
+    score.push(2 * (1 - Math.abs(pointDeltaDirection.dot(toPoint.subtract(fromPoint).normalise()))));
   }
 
   return {
