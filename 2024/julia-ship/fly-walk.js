@@ -3,15 +3,15 @@ export class FlyWalk {
     this.zoomSetting = -3200;
 
     this.wanderer = new Wanderer(pickRandom([
-      new Vec4(.14, .65, -.22, -.73),
-      new Vec4(-.01, .18, -.03, -.76),
-      new Vec4(-.53, -.97, .31, .03),
-      new Vec4(-.32, -.52, -.75, -.13),
-      new Vec4(-.11, -.07, -1.76, -.01),
-      new Vec4(.10, -.04, -1.76, .01),
-      new Vec4(1.15, 0.15, -.78, -.24),
-      new Vec4(-1.3, .11, -.75, -.1),
-      new Vec4(-.82, -.35, -.8, -.16),
+      // new Vec4(.14, .65, -.22, -.73),
+      // new Vec4(-.01, .18, -.03, -.76),
+      // new Vec4(-.53, -.97, .31, .03),
+      // new Vec4(-.32, -.52, -.75, -.13),
+      // new Vec4(-.11, -.07, -1.76, -.01),
+      // new Vec4(.10, -.04, -1.76, .01),
+      // new Vec4(-1.3, .11, -.75, -.1),
+      // new Vec4(-.82, -.35, -.8, -.16),
+      new Vec4(1.14, 0.14, -.75, -.24),
     ]));
 
     this.nextToPoint = null;
@@ -47,7 +47,7 @@ export class FlyWalk {
     const {nextToPoint, score} = generateNextToPoint(
       this.wanderer.fromPoint,
       this.wanderer.toPoint,
-      this.zoom(),
+      this.zoom() * 3,
     );
     if (sum(score) > sum(this.nextToPointScore)) {
       this.nextToPoint = nextToPoint;

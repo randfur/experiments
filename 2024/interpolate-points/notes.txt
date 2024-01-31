@@ -1,3 +1,7 @@
+# 2024-01-31
+- Draw velocity and acceleration vectors.
+- Would like acceleration to be less jumpy.
+
 # 2024-01-06
 - Testing out a smooth point interpolation algorithm for julia-ship.
 - Smoothly interpolate from projection of the previous trajectory to the new trajectory.
