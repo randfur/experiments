@@ -51,7 +51,7 @@ export class FlyWalk {
       const {nextToPoint, score} = generateNextToPoint(
         this.wanderer.fromPoint,
         this.wanderer.toPoint,
-        this.zoom() * 3,
+        Math.min(this.zoom() * 3, 0.5),
       );
       if (sum(score) > sum(this.nextToPointScore)) {
         this.nextToPoint = nextToPoint;
@@ -149,15 +149,16 @@ function generateNextToPoint(fromPoint, toPoint, distance) {
   }
 
   const score = [];
-  // for (let half = 0; half < 2; ++half) {
-  //   const halfProbes = probes.slice(probeCount * half / 2, probeCount * (half + 1) / 2);
-  //   const inCount = halfProbes.reduce((acc, x) => acc + x, 0);
-  //   score.push(-((10 * Math.abs(0.5 - inCount / (probeCount / 2))) ** 2));
-  // }
+  // Favour changes.
   const changeFraction = sum(probes.map((x, i) => i > 0 ? x !== probes[i - 1] : false)) / probeCount;
   score.push((changeFraction * 10) ** 2);
-  const dot = toPoint.subtract(fromPoint).normalise().dot(nextToPoint.subtract(toPoint).normalise());
-  score.push(-10 * Math.abs(dot));
+  const pointDeltaDirection = nextToPoint.subtract(toPoint).normalise();
+  // Favour turning.
+  score.push(-10 * Math.abs(pointDeltaDirection.dot(toPoint.subtract(fromPoint).normalise())));
+  // Go towards/away from origin if lost.
+  if (changeFraction === 0) {
+    score.push(100 * pointDeltaDirection.dot(fromPoint.scale(probes[0] ? 1 : -1).normalise()));
+  }
 
   return {
     nextToPoint,
