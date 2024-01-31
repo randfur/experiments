@@ -41,7 +41,9 @@ class Vec2 {
 }
 
 function smooth(x) {
-  return x < 0.5 ? x ** 2 * 2 : 1 - ((1 - x) ** 2 * 2);
+  // return x < 0.5 ? x ** 2 * 2 : 1 - ((1 - x) ** 2 * 2);
+  return 120 * (x ** 5 / 20 - x ** 4 / 8 + x ** 3 / 12);
+  // return 3 / 5 * x ** 5 - x ** 4 + 4 * x ** 3;
 }
 
 async function main() {

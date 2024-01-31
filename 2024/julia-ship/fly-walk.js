@@ -44,14 +44,17 @@ export class FlyWalk {
   }
 
   static update(time) {
-    const {nextToPoint, score} = generateNextToPoint(
-      this.wanderer.fromPoint,
-      this.wanderer.toPoint,
-      this.zoom() * 3,
-    );
-    if (sum(score) > sum(this.nextToPointScore)) {
-      this.nextToPoint = nextToPoint;
-      this.nextToPointScore = score;
+    const runs = this.nextToPoint === null && this.wanderer.toPoint === null ? 20 : 1;
+    for (let run = 0; run < runs; ++run) {
+      const {nextToPoint, score} = generateNextToPoint(
+        this.wanderer.fromPoint,
+        this.wanderer.toPoint,
+        this.zoom() * 3,
+      );
+      if (sum(score) > sum(this.nextToPointScore)) {
+        this.nextToPoint = nextToPoint;
+        this.nextToPointScore = score;
+      }
     }
 
     if (this.wanderer.toPoint === null) {
@@ -118,10 +121,7 @@ export class FlyWalk {
 }
 
 function smoothTriLerp(prevFromPoint, fromPoint, toPoint, progress) {
-  const oldTrajectory = fromPoint.lerpTo(
-    fromPoint.add(fromPoint.subtract(prevFromPoint)),
-    progress,
-  );
+  const oldTrajectory = prevFromPoint.lerpTo(fromPoint, 1 + progress);
   const newTrajectory = fromPoint.lerpTo(toPoint, progress);
   return oldTrajectory.lerpTo(newTrajectory, smooth(progress));
 }
@@ -358,5 +358,5 @@ function deviate(x) {
 }
 
 function smooth(x) {
-  return x < 0.5 ? 2 * x ** 2 : 1 - 2 * (x - 1) ** 2;
+  return 120 * (x ** 5 / 20 - x ** 4 / 8 + x ** 3 / 12);
 }
