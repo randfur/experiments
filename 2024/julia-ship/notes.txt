@@ -60,6 +60,7 @@
 - Updated scoring to just count how many in/out changes there are and weight it quadratically.
 - Added seeking origin if lost out in the void or going away from origin if stuck inside.
 - Added favouring landing on a different in/out to the start.
+- Updated score to have named keys.
 
 # 2024-01-31
 - Added 4D rotation of plane.

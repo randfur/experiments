@@ -1,6 +1,6 @@
 export class FlyWalk {
   static init() {
-    this.zoomSetting = -2500;
+    this.zoomSetting = -2000;
 
     this.wanderer = new Wanderer(pickRandom([
       new Vec4(.14, .65, -.22, -.73),
@@ -16,7 +16,7 @@ export class FlyWalk {
 
     this.toPointScore = [];
     this.nextToPoint = null;
-    this.nextToPointScore = [-Infinity];
+    this.nextToPointScore = { unset: -Infinity };
 
     this.lastDirection = new Vec4();
     this.xDir = Vec4.newDeviate(1).normalise();
@@ -37,7 +37,7 @@ export class FlyWalk {
       this.wanderer.reset(newPoint, this.lastDirection.scale(this.zoom() / 10));
       this.toPointScore = [];
       this.nextToPoint = null;
-      this.nextToPointScore = [-Infinity];
+      this.nextToPointScore = { unset: -Infinity };
     });
   }
 
@@ -63,7 +63,7 @@ export class FlyWalk {
       this.wanderer.toPoint = this.nextToPoint;
       this.toPointScore = this.nextToPointScore;
       this.nextToPoint = null;
-      this.nextToPointScore = [-Infinity];
+      this.nextToPointScore = { unset: -Infinity };
     }
 
     const lastPoint = this.wanderer.currentPoint.clone();
@@ -110,9 +110,9 @@ export class FlyWalk {
     printVec4('currentPoint', this.wanderer.currentPoint);
     printText(`current origin distance: ${this.wanderer.currentPoint.length()}`);
     printVec4('toPoint', this.wanderer.toPoint);
-    printText(`toPointScore: ${this.toPointScore}`);
+    printText(`toPointScore: ${JSON.stringify(this.toPointScore)}`);
     printVec4('nextToPoint', this.nextToPoint);
-    printText(`nextToPointScore: ${this.nextToPointScore}`);
+    printText(`nextToPointScore: ${JSON.stringify(this.nextToPointScore)}`);
     printText(`nextToPoint distance: ${
       this.wanderer.toPoint && this.nextToPoint
       ? this.wanderer.toPoint.subtract(this.nextToPoint).length()
@@ -149,21 +149,21 @@ function generateNextToPoint(fromPoint, toPoint, distance) {
     probes.push(zr * zr + zi * zi < 2 * 2);
   }
 
-  const score = [];
+  const score = {};
   // Favour changes.
   const changeFraction = sum(probes.map((x, i) => i > 0 ? x !== probes[i - 1] : false)) / probeCount;
-  score.push((changeFraction * 20) ** 2);
+  score.changes = (changeFraction * 20) ** 2;
   const pointDeltaDirection = nextToPoint.subtract(toPoint).normalise();
   if (changeFraction === 0) {
     // Go towards/away from origin if lost.
     const originDistanceDelta = nextToPoint.length() - toPoint.length();
-    score.push((probes[0] ? 1 : -1) * originDistanceDelta);
+    score.lost = (probes[0] ? 1 : -1) * originDistanceDelta;
   } else {
     // Favour turning.
-    score.push(2 * (1 - Math.abs(pointDeltaDirection.dot(toPoint.subtract(fromPoint).normalise()))));
+    score.turn = 5 * (1 - Math.abs(pointDeltaDirection.dot(toPoint.subtract(fromPoint).normalise())));
   }
   // Favour ending differently to starting.
-  score.push(10 * (probes[0] !== probes[probes.length - 1]));
+  score.end = 10 * (probes[0] !== probes[probes.length - 1]);
 
   return {
     nextToPoint,
@@ -171,8 +171,12 @@ function generateNextToPoint(fromPoint, toPoint, distance) {
   };
 }
 
-function sum(list) {
-  return list.reduce((acc, x) => acc + x, 0);
+function sum(object) {
+  let result = 0;
+  for (const i in object) {
+    result += object[i];
+  }
+  return result;
 }
 
 function pickRandom(list) {
