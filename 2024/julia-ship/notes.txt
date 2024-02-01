@@ -55,6 +55,8 @@
       c = 24
       f(x) = 3/5*x^5 - x^4 + 4*x^3
     - This is not the same answer and is wrong.
+    - Tried this again and got the right answer, easier to set a, b, c on f(x) rather than f''(x) but takes a bit more reasoning to know there's only a, b and c.
+      - The fact that f'(0) = f''(0) = 0 means there's no d or e constants.
 - Updated scoring to just count how many in/out changes there are and weight it quadratically.
 - Added seeking origin if lost out in the void or going away from origin if stuck inside.
 - Added favouring landing on a different in/out to the start.

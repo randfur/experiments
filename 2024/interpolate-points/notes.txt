@@ -1,3 +1,6 @@
+# 2024-02-01
+- Updated smooth function based on findings from julia-ship.
+
 # 2024-01-31
 - Draw velocity and acceleration vectors.
 - Would like acceleration to be less jumpy.
