@@ -3,13 +3,12 @@ export class FlyWalk {
     this.zoomSetting = -2200;
 
     this.wanderer = new Wanderer(pickRandom([
-      new Vec4(.14, .65, -.22, -.73),
       new Vec4(-.01, .18, -.03, -.76),
-      new Vec4(-.53, -.97, .31, .03),
       new Vec4(-.32, -.52, -.75, -.13),
-      new Vec4(-.82, -.35, -.8, -.16),
-      new Vec4(1.14, 0.14, -.75, -.24),
-      new Vec4(-1.3, .11, -.75, -.1),
+      new Vec4(-.53, -.97, .31, .03),
+      new Vec4(-1.34, .04, -.76, -.1),
+      new Vec4(.14, .65, -.22, -.73),
+      new Vec4(1.14, 0.17, -.77, -.26),
     ]));
 
     this.toPointScore = [];
