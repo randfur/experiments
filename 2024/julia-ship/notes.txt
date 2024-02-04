@@ -1,3 +1,6 @@
+# 2024-02-04
+- Added error warning for WebGPU initialisation failure.
+
 # 2024-02-01
 - Resolving acceleration smoothing for random walk.
   - Thinking the acceleration could be an up down up cubic with 0 points at 0, 0.5 and 1.

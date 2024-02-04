@@ -17,7 +17,16 @@ export class Render {
       position: absolute;
     `;
 
-    this.device = await (await navigator.gpu.requestAdapter()).requestDevice();
+    try {
+      this.device = await (await navigator.gpu.requestAdapter()).requestDevice();
+    } catch (error) {
+      const errorDiv = document.createElement('div');
+      errorDiv.style.color = 'white';
+      errorDiv.style.fontFamily = 'monospace';
+      errorDiv.textContent = error.message;
+      document.body.append(errorDiv);
+      return;
+    }
 
     this.canvas = document.createElement('canvas');
     this.canvas.style = `

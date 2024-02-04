@@ -1,6 +1,6 @@
 export class FlyWalk {
   static init() {
-    this.zoomSetting = -2000;
+    this.zoomSetting = -2200;
 
     this.wanderer = new Wanderer(pickRandom([
       new Vec4(.14, .65, -.22, -.73),
@@ -49,7 +49,7 @@ export class FlyWalk {
       const {nextToPoint, score} = generateNextToPoint(
         this.wanderer.fromPoint,
         this.wanderer.toPoint,
-        Math.min(this.zoom() * 3, 0.5),
+        Math.min(this.zoom() * 2, 0.5),
       );
       if (sum(score) > sum(this.nextToPointScore)) {
         this.nextToPoint = nextToPoint;
@@ -103,6 +103,7 @@ export class FlyWalk {
       printText(`${text}: ${v ? v.toArray().map(x => x.toFixed(2)).join(', ') : null}`);
     }
     printText(`step: ${this.wanderer.step}`);
+    printText(`progress: ${this.wanderer.step / this.wanderer.maxStep}`);
     printVec4('prevFromPoint', this.wanderer.prevFromPoint);
     printVec4('fromPoint', this.wanderer.fromPoint);
     printVec4('currentPoint', this.wanderer.currentPoint);
