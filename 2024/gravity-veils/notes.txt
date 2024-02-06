@@ -1,0 +1,26 @@
+# 2024-02-06
+- Recreation of http://four-venom.glitch.me/ in 3D using WebGPU.
+- Use the compute stage to parallelise the computation of many many more points than four-venom which is completely CPU driven.
+- Be in space with stars in the background.
+- Camera rotating around origin.
+- Veils:
+  - Veils spawning from origin in different directions.
+  - Multiple veils.
+  - Use the historical path of a smooth 3D walkers to generate veil points in those directions.
+  - Additive colouring.
+  - Start and end of veils fade to transparent.
+  - Not made up of dots like in four-venom, will be triangles.
+- Maybe consider volumes as well as veils.
+  - Possibly a separate experiment.
+- Architecture:
+  - WebGPU shaders.
+    - Gravity path compute.
+    - Veil rendering.
+    - Data buffers between pipeline stages.
+    - Blending configuration.
+  - Veil directions computation.
+    - 3D walker path history.
+  - Gravity points over time.
+    - Orbiting origin.
+    - Fading in and out.
+  - Camera orientation.
