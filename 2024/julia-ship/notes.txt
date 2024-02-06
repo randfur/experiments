@@ -1,5 +1,5 @@
 # 2024-02-06
-- Promoted moving forwards and heavily penalised moving backwards.
+- Promote moving forwards and heavily penalise any moving backwards.
   - Used to just promote turning 90 degrees.
 
 # 2024-02-04

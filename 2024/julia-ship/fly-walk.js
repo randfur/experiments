@@ -161,7 +161,7 @@ function generateNextToPoint(fromPoint, toPoint, distance) {
   } else {
     // Penalise going backwards.
     const forwardsDot = pointDeltaDirection.dot(toPoint.subtract(fromPoint).normalise())
-    score.forward = (forwardsDot > 0 ? 10 : 100) * forwardsDot;
+    score.forward = forwardsDot > 0 ? 10 * forwardsDot : -100;
   }
   // Favour ending differently to starting.
   score.end = 10 * (probes[0] !== probes[probes.length - 1]);
