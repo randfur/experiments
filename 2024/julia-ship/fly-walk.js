@@ -159,8 +159,9 @@ function generateNextToPoint(fromPoint, toPoint, distance) {
     const originDistanceDelta = nextToPoint.length() - toPoint.length();
     score.lost = (probes[0] ? 1 : -1) * originDistanceDelta;
   } else {
-    // Favour turning.
-    score.turn = 5 * (1 - Math.abs(pointDeltaDirection.dot(toPoint.subtract(fromPoint).normalise())));
+    // Penalise going backwards.
+    const forwardsDot = pointDeltaDirection.dot(toPoint.subtract(fromPoint).normalise())
+    score.forward = (forwardsDot > 0 ? 10 : 100) * forwardsDot;
   }
   // Favour ending differently to starting.
   score.end = 10 * (probes[0] !== probes[probes.length - 1]);
