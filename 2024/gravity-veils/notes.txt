@@ -1,3 +1,29 @@
+# 2024-02-17
+- How to convert the trajectories into a mesh.
+  - Discussed the idea with GPT4.
+  - Creating individual triangles seems data heavy and cumbersome and hard to track offsets of things in the overall mesh buffer.
+  - Using a triangle strip is easier as pairs of positions will work fine, though they do need repeating on the other side but that's probably fine.
+    - Using indexed buffers would avoid the duplication but it seems simple enough to not worry about for now.
+  - One problem with triangle strips is the zig zag pattern of traversing through trajectories will create joins between the end of one and the start of the other.
+    - GPT4 suggested adding degenerate triangles to the end to avoid that.
+    - Adding two points that are in the same position such that the next point won't form a visible triangle as the area will be 0.
+  - The pattern of converting trajectories to a mesh will not change and does not need to be computed with every frame.
+    - Less compute and memory to use a statically computed index buffer.
+    - Need to work out the API for it.
+- Index buffers
+  - Turns out index buffers support restarting the topology sequence by using the max integer value: https://developer.mozilla.org/en-US/docs/Web/API/GPURenderPassEncoder/setIndexBuffer
+  - No need to do the repeat existing vertex hack.
+- Buffer structure
+  - Mass buffer
+    - List of {position, mass}.
+  - Particle buffer
+    - List of {position, velocity, colour}.
+  - Trajectory buffer
+    - 2D array of {position, colour}.
+  - Mesh index buffer
+    - Triangle strip indicies into trajectory buffer.
+
+
 # 2024-02-06
 - Recreation of http://four-venom.glitch.me/ in 3D using WebGPU.
 - Use the compute stage to parallelise the computation of many many more points than four-venom which is completely CPU driven.
