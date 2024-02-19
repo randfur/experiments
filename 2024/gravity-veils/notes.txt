@@ -1,3 +1,22 @@
+# 2024-02-20
+- Wrote data into buffers.
+- Added mesh index buffer.
+- Wrote compute pass.
+- No errors yet, need render pass to see anything.
+- Wrote render pass.
+- Fixed up index buffer issues.
+  - Need to specify uint16 in primitive part of render pipeline creation.
+  - Buffer size needs to be a multiple of 4.
+- Rendered some stuff, top right quadrant filled with blue and white gradient.
+  - Need to tweak all the numbers.
+  - 1000 particles and 1000 simulation steps took a bit of time to render, might be mainly in the CPU generating the mesh index buffer, need multiple frames to see GPU cost.
+  - Dropped down to 10 each for now.
+  - Added zoom factor.
+  - Tweaked the initial values, rendering in all quadrants now, didn't have big enough angles.
+  - Getting all sorts of colours, shouldn't be getting any colour as all the particles are white.
+    - Must be reading the data incorrectly.
+    - Everything is mess lol, big debugging time now.
+
 # 2024-02-19
 - Added initial particle values.
   - First action device caused pipeline logic to actually execute, discovered all the compile issues.
