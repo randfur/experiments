@@ -2,17 +2,15 @@ const f32Bytes = 4;
 const vec3Bytes = f32Bytes * 3;
 const vec4Bytes = f32Bytes * 4;
 
-const constants = {
-  maxMassCount: 10,
-  maxParticleCount: 1000,
-  maxSimulationStepCount: 1000,
-  simulationTimeStep: 1,
-};
+const maxParticleCount = 1000;
+const maxMassCount = 10;
+const maxSimulationStepCount = 1000;
+const simulationTimeStep = 1;
 
 const massBytes = vec3Bytes + f32Bytes;
 const particleBytes = vec3Bytes + vec3Bytes + vec4Bytes;
 const trajectoryPointBytes = vec3Bytes + vec4Bytes;
-const trajectoryBytes = trajectoryPointBytes * constants.maxSimulationStepCount;
+const trajectoryBytes = trajectoryPointBytes * (maxSimulationStepCount + 1);
 
 async function main() {
   document.body.style = `
@@ -35,71 +33,69 @@ async function main() {
   });
 
   const massBuffer = device.createBuffer({
-    size: massBytes * constants.maxMassCount,
+    size: massBytes * maxMassCount,
     usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.STORAGE,
   });
 
   const particleBuffer = device.createBuffer({
-    size: particleBytes * constants.maxParticleCount,
+    size: particleBytes * maxParticleCount,
     usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.STORAGE,
   });
 
   const trajectoryBuffer = device.createBuffer({
-    size: trajectoryBytes * constants.maxParticleCount,
+    size: trajectoryBytes * maxParticleCount,
     usage: GPUBufferUsage.STORAGE | GPUBufferUsage.VERTEX,
   });
 
   const shaderModule = device.createShaderModule({
     code: `
-      const maxParticleCount: u32;
-      const maxMassCount: u32;
-      const maxSimulationStepCount: u32;
-      const simulationTimeStep: f32;
+      override maxMassCount: u32;
+      override maxSimulationStepCount: u32;
+      override simulationTimeStep: f32;
 
       struct Particle {
-        vec3f position,
-        vec3f velocity,
-        vec4f colour,
+        position: vec3f,
+        velocity: vec3f,
+        colour: vec4f,
       }
 
       struct Mass {
-        vec3f position,
-        f32 size,
+        position: vec3f,
+        size: f32,
       }
 
       struct TrajectoryPoint {
-        @location(0) vec3f position,
-        @location(1) vec4f colour,
+        @location(0) position: vec3f,
+        @location(1) colour: vec4f,
       }
 
-      alias Trajectory = array<TrajectoryPoint, maxSimulationStepCount + 1>;
-
-      @group(0) @binding(0) var<storage, read> particles: array<Particle, maxParticleCount>;
-      @group(0) @binding(1) var<storage, read> masses: array<Mass, maxMassCount>;
-      @group(0) @binding(2) var<storage, write> trajectories: array<Trajectory, maxParticleCount>;
+      @group(0) @binding(0) var<storage, read> particles: array<Particle>;
+      @group(0) @binding(1) var<storage, read> masses: array<Mass>;
+      @group(0) @binding(2) var<storage, read_write> trajectories: array<TrajectoryPoint>;
 
       @compute @workgroup_size(64)
       fn simulate(@builtin(global_invocation_id) id: vec3u) {
         let particleIndex = id.x;
         var particle = particles[particleIndex];
+        let trajectoryIndexStart = particleIndex * (maxSimulationStepCount + 1);
 
-        trajectories[particleIndex][0] = TrajectoryPoint{
-          position: particle.position,
-          colour: particle.colour,
-        };
+        trajectories[trajectoryIndexStart] = TrajectoryPoint(
+          particle.position,
+          particle.colour,
+        );
 
-        for (let i: u32 = 0; i < maxSimulationStepCount; ++i) {
-          for (let j: u32 = 0; j < maxMassCount; ++j) {
+        for (var i: u32 = 0; i < maxSimulationStepCount; i += 1) {
+          for (var j: u32 = 0; j < maxMassCount; j += 1) {
             let delta = masses[j].position - particle.position;
             particle.velocity += delta * masses[j].size / dot(delta, delta) * simulationTimeStep;
           }
 
           particle.position += particle.velocity * simulationTimeStep;
 
-          trajectories[particleIndex][i + 1] = TrajectoryPoint{
-            position: particle.position,
-            colour: particle.colour,
-          };
+          trajectories[trajectoryIndexStart + 1] = TrajectoryPoint(
+            particle.position,
+            particle.colour,
+          );
         }
       }
 
@@ -110,10 +106,10 @@ async function main() {
 
       @vertex
       fn vertex(trajectoryPoint: TrajectoryPoint) -> Vertex {
-        return Vertex{
-          position: vec4f(trajectoryPoint.position, 1),
-          colour: trajectoryPoint.colour,
-        };
+        return Vertex(
+          vec4f(trajectoryPoint.position, 1),
+          trajectoryPoint.colour,
+        );
       }
 
       @fragment
@@ -126,7 +122,11 @@ async function main() {
   const trajectorySimulationPipeline = device.createComputePipeline({
     layout: 'auto',
     compute: {
-      constants,
+      constants: {
+        maxMassCount,
+        maxSimulationStepCount,
+        simulationTimeStep,
+      },
       entryPoint: 'simulate',
       module: shaderModule,
     },
@@ -158,7 +158,6 @@ async function main() {
       topology: 'triangle-strip',
     },
     vertex: {
-      constants,
       module: shaderModule,
       entryPoint: 'vertex',
       buffers: [{
@@ -175,7 +174,6 @@ async function main() {
       }],
     },
     fragment: {
-      constants,
       module: shaderModule,
       entryPoint: 'fragment',
       targets: [{
@@ -196,8 +194,27 @@ async function main() {
     },
   });
 
-  device.queue.writeBuffer(particleBuffer, 0, new Float32Array(...));
+  device.queue.writeBuffer(
+    particleBuffer,
+    0,
+    new Float32Array(range(maxParticleCount).flatMap(i => [
+      Math.cos(i / 1000),
+      Math.sin(i / 1000),
+      0,
+      1,
+      1,
+      1,
+      1,
+    ])),
+  );
+}
 
+function range(n) {
+  const result = [];
+  for (let i = 0; i < n; ++i) {
+    result.push(i);
+  }
+  return result;
 }
 
 main();
