@@ -1,3 +1,13 @@
+# 2024-02-19
+- Added initial particle values.
+  - First action device caused pipeline logic to actually execute, discovered all the compile issues.
+  - Fixed errors:
+    - Structs don't get constructed like in Rust.
+    - Have to use override variables instead of const for pipeline constant overrides.
+    - Can't use overrides in array lengths without them being stored in the workgroup which doesn't get connected to a buffer.
+    - Storage variables can't be write only, have to be read_write.
+    - Pipeline constants have to exist in the shader function to be valid, can't dump all constants in there.
+
 # 2024-02-17
 - How to convert the trajectories into a mesh.
   - Discussed the idea with GPT4.
