@@ -123,7 +123,7 @@ async function main() {
     `,
   });
 
-  const simulationPipeline = device.createComputePipeline({
+  const trajectorySimulationPipeline = device.createComputePipeline({
     layout: 'auto',
     compute: {
       constants,
@@ -132,8 +132,8 @@ async function main() {
     },
   });
 
-  const storageBufferBindGroup = device.createBindGroup({
-    layout: simulationPipeline.getBindGroupLayout(0),
+  const trajectorySimulationBindGroup = device.createBindGroup({
+    layout: trajectorySimulationPipeline.getBindGroupLayout(0),
     entries: [{
       binding: 0,
       resource: {
@@ -152,13 +152,51 @@ async function main() {
     }],
   });
 
-  const renderPipeline = device.createRenderPipeline({
+  const trajectoryRenderPipeline = device.createRenderPipeline({
     layout: 'auto',
     primitive: {
       topology: 'triangle-strip',
     },
-    vertex: {},
-    fragment: {},
+    vertex: {
+      constants,
+      module: shaderModule,
+      entryPoint: 'vertex',
+      buffers: [{
+        arrayStride: trajectoryPointBytes,
+        attributes: [{
+          shaderLocation: 0,
+          format: 'float32x3',
+          offset: 0,
+        }, {
+          shaderLocation: 1,
+          format: 'float32x4',
+          offset: vec3Bytes,
+        }],
+      }],
+    },
+    fragment: {
+      constants,
+      module: shaderModule,
+      entryPoint: 'fragment',
+      targets: [{
+        blend: {
+          color: {
+            operation: 'add',
+            srcFactor: 'src-alpha',
+            dstFactor: 'one-minus-src-alpha',
+          },
+          alpha: {
+            operation: 'add',
+            srcFactor: 'one',
+            dstFactor: 'one',
+          },
+        },
+        format: navigator.gpu.getPreferredCanvasFormat(),
+      }],
+    },
+  });
+
+  device.queue.writeBuffer(particleBuffer, 0, new Float32Array(...));
 
 }
 

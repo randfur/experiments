@@ -22,7 +22,7 @@
     - 2D array of {position, colour}.
   - Mesh index buffer
     - Triangle strip indicies into trajectory buffer.
-
+- Worked on writing the pipelines and now need to fill the buffers with initial data.
 
 # 2024-02-06
 - Recreation of http://four-venom.glitch.me/ in 3D using WebGPU.
