@@ -1,19 +1,20 @@
-const u16Bytes = 2;
+const nan = 0 / 0;
+const u32Bytes = 4;
 const f32Bytes = 4;
 const vec3Bytes = f32Bytes * 3;
 const vec4Bytes = f32Bytes * 4;
 
-const maxParticleCount = 2;
-const maxMassCount = 5;
-const maxSimulationStepCount = 1000;
+const maxParticleCount = 10;
+const maxMassCount = 2;
+const maxSimulationStepCount = 500;
 const meshIndexCount = (maxParticleCount - 1) * (maxSimulationStepCount * 2 + 1);
-const simulationTimeStep = 0.001;
+const simulationTimeStep = 0.01;
 const workgroupSize = 64;
-const zoomSetting = -2;
+const zoom = 0.25;
 
-const massBytes = vec3Bytes + f32Bytes;
-const particleBytes = vec3Bytes + vec3Bytes + vec4Bytes;
-const trajectoryPointBytes = vec3Bytes + vec4Bytes;
+const massBytes = vec4Bytes + vec4Bytes;
+const particleBytes = vec4Bytes + vec4Bytes + vec4Bytes;
+const trajectoryPointBytes =  vec4Bytes + vec4Bytes;
 const trajectoryBytes = trajectoryPointBytes * maxSimulationStepCount;
 
 async function main() {
@@ -52,7 +53,7 @@ async function main() {
   });
 
   const meshIndexBuffer = device.createBuffer({
-    size: incrementToMultiple(u16Bytes * meshIndexCount, 4),
+    size: u32Bytes * meshIndexCount,
     usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.INDEX,
   });
 
@@ -63,21 +64,21 @@ async function main() {
       override maxSimulationStepCount: u32;
       override simulationTimeStep: f32;
 
-      const zoom: f32 = pow(2, ${zoomSetting});
+      const zoom: f32 = ${zoom};
 
       struct Particle {
-        position: vec3f,
-        velocity: vec3f,
+        position: vec4f,
+        velocity: vec4f,
         colour: vec4f,
       }
 
       struct Mass {
-        position: vec3f,
-        size: f32,
+        position: vec4f,
+        size: vec4f
       }
 
       struct TrajectoryPoint {
-        @location(0) position: vec3f,
+        @location(0) position: vec4f,
         @location(1) colour: vec4f,
       }
 
@@ -92,12 +93,12 @@ async function main() {
           return;
         }
         var particle = particles[particleIndex];
-        let trajectoryIndexStart = particleIndex * (maxSimulationStepCount + 1);
+        let trajectoryIndexStart = particleIndex * maxSimulationStepCount;
 
         for (var i: u32 = 0; i < maxSimulationStepCount; i += 1) {
           for (var j: u32 = 0; j < maxMassCount; j += 1) {
             let delta = masses[j].position - particle.position;
-            particle.velocity += delta * masses[j].size / dot(delta, delta) * simulationTimeStep;
+            particle.velocity += delta * masses[j].size.x / dot(delta, delta) * simulationTimeStep;
           }
 
           particle.position += particle.velocity * simulationTimeStep;
@@ -117,7 +118,7 @@ async function main() {
       @vertex
       fn vertex(trajectoryPoint: TrajectoryPoint) -> Vertex {
         return Vertex(
-          vec4f(trajectoryPoint.position * zoom, 1),
+          vec4f((trajectoryPoint.position * zoom).xyz, 1),
           trajectoryPoint.colour,
         );
       }
@@ -167,7 +168,7 @@ async function main() {
     layout: 'auto',
     primitive: {
       topology: 'triangle-strip',
-      stripIndexFormat: 'uint16',
+      stripIndexFormat: 'uint32',
     },
     vertex: {
       module: shaderModule,
@@ -176,12 +177,12 @@ async function main() {
         arrayStride: trajectoryPointBytes,
         attributes: [{
           shaderLocation: 0,
-          format: 'float32x3',
+          format: 'float32x4',
           offset: 0,
         }, {
           shaderLocation: 1,
           format: 'float32x4',
-          offset: vec3Bytes,
+          offset: vec4Bytes,
         }],
       }],
     },
@@ -193,7 +194,7 @@ async function main() {
           color: {
             operation: 'add',
             srcFactor: 'src-alpha',
-            dstFactor: 'one-minus-src-alpha',
+            dstFactor: 'one',
           },
           alpha: {
             operation: 'add',
@@ -206,64 +207,71 @@ async function main() {
     },
   });
 
-  device.queue.writeBuffer(
-    massBuffer,
-    0,
-    new Float32Array(range(maxMassCount).flatMap(i => [
-      2 * Math.cos(i * 10), 2 * Math.sin(i * 10), 2 * Math.cos(i * 4),
-      10 * Math.abs(Math.cos(i)) + 1,
-    ])),
-  );
+  while (true) {
+    const time = await new Promise(requestAnimationFrame);
 
-  device.queue.writeBuffer(
-    particleBuffer,
-    0,
-    new Float32Array(range(maxParticleCount).flatMap(i => [
-      Math.cos(i / 2), Math.sin(i / 2), 0,
-      1, 1, 1, 1,
-    ])),
-  );
+    device.queue.writeBuffer(
+      massBuffer,
+      0,
+      new Float32Array(range(maxMassCount).flatMap(i => [
+        3 * Math.cos(time / 10000 + i * 10), 3 * Math.sin(time / 10000 + i * 10), 3 * Math.cos(time / 10000 + i * 4), 0,
+        10, 0, 0, 0
+      ])),
+    );
 
-  device.queue.writeBuffer(
-    meshIndexBuffer,
-    0,
-    new Uint16Array(
-      padToMultiple(
+    device.queue.writeBuffer(
+      particleBuffer,
+      0,
+      new Float32Array(range(maxParticleCount).flatMap(i => (i > 5 && i < 8) ? [
+        nan, nan, nan, nan,
+        nan, nan, nan, nan,
+        nan, nan, nan, nan,
+      ] : [
+        0, 0, 0, 0,
+        Math.cos(i / 2), Math.sin(i / 2), 0, 1,
+        0.2, 0.02, 0.01, 0.5,
+      ])),
+    );
+
+    device.queue.writeBuffer(
+      meshIndexBuffer,
+      0,
+      new Uint32Array(
         range(maxParticleCount - 1).map(i => [
           range(maxSimulationStepCount).map(j => [
             i * maxSimulationStepCount + j,
             (i + 1) * maxSimulationStepCount + j,
           ]),
-          0xFFFF,
+          0xFFFFFFFF,
         ]).flat(Infinity),
         2,
         4,
       ),
-    ),
-  );
+    );
 
-  const commandEncoder = device.createCommandEncoder();
+    const commandEncoder = device.createCommandEncoder();
 
-  const computePass = commandEncoder.beginComputePass();
-  computePass.setPipeline(trajectorySimulationPipeline);
-  computePass.setBindGroup(0, trajectorySimulationBindGroup);
-  computePass.dispatchWorkgroups(Math.ceil(maxParticleCount / workgroupSize));
-  computePass.end();
+    const computePass = commandEncoder.beginComputePass();
+    computePass.setPipeline(trajectorySimulationPipeline);
+    computePass.setBindGroup(0, trajectorySimulationBindGroup);
+    computePass.dispatchWorkgroups(Math.ceil(maxParticleCount / workgroupSize));
+    computePass.end();
 
-  const renderPass = commandEncoder.beginRenderPass({
-    colorAttachments: [{
-      loadOp: 'load',
-      storeOp: 'store',
-      view: context.getCurrentTexture().createView(),
-    }],
-  });
-  renderPass.setPipeline(trajectoryRenderPipeline);
-  renderPass.setVertexBuffer(0, trajectoriesBuffer);
-  renderPass.setIndexBuffer(meshIndexBuffer, 'uint16');
-  renderPass.drawIndexed(meshIndexCount);
-  renderPass.end();
+    const renderPass = commandEncoder.beginRenderPass({
+      colorAttachments: [{
+        loadOp: 'load',
+        storeOp: 'store',
+        view: context.getCurrentTexture().createView(),
+      }],
+    });
+    renderPass.setPipeline(trajectoryRenderPipeline);
+    renderPass.setVertexBuffer(0, trajectoriesBuffer);
+    renderPass.setIndexBuffer(meshIndexBuffer, 'uint32');
+    renderPass.drawIndexed(meshIndexCount);
+    renderPass.end();
 
-  device.queue.submit([commandEncoder.finish()]);
+    device.queue.submit([commandEncoder.finish()]);
+  }
 }
 
 function range(n) {

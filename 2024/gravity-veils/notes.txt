@@ -1,3 +1,32 @@
+# 2024-02-21
+- Asked GPT4 what was wrong.
+  - https://chat.openai.com/c/b700bbb2-758d-4ae3-a532-5f945750e50e
+  - Forgot to include the particle's position.
+- Maybe structs aren't tighly packed and have padding and alignment.
+  - Yes and it's not simple: https://www.w3.org/TR/WGSL/#memory-layouts
+  - Need a tool to help compute offsets and padding for this.
+  - Just converting everything to vec4f for simplicity, that size won't incur struct padding.
+- Changed index buffer to u32 as well to avoid alignment weirdness as well.
+- Rendered something.
+  - Cyan blob that's much less random than previously.
+  - Has some dark gradients in it.
+  - Should be white still, something is broken with colours but at least it's not ranbow now.
+- Cyan colour
+  - The colour appears to be offset by one f32 either in the trajectory buffer or its reader.
+  - Found it, forgot to update the vertex attribute offset. Fixed.
+- Working!
+  - Got swirly veils.
+- Fixed up blending.
+  - dstFactor should be one rather than one-minus-src-alpha for additive colours.
+- Added animation loop to move the masses around.
+- Switched to only 2 masses.
+  - 3 Had too much chaotic flipping back and forth.
+- Tweaked colours a bit.
+  - Primarily red with small bits of green and smaller bits of blue.
+- Tested NaN.
+  - Setting a particle to NaN causes it to not be rendered.
+  - Can have separate veils using this without altering the meshIndexBuffer.
+
 # 2024-02-20
 - Wrote data into buffers.
 - Added mesh index buffer.
