@@ -26,6 +26,8 @@
 - Tested NaN.
   - Setting a particle to NaN causes it to not be rendered.
   - Can have separate veils using this without altering the meshIndexBuffer.
+- Would like to fix up the alignment to avoid everything being vec4f.
+  - Can do that incrementally now that there's a working version.
 
 # 2024-02-20
 - Wrote data into buffers.
