@@ -4,9 +4,9 @@ const f32Bytes = 4;
 const vec3Bytes = f32Bytes * 3;
 const vec4Bytes = f32Bytes * 4;
 
-const maxParticleCount = 10;
+const maxParticleCount = 100;
 const maxMassCount = 2;
-const maxSimulationStepCount = 500;
+const maxSimulationStepCount = 1000;
 const meshIndexCount = (maxParticleCount - 1) * (maxSimulationStepCount * 2 + 1);
 const simulationTimeStep = 0.01;
 const workgroupSize = 64;
@@ -207,6 +207,22 @@ async function main() {
     },
   });
 
+    device.queue.writeBuffer(
+      meshIndexBuffer,
+      0,
+      new Uint32Array(
+        range(maxParticleCount - 1).map(i => [
+          range(maxSimulationStepCount).map(j => [
+            i * maxSimulationStepCount + j,
+            (i + 1) * maxSimulationStepCount + j,
+          ]),
+          0xFFFFFFFF,
+        ]).flat(Infinity),
+        2,
+        4,
+      ),
+    );
+
   while (true) {
     const time = await new Promise(requestAnimationFrame);
 
@@ -231,22 +247,6 @@ async function main() {
         Math.cos(i / 2), Math.sin(i / 2), 0, 1,
         0.2, 0.02, 0.01, 0.5,
       ])),
-    );
-
-    device.queue.writeBuffer(
-      meshIndexBuffer,
-      0,
-      new Uint32Array(
-        range(maxParticleCount - 1).map(i => [
-          range(maxSimulationStepCount).map(j => [
-            i * maxSimulationStepCount + j,
-            (i + 1) * maxSimulationStepCount + j,
-          ]),
-          0xFFFFFFFF,
-        ]).flat(Infinity),
-        2,
-        4,
-      ),
     );
 
     const commandEncoder = device.createCommandEncoder();

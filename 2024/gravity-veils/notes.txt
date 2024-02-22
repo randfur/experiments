@@ -1,3 +1,6 @@
+# 2024-02-22
+- Moved mesh building outside animation loop, whoops.
+
 # 2024-02-21
 - Asked GPT4 what was wrong.
   - https://chat.openai.com/c/b700bbb2-758d-4ae3-a532-5f945750e50e
