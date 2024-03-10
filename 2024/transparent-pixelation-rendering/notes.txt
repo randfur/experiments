@@ -1,0 +1,29 @@
+# 2024-03-10
+- Experimental implementation of algorithm for rendering with transparency and pixelation.
+- See hex-lines repo notes for same day.
+- Data structures:
+  - type Drawing = ImageDrawing | GroupDrawing;
+  - class ImageDrawing {
+      emoji: string,
+      x: number,
+      y: number,
+      pixelSize: number,
+    }
+  - class GroupDrawing {
+      drawings: Array<Drawing>,
+      alpha: number,
+    }
+- Draw drawing onto canvas with pixelation and transparency rendering.
+  - Only ImageDrawing leaf nodes can have pixelation, there's no nesting of pixelation.
+  - GroupDrawing has alpha transparency which applies to the final render of its children.
+  - Transparency can nest.
+  - Pixelation is done by rendering a small image and then blitting it onto the canvas at a larger size using nearest neighbour.
+  - Pixelation can be mixed in a render, each image has its own pixelSize.
+- Canvases:
+  - A merge canvas to hold the rendering of a group to apply transparency on the final result.
+  - A pixelation canvas to hold the small renderings of images.
+    - Multiple image renders of the same pixelSize can stack on the same pixelation canvas to reduce the number of flushes out to the merge canvas.
+- Test page:
+  - Half page taken up by fixed size canvas.
+  - Other half taken up by textarea with JSON representation of drawing.
+    - Changes to the JSON update the canvas rendering live.
