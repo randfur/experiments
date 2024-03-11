@@ -1,3 +1,17 @@
+# 2024-03-12
+- More work on the algorithm implementation.
+  - The mergeCanvas stack is only for < 1 alpha groupDrawings.
+  - The recursive calls reference indices into the stack rather than objects.
+    - Much easier to have unset values.
+  - drawDrawing() only does part of the job, the caller needs to composite the results down.
+  - The output of a drawDrawing call is either:
+    - Nothing being drawn.
+    - The pixelationBuffer being drawn to.
+    - The mergeBuffer being drawn to and the pixelationBuffer being drawn to.
+  - Maybe what was done should be a return value.
+    - Return bitset of which buffers were written to.
+    - Use this in a common flush method.
+
 # 2024-03-10
 - Experimental implementation of algorithm for rendering with transparency and pixelation.
 - See hex-lines repo notes for same day.
@@ -27,3 +41,4 @@
   - Half page taken up by fixed size canvas.
   - Other half taken up by textarea with JSON representation of drawing.
     - Changes to the JSON update the canvas rendering live.
+  - Use JSON5 actually, JSON sucks to write.
