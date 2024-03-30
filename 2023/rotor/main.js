@@ -10,7 +10,6 @@ function multiplyVec3Vec3(v1/*: Vec3*/, v2/*: Vec3*/)/*: Rot3*/ {
   // = adxx + aexy + afxz + bdyx + beyy + bfyz + cdzx + cezy + cfzz
   // = ad + aexy + afxz + bdyx + be + bfyz + cdzx + cezy + cf
   // = (ad + be + cf) + (ae - bd)xy + (bf - ce)yz + (-af + cd)zx
-  // = g + hxy + iyz + jzx
   const [a, b, c] = v1;
   const [d, e, f] = v2;
   return [

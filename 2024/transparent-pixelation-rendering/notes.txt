@@ -1,3 +1,64 @@
+# 2024-03-30
+- Want to recycle the image buffer for consecutive and nested groups that have the same pixelSize and no alpha/blur.
+  - Recycling resources across the drawing tree makes things trickier.
+  - Seems similar to the algorithm challenge of before.
+- Nested non-one pixelSizes is a bit confusing.
+  - Maybe should be treated the same as if each group was rendered to the 100% size canvas at each level?
+  - Won't be exactly like that though probably especially with nested group transforming.
+  - Maybe take the max ancestral pixelSize for a given group layer?
+- Algorithm
+  - Continue to have a stack of intermediate image buffers for each group that needs it.
+  - Start with the canvas buffer with pixelSize 1.
+  - If the child group has transparency or a bigger pixelSize create a new stack entry and draw group into that.
+  - After drawing the group leave it for the next drawing to inspect if there's no transparency otherwise render it into the parent and pop it.
+    - If the next drawing is a group with no transparency and <= pixelSize then draw its children into the same stack entry.
+    - Otherwise render the stack entry into the parent stack entry and pop it and start with a new stack entry if needed.
+
+# 2024-03-29
+- Pixelation might make more sense conceptually on the GroupDrawing level like a layer.
+  - This fits as an effect pass like opacity.
+  - Associating GroupDrawings with effects allows for other things like blur etc.
+- Alternate structure:
+  - class ImageDrawing {
+      emoji: string,
+      size: number,
+      x: number,
+      y: number,
+    }
+  - class GroupDrawing {
+      pixelSize: number,
+      alpha: number,
+      drawings: Array<Drawing>,
+    }
+- Add size to ImageDrawing to track what happens to hex line sizes.
+- If a GroupDrawing as pixelSize 1 and alpha 1 it can draw its children directly onto the parent buffer.
+- What happens when there are nested groups with >1 pixelSizes?
+  - Example:
+    - Canvas target size 100x100.
+    - GroupDrawing{
+        pixelSize: 2,
+        alpha: 1,
+        drawings: [
+          GroupDrawing{
+            pixelSize: 2,
+            alpha: 1,
+            drawings: [
+              ImageDrawing{
+                emoji: '🦖',
+                size: 10,
+                x: 50,
+                y: 50,
+              },
+            ],
+          },
+        ],
+      }
+    - First group buffer size: 50x50.
+    - Second group buffer size: 25x25.
+    - Emoji size: 2.5.
+  - PixelSize causes the group buffer to scale down by the factor and all sizes inside it as well.
+
+
 # 2024-03-12
 - More work on the algorithm implementation.
   - The mergeCanvas stack is only for < 1 alpha groupDrawings.
