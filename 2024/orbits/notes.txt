@@ -5,3 +5,16 @@
 - Looked up the stable orbit speed, it's sqrt(GM/radius).
 - Added random planets with random colours and angles and radii.
 - Added fading of the canvas rather than clearing to watch the trajectories.
+- Replaced black background with white because the fade looks nicer.
+- Removed gravity when circles are colliding, to implement collision response with proper momentum transfer.
+  - Needs a bunch of geometry math to work it out.
+  - Removing the hyperslingshot effect makes the animation last way longer now, looks better.
+- Experimented with putting the sun at a different Z.
+  - Things got bobby.
+- Added Z sorting.
+- Added YZ camera angle.
+  - Looks more like a solar system now.
+- Added a bit of YZ rotation to the planets.
+- Randomised the YZ camera angle.
+  - Have a chance to get the top down view back.
+    - This perspective works a bit better for the trajectory trails.

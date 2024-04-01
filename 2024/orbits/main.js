@@ -1,8 +1,8 @@
 const TAU = Math.PI * 2;
 const tickSize = 0.01;
 const gravitationalConstant = 100000;
-const width = 1000;
-const height = 1000;
+const width = window.innerWidth;
+const height = window.innerHeight;
 const centreX = width / 2;
 const centreY = height / 2;
 
@@ -13,26 +13,42 @@ async function main() {
   canvas.height = height;
   const context = canvas.getContext('2d');
 
-  document.body.style.backgroundColor = 'black';
+  document.body.style = `
+    background-color: white;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+  `;
   document.body.append(canvas);
 
-  const cameraPosition = new Vec3(0, 0, -100);
-  const perspectiveDiv = 40;
+  const cameraPosition = new Vec3(0, 0, -1000);
+  const cameraAngle = TAU * Math.random() * -0.25;
+  const perspectiveDiv = 400;
+  const sunSize = 200;
   const objects = [{
     colour: 'yellow',
-    size: 100,
+    size: sunSize,
     position: new Vec3(0, 0, 0),
     velocity: new Vec3(0, 0, 0),
   }];
-  for (let i = 0; i < 10; ++i) {
-    const radius = 200 + i * (50 + Math.random() * 50);
+  for (let i = 0; i < 20; ++i) {
+    const radius = sunSize + (i + 1) * (50 + Math.random() * 50);
     const angle = Math.random() * TAU;
-    const speed = Math.sqrt(100 * gravitationalConstant / radius);
+    const yzAngle = (Math.random() * 2 - 1) * TAU * 0.05;
+    const speed = Math.sqrt(sunSize * gravitationalConstant / radius);
     objects.push({
-      colour: pickRandom(['red', 'brown', 'blue', 'lime', 'orange', 'white']),
+      colour: pickRandom(['red', 'brown', 'blue', 'purple', 'orange', 'black']),
       size: 10 + Math.random() * 20,
-      position: new Vec3(Math.cos(angle) * radius, Math.sin(angle) * radius, 0),
-      velocity: new Vec3(Math.cos(angle + TAU / 4) * speed, Math.sin(angle + TAU / 4) * speed, 0),
+      position: new Vec3(
+        Math.cos(angle) * radius,
+        Math.sin(angle) * radius,
+        0,
+      ).rotateYz(yzAngle),
+      velocity: new Vec3(
+        Math.cos(angle + TAU / 4) * speed,
+        Math.sin(angle + TAU / 4) * speed,
+        0,
+      ).rotateYz(yzAngle),
     });
   }
 
@@ -44,18 +60,25 @@ async function main() {
       for (let j = i + 1; j < objects.length; ++j) {
         const otherObject = objects[j];
         const delta = otherObject.position.subtract(object.position);
-        delta.scaleMut(tickSize * gravitationalConstant / delta.length() ** 3);
-        object.velocity.addMut(delta.scale(otherObject.size));
-        otherObject.velocity.subtractMut(delta.scale(object.size));
+        const deltaLength = delta.length();
+        if (deltaLength < object.size + otherObject.size) {
+          // TODO: Bounce.
+        } else {
+          delta.scaleMut(tickSize * gravitationalConstant / deltaLength ** 3);
+          object.velocity.addMut(delta.scale(otherObject.size));
+          otherObject.velocity.subtractMut(delta.scale(object.size));
+        }
       }
     }
 
-    context.fillStyle = '#00000002';
+    context.fillStyle = '#FFFFFF02';
     context.fillRect(0, 0, width, height);
+
+    objects.sort((a, b) => b.position.z - a.position.z);
 
     for (const object of objects) {
       object.position.addMut(object.velocity.scale(tickSize));
-      const screenPosition = object.position.subtract(cameraPosition);
+      const screenPosition = object.position.rotateYz(cameraAngle).subtract(cameraPosition);
       if (screenPosition.z <= 0) {
         continue;
       }
@@ -94,6 +117,14 @@ class Vec3 {
       this.x * k,
       this.y * k,
       this.z * k,
+    );
+  }
+
+  rotateYz(angle) {
+    return new Vec3(
+      this.x,
+      this.y * Math.cos(angle) - this.z * Math.sin(angle),
+      this.y * Math.sin(angle) + this.z * Math.cos(angle),
     );
   }
 
