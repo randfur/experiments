@@ -1,11 +1,13 @@
 const TAU = Math.PI * 2;
+const tickSize = 0.01;
+const gravitationalConstant = 100000;
+const width = 1000;
+const height = 1000;
+const centreX = width / 2;
+const centreY = height / 2;
+
 
 async function main() {
-  const width = 1000;
-  const height = 1000;
-  const centreX = width / 2;
-  const centreY = height / 2;
-
   const canvas = document.createElement('canvas');
   canvas.width = width;
   canvas.height = height;
@@ -21,25 +23,19 @@ async function main() {
     size: 100,
     position: new Vec3(0, 0, 0),
     velocity: new Vec3(0, 0, 0),
-  }, {
-    colour: 'blue',
-    size: 40,
-    position: new Vec3(0, 200, 0),
-    velocity: new Vec3(400, 0, 0),
-  }, {
-    colour: 'green',
-    size: 36,
-    position: new Vec3(300, 0, 0),
-    velocity: new Vec3(0, 40, 0),
-  }, {
-    colour: 'brown',
-    size: 20,
-    position: new Vec3(400, -200, 0),
-    velocity: new Vec3(-70, 50, 0),
   }];
+  for (let i = 0; i < 10; ++i) {
+    const radius = 200 + i * (50 + Math.random() * 50);
+    const angle = Math.random() * TAU;
+    const speed = Math.sqrt(100 * gravitationalConstant / radius);
+    objects.push({
+      colour: pickRandom(['red', 'brown', 'blue', 'lime', 'orange', 'white']),
+      size: 10 + Math.random() * 20,
+      position: new Vec3(Math.cos(angle) * radius, Math.sin(angle) * radius, 0),
+      velocity: new Vec3(Math.cos(angle + TAU / 4) * speed, Math.sin(angle + TAU / 4) * speed, 0),
+    });
+  }
 
-  const tickSize = 0.01;
-  const gravitationalConstant = 100000;
   while (true) {
     await new Promise(requestAnimationFrame);
 
@@ -54,7 +50,8 @@ async function main() {
       }
     }
 
-    context.clearRect(0, 0, width, height);
+    context.fillStyle = '#00000002';
+    context.fillRect(0, 0, width, height);
 
     for (const object of objects) {
       object.position.addMut(object.velocity.scale(tickSize));
@@ -121,6 +118,10 @@ class Vec3 {
   length() {
     return (this.x ** 2 + this.y ** 2 + this.z ** 2) ** 0.5;
   }
+}
+
+function pickRandom(list) {
+  return list[Math.floor(Math.random() * list.length)];
 }
 
 main();

@@ -2,3 +2,6 @@
 - What if a star flew through the solar system, what happens to the orbits?
 - Implemented simple orbit simulation, not accurate numbers of anything.
 - Will need to look up what stable orbit configurations are or just guestimate it with trial and error.
+- Looked up the stable orbit speed, it's sqrt(GM/radius).
+- Added random planets with random colours and angles and radii.
+- Added fading of the canvas rather than clearing to watch the trajectories.
