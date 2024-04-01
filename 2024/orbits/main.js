@@ -24,21 +24,21 @@ async function main() {
   const cameraPosition = new Vec3(0, 0, -1000);
   const cameraAngle = TAU * Math.random() * -0.25;
   const perspectiveDiv = 400;
-  const sunSize = 200;
+  const sunMass = 500;
   const objects = [{
     colour: 'yellow',
-    size: sunSize,
-    position: new Vec3(0, 0, 0),
+    mass: sunMass,
+    position: new Vec3(0, 0, 50),
     velocity: new Vec3(0, 0, 0),
   }];
   for (let i = 0; i < 20; ++i) {
-    const radius = sunSize + (i + 1) * (50 + Math.random() * 50);
+    const radius = 500 + Math.sqrt(i + 1) * (100 + Math.random() * 50);
     const angle = Math.random() * TAU;
-    const yzAngle = (Math.random() * 2 - 1) * TAU * 0.05;
-    const speed = Math.sqrt(sunSize * gravitationalConstant / radius) * 1.05;
+    const yzAngle = (Math.random() * 2 - 1) * TAU * 0.03;
+    const speed = Math.sqrt(sunMass * gravitationalConstant / radius) * 1.0;
     objects.push({
       colour: pickRandom(['red', 'brown', 'blue', 'purple', 'orange', 'black']),
-      size: 10 + Math.random() * 20,
+      mass: 10 + Math.random() * 20,
       position: new Vec3(
         Math.cos(angle) * radius,
         Math.sin(angle) * radius,
@@ -61,12 +61,12 @@ async function main() {
         const otherObject = objects[j];
         const delta = otherObject.position.subtract(object.position);
         const deltaLength = delta.length();
-        if (deltaLength < object.size + otherObject.size) {
+        if (deltaLength < object.mass + otherObject.mass) {
           // TODO: Bounce.
         } else {
           delta.scaleMut(tickSize * gravitationalConstant / deltaLength ** 3);
-          object.velocity.addMut(delta.scale(otherObject.size));
-          otherObject.velocity.subtractMut(delta.scale(object.size));
+          object.velocity.addMut(delta.scale(otherObject.mass));
+          otherObject.velocity.subtractMut(delta.scale(object.mass));
         }
       }
     }
@@ -88,7 +88,7 @@ async function main() {
       context.arc(
         centreX + screenPosition.x / divisor,
         centreY + screenPosition.y / divisor,
-        object.size / divisor,
+        object.mass ** 0.8 / divisor,
         0,
         TAU,
       );
