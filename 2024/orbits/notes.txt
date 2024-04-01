@@ -18,3 +18,5 @@
 - Randomised the YZ camera angle.
   - Have a chance to get the top down view back.
     - This perspective works a bit better for the trajectory trails.
+- Give the gravitational constant double berries so things run faster but not so fast the circles are far apart enough to draw an unsmooth trajectory line.
+- Give the planets a bit more speed to avoid them all falling in, their original speed doesn't account for all the other planets pulling them in.

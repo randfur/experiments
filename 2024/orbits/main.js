@@ -1,6 +1,6 @@
 const TAU = Math.PI * 2;
 const tickSize = 0.01;
-const gravitationalConstant = 100000;
+const gravitationalConstant = 2e5;
 const width = window.innerWidth;
 const height = window.innerHeight;
 const centreX = width / 2;
@@ -35,7 +35,7 @@ async function main() {
     const radius = sunSize + (i + 1) * (50 + Math.random() * 50);
     const angle = Math.random() * TAU;
     const yzAngle = (Math.random() * 2 - 1) * TAU * 0.05;
-    const speed = Math.sqrt(sunSize * gravitationalConstant / radius);
+    const speed = Math.sqrt(sunSize * gravitationalConstant / radius) * 1.05;
     objects.push({
       colour: pickRandom(['red', 'brown', 'blue', 'purple', 'orange', 'black']),
       size: 10 + Math.random() * 20,
