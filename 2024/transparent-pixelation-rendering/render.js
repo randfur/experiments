@@ -1,62 +1,60 @@
-const kPixelationBufferDrawn = 1 << 0;
-const kMergeBufferDrawn = 1 << 1;
+const TAU = Math.PI * 2;
 
-class Render {
+export class Render {
   constructor(canvas) {
     this.width = canvas.width;
     this.height = canvas.height;
-    this.pixelationCanvas = new OffscreenCanvas(this.width, this.height);
-    this.pixelationCanvasPixelSize = null;
-    this.mergeCanvasStack = [canvas];
-    canvas.initialised = true;
+    this.canvasStack = [canvas];
   }
 
   draw(drawing) {
-    const drawn = this.drawDrawing(drawing, 0);
-    this.flushPixelationCanvas(drawn, 0)
+    this.canvasStack[0].getContext('2d').reset();
+    this.drawDrawing(drawing, 0, 1);
   }
 
-  drawDrawing(drawing, mergeCanvasIndex) {
+  drawDrawing(drawing, stackIndex, pixelSize) {
     if (drawing.drawings) {
-      return this.drawGroup(drawing, mergeCanvasIndex);
+      this.drawGroup(drawing, stackIndex, pixelSize);
+      return;
     }
-    return this.drawEmoji(drawing, mergeCanvasIndex);
+    this.drawImage(drawing, stackIndex, pixelSize);
   }
 
-  drawGroup(groupDrawing, mergeCanvasIndex, depth) {
-    if (groupDrawing.alpha === 1) {
+  drawGroup(groupDrawing, stackIndex, pixelSize) {
+    const effectivePixelSize = Math.max(pixelSize, groupDrawing.pixelSize);
+    const nextStackIndex = stackIndex + 1;
+    if (this.canvasStack.length <= nextStackIndex) {
+      this.canvasStack.push(new OffscreenCanvas(this.width, this.height));
     }
+    const nextCanvas = this.canvasStack[nextStackIndex];
+    const nextContext = nextCanvas.getContext('2d');
+    nextContext.reset();
+    for (const drawing of groupDrawing.drawings) {
+      this.drawDrawing(drawing, nextStackIndex, effectivePixelSize);
+    }
+    const canvas = this.canvasStack[stackIndex];
+    const context = canvas.getContext('2d');
+    context.save();
+    context.globalAlpha = groupDrawing.alpha;
+    context.imageSmoothingEnabled = false;
+    const scale = effectivePixelSize / pixelSize;
+    context.scale(scale, scale);
+    context.drawImage(nextCanvas, 0, 0);
+    context.restore();
+  }
+
+  drawImage(imageDrawing, stackIndex, pixelSize) {
+    const canvas = this.canvasStack[stackIndex];
+    const context = canvas.getContext('2d');
+    context.fillStyle = imageDrawing.colour;
+    context.beginPath();
+    context.arc(
+      imageDrawing.x / pixelSize,
+      imageDrawing.y / pixelSize,
+      imageDrawing.size / pixelSize,
+      0,
+      TAU,
+    );
+    context.fill();
   }
 }
-
-  // drawGroup(groupDrawing, mergeCanvasIndex, depth) {
-  //   if (groupDrawing.alpha === 1) {
-  //     for (const drawing of groupDrawing.drawings) {
-  //       this.drawDrawing(drawing, mergeCanvasIndex);
-  //     }
-  //   }
-
-  //   this.flushPixelationCanvas(mergeCanvasIndex);
-  //   this.ensureMergeCanvasCleared(mergeCanvasIndex + 1);
-
-  //   for (const drawing of groupDrawing.drawings) {
-  //     this.drawDrawing(drawing, mergeCanvasIndex + 1);
-  //   }
-
-  //   if (this.mergeCanvasStack[mergeCanvasIndex + 1]?.initialised) {
-  //     this.flushPixelationCanvas(mergeCanvasIndex + 1);
-  //     this.ensureMergeCanvasCleared(mergeCanvasIndex);
-  //     this.composite(this.mergeCanvasStack[mergeCanvasIndex + 1], this.mergeCanvasStack[mergeCanvasIndex], groupDrawing.alpha, 1);
-  //   } else if (pixelationCanvasPixelSize !== null) {
-  //     this.composite(pixelationCanvas, mergeCanvasIndex, groupDrawing.alpha, pixelationCanvasPixelSize);
-  //     this.clearPixelationCanvas();
-  //   }
-  // }
-
-  // drawEmoji(emojiDrawing, mergeCanvasIndex) {
-  //   if (pixelationCanvasPixelSize !== null && pixelationCanvasPixelSize !== emojiDrawing.pixelSize) {
-  //     this.ensureMergeCanvasInitialised(mergeCanvasIndex);
-
-  //   }
-  // }
-

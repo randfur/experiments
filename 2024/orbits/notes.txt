@@ -1,3 +1,13 @@
+# 2024-04-07
+- Ideas for next orbit thing:
+  - A tree with branch factor 20.
+  - Each node is a centre point for its immediate children that orbit together.
+  - 20 in orbit is n(n-1)/2 = 20 * 19 / 2 = 190 computations.
+  - Each block of children centre their average position on their parent node's position.
+  - Can perform orbit computation on GPU, each block of orbits a shader invocation.
+  - Have orbit position stored on GPU for computation and rendering using flat tree representation.
+  - Probably call it orbit-tree.
+
 # 2024-04-01
 - What if a star flew through the solar system, what happens to the orbits?
 - Implemented simple orbit simulation, not accurate numbers of anything.

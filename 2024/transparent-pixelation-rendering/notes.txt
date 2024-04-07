@@ -1,3 +1,23 @@
+# 2024-04-07
+- Recap:
+  - Tree of drawing nodes of two types:
+    - Layer branch node with alpha transparency and pixelation size.
+    - Leaf node with actual image content.
+  - Pixelation just takes the max pixelation of all ancestors and self.
+  - Alpha works as normal.
+- Just implement non-optimal approach with no canvas recycling, all layers are new canvases.
+- Got basic alpha and pixelation implementation working.
+  - Tried one attempt where the pixelation stacked e.g. pixelSize: 2 + pixelSize: 2 => pixelSize: 4.
+  - Probably not practical.
+  - Switched to using max pixel size seen in tree branch.
+    - Much more intuitive.
+    - effectivePixelSize = max(parentPixelSize, nodePixelSize).
+    - Layer scale factor = effectivePixelSize / parentPixelSize.
+- Seems to work well.
+- Switched from emojis to coloured circles.
+  - Emoji positioning was too hard to deal with for this.
+- Next step: recycling canvases.
+
 # 2024-03-30
 - Want to recycle the image buffer for consecutive and nested groups that have the same pixelSize and no alpha/blur.
   - Recycling resources across the drawing tree makes things trickier.
@@ -26,8 +46,8 @@
       y: number,
     }
   - class GroupDrawing {
-      pixelSize: number,
       alpha: number,
+      pixelSize: number,
       drawings: Array<Drawing>,
     }
 - Add size to ImageDrawing to track what happens to hex line sizes.

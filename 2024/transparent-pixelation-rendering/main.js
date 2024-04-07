@@ -1,3 +1,5 @@
+import {Render} from './render.js';
+
 const width = 1000;
 const height = 500;
 
@@ -6,66 +8,70 @@ function main() {
   canvas.width = width;
   canvas.height = height;
 
+  const render = new Render(canvas);
+
   const textarea = document.createElement('textarea');
   textarea.style.width = '${width}px';
   textarea.style.height = '${height}px';
-  textarea.addEventListener('input', event => {
+  textarea.addEventListener('input', updateDrawing);
+  function updateDrawing() {
     let drawing = null;
     try {
-      drawing = eval(textarea.value);
+      drawing = eval(`(${textarea.value})`);
     } catch (error) {
       console.log(error);
       return;
     }
-    draw(drawing);
-  });
-
-  const render = new Render(canvas);
+    render.draw(drawing);
+  }
+  textarea.value = initialJson5;
+  updateDrawing();
 
   document.body.append(
     canvas,
     document.createElement('br'),
     textarea,
   );
-
-  draw(initialJson5);
 }
 
-// Spares: 🍏🍉🍓🍅
 const initialJson5 = `{
   alpha: 1,
+  pixelSize: 1,
   drawings: [{
     alpha: 1,
+    pixelSize: 3,
     drawings: [{
-      emoji: '🍎',
-      x: 20,
-      y: 400,
-      pixelSize: 4,
+      colour: 'red',
+      size: 70,
+      x: 140,
+      y: 200,
     }, {
-      emoji: '🍊',
-      x: 80,
-      y: 400,
-      pixelSize: 4,
+      colour: 'orange',
+      size: 50,
+      x: 190,
+      y: 150,
     }],
   }, {
-    emoji: '🍋',
-    x: 100,
-    y: 400,
-    pixelSize: 4,
+    colour: 'yellow',
+    size: 60,
+    x: 210,
+    y: 220,
   }, {
     alpha: 0.5,
+    pixelSize: 2,
     drawings: [{
-      emoji: '🍐',
-      x: 140,
-      y: 400,
-      pixelSize: 8,
+      colour: 'lime',
+      size: 70,
+      x: 270,
+      y: 180,
     }, {
       alpha: 0.5,
+      pixelSize: 8,
       drawings: [{
-        emoji: '🍇',
-        x: 150,
-        y: 400,
-        pixelSize: 10,
+        colour: 'purple',
+        size: 80,
+        x: 210,
+        y: 290,
       }],
     }],
   }],
