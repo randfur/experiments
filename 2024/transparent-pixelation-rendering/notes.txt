@@ -1,3 +1,10 @@
+# 2024-04-08
+- Attempted optimisation.
+  - Very simple group layer check whether its pixelSize was <= and its alpha was 1.
+  - If so just render the child drawings straight onto the current canvas stack frame.
+- Seems like carrying state sideways might not be needed.
+- This seems good enough to implement in WebGL/WebGPU.
+
 # 2024-04-07
 - Recap:
   - Tree of drawing nodes of two types:

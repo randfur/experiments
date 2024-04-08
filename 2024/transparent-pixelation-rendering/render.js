@@ -21,7 +21,13 @@ export class Render {
   }
 
   drawGroup(groupDrawing, stackIndex, pixelSize) {
-    const effectivePixelSize = Math.max(pixelSize, groupDrawing.pixelSize);
+    if (groupDrawing.alpha === 1 && groupDrawing.pixelSize <= pixelSize) {
+      for (const drawing of groupDrawing.drawings) {
+        this.drawDrawing(drawing, stackIndex, pixelSize);
+      }
+      return;
+    }
+
     const nextStackIndex = stackIndex + 1;
     if (this.canvasStack.length <= nextStackIndex) {
       this.canvasStack.push(new OffscreenCanvas(this.width, this.height));
@@ -30,14 +36,14 @@ export class Render {
     const nextContext = nextCanvas.getContext('2d');
     nextContext.reset();
     for (const drawing of groupDrawing.drawings) {
-      this.drawDrawing(drawing, nextStackIndex, effectivePixelSize);
+      this.drawDrawing(drawing, nextStackIndex, groupDrawing.pixelSize);
     }
     const canvas = this.canvasStack[stackIndex];
     const context = canvas.getContext('2d');
     context.save();
     context.globalAlpha = groupDrawing.alpha;
     context.imageSmoothingEnabled = false;
-    const scale = effectivePixelSize / pixelSize;
+    const scale = groupDrawing.pixelSize / pixelSize;
     context.scale(scale, scale);
     context.drawImage(nextCanvas, 0, 0);
     context.restore();

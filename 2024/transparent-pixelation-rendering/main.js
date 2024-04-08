@@ -39,7 +39,7 @@ const initialJson5 = `{
   pixelSize: 1,
   drawings: [{
     alpha: 1,
-    pixelSize: 3,
+    pixelSize: 4,
     drawings: [{
       colour: 'red',
       size: 70,
@@ -58,7 +58,7 @@ const initialJson5 = `{
     y: 220,
   }, {
     alpha: 0.5,
-    pixelSize: 2,
+    pixelSize: 8,
     drawings: [{
       colour: 'lime',
       size: 70,
@@ -66,7 +66,7 @@ const initialJson5 = `{
       y: 180,
     }, {
       alpha: 0.5,
-      pixelSize: 8,
+      pixelSize: 4,
       drawings: [{
         colour: 'purple',
         size: 80,
