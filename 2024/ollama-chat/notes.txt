@@ -1,0 +1,12 @@
+# 2024-04-28
+- Playing with Ollama using llama3.
+  - https://ollama.com/
+- Has chat REST API.
+  - https://github.com/ollama/ollama/blob/main/docs/api.md
+  - Needs to be running locally.
+  - Can talk to localhost.
+  - Can control entire chat history with each call.
+- Created simple chat input + JSON output viewer.
+- Next steps:
+  - Create a message tree.
+  - Each message can have different alternative versions, these versions are the children of the parent.
