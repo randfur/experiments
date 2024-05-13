@@ -11,6 +11,7 @@ export class FlyWalk {
       new Vec4(.14, .65, -.22, -.73),
       new Vec4(.34, .68, -.41, -.6),
       new Vec4(1.14, 0.17, -.77, -.26),
+      new Vec4(-.92, .39, -.86, .24),
     ]));
 
     this.toPointScore = [];
