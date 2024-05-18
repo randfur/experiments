@@ -38,7 +38,7 @@ async function main() {
 
   let count = 0;
   while (true) {
-    const time = await new Promise(requestAnimationFrame) && 550;
+    const time = await new Promise(requestAnimationFrame);
 
     // Render a triangle onto the canvas.
     gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, null);
