@@ -1,0 +1,33 @@
+# 2024-05-18
+- Implemented rendering to render frames attached to frame buffer.
+  - Works as expected.
+- AI lied.
+  - blitFramebuffers doesn't do blending or depth testing.
+  - Not unexpected but shame there isn't something that does.
+- Alternative approach:
+  - Perform the regular opaque renders.
+  - Use the existing depth buffer when rendering translucent stuff.
+  - Might get weird with different pixelation levels.
+    - Depth buffer needs to be the same size as the colour buffer.
+    - Tested and verified this.
+    - Maybe have to maintain a set of differently sized depth buffers.
+    - Depth buffer doesn't need updating after opaque render, no need to update multiple scales of depth buffers as we render translucent things.
+- Ran into blending problem:
+  - How to use the blend constant with the fragment output's alpha at the same time?
+  - Want to muliply them together.
+  - Probably just have to do it in the fragment shader itself rather than using the blend constant.
+  - This works!
+- Now trying with pixelation rendering.
+  - Should be as simple as halving the size of the texture and depth buffer copy.
+  - Texture sampling is in terms of uv relative to the texture's size so it should all adjust automatically.
+  - Not working, texture seems to be rendered twice as big scaled away from (-1, -1).
+  - Maybe suspicious because the uv is calculated relative to that point.
+  - Needed to update the gl.viewport() when rendering to the smaller frame buffer.
+  - More or less works!
+  - The depth culling boundary where the translucent thing is behind the opaque thing has a jagged overlap.
+
+# 2024-05-06
+- Goal:
+  - Render an opaque complex object.
+  - Render a transparent complex object onto a render buffer.
+  - Blit the transparent render onto the opaque object with blending and depth testing.
