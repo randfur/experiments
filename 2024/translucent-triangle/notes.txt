@@ -25,6 +25,14 @@
   - Needed to update the gl.viewport() when rendering to the smaller frame buffer.
   - More or less works!
   - The depth culling boundary where the translucent thing is behind the opaque thing has a jagged overlap.
+- Depth testing on texture is flaky.
+  - Added frame rendering and every other frame (randomly) the depth test for the texture render doesn't work.
+  - Possibly an async issue with blitting the depth buffer over?
+- Firefox differences:
+  - The depth test isn't working for Firefox.
+  - Also it needed a different format for the depth buffer, need to use user agent detection to pick a compatible depth buffer format.
+- Construct main depth buffer:
+  - Maybe using the canvas depth buffer is a source of problems and might have better luck between custom frame buffers.
 
 # 2024-05-06
 - Goal:

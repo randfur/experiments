@@ -15,40 +15,55 @@ async function main() {
 
   // Set up WebGL2.
   const gl = canvas.getContext('webgl2', { antialias: false });
-  gl.enable(gl.DEPTH_TEST);
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
   gl.depthFunc(gl.LESS);
+  gl.clearColor(0, 0, 0, 0);
+  gl.clearDepth(1);
 
-  // Render a triangle onto the canvas.
-  renderTriangle(gl, -0.45, -0.2, -0.3, -0.5, 1, 0, 0);
-
-  // Copy the canvas' depth buffer.
+  // Set up framebuffer.
   const pixelation = 8;
-  const depthRenderbuffer = gl.createRenderbuffer();
-  gl.bindRenderbuffer(gl.RENDERBUFFER, depthRenderbuffer);
-  gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, width / pixelation, height / pixelation);
-  const framebuffer = gl.createFramebuffer();
-  gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, framebuffer);
-  gl.framebufferRenderbuffer(gl.DRAW_FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, depthRenderbuffer);
-  gl.bindFramebuffer(gl.READ_FRAMEBUFFER, null);
-  gl.blitFramebuffer(0, 0, width, height, 0, 0, width / pixelation, height / pixelation, gl.DEPTH_BUFFER_BIT, gl.NEAREST);
-
-  // Render a triangle onto a texture using the depth buffer copy.
   const texture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, texture);
   gl.texStorage2D(gl.TEXTURE_2D, 1, gl.RGBA8, width / pixelation, height / pixelation);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  const depthRenderbuffer = gl.createRenderbuffer();
+  gl.bindRenderbuffer(gl.RENDERBUFFER, depthRenderbuffer);
+  gl.renderbufferStorage(gl.RENDERBUFFER, navigator.userAgent.includes('Firefox') ? gl.DEPTH_COMPONENT16 : gl.DEPTH_STENCIL, width / pixelation, height / pixelation);
+  const framebuffer = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, framebuffer);
   gl.framebufferTexture2D(gl.DRAW_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
-  gl.viewport(0, 0, width / pixelation, height / pixelation);
-  renderTriangle(gl, 0.45, -0.2, -0.3, 0.5, 0.5, 0, 0);
+  gl.framebufferRenderbuffer(gl.DRAW_FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, depthRenderbuffer);
 
-  // Render the texture onto the canvas with opacity.
-  gl.enable(gl.BLEND);
-  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-  gl.disable(gl.DEPTH_TEST);
-  gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, null);
-  gl.viewport(0, 0, width, height);
-  renderTexture(gl, texture, 0.5);
+  let count = 0;
+  while (true) {
+    const time = await new Promise(requestAnimationFrame) && 550;
+
+    // Render a triangle onto the canvas.
+    gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, null);
+    gl.viewport(0, 0, width, height);
+    gl.enable(gl.DEPTH_TEST);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    renderTriangle(gl, -0.35, -0.2, 1.5, time * -0.001, 1, 0, 0);
+
+    // Copy the canvas' depth buffer into the framebuffer.
+    gl.bindFramebuffer(gl.READ_FRAMEBUFFER, null);
+    gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, framebuffer);
+    gl.blitFramebuffer(0, 0, width, height, 0, 0, width / pixelation, height / pixelation, gl.DEPTH_BUFFER_BIT, gl.NEAREST);
+
+    // Render a triangle in the framebuffer.
+    gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, framebuffer);
+    gl.viewport(0, 0, width / pixelation, height / pixelation);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    renderTriangle(gl, 0.35, -0.2, 1.5, time * 0.0008, 0.5, 0, 0);
+
+    // Render the texture onto the canvas with opacity.
+    gl.disable(gl.DEPTH_TEST);
+    gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, null);
+    gl.viewport(0, 0, width, height);
+    renderTexture(gl, texture, 0.5);
+  }
 }
 
 function renderTriangle(gl, x, y, z, turn, r, g, b) {
@@ -70,7 +85,7 @@ function renderTriangle(gl, x, y, z, turn, r, g, b) {
             vertexPosition.x * sin(turn) + vertexPosition.z * cos(turn));
 
           gl_Position.xyz = position + rotatedVertexPosition;
-          gl_Position.w = (gl_Position.z + 1.0) * 4.0;
+          gl_Position.w = gl_Position.z + 1.0;
         }
       `,
       `#version 300 es
@@ -142,7 +157,6 @@ function renderTexture(gl, texture, opacity) {
 
 function createProgram(gl, vertexSource, fragmentSource) {
   const program = gl.createProgram();
-  gl.triangleProgram = program;
   const vertexShader = gl.createShader(gl.VERTEX_SHADER);
   gl.shaderSource(vertexShader, vertexSource);
   gl.compileShader(vertexShader);
