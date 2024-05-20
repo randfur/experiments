@@ -23,47 +23,71 @@ async function main() {
 
   // Set up framebuffer.
   const pixelation = 8;
-  const texture = gl.createTexture();
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-  gl.texStorage2D(gl.TEXTURE_2D, 1, gl.RGBA8, width / pixelation, height / pixelation);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-  const depthRenderbuffer = gl.createRenderbuffer();
-  gl.bindRenderbuffer(gl.RENDERBUFFER, depthRenderbuffer);
-  gl.renderbufferStorage(gl.RENDERBUFFER, navigator.userAgent.includes('Firefox') ? gl.DEPTH_COMPONENT16 : gl.DEPTH_STENCIL, width / pixelation, height / pixelation);
-  const framebuffer = gl.createFramebuffer();
-  gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, framebuffer);
-  gl.framebufferTexture2D(gl.DRAW_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
-  gl.framebufferRenderbuffer(gl.DRAW_FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, depthRenderbuffer);
+  const framebufferA = createFramebuffer(gl, /*useTexture=*/false, width, height);
+  const framebufferB = createFramebuffer(gl, /*useTexture=*/true, width / pixelation, height / pixelation);
 
   let count = 0;
   while (true) {
     const time = await new Promise(requestAnimationFrame);
 
-    // Render a triangle onto the canvas.
-    gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, null);
+    // Render a triangle onto the first framebuffer.
+    gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, framebufferA);
     gl.viewport(0, 0, width, height);
     gl.enable(gl.DEPTH_TEST);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    renderTriangle(gl, -0.35, -0.2, 1.5, time * -0.001, 1, 0, 0);
+    renderTriangle(gl, -0.2, -0.2, 1.5, time * -0.0008, 1, 0, 0);
 
-    // Copy the canvas' depth buffer into the framebuffer.
-    gl.bindFramebuffer(gl.READ_FRAMEBUFFER, null);
-    gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, framebuffer);
+    // Copy the first framebuffer's depth buffer into the second framebuffer's depth buffer.
+    gl.bindFramebuffer(gl.READ_FRAMEBUFFER, framebufferA);
+    gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, framebufferB);
     gl.blitFramebuffer(0, 0, width, height, 0, 0, width / pixelation, height / pixelation, gl.DEPTH_BUFFER_BIT, gl.NEAREST);
 
-    // Render a triangle in the framebuffer.
-    gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, framebuffer);
+    // Render a triangle in the second framebuffer.
+    gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, framebufferB);
     gl.viewport(0, 0, width / pixelation, height / pixelation);
     gl.clear(gl.COLOR_BUFFER_BIT);
-    renderTriangle(gl, 0.35, -0.2, 1.5, time * 0.0008, 0.5, 0, 0);
+    renderTriangle(gl, 0.2, -0.2, 1.5, time * 0.0011, 0.5, 0, 0);
 
-    // Render the texture onto the canvas with opacity.
+    // Render the second framebuffer onto the first framebuffer with opacity.
     gl.disable(gl.DEPTH_TEST);
-    gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, null);
+    gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, framebufferA);
     gl.viewport(0, 0, width, height);
-    renderTexture(gl, texture, 0.5);
+    renderTexture(gl, framebufferB.colourTexture, 0.5);
+
+    // Render the first framebuffer onto the canvas.
+    gl.bindFramebuffer(gl.READ_FRAMEBUFFER, framebufferA);
+    gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, null);
+    gl.blitFramebuffer(0, 0, width, height, 0, 0, width, height, gl.COLOR_BUFFER_BIT, gl.NEAREST);
   }
+}
+
+function createFramebuffer(gl, useTexture, width, height) {
+  const framebuffer = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, framebuffer);
+
+  const depthRenderbuffer = gl.createRenderbuffer();
+  gl.bindRenderbuffer(gl.RENDERBUFFER, depthRenderbuffer);
+  gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, width, height);
+  gl.framebufferRenderbuffer(gl.DRAW_FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, depthRenderbuffer);
+  framebuffer.depthRenderbuffer = depthRenderbuffer;
+
+  if (useTexture) {
+    const colourTexture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, colourTexture);
+    gl.texStorage2D(gl.TEXTURE_2D, 1, gl.RGBA8, width, height);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.framebufferTexture2D(gl.DRAW_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, colourTexture, 0);
+    framebuffer.colourTexture = colourTexture;
+  } else {
+    const colourRenderbuffer = gl.createRenderbuffer();
+    gl.bindRenderbuffer(gl.RENDERBUFFER, colourRenderbuffer);
+    gl.renderbufferStorage(gl.RENDERBUFFER, gl.RGBA8, width, height);
+    gl.framebufferRenderbuffer(gl.DRAW_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.RENDERBUFFER, colourRenderbuffer);
+    framebuffer.colourRenderbuffer = colourRenderbuffer;
+  }
+
+  return framebuffer;
 }
 
 function renderTriangle(gl, x, y, z, turn, r, g, b) {

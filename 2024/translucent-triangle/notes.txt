@@ -1,3 +1,9 @@
+# 2024-05-20
+- Created helper function for framebuffers.
+- Rendered onto temporary framebuffer before blitting back to canvas.
+  - Doesn't fix the flickering on Chrome desktop.
+  - Fixes Firefox, now renders correctly. Doesn't even flicker.
+
 # 2024-05-18
 - Implemented rendering to render frames attached to frame buffer.
   - Works as expected.
