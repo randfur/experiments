@@ -3,6 +3,8 @@
 - Rendered onto temporary framebuffer before blitting back to canvas.
   - Doesn't fix the flickering on Chrome desktop.
   - Fixes Firefox, now renders correctly. Doesn't even flicker.
+  - Weirdly the flickering in Chrome goes away if I turn on a screen recorder.
+  - Filed Chrome bug: https://issues.chromium.org/issues/341618084
 
 # 2024-05-18
 - Implemented rendering to render frames attached to frame buffer.
