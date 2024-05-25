@@ -23,71 +23,85 @@ async function main() {
 
   // Set up framebuffer.
   const pixelation = 8;
-  const framebufferA = createFramebuffer(gl, /*useTexture=*/false, width, height);
-  const framebufferB = createFramebuffer(gl, /*useTexture=*/true, width / pixelation, height / pixelation);
+  const framebufferA = createFramebuffer(gl, width, height);
+  const framebufferB = createFramebuffer(gl, width / pixelation, height / pixelation);
 
   let count = 0;
   while (true) {
     const time = await new Promise(requestAnimationFrame);
 
     // Render a triangle onto the first framebuffer.
-    gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, framebufferA);
-    gl.viewport(0, 0, width, height);
+    targetFramebuffer(gl, framebufferA);
     gl.enable(gl.DEPTH_TEST);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     renderTriangle(gl, -0.2, -0.2, 1.5, time * -0.0008, 1, 0, 0);
 
     // Copy the first framebuffer's depth buffer into the second framebuffer's depth buffer.
-    gl.bindFramebuffer(gl.READ_FRAMEBUFFER, framebufferA);
-    gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, framebufferB);
-    gl.blitFramebuffer(0, 0, width, height, 0, 0, width / pixelation, height / pixelation, gl.DEPTH_BUFFER_BIT, gl.NEAREST);
+    blitDepth(gl, framebufferA, framebufferB);
 
     // Render a triangle in the second framebuffer.
-    gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, framebufferB);
-    gl.viewport(0, 0, width / pixelation, height / pixelation);
+    targetFramebuffer(gl, framebufferB);
     gl.clear(gl.COLOR_BUFFER_BIT);
     renderTriangle(gl, 0.2, -0.2, 1.5, time * 0.0011, 0.5, 0, 0);
 
     // Render the second framebuffer onto the first framebuffer with opacity.
+    targetFramebuffer(gl, framebufferA);
     gl.disable(gl.DEPTH_TEST);
-    gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, framebufferA);
-    gl.viewport(0, 0, width, height);
     renderTexture(gl, framebufferB.colourTexture, 0.5);
 
     // Render the first framebuffer onto the canvas.
-    gl.bindFramebuffer(gl.READ_FRAMEBUFFER, framebufferA);
-    gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, null);
-    gl.blitFramebuffer(0, 0, width, height, 0, 0, width, height, gl.COLOR_BUFFER_BIT, gl.NEAREST);
+    blitColour(gl, framebufferA, canvas);
   }
 }
 
-function createFramebuffer(gl, useTexture, width, height) {
+function createFramebuffer(gl, width, height) {
   const framebuffer = gl.createFramebuffer();
+  framebuffer.width = width;
+  framebuffer.height = height;
   gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, framebuffer);
 
-  const depthRenderbuffer = gl.createRenderbuffer();
-  gl.bindRenderbuffer(gl.RENDERBUFFER, depthRenderbuffer);
-  gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT24, width, height);
-  gl.framebufferRenderbuffer(gl.DRAW_FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, depthRenderbuffer);
-  framebuffer.depthRenderbuffer = depthRenderbuffer;
+  const depthTexture = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, depthTexture);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT24, width, height, 0, gl.DEPTH_COMPONENT, gl.UNSIGNED_INT, null);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.framebufferTexture2D(gl.DRAW_FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, depthTexture, 0);
+  framebuffer.depthTexture = depthTexture;
 
-  if (useTexture) {
-    const colourTexture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, colourTexture);
-    gl.texStorage2D(gl.TEXTURE_2D, 1, gl.RGBA8, width, height);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.framebufferTexture2D(gl.DRAW_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, colourTexture, 0);
-    framebuffer.colourTexture = colourTexture;
-  } else {
-    const colourRenderbuffer = gl.createRenderbuffer();
-    gl.bindRenderbuffer(gl.RENDERBUFFER, colourRenderbuffer);
-    gl.renderbufferStorage(gl.RENDERBUFFER, gl.RGBA8, width, height);
-    gl.framebufferRenderbuffer(gl.DRAW_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.RENDERBUFFER, colourRenderbuffer);
-    framebuffer.colourRenderbuffer = colourRenderbuffer;
-  }
+  const colourTexture = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, colourTexture);
+  gl.texStorage2D(gl.TEXTURE_2D, 1, gl.RGBA8, width, height);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.framebufferTexture2D(gl.DRAW_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, colourTexture, 0);
+  framebuffer.colourTexture = colourTexture;
 
   return framebuffer;
+}
+
+function targetFramebuffer(gl, framebuffer) {
+  gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, framebuffer instanceof HTMLCanvasElement ? null : framebuffer);
+  gl.viewport(0, 0, framebuffer.width, framebuffer.height);
+}
+
+function createProgram(gl, vertexSource, fragmentSource) {
+  const program = gl.createProgram();
+  const vertexShader = gl.createShader(gl.VERTEX_SHADER);
+  gl.shaderSource(vertexShader, vertexSource);
+  gl.compileShader(vertexShader);
+  logIf(gl.getShaderInfoLog(vertexShader));
+
+  const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+  gl.shaderSource(fragmentShader, fragmentSource);
+  gl.compileShader(fragmentShader);
+  logIf(gl.getShaderInfoLog(fragmentShader));
+
+  gl.attachShader(program, vertexShader);
+  gl.attachShader(program, fragmentShader);
+  gl.linkProgram(program);
+  logIf(gl.getProgramInfoLog(program));
+
+  return program;
 }
 
 function renderTriangle(gl, x, y, z, turn, r, g, b) {
@@ -179,24 +193,22 @@ function renderTexture(gl, texture, opacity) {
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 }
 
-function createProgram(gl, vertexSource, fragmentSource) {
-  const program = gl.createProgram();
-  const vertexShader = gl.createShader(gl.VERTEX_SHADER);
-  gl.shaderSource(vertexShader, vertexSource);
-  gl.compileShader(vertexShader);
-  logIf(gl.getShaderInfoLog(vertexShader));
+function blitDepth(gl, framebufferSource, framebufferDestination) {
+  gl.bindFramebuffer(gl.READ_FRAMEBUFFER, framebufferSource);
+  targetFramebuffer(gl, framebufferDestination);
+  gl.blitFramebuffer(
+    0, 0, framebufferSource.width, framebufferSource.height,
+    0, 0, framebufferDestination.width, framebufferDestination.height,
+    gl.DEPTH_BUFFER_BIT, gl.NEAREST);
+}
 
-  const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-  gl.shaderSource(fragmentShader, fragmentSource);
-  gl.compileShader(fragmentShader);
-  logIf(gl.getShaderInfoLog(fragmentShader));
-
-  gl.attachShader(program, vertexShader);
-  gl.attachShader(program, fragmentShader);
-  gl.linkProgram(program);
-  logIf(gl.getProgramInfoLog(program));
-
-  return program;
+function blitColour(gl, framebufferSource, framebufferDestination) {
+  gl.bindFramebuffer(gl.READ_FRAMEBUFFER, framebufferSource);
+  targetFramebuffer(gl, framebufferDestination);
+  gl.blitFramebuffer(
+    0, 0, framebufferSource.width, framebufferSource.height,
+    0, 0, framebufferDestination.width, framebufferDestination.height,
+   gl.COLOR_BUFFER_BIT, gl.NEAREST);
 }
 
 function logIf(text) {

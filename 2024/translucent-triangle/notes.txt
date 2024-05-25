@@ -1,3 +1,20 @@
+# 2024-05-25
+- Saved an offline file version of translucent triangle for https://issues.chromium.org/issues/341618084 so this could change.
+- New goal:
+  - Implement framebuffer merging with depth testing.
+  - Use texture for depth buffer and perform depth testing in the fragment shader.
+    - Bind both the colour texture and two depth textures.
+    - How to merge the depth buffers?
+    - Not sure if there's a way to write to the depth buffer.
+      - There is a gl_FragDepth out variable in the fragment shader.
+      - https://www.khronos.org/opengl/wiki/Fragment_Shader/Defined_Outputs
+      - Weird they have that but not gl_FragColor.
+  - Should fix the jagged overlap between different pixelation sizes.
+- Depth texture:
+  - Needed to reference https://webgl2fundamentals.org/webgl/lessons/webgl-render-to-texture.html to work out what combination of formats were supported in WebGL2.
+- Refactoring:
+  - Moved common actions into helper functions e.g. targeting a framebuffer and setting the viewport for it.
+
 # 2024-05-20
 - Created helper function for framebuffers.
 - Rendered onto temporary framebuffer before blitting back to canvas.
