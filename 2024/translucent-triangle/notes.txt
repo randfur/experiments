@@ -14,6 +14,12 @@
   - Needed to reference https://webgl2fundamentals.org/webgl/lessons/webgl-render-to-texture.html to work out what combination of formats were supported in WebGL2.
 - Refactoring:
   - Moved common actions into helper functions e.g. targeting a framebuffer and setting the viewport for it.
+- Having trouble reading from the depth texture and from gl_FragDepth.
+  - Texture is returning a high value that doesn't change in undrawn areas.
+  - gl_FragDepth seems to always be 0.
+  - Talking with GPT-4o it seems to work to use gl.DEPTH_COMPONENT32F instead of gl.DEPTH_COMPONENT24.
+  - gl_FragDepth is always 0 because that's the depth of the drawn triangle rather than the depth in the existing depth buffer, probably no way to read that normally.
+- Implemented fragment shader depth testing, merging two framebuffers.
 
 # 2024-05-20
 - Created helper function for framebuffers.

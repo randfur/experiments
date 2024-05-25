@@ -15,9 +15,8 @@ async function main() {
 
   // Set up WebGL2.
   const gl = canvas.getContext('webgl2', { antialias: false });
-  gl.enable(gl.BLEND);
-  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
   gl.depthFunc(gl.LESS);
+  // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
   gl.clearColor(0, 0, 0, 0);
   gl.clearDepth(1);
 
@@ -26,31 +25,24 @@ async function main() {
   const framebufferA = createFramebuffer(gl, width, height);
   const framebufferB = createFramebuffer(gl, width / pixelation, height / pixelation);
 
-  let count = 0;
   while (true) {
     const time = await new Promise(requestAnimationFrame);
 
-    // Render a triangle onto the first framebuffer.
-    targetFramebuffer(gl, framebufferA);
     gl.enable(gl.DEPTH_TEST);
+
+    targetFramebuffer(gl, framebufferA);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     renderTriangle(gl, -0.2, -0.2, 1.5, time * -0.0008, 1, 0, 0);
 
-    // Copy the first framebuffer's depth buffer into the second framebuffer's depth buffer.
-    blitDepth(gl, framebufferA, framebufferB);
-
-    // Render a triangle in the second framebuffer.
     targetFramebuffer(gl, framebufferB);
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     renderTriangle(gl, 0.2, -0.2, 1.5, time * 0.0011, 0.5, 0, 0);
 
-    // Render the second framebuffer onto the first framebuffer with opacity.
-    targetFramebuffer(gl, framebufferA);
     gl.disable(gl.DEPTH_TEST);
-    renderTexture(gl, framebufferB.colourTexture, 0.5);
 
-    // Render the first framebuffer onto the canvas.
-    blitColour(gl, framebufferA, canvas);
+    targetFramebuffer(gl, canvas);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    mergeFramebuffer(gl, framebufferA, framebufferB, 0.5);
   }
 }
 
@@ -62,7 +54,7 @@ function createFramebuffer(gl, width, height) {
 
   const depthTexture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, depthTexture);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT24, width, height, 0, gl.DEPTH_COMPONENT, gl.UNSIGNED_INT, null);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT32F, width, height, 0, gl.DEPTH_COMPONENT, gl.FLOAT, null);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
   gl.framebufferTexture2D(gl.DRAW_FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, depthTexture, 0);
@@ -75,6 +67,8 @@ function createFramebuffer(gl, width, height) {
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
   gl.framebufferTexture2D(gl.DRAW_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, colourTexture, 0);
   framebuffer.colourTexture = colourTexture;
+
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   return framebuffer;
 }
@@ -146,9 +140,9 @@ function renderTriangle(gl, x, y, z, turn, r, g, b) {
   gl.drawArrays(gl.TRIANGLES, 0, 3);
 }
 
-function renderTexture(gl, texture, opacity) {
-  if (!gl.textureProgram) {
-    gl.textureProgram = createProgram(
+function mergeFramebuffer(gl, framebufferA, framebufferB, opacity) {
+  if (!gl.mergeProgram) {
+    gl.mergeProgram = createProgram(
       gl,
       `#version 300 es
         precision mediump float;
@@ -170,26 +164,41 @@ function renderTexture(gl, texture, opacity) {
       `#version 300 es
         precision mediump float;
 
-        uniform sampler2D sampler;
-        uniform float opacity;
+        uniform sampler2D colourTextureA;
+        uniform sampler2D depthTextureA;
+        uniform sampler2D colourTextureB;
+        uniform sampler2D depthTextureB;
+        uniform float opacityB;
 
         in vec2 uv;
-        out vec4 fragmentColour;
+        out vec4 colour;
 
         void main() {
-          fragmentColour = texture(sampler, uv);
-          fragmentColour.a *= opacity;
+          vec4 colourA = texture(colourTextureA, uv);
+          vec4 colourB = texture(colourTextureB, uv);
+          float depthA = texture(depthTextureA, uv).r;
+          float depthB = texture(depthTextureB, uv).r;
+          colour = depthA < depthB ? colourA : colourA * (1.0 - (colourB.a * opacityB)) + colourB * opacityB;
+          gl_FragDepth = min(depthA, depthB);
         }
       `,
     );
   }
 
-  gl.useProgram(gl.textureProgram);
-  gl.bindSampler(0, gl.textureProgram.sampler);
+  gl.useProgram(gl.mergeProgram);
   gl.activeTexture(gl.TEXTURE0);
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-  gl.uniform1i(gl.getUniformLocation(gl.textureProgram, 'sampler'), 0);
-  gl.uniform1f(gl.getUniformLocation(gl.textureProgram, 'opacity'), opacity);
+  gl.bindTexture(gl.TEXTURE_2D, framebufferA.colourTexture);
+  gl.activeTexture(gl.TEXTURE1);
+  gl.bindTexture(gl.TEXTURE_2D, framebufferA.depthTexture);
+  gl.activeTexture(gl.TEXTURE2);
+  gl.bindTexture(gl.TEXTURE_2D, framebufferB.colourTexture);
+  gl.activeTexture(gl.TEXTURE3);
+  gl.bindTexture(gl.TEXTURE_2D, framebufferB.depthTexture);
+  gl.uniform1i(gl.getUniformLocation(gl.mergeProgram, 'colourTextureA'), 0);
+  gl.uniform1i(gl.getUniformLocation(gl.mergeProgram, 'depthTextureA'), 1);
+  gl.uniform1i(gl.getUniformLocation(gl.mergeProgram, 'colourTextureB'), 2);
+  gl.uniform1i(gl.getUniformLocation(gl.mergeProgram, 'depthTextureB'), 3);
+  gl.uniform1f(gl.getUniformLocation(gl.mergeProgram, 'opacityB'), opacity);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 }
 
