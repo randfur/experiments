@@ -1,0 +1,20 @@
+# 2024-06-04
+- Problem:
+  - Using gl.blendFunc(gl.SRC_COLOR, gl.ONE_MINUS_SRC_COLOR) doesn't seem to work well when applied multiple times.
+- Goal:
+  - Search all the different blendFuncSeparate() combinations to find one that matches what canvas does most closely.
+- Blend func parameters:
+  - https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/blendFuncSeparate
+  - Ignore the constant colour ones.
+    - gl.ZERO
+    - gl.ONE
+    - gl.SRC_COLOR
+    - gl.ONE_MINUS_SRC_COLOR
+    - gl.DST_COLOR
+    - gl.ONE_MINUS_DST_COLOR
+    - gl.SRC_ALPHA
+    - gl.ONE_MINUS_SRC_ALPHA
+    - gl.DST_ALPHA
+    - gl.ONE_MINUS_DST_ALPHA
+    - gl.SRC_ALPHA_SATURATE
+  - 11 remaining, 11^4 = 14641, probably reasonable to compute in one go.
