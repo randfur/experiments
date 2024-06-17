@@ -1,0 +1,9 @@
+# 2024-06-17
+- Radix sort
+  - Sort each column from LSB to MSB in turn.
+    - If you do MSB to LSB it doesn't work.
+  - Keep stable sorting.
+  - Algorithm:
+    - For each column (right to left) partition by value and join partitions in order.
+    - Can do with with heavy weight maps and stuff.
+    - Or can recycle between two arrays like a swap buffer.
