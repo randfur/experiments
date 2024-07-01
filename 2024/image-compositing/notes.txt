@@ -1,3 +1,45 @@
+# 2024-07-01
+- Recalling original problem from hex-lines work.
+  - Not sure how to blend a translucent colour onto an already translucent colour.
+  - GIMP and canvas seem to know what to do.
+- Concrete goal:
+  - Try applying partial green onto partial blue.
+  - [0, 1, 0, 0.5] on [0, 0, 1, 0.5] blends to [0, 0.66, 0.33, 0.75].
+- Completed code.
+  - Ran all combinations to find bend matching blended colour:
+    - bestDistance: 0.33431372549019606
+    - bestTypeCombination: {srcRGB: 'SRC_ALPHA', dstRGB: 'SRC_ALPHA', srcAlpha: 'SRC_COLOR', dstAlpha: 'ONE'}
+    - bestBlendedColour: [0, 0.5, 0.5, 0.75]
+    - targetColour: [0, 0.66, 0.33, 0.75]
+  - Nowhere near the target colour.
+  - The combination doesn't make any sense and is overfitting the singular input/output expectation.
+  - Tried a different input, got very different best type combination:
+    - sourceColour: [0, 0, 1, 0.5]
+    - destinationColour: [1, 0, 1, 0.5]
+    - targetColour: [0.3333333333333333, 0, 1, 0.7490196078431373]
+    - bestBlendedColour: [0.5, 0, 1, 0.75]
+    - bestDistance: 0.16764705882352943
+    - bestTypeCombination: {srcRGB: 'ONE', dstRGB: 'SRC_ALPHA', srcAlpha: 'SRC_COLOR', dstAlpha: 'ONE'}
+  - This actually seems a bit more reasonable but not actually and the distance is still too big.
+    - Tried it in hex-lines/examples/basic-2d-next.html, doesn't work at all.
+- blendFuncSeparate() not good enough?
+  - Seems like there's no combination of blend modes that replicate what GIMP and canvas do when drawing transparency on transparency.
+- Premultiplied alpha:
+  - Suspicion that premultiplying the RGB by alpha might be what they do.
+  - Remember hearing about it being the way to go.
+  - Thought that maybe this approach existed as some combination of blend funcs.
+  - Asked Claude 3.5 to build me an interactive premultiplied blending demo:
+    - https://claude.ai/chat/7e6e4511-f3cf-4076-82bb-dfaae231ad3b
+  - It did amazingly well.
+  - The results match canvas.
+  - Continued the conversation in the direction of WebGL and blendFunc.
+  - It used gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA) along with premultiplying the source colour.
+    - Tried this in hex-lines, seems to work?
+    - May be that simple, need to play with the math some more.
+    - In the pre-WebGL interactive demo they divided by outputAlpha but not in the WebGL version.
+    - They say it's because that division is part of un-premultiplying it to present to the user as number and that's not needed for the render buffer since we want it to continue to be premultiplied.
+  - Not able to replicate it working in this hand written experiment...
+
 # 2024-06-04
 - Problem:
   - Using gl.blendFunc(gl.SRC_COLOR, gl.ONE_MINUS_SRC_COLOR) doesn't seem to work well when applied multiple times.
