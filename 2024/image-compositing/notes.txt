@@ -1,3 +1,22 @@
+# 2024-07-03
+- Dug into why things weren't working in the translucent white on transparent blending case.
+  - When displayed against a white background, saw grey.
+  - Noticed the premultipliedAlpha option in getContext() mentioned in the chat with Claude.
+  - https://claude.ai/chat/7e6e4511-f3cf-4076-82bb-dfaae231ad3b
+  - Researched further, started conversation with another AI: https://chatgpt.com/c/2f6e5134-c086-49df-9e2d-73a8f4220501
+  - ChatGPT said there was no need to unpremultiply the colours in the render buffer, that the canvas expected premultiplied colours and gave a sample to test it.
+  - Refactored project into separate mains.
+  - Put ChatGPT sample code in shader.js.
+  - It works, it was correct.
+  - My premultiplying was incorrect in hex-lines, fixing it fixed everything.
+    - Incorrect:
+      colour = texture(texture2D, uv);
+      colour.a *= opacity;
+      colour.rgb *= colour.a;
+    - Fixed to:
+      colour = texture(texture2D, uv) * opacity;
+    - The original alpha was getting doubly multiplied on successive blends.
+
 # 2024-07-01
 - Recalling original problem from hex-lines work.
   - Not sure how to blend a translucent colour onto an already translucent colour.
