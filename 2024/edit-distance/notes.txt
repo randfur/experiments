@@ -1,0 +1,13 @@
+# 2024-07-08
+- Edit distance dynamic programming algorithm.
+  - https://en.wikipedia.org/wiki/Edit_distance
+  - Comparing two strings and counting how many edits to get from one to the other.
+  - Edits being inserting a character, deleting a character or replacing a character.
+  - Look at top, top left and left cells.
+    - Top and left represent insertion/deletion.
+      - An insertion for one string looks like a deletion for the other, people call this indel.
+      - Indels are always counted as one edit.
+    - Top left represents match/mismatch.
+      - If the characters mismatch then count it as an edit.
+- Goal:
+  - Print out all the possible edit paths that are the minimal edit distance.
