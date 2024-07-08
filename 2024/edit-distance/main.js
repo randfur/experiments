@@ -7,8 +7,9 @@ function main() {
 
   const grid = computeMinimalEditGrid(stringA, stringB);
   console.log(grid.toString());
+
   for (const minimalEdit of computeMinimalEdits(stringA, stringB)) {
-    console.log(`${minimalEdit.a}\n${minimalEdit.b}`);
+    console.log(`A: ${minimalEdit.a}\nB: ${minimalEdit.b}`);
   }
 }
 
@@ -27,9 +28,9 @@ function computeMinimalEdits(stringA, stringB) {
         b: '',
       }];
     }
-    const top = grid.get(row - 1, col);
-    const topLeft = grid.get(row - 1, col - 1);
-    const left = grid.get(row, col - 1);
+    const top = grid.get(row - 1, col) + 1;
+    const topLeft = grid.get(row - 1, col - 1) + (stringA[row - 1] === stringB[col - 1] ? 0 : 1);
+    const left = grid.get(row, col - 1) + 1;
     const min = Math.min(top, topLeft, left);
     return [
       ...(top === min ? recurse(row - 1, col).flatMap(minimalEdit => {
