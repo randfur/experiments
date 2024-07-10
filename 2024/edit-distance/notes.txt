@@ -1,3 +1,7 @@
+# 2024-07-10
+- No need for flatMap.
+- Output to page instead of console.
+
 # 2024-07-08
 - Edit distance dynamic programming algorithm.
   - https://en.wikipedia.org/wiki/Edit_distance

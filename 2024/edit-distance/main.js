@@ -1,15 +1,25 @@
 function main() {
+  const output = document.createElement('pre');
+  document.body.append(output);
+  function print(text) {
+    output.textContent += (text ?? '') + '\n';
+  }
+
   const stringA = 'dogdogdog';
   const stringB = 'dogcatcatdog';
 
-  console.log(stringA);
-  console.log(stringB);
+  print('Input strings:');
+  print(stringA);
+  print(stringB);
+  print();
 
+  print('Minimal edit DP grid:');
   const grid = computeMinimalEditGrid(stringA, stringB);
-  console.log(grid.toString());
+  print(grid.toString());
 
+  print('Minimal edits:');
   for (const minimalEdit of computeMinimalEdits(stringA, stringB)) {
-    console.log(`A: ${minimalEdit.a}\nB: ${minimalEdit.b}`);
+    print(`A: ${minimalEdit.a}\nB: ${minimalEdit.b}\n`);
   }
 }
 
@@ -33,19 +43,19 @@ function computeMinimalEdits(stringA, stringB) {
     const left = grid.get(row, col - 1) + 1;
     const min = Math.min(top, topLeft, left);
     return [
-      ...(top === min ? recurse(row - 1, col).flatMap(minimalEdit => {
+      ...(top === min ? recurse(row - 1, col).map(minimalEdit => {
         return {
           a: minimalEdit.a + stringA[row - 1],
           b: minimalEdit.b + '-',
         };
       }) : []),
-      ...(topLeft === min ? recurse(row - 1, col - 1).flatMap(minimalEdit => {
+      ...(topLeft === min ? recurse(row - 1, col - 1).map(minimalEdit => {
         return {
           a: minimalEdit.a + stringA[row - 1],
           b: minimalEdit.b + stringB[col - 1],
         };
       }) : []),
-      ...(left === min ? recurse(row, col - 1).flatMap(minimalEdit => {
+      ...(left === min ? recurse(row, col - 1).map(minimalEdit => {
         return {
           a: minimalEdit.a + '-',
           b: minimalEdit.b + stringB[col - 1],
