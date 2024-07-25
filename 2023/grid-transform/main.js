@@ -1,7 +1,7 @@
-import {HexLinesContext} from './third-party/hex-lines/src/hex-lines.js';
-import {Temp} from './third-party/ga/temp.js';
-import {Vec3} from './third-party/ga/vec3.js';
-import {Rotor3} from './third-party/ga/rotor3.js';
+import {HexLinesContext} from '../third-party/hex-lines/src/hex-lines.js';
+import {Temp} from '../third-party/ga/temp.js';
+import {Vec3} from '../third-party/ga/vec3.js';
+import {Rotor3} from '../third-party/ga/rotor3.js';
 
 async function main() {
   const {width, height, hexLinesContext} = HexLinesContext.setupFullPageContext({

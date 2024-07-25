@@ -1,3 +1,8 @@
+# 2024-07-25
+- Replaced third-party/hex-lines with 2023 common checkout of hex-lines.
+  - This is part of consolidating 2023's experiments to use the same third-party checkouts to improve repo initialisation times on GitHub.
+  - No changes needed.
+
 # 2023-09-26
 - Splitting off into animate-hex-lines
 

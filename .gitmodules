@@ -1,33 +1,21 @@
-[submodule "frame-edit-ui/third-party/rojs"]
-	path = 2023/frame-edit-ui/third-party/rojs
-	url = git@github.com:randfur/rojs.git
-[submodule "2023/html-input-event/third_party/rojs"]
-	path = 2023/html-input-event/third-party/rojs
-	url = git@github.com:randfur/rojs.git
 [submodule "2023/bomber-hex-lines/third-party/hex-lines"]
 	path = 2023/bomber-hex-lines/third-party/hex-lines
-	url = git@github.com:randfur/hex-lines.git
-[submodule "2023/spirals/third-party/hex-lines"]
-	path = 2023/spirals/third-party/hex-lines
 	url = git@github.com:randfur/hex-lines.git
 [submodule "2023/draw-hex-lines/third-party/hex-lines"]
 	path = 2023/draw-hex-lines/third-party/hex-lines
 	url = git@github.com:randfur/hex-lines.git
-[submodule "2023/wormtree/third-party/hex-lines"]
-	path = 2023/ember/third-party/hex-lines
-	url = git@github.com:randfur/hex-lines.git
-[submodule "2023/ember/third-party/ga"]
-	path = 2023/ember/third-party/ga
-	url = git@github.com:randfur/ga.git
-[submodule "2023/grid-transform/third-party/hex-lines"]
-	path = 2023/grid-transform/third-party/hex-lines
-	url = git@github.com:randfur/hex-lines.git
-[submodule "2023/grid-transform/third-party/ga"]
-	path = 2023/grid-transform/third-party/ga
-	url = git@github.com:randfur/ga.git
 [submodule "2023/animate-hex-lines/third-party/hex-lines"]
 	path = 2023/animate-hex-lines/third-party/hex-lines
 	url = git@github.com:randfur/hex-lines.git
 [submodule "2023/animate-hex-lines/third-party/ga"]
 	path = 2023/animate-hex-lines/third-party/ga
 	url = git@github.com:randfur/ga.git
+[submodule "2023/third-party/hex-lines"]
+	path = 2023/third-party/hex-lines
+	url = git@github.com:randfur/hex-lines.git
+[submodule "2023/third-party/ga"]
+	path = 2023/third-party/ga
+	url = git@github.com:randfur/ga.git
+[submodule "2023/third-party/rojs"]
+	path = 2023/third-party/rojs
+	url = git@github.com:randfur/rojs.git

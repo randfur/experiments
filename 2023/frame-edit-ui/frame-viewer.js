@@ -1,4 +1,4 @@
-import {read, Component} from './third-party/rojs/src/rojs.js';
+import {read, Component} from '../third-party/rojs/src/rojs.js';
 
 export class FrameViewer extends Component {
   constructor() {

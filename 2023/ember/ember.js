@@ -1,8 +1,8 @@
 import {Engine} from './engine.js';
 import {Flame} from './flame.js';
-import {Vec3} from './third-party/ga/vec3.js';
-import {Rotor3} from './third-party/ga/rotor3.js';
-import {Temp} from './third-party/ga/temp.js';
+import {Vec3} from '../third-party/ga/vec3.js';
+import {Rotor3} from '../third-party/ga/rotor3.js';
+import {Temp} from '../third-party/ga/temp.js';
 import {
   secondsRange,
   never,

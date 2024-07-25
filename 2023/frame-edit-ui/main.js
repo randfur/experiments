@@ -1,4 +1,4 @@
-import {render, joinBr} from './third-party/rojs/src/rojs.js';
+import {render, joinBr} from '../third-party/rojs/src/rojs.js';
 
 import {bundleBundle} from './bundle.js';
 import {AnimationData} from './animation-data.js';

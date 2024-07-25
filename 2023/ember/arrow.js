@@ -1,6 +1,6 @@
-import {Vec3} from './third-party/ga/vec3.js';
-import {Temp} from './third-party/ga/temp.js';
-import {Rotor3} from './third-party/ga/rotor3.js';
+import {Vec3} from '../third-party/ga/vec3.js';
+import {Temp} from '../third-party/ga/temp.js';
+import {Rotor3} from '../third-party/ga/rotor3.js';
 import {range, never, TAU} from './utils.js';
 
 export class Arrow {

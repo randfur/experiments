@@ -1,3 +1,8 @@
+# 2024-07-25
+- Replaced third-party/hex-lines with 2023 common checkout of hex-lines.
+  - This is part of consolidating 2023's experiments to use the same third-party checkouts to improve repo initialisation times on GitHub.
+  - Needed to switch to setting transformMatrix on HexLinesContext and transposing the matrix to match GL expecting column major data.
+
 # 2023-08-30
 - Updated to use flat point add method.
   - Marginal improvement.

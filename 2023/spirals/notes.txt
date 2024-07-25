@@ -1,3 +1,8 @@
+# 2024-07-25
+- Replaced third-party with 2023 common checkouts.
+  - This is part of consolidating 2023's experiments to use the same third-party checkouts to improve repo initialisation times on GitHub.
+  - No changes needed.
+
 # 2023-09-11
 - Changed turning into wobble to keep on screen.
 

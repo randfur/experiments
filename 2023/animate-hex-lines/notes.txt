@@ -1,3 +1,7 @@
+# 2024-07-25
+- Removed third-party submodule repos as they're unused.
+  - This is part of consolidating 2023's experiments to use the same third-party checkouts to improve repo initialisation times on GitHub.
+
 # 2023-12-10
 - Continued this a bit.
 - Updated to AnimationEditor and AnimationPack.

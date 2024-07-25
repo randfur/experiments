@@ -1,4 +1,4 @@
-import {read, write, htmlIf, Component, button} from './third-party/rojs/src/rojs.js';
+import {read, write, htmlIf, Component, button} from '../third-party/rojs/src/rojs.js';
 
 export class AnimationPlayer extends Component {
   constructor() {
