@@ -1,3 +1,40 @@
+# 2024-07-27
+- Remembering the structure of an animation.
+  - AnimationPack
+    - Animation map
+    - Root Animation
+  - Animation
+    - Id
+    - Guide layers
+    - Visible layers
+  - Layer
+    - Opacity
+    - Transform
+    - Keyframes
+  - Keyframe
+    - Start
+    - Duration
+    - Group
+  - Element
+    - Opacity
+    - Transform
+    - Drawing or instance or group
+  - Drawing
+    - Line buffer
+  - Instance
+    - Animation id
+  - Group
+    - Elements
+- Renamed Animation to Sprite and AnimationPack to Animation.
+- Wrote and moved all class definitions in one file animation.js.
+- Reconsidering using classes, maybe use plain JSON instead to make saving and loading trivial.
+  - Won't be able to have lineBuffer instances inline, will need a separate mapping along side, will need extra resource management rather than relying on garbage collection like usual.
+    - Can probably just do a clean up sweep on save.
+    - Use incrementing numeric IDs.
+- Rewriting animation definitions in TypeScript interfaces for JSON compat.
+- Thinking about how to represent running sub animations.
+- Thinking about how to represent animations on transform rather than the sprite.
+
 # 2024-07-25
 - Removed third-party submodule repos as they're unused.
   - This is part of consolidating 2023's experiments to use the same third-party checkouts to improve repo initialisation times on GitHub.
