@@ -38,6 +38,14 @@
       - Mouse frame rate tanked as well.
       - Wasn't even able to record perf data in DevTools.
     - Being able to handle hundreds of thousands of points on a laptop is a very good sign.
+    - This was with a single line buffer however, need to test with multiple layers and opacity blending.
+- Render animation.
+  - Should write up rendering an animation.
+  - Renamed JSON data format to AnimationData.
+  - Created Animation class to represent one of these at runtime and hold lineBuffer references.
+  - Animation should generate the HexLines2d Drawing (LineDrawing/GroupDrawing) for a given time and cache it.
+    - New time renders can reuse existing inner Drawings, maybe mutating their transform etc.
+    - Will start off without this for simplicity and then work on caching.
 
 # 2024-07-27
 - Referencing 2023/animate-hex-lines.

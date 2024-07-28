@@ -1,6 +1,7 @@
-interface Animation {
+interface AnimationData {
+  // Root sprite stored in ''.
   spriteMap: {[spriteId: SpriteId]: Sprite};
-  lineBufferMap: {[lineBufferId: LineBufferId]: LineBuffer};
+  lineBufferDataMap: {[lineBufferId: LineBufferId]: LineBufferData};
 }
 
 type SpriteId = string;
@@ -67,4 +68,4 @@ interface TransformKeyframe {
 type LineBufferId = number;
 
 // [(x, y, size, r, g, b)...]
-type LineBuffer = Array<number>;
+type LineBufferData = Array<number>;
