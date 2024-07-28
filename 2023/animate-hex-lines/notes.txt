@@ -1,3 +1,44 @@
+# 2024-07-28
+- Transform:
+  - Animating transform.
+    - Maybe let transform be transform keyframes on everything that has transform.
+    - Allowing it on everything might be too much but should be simple to do after doing one and fun to experiment with.
+  - Data format:
+    - A union of nothing, JSON transform, matrix transform and transform keyframes.
+      - Transform keyframes and matrix transformation would both be arrays which clashes, leave matrix tranformation out for now, decide later which one should yield into being an object (probably keyframes).
+    - Transform keyframe:
+      - Start and duration as usual.
+      - Should be able to have static value as well as from/to values.
+    - Updated interface definitions to match this.
+- What about colour mapping and animating the palette?
+  - Could be neat, requires data format designing though.
+  - Maybe negative colour values could be used to dip into the different colouring mode.
+    - Can't really do this as the colour channels are sent though as u8s.
+    - Could maybe use the alpha channel as well though, that's currently just unused padding.
+      - See src/2d/utils.h kPointByteLength.
+- Dot angles.
+  - Currently are based on their instance ID which is volatile as a lineBuffer gets edited or merged with other ones.
+  - Maybe setting a negative size for a null point could be used as the angle.
+  - Currently the dots are done via two points at the same position surrounded by nulls.
+    - Difficult to change this, having only one non-null point would require expanding the viewing window to three points.
+    - Maybe have the second point use a negative size which dictates the angle of the hex.
+      - A bit complicated and needs branching but maybe okay.
+  - Just check if the two points have the same position and read the second point's size for the angle. Shouldn't be a problem for regular lines since they'd get a basically random angle anyway.
+    - This allows for unbounded positive and negative angles.
+- Perf testing:
+  - Running on Linux laptop, Chrome stable M127.
+    - Chrome Beta has a bug causing basic WebGL drawing to take multiple frames.
+    - Chrome Unstable has a bug causing rendering to be very glitchy and not clearing the buffer.
+    - Chrome Stable is still good.
+    - 200, 2000, 20000, 200000 dots:
+      - Under a frame to render.
+    - 2000000 dots:
+      - About 2 FPS.
+      - Lags the entire computer.
+      - Mouse frame rate tanked as well.
+      - Wasn't even able to record perf data in DevTools.
+    - Being able to handle hundreds of thousands of points on a laptop is a very good sign.
+
 # 2024-07-27
 - Remembering the structure of an animation.
   - AnimationPack

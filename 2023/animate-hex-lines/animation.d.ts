@@ -1,7 +1,6 @@
-/*
 interface Animation {
-  spriteMap: {[SpriteId]: Sprite};
-  lineBufferMap: {[LineBufferId]: LineBuffer};
+  spriteMap: {[spriteId: SpriteId]: Sprite};
+  lineBufferMap: {[lineBufferId: LineBufferId]: LineBuffer};
 }
 
 type SpriteId = string;
@@ -13,6 +12,7 @@ interface Sprite {
 }
 
 interface Layer {
+  animatedTransform: AnimatedTransform;
   keyframes: Array<Keyframe>;
 }
 
@@ -24,28 +24,29 @@ interface Keyframe {
 
 interface Element {
   type: string;
-  transform: Transform | null;
+  animatiedTransform: AnimatedTransform;
   opacity: number;
 }
 
 interface GroupElement extends Element {
-  type: 'group';
   elements: Array<Element>;
 }
 
 interface LineBufferElement extends Element {
-  type: 'lineBuffer';
   lineBufferId: LineBufferId;
 }
 
 interface SpriteElement extends Element {
-  type: 'sprite';
   spriteId: SpriteId;
   startSeconds: number;
   paused: boolean;
 }
 
-interface Transform {
+type AnimatedTransform = Transform | Array<TransformKeyframe>;
+
+type Transform = TransformJson | null;
+
+interface TransformJson {
   translate: {
     x: number,
     y: number,
@@ -57,8 +58,13 @@ interface Transform {
   rotate: number;
 }
 
+interface TransformKeyframe {
+  startSeconds: number;
+  durationSeconds: number
+  transform: Transform;
+}
+
 type LineBufferId = number;
 
-// [x, y, size, r, g, b]...
+// [(x, y, size, r, g, b)...]
 type LineBuffer = Array<number>;
-*/
