@@ -10,6 +10,7 @@ interface Sprite {
   framesPerSecond: number;
   fillStart: FillMode;
   fillEnd: FillMode;
+  pixelSize: number;
   guideLayers: Array<Layer>;
   visibleLayers: Array<Layer>;
 }
@@ -77,5 +78,5 @@ interface TransformKeyframe {
 
 type LineBufferId = number;
 
-// [(x, y, size, r, g, b)...]
+// [(x, y, size, rgb)...]
 type LineBufferData = Array<number>;

@@ -27,11 +27,10 @@ export class Animation {
         const group = keyframe.group;
         return new GroupDrawing({
           transform: getTransform(layer.animatedTransform),
+          pixelSize: sprite.pixelSize,
           children: [
             new GroupDrawing({
               transform: getTransform(group.animatedTransform, targetFrame - keyframe.frame),
-              pixelSize: group.pixelSize,
-              opacity: group.opacity,
               children: group.children.map(child => {
                 switch (child.type) {
                 case 'group':

@@ -1,3 +1,10 @@
+# 2024-08-04
+- Moved pixelSize back onto Sprite instead of GroupElement since it's unlikely to want to alter it throughout the sprite.
+- Added actual drawing to sampleAnimationData.
+  - Extracted it from 2023/draw-hex-lines.
+  - copy(JSON.stringify(((hl) => new Array(hl.length).fill(0).flatMap((_, i) => [hl.dataView.getFloat32(i*16, true), hl.dataView.getFloat32(i*16+4, true), hl.dataView.getUint32(i*16+8, true), hl.dataView.getUint32(i*16+12, true)>>4]))(hexLines)))
+    - Needed to lift hexLines into a function parameter as it wasn't able to be captured by the lambda otherwise when running in a paused execution environment.
+
 # 2024-08-03
 - Work on filling out sampleAnimationData.
   - Minor fix ups to animation-data.d.ts.
