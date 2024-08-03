@@ -1,3 +1,26 @@
+# 2024-08-03
+- Work on filling out sampleAnimationData.
+  - Minor fix ups to animation-data.d.ts.
+    - Name lineBuffer lineBufferData.
+    - Add type values to Element sub interfaces.
+    - Add pixelSize and opacity to GroupElement.
+- Looked at animation-editor dog-3-stars and animation-pack.d.ts.
+  - Added origin to TransformJson.
+  - Considering sprites to set framesPerSecond and each keyframe set number of frames.
+    - Updated to this.
+    - Put FPS on sprite.
+    - Added timeScale to SpriteElements.
+    - Added separate outerFrame and innerFrame offsets for SpriteElements since they may be different frame rates.
+- Implementing Animation.draw().
+  - Added keyframe bisect.
+  - Still need to add fill mode support, currently just clamps.
+  - Got drawing a 2 frame animation working.
+- Next:
+  - Support fill mode repeat.
+  - Support SpriteElements.
+  - Support transform animation.
+  - Recreate dog-3-stars.
+
 # 2024-07-28
 - Transform:
   - Animating transform.

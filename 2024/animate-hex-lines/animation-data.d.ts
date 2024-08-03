@@ -1,15 +1,20 @@
 interface Animation {
   spriteMap: {[spriteId: SpriteId]: Sprite};
-  lineBufferMap: {[lineBufferId: LineBufferId]: LineBuffer};
+  lineBufferDataMap: {[lineBufferId: LineBufferId]: LineBufferData};
 }
 
 type SpriteId = string;
 
 interface Sprite {
   id: SpriteId;
+  framesPerSecond: number;
+  fillStart: FillMode;
+  fillEnd: FillMode;
   guideLayers: Array<Layer>;
   visibleLayers: Array<Layer>;
 }
+
+type FillMode = 'clamp' | 'hide' | 'repeat' | 'reverse-repeat';
 
 interface Layer {
   animatedTransform: AnimatedTransform;
@@ -17,28 +22,34 @@ interface Layer {
 }
 
 interface Keyframe {
-  startSeconds: number;
-  durationSeconds: number;
+  frame: number;
+  frames: number;
   group: GroupElement;
 }
 
 interface Element {
   type: string;
   animatiedTransform: AnimatedTransform;
-  opacity: number;
 }
 
 interface GroupElement extends Element {
-  elements: Array<Element>;
+  type: 'group',
+  pixelSize: number,
+  opacity: number;
+  children: Array<Element>;
 }
 
 interface LineBufferElement extends Element {
+  type: 'lineBuffer',
   lineBufferId: LineBufferId;
 }
 
 interface SpriteElement extends Element {
+  type: 'sprite',
   spriteId: SpriteId;
-  startSeconds: number;
+  outerFrame: number;
+  innerFrame: number;
+  timeScale: number;
   paused: boolean;
 }
 
@@ -47,24 +58,24 @@ type AnimatedTransform = Transform | Array<TransformKeyframe>;
 type Transform = TransformJson | null;
 
 interface TransformJson {
-  translate: {
-    x: number,
-    y: number,
-  };
-  scale: {
-    x: number,
-    y: number,
-  }
+  origin: Vec2;
   rotate: number;
+  scale: Vec2;
+  translate: Vec2;
+}
+
+interface Vec2 {
+  x: number,
+  y: number,
 }
 
 interface TransformKeyframe {
-  startSeconds: number;
-  durationSeconds: number
+  frame: number;
+  frames: number
   transform: Transform;
 }
 
 type LineBufferId = number;
 
 // [(x, y, size, r, g, b)...]
-type LineBuffer = Array<number>;
+type LineBufferData = Array<number>;
