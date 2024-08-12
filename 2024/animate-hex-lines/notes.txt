@@ -4,6 +4,7 @@
   - Extracted it from 2023/draw-hex-lines.
   - copy(JSON.stringify(((hl) => new Array(hl.length).fill(0).flatMap((_, i) => [hl.dataView.getFloat32(i*16, true), hl.dataView.getFloat32(i*16+4, true), hl.dataView.getUint32(i*16+8, true), hl.dataView.getUint32(i*16+12, true)>>4]))(hexLines)))
     - Needed to lift hexLines into a function parameter as it wasn't able to be captured by the lambda otherwise when running in a paused execution environment.
+    - Should really just add this to draw-hex-lines.
 
 # 2024-08-03
 - Work on filling out sampleAnimationData.
