@@ -7,7 +7,10 @@ function main() {
     lastHuffmanTree = compressed.tree;
   });
   decompressButton.addEventListener('click', () => {
-    decompressedText.value = decompress(compress(inputText.value));
+    decompressedText.value = decompress({
+      binary: compressedBinary.value,
+      tree: lastHuffmanTree,
+    });
   });
 
   inputText.value = 'pants and dog';

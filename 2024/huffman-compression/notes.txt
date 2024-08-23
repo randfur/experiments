@@ -1,3 +1,7 @@
+# 2024-08-23
+- Updated decompress() to actually read from the compressed binary.
+- Updated single text inputs to be wider.
+
 # 2024-08-12
 - Write a huffman compression algorithm.
 - Take text, produce huffman encoded bytes plus huffman tree.
