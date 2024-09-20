@@ -19,7 +19,6 @@ export class Animation {
 
   buildSpriteDrawing(spriteId, timeSeconds) {
     const sprite = this.animationData.spriteMap[spriteId];
-    // const guideDrawing = new GroupDrawing({});
     const targetFrame = timeSeconds * sprite.framesPerSecond;
     const visibleDrawing = new GroupDrawing({
       children: sprite.visibleLayers.map(layer => {

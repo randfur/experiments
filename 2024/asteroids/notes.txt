@@ -1,0 +1,4 @@
+# 2024-09-14
+- Goal: Recreate https://www.youtube.com/watch?v=6puBZpFWsKY using hex-lines and JS.
+- Asteroids are random convex polygons that can be shot into pieces.
+- Maybe add powerups for more interesting mechanics later.

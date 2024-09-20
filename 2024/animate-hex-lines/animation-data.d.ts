@@ -11,13 +11,13 @@ interface Sprite {
   fillStart: FillMode;
   fillEnd: FillMode;
   pixelSize: number;
-  guideLayers: Array<Layer>;
-  visibleLayers: Array<Layer>;
+  layers: Array<Layer>;
 }
 
-type FillMode = 'clamp' | 'hide' | 'repeat' | 'reverse-repeat';
+type FillMode = 'clamp' | 'hide' | 'repeat';
 
 interface Layer {
+  guide: boolean;
   animatedTransform: AnimatedTransform;
   keyframes: Array<Keyframe>;
 }

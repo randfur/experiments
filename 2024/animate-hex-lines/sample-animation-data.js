@@ -6,8 +6,8 @@ export const sampleAnimationData = {
       fillStart: 'clamp',
       fillEnd: 'repeat',
       pixelSize: 4,
-      guideLayers: [],
-      visibleLayers: [{
+      layers: [{
+        guide: false,
         animatedTransform: null,
         keyframes: [{
           frame: 0,

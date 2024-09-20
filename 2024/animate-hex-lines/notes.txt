@@ -1,3 +1,16 @@
+# 2024-09-14
+- Removed reverse-repeat fill mode.
+  - Cargo culted from CSS animations.
+  - Add back in if actually needed otherwise is probably unnecessary complexity.
+- Removed guideLayers in favour of putting a guide boolean on Layer.
+  - Will probably want to intersperse guides among the layers.
+  - Don't do any fancy relayering of guides for now, just have them participate in the layer layering as normal, probably simpler and more manageable.
+
+# 2024-09-06
+- Updated to latest hex-lines with anti-aliasing and opacity support.
+- Need plan for initial UI for editing animations.
+  - Draw representation of keyframes.
+
 # 2024-08-04
 - Moved pixelSize back onto Sprite instead of GroupElement since it's unlikely to want to alter it throughout the sprite.
 - Added actual drawing to sampleAnimationData.

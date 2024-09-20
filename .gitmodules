@@ -22,3 +22,6 @@
 [submodule "2024/animate-hex-lines/third-party/hex-lines"]
 	path = 2024/animate-hex-lines/third-party/hex-lines
 	url = https://github.com/randfur/hex-lines
+[submodule "2024/asteroids/third-party/hex-lines"]
+	path = 2024/asteroids/third-party/hex-lines
+	url = git@github.com:randfur/hex-lines.git
