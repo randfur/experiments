@@ -1,7 +1,14 @@
-import {HexLines2d} from './third-party/hex-lines/src/2d/hex-lines-2d.js';
+import {Engine} from './engine.js';
+import {Ship} from './ship.js';
 
-async function main() {
-  console.log(HexLines2d);
+function main() {
+  Engine.init();
+  Engine.add(new Ship());
+  Engine.add(new Ship());
+  Engine.add(new Ship());
+  Engine.add(new Ship());
+  Engine.add(new Ship());
+  Engine.run();
 }
 
 main();

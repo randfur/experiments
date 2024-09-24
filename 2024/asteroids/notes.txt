@@ -1,3 +1,18 @@
+# 2024-09-24
+- Writing a mini game engine.
+- Inspired by async-game-engine but not bothering with nested job cancellation.
+- Writing deathCheck() helper that wraps a promise and throws on death for an entity.
+- If everything inside the entity uses deathCheck() then all concurrent async work it starts should all stop when the entity dies.
+- Much simpler and more general than the nested jobs approach from async-game-engine, will probably port this over when I get back to working on that.
+- Seems to work alright.
+- Also made the game engine a singleton so everything has global access to it without needing to be passed an instance.
+  - Probably not the best design for a general game engine but is good for this.
+- Updating the drawing to be based on drawings rather than points in a line buffer.
+  - Allows entities to use drawing transform and recycle line buffers between instances.
+  - This works nicely.
+- Added a once() utility that wraps a function and makes it callable only once, subsequent calls will be noops.
+  - Using this for classes being able to set up shared resources just once.
+
 # 2024-09-14
 - Goal: Recreate https://www.youtube.com/watch?v=6puBZpFWsKY using hex-lines and JS.
 - Asteroids are random convex polygons that can be shot into pieces.
