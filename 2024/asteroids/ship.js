@@ -6,11 +6,13 @@ import {sleep, once, deviate} from './utils.js';
 export class Ship extends Entity {
   static init = once(function() {
     this.lineBuffer = Engine.hexLines2d.createLineBuffer();
+    const size = 10;
+    const colour = {r: 255, g: 255, b: 255};
     this.lineBuffer.addLine([
-      {position: {x: 0, y: 0}, size: 10, colour: {r: 255, g: 255, b: 255}},
-      {position: {x: 100, y: 50}, size: 10, colour: {r: 255, g: 255, b: 255}},
-      {position: {x: 50, y: 100}, size: 10, colour: {r: 255, g: 255, b: 255}},
-      {position: {x: 0, y: 0}, size: 10, colour: {r: 255, g: 255, b: 255}},
+      {position: {x: 50, y: 0}, size, colour},
+      {position: {x: -50, y: 30}, size, colour},
+      {position: {x: -50, y: -30}, size, colour},
+      {position: {x: 50, y: 0}, size, colour},
     ]);
   });
 
@@ -27,9 +29,9 @@ export class Ship extends Entity {
 
   async run() {
     while (true) {
-      await this.deathCheck(Engine.nextFrame);
-      this.position.x += deviate(10);
-      this.position.y += deviate(10);
+      const time = await this.deathCheck(Engine.nextFrame);
+      this.position.x += deviate(time / 1000);
+      this.position.y += deviate(time / 1000);
     }
   }
 
