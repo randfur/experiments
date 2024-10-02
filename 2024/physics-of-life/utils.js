@@ -22,12 +22,12 @@ export function repeat(n, f) {
   }
 }
 
-export function makeGrid({cellSize, width, height}) {
+export function makeGrid({cellSize, cols, rows, value}) {
   let result = [];
-  for (let y = 0; y < height; ++y) {
+  for (let y = 0; y < rows; ++y) {
     const row = [];
-    for (let x = 0; x < width; ++x) {
-      row.push(null);
+    for (let x = 0; x < cols; ++x) {
+      row.push(value);
     }
     result.push(row);
   }

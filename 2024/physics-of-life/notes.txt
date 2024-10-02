@@ -14,3 +14,8 @@
   - Get all grid positions of all particles.
   - Create/destroy particles based on grid rules.
   - Wait n milliseconds.
+- Implemented this.
+- POL rules:
+  - If 3 particles next to an empty cell, spawn particle in cell.
+  - If more than 3 particle next to a particle, kill particle.
+- Looks like chaos.

@@ -13,24 +13,26 @@ export class Particle {
     });
   });
 
-  constructor(hexLines2d) {
+  constructor({hexLines2d, position, velocity}) {
     Particle.ensureInit(hexLines2d);
 
-    this.drawing = new LineDrawing({lineBuffer: Particle.lineBuffer});
-    this.position = {
-      x: deviate(200),
-      y: deviate(200),
-    };
+    this.alive = true;
 
-    this.velocity = {
-      x: deviate(4),
-      y: deviate(4),
+    this.drawing = new LineDrawing({lineBuffer: Particle.lineBuffer});
+    this.position = position;
+    this.velocity = velocity;
+
+    this.acceleration = {
+      x: deviate(0),
+      y: deviate(0),
     };
   }
 
   step() {
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
+    this.velocity.x += this.acceleration.x;
+    this.velocity.y += this.acceleration.y;
   }
 
   draw() {
