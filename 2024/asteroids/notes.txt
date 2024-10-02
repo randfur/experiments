@@ -1,3 +1,7 @@
+# 2024-10-02
+- Started using field "declarations" in the class definition similar to TypeScript.
+- Moved the destroy() call into a finally block, it doesn't throw because it's not awaiting on the whenDead promise.
+
 # 2024-09-24
 - Writing a mini game engine.
 - Inspired by async-game-engine but not bothering with nested job cancellation.

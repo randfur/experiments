@@ -7,7 +7,6 @@ function main() {
   repeat(10, () => {
     Engine.add(new Ship());
   });
-  Engine.add(new Ship());
   Engine.run();
 }
 

@@ -1,8 +1,11 @@
 import {Engine} from './engine.js';
 
 export class Entity {
+  alive = true;
+  whenDead;
+  signalDeath;
+
   constructor() {
-    this.alive = true;
     ({
       promise: this.whenDead,
       reject: this.signalDeath,
@@ -14,7 +17,7 @@ export class Entity {
     this.signalDeath(Engine.deathSignal);
   }
 
-  deathCheck(promise) {
+  async deathCheck(promise) {
     return Promise.race([promise, this.whenDead]);
   }
 }

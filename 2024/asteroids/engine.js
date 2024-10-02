@@ -3,8 +3,21 @@ import {LineDrawing} from './third-party/hex-lines/src/2d/line-drawing.js';
 import {GroupDrawing} from './third-party/hex-lines/src/2d/group-drawing.js';
 
 export class Engine {
+  static hexLines2d;
+  static width;
+  static height;
+
+  static nextFrame;
+  static resolveNextFrame;
+
   static deathSignal = Symbol('deathSignal');
   static forever = new Promise(resolve => {});
+
+  static entities = [];
+  static drawing = new GroupDrawing({
+    pixelSize: 4,
+    children: [],
+  });
 
   static init() {
     ({
@@ -13,28 +26,22 @@ export class Engine {
       height: this.height,
     } = HexLines2d.setupFullPageCanvas());
 
-    this.drawing = new GroupDrawing({
-      pixelSize: 4,
-      children: [],
-    });
-
     ({
       promise: this.nextFrame,
       resolve: this.resolveNextFrame,
     } = Promise.withResolvers());
-
-    this.entities = [];
   }
 
   static async add(entity) {
     this.entities.push(entity);
     try {
       await entity.run?.();
-      entity.destroy();
     } catch (error) {
       if (error !== this.deathSignal) {
         throw error;
       }
+    } finally {
+      entity.destroy();
     }
   }
 
