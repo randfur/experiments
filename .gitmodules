@@ -25,3 +25,6 @@
 [submodule "2024/asteroids/third-party/hex-lines"]
 	path = 2024/asteroids/third-party/hex-lines
 	url = git@github.com:randfur/hex-lines.git
+[submodule "2024/physics-of-life/third-party/hex-lines"]
+	path = 2024/physics-of-life/third-party/hex-lines
+	url = git@github.com:randfur/hex-lines.git

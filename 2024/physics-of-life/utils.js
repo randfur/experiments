@@ -21,3 +21,15 @@ export function repeat(n, f) {
     f();
   }
 }
+
+export function makeGrid({cellSize, width, height}) {
+  let result = [];
+  for (let y = 0; y < height; ++y) {
+    const row = [];
+    for (let x = 0; x < width; ++x) {
+      row.push(null);
+    }
+    result.push(row);
+  }
+  return result;
+}

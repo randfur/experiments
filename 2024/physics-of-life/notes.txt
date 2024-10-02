@@ -1,0 +1,16 @@
+# 2024-10-02
+- Game of life but with some twists.
+  - In regular GOL cells die if there aren't enough alive cells around them.
+  - Cells have direction.
+  - Don't kill the cell if it's idle, have it move from one cell to the other.
+  - When cells intersect this is where the GOL type rules take place.
+- Have particles that are in floating point 2D space.
+- Look at their discrete grid position each step to compute the GOL rules.
+- Start off with if there are two then spawn a third going in a random direction.
+- Copying the game engine code from 2024/asteroids.
+  - Nvm it's not useful here.
+- Each step:
+  - Update particle position with their direction.
+  - Get all grid positions of all particles.
+  - Create/destroy particles based on grid rules.
+  - Wait n milliseconds.
