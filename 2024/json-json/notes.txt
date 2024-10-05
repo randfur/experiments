@@ -1,0 +1,5 @@
+# 2024-10-05
+- JSON encoded JSON in a silly way.
+- Encode the JSON string as an object encoded array of characters.
+  - The JSON string being its own encoding.
+- Infinite string generation.
