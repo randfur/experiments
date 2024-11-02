@@ -1,0 +1,8 @@
+# 2024-10-31
+- Checking if 7.1.3.1 is "true" as in comes around to rounds without any other repeats along the way.
+- Implemented sequencer with output.
+- Looks like yes it is true.
+- Next ideas:
+  - UI to input place notation and number of bells.
+  - Update place notation compile step to "correct" the places.
+  - Draw the blue line for all the bells side by side.
