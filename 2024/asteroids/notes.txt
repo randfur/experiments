@@ -4,6 +4,9 @@
   - Polygon colliders.
   - Bounding box tree collision detection.
   - Input handling.
+    - Another entity like Collisions?
+    - Does Collisions or Inputs need to be an entity?
+    - Probably not, turn run() into init().
   - Text graphics.
   - Graphical layers?
     - Example:
