@@ -1,7 +1,7 @@
 import {Engine} from './engine.js';
 import {Entity} from './entity.js';
 import {LineDrawing} from './third-party/hex-lines/src/2d/line-drawing.js';
-import {sleep, once, deviate} from './utils.js';
+import {sleep, once, deviate, acceptDeath} from './utils.js';
 
 export class Ship extends Entity {
   static ensureInit = once(() => {
@@ -16,35 +16,53 @@ export class Ship extends Entity {
     ]);
   });
 
-  constructor() {
+  constructor(collisions) {
     super();
     Ship.ensureInit();
+
+    this.collisions = collisions;
+    collisions.register(this);
 
     this.drawing = new LineDrawing({lineBuffer: Ship.lineBuffer});
     this.position = {
       x: deviate(400),
       y: deviate(400),
     };
+    this.radius = 50;
+    this.scale = 1;
   }
 
   async run() {
-    // // Testing using destroy() during running.
-    // (async () => {
-    //   await sleep(1000 + Math.random() * 5000);
-    //   this.destroy();
-    // })();
+    acceptDeath(async () => {
+      while (true) {
+        await this.raceDeath(Engine.nextFrame);
+        this.position.x += deviate(Engine.time / 1000);
+        this.position.y += deviate(Engine.time / 1000);
+      }
+    });
 
-    while (true) {
-      const time = await this.deathCheck(Engine.nextFrame);
-      this.position.x += deviate(time / 1000);
-      this.position.y += deviate(time / 1000);
-    }
+    acceptDeath(async () => {
+      while (true) {
+        await this.raceDeath(this.collisions.check);
+        if (this.colliding) {
+          break;
+        }
+      }
+
+      await this.processDuration(1000, progress => {
+        this.scale = 1 - progress;
+      });
+
+      this.die();
+    });
+
+    await this.whenDead;
   }
 
   draw() {
     this.drawing.transform = new Float32Array([
-      1, 0, this.position.x,
-      0, 1, this.position.y,
+      this.scale, 0, this.position.x,
+      0, this.scale, this.position.y,
       0, 0, 1,
     ]);
     return this.drawing;

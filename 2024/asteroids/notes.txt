@@ -1,3 +1,19 @@
+# 2024-11-07
+- Thinking about how to order stages of work per frame.
+  - Maybe just have the stages as entities that run and expose promises for when their stage is completed that everything that depends on them can wait for.
+  - Stages that depend on other stages just await their step being done.
+- Added collision stage.
+  - Used basic quadratic radius checking.
+  - Added registration concept and cleanUp() method to Entities.
+  - Works.
+- Refactored Ship run to have two concurrent loops, one that loops checking for collision, one that loops per frame.
+- Added the concept of running stuff concurrently in the background in run().
+  - Doesn't really have any connection to run(), just needs to do the entity deathCheck() whenever it awaits.
+  - Exposed an acceptDeath() method that just runs an async function and ignores the deathSignal.
+- Names of things are kind of weird but make sense when thinking about things entirely around death of the entity.
+  - Renamed destroy() to die().
+  - Renamed deathCheck() to raceDeath().
+
 # 2024-10-02
 - Started using field "declarations" in the class definition similar to TypeScript.
 - Moved the destroy() call into a finally block, it doesn't throw because it's not awaiting on the whenDead promise.

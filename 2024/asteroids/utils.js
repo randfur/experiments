@@ -21,3 +21,23 @@ export function repeat(n, f) {
     f();
   }
 }
+
+export function remove(list, item) {
+  const index = list.indexOf(item);
+  if (index !== -1) {
+    list.splice(index, 1);
+  }
+}
+
+export const deathSignal = Symbol('deathSignal');
+
+export async function acceptDeath(f) {
+  try {
+    await f();
+  } catch (error) {
+    if (error !== deathSignal) {
+      throw error;
+    }
+  }
+}
+

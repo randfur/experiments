@@ -1,9 +1,11 @@
 import {Engine} from './engine.js';
+import {deathSignal} from './utils.js';
 
 export class Entity {
   alive = true;
   whenDead;
   signalDeath;
+  unregisters = [];
 
   constructor() {
     ({
@@ -12,12 +14,34 @@ export class Entity {
     } = Promise.withResolvers());
   }
 
-  destroy() {
-    this.alive = false;
-    this.signalDeath(Engine.deathSignal);
+  async run() {}
+
+  die() {
+    if (this.alive) {
+      this.alive = false;
+      this.signalDeath(deathSignal);
+      this.cleanUp();
+    }
   }
 
-  async deathCheck(promise) {
+  cleanUp() {
+    for (const unregister of this.unregisters) {
+      unregister();
+    }
+  }
+
+  async raceDeath(promise) {
     return Promise.race([promise, this.whenDead]);
+  }
+
+  async processDuration(duration, f) {
+    const start = Engine.time;
+    while (true) {
+      await this.raceDeath(Engine.nextFrame);
+      f(Math.min(1, (Engine.time - start) / duration));
+      if (Engine.time >= start + duration) {
+        break;
+      }
+    }
   }
 }

@@ -1,17 +1,16 @@
 import {HexLines2d} from './third-party/hex-lines/src/2d/hex-lines-2d.js';
 import {LineDrawing} from './third-party/hex-lines/src/2d/line-drawing.js';
 import {GroupDrawing} from './third-party/hex-lines/src/2d/group-drawing.js';
+import {acceptDeath} from './utils.js';
 
 export class Engine {
   static hexLines2d;
   static width;
   static height;
+  static time = 0;
 
   static nextFrame;
   static resolveNextFrame;
-
-  static deathSignal = Symbol('deathSignal');
-  static forever = new Promise(resolve => {});
 
   static entities = [];
   static drawing = new GroupDrawing({
@@ -32,24 +31,20 @@ export class Engine {
     } = Promise.withResolvers());
   }
 
-  static async add(entity) {
-    this.entities.push(entity);
-    try {
-      await entity.run?.();
-    } catch (error) {
-      if (error !== this.deathSignal) {
-        throw error;
-      }
-    } finally {
-      entity.destroy();
-    }
+  static add(entity) {
+    (async () => {
+      this.entities.push(entity);
+      await acceptDeath(() => entity.run());
+      entity.die();
+    })();
+    return entity;
   }
 
   static async run() {
     while (this.entities.length > 0) {
-      const time = await new Promise(requestAnimationFrame);
+      this.time = await new Promise(requestAnimationFrame);
 
-      this.resolveNextFrame(time);
+      this.resolveNextFrame(this.time);
       ({
         promise: this.nextFrame,
         resolve: this.resolveNextFrame,
