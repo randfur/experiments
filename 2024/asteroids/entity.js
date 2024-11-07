@@ -5,7 +5,7 @@ export class Entity {
   alive = true;
   whenDead;
   signalDeath;
-  unregisters = [];
+  unregisterCallbacks = [];
 
   constructor() {
     ({
@@ -25,8 +25,8 @@ export class Entity {
   }
 
   cleanUp() {
-    for (const unregister of this.unregisters) {
-      unregister();
+    for (const unregisterCallback of this.unregisterCallbacks) {
+      unregisterCallback();
     }
   }
 

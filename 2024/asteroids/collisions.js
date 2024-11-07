@@ -16,7 +16,7 @@ export class Collisions extends Entity {
 
   register(collider) {
     this.colliders.push(collider);
-    collider.unregisters.push(() => {
+    collider.unregisterCallbacks.push(() => {
       remove(this.colliders, collider);
     });
     collider.colliding = false;

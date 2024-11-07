@@ -1,3 +1,29 @@
+# 2024-11-08
+- TODO:
+  - Shared line buffer.
+  - Polygon colliders.
+  - Bounding box tree collision detection.
+  - Input handling.
+  - Text graphics.
+  - Graphical layers?
+    - Example:
+      const layerKey = Engine.addDrawingLayer({pixelSize, opacity});
+      Engine.add(new Thing(layerKey));
+      class Thing {
+        draw(layers) {
+          layers[layerKey].children.push(this.drawing);
+        }
+      }
+  - Actual game.
+    - Convex asteroid polygons.
+    - Ship movement.
+    - Screen wrapping.
+    - Keyboard controls.
+    - Bullets.
+    - Asteroid splitting.
+    - Win/lose/scoring.
+    - Particle effects.
+
 # 2024-11-07
 - Thinking about how to order stages of work per frame.
   - Maybe just have the stages as entities that run and expose promises for when their stage is completed that everything that depends on them can wait for.

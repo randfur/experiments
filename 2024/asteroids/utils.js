@@ -22,10 +22,10 @@ export function repeat(n, f) {
   }
 }
 
-export function remove(list, item) {
-  const index = list.indexOf(item);
+export function remove(array, item) {
+  const index = array.indexOf(item);
   if (index !== -1) {
-    list.splice(index, 1);
+    array.splice(index, 1);
   }
 }
 
