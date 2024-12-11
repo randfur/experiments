@@ -31,15 +31,30 @@ async function main() {
 
   window.addEventListener('keydown', event => handleKeydown(event, gameState));
 
+  (async () => {
+    while (true) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      gameState.piece = makeRandomPiece();
+    }
+  })();
+
   while (true) {
-    // await new Promise(requestAnimationFrame);
-    await new Promise(resolve => setTimeout(resolve, 100));
-    gameState.piece = makeRandomPiece();
+    await new Promise(requestAnimationFrame);
     draw(context, gameState);
   }
 }
 
 function handleKeydown(event, gameState) {
+  switch (event.code) {
+  case 'ArrowLeft':
+  case 'ArrowRight':
+    gameState.piece.position.col += event.code === 'ArrowLeft' ? -1 : 1;
+    break;
+  case 'ArrowUp':
+  case 'ArrowDown':
+    gameState.piece.position.row += event.code === 'ArrowUp' ? -1 : 1;
+    break;
+  }
 }
 
 function makeRandomPiece() {
