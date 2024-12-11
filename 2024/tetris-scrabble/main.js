@@ -4,7 +4,7 @@ const kWidthPx = innerWidth;
 const kHeightPx = innerHeight;
 const kCellSizePx = 30;
 const kGridRows = 25;
-const kGridCols = 10;
+const kGridCols = 11;
 const kGridWidthPx = kGridCols * kCellSizePx;
 const kGridHeightPx = kGridRows * kCellSizePx;
 
@@ -65,7 +65,7 @@ function makeRandomPiece() {
     position: {
       // row: 0,
       row: Math.round((kGridRows - kPieceShapes[index].size) / 2),
-      col: Math.round((kGridCols - kPieceShapes[index].size + 1) / 2),
+      col: Math.round((kGridCols - kPieceShapes[index].size) / 2),
     },
   };
 }
@@ -102,8 +102,8 @@ function draw(context, gameState) {
 
   context.lineWidth = 2;
   context.strokeStyle = '#555';
-  for (let row = 0; row <= kGridRows; ++row) {
-    for (let col = 0; col <= kGridCols; ++col) {
+  for (let row = 0; row < kGridRows; ++row) {
+    for (let col = 0; col < kGridCols; ++col) {
       context.strokeRect(col * kCellSizePx, row * kCellSizePx, kCellSizePx, kCellSizePx);
     }
   }

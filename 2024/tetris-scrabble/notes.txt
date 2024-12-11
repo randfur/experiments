@@ -25,3 +25,8 @@
   - Decided to hard code orientations because simpler than computing rotations.
   - Realise now that will need to compute the rotations anyway because the letters will be randomised and need to stay consistent across rotation.
   - Rotation is awkward with the 2x2 square block.
+- Added input handling.
+  - Simply takes game state and event and updates game state.
+- Added periodic piece refreshing for testing.
+  - Runs in a separate loop from the main draw loop.
+  - Probably won't do this in actual game, instead use timing values in the game state with a single frame based loop.
