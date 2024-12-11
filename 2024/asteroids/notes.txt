@@ -1,3 +1,24 @@
+# 2024-11-23
+- Renames:
+  - acceptDeath() -> whileAlive()
+  - whenDead -> lifetime
+  - die() -> destroy()
+- Turned Collisions into a non-Entity.
+  - Kept as an instance in case we want multiple collision layers.
+- Considering colour transforms as part of LineDrawing.
+  - Could have a colour override or a colour matrix.
+- Ship is starting to get complicated.
+  - Want collision polygons.
+  - Want input handling.
+  - Want physics object state.
+  - Considering implementing these things into Entity as optional things that can be turned on.
+    - initInputs()
+    - initSprite()
+    - initMotion()
+    - initCollision()
+  - Maybe best to do that after implementing it in Ship rather than before.
+    - Having the initX() methods and clear grouping of related members and logic would still be good though.
+
 # 2024-11-08
 - TODO:
   - Shared line buffer.

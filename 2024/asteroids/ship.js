@@ -1,7 +1,7 @@
 import {Engine} from './engine.js';
 import {Entity} from './entity.js';
 import {LineDrawing} from './third-party/hex-lines/src/2d/line-drawing.js';
-import {sleep, once, deviate, acceptDeath} from './utils.js';
+import {sleep, once, deviate} from './utils.js';
 
 export class Ship extends Entity {
   static ensureInit = once(() => {
@@ -33,17 +33,17 @@ export class Ship extends Entity {
   }
 
   async run() {
-    acceptDeath(async () => {
+    this.whileAlive(async () => {
       while (true) {
-        await this.raceDeath(Engine.nextFrame);
+        await this.lifetimeScoped(Engine.nextFrame);
         this.position.x += deviate(Engine.time / 1000);
         this.position.y += deviate(Engine.time / 1000);
       }
     });
 
-    acceptDeath(async () => {
+    this.whileAlive(async () => {
       while (true) {
-        await this.raceDeath(this.collisions.check);
+        await this.lifetimeScoped(this.collisions.check);
         if (this.colliding) {
           break;
         }
@@ -53,10 +53,10 @@ export class Ship extends Entity {
         this.scale = 1 - progress;
       });
 
-      this.die();
+      this.destroy();
     });
 
-    await this.whenDead;
+    await this.lifetime;
   }
 
   draw() {

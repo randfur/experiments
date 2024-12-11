@@ -1,0 +1,27 @@
+# 2024-12-11
+- Make Tetris with Scrabble:
+  - Tetris game but pieces have letters in them.
+  - Scoring:
+    - Line clears don't score anything.
+    - Making words scores points using scrabble scoring.
+    - Maybe have the score multiplier in the background of the grid.
+  - Can words have letters before and after them or do they have to be clean?
+    - E.g. does the sequence "jcdogpn" score "dog" or not?
+    - Might be very difficult to get clean words while playing Tetris.
+    - Would probably need blank squares in pieces to manage the gaps between words.
+    - If "jcdogpn" scores "dog" then it would score "do" as well right?
+- Calling this one tetris-scrabble to leave room for scrabble-tetris.
+  - scrabble-tetris is played on a scrabble board.
+  - Each turn you're given a tetris piece you have to fill up with your scrabble letters.
+  - The tetris piece is falling down onto the scrabble board at the same time.
+  - You have to fill it with letters and pick the place in time before it lands.
+- Implemented piece shapes.
+- Implemented canvas with grid drawing.
+- Implemented piece drawing.
+  - Not sure what the standard colours are.
+  - Picked closeish colours from memory.
+- Implemented picking random piece.
+- Piece shapes have hardcoded orientations.
+  - Decided to hard code orientations because simpler than computing rotations.
+  - Realise now that will need to compute the rotations anyway because the letters will be randomised and need to stay consistent across rotation.
+  - Rotation is awkward with the 2x2 square block.

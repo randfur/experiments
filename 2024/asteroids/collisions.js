@@ -1,13 +1,10 @@
 import {Engine} from './engine.js';
-import {Entity} from './entity.js';
 import {remove} from './utils.js';
 
-export class Collisions extends Entity {
+export class Collisions {
   colliders = [];
 
   constructor() {
-    super();
-
     ({
       promise: this.check,
       resolve: this.resolveCheck,
@@ -22,9 +19,9 @@ export class Collisions extends Entity {
     collider.colliding = false;
   }
 
-  async run() {
+  async init() {
     while (true) {
-      await this.raceDeath(Engine.nextFrame);
+      await Engine.nextFrame;
 
       for (const collider of this.colliders) {
         collider.colliding = false;

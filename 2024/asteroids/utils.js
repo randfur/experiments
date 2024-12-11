@@ -31,9 +31,9 @@ export function remove(array, item) {
 
 export const deathSignal = Symbol('deathSignal');
 
-export async function acceptDeath(f) {
+export async function discardDeathSignal(promise) {
   try {
-    await f();
+    await promise;
   } catch (error) {
     if (error !== deathSignal) {
       throw error;

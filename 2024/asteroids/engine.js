@@ -1,7 +1,7 @@
 import {HexLines2d} from './third-party/hex-lines/src/2d/hex-lines-2d.js';
 import {LineDrawing} from './third-party/hex-lines/src/2d/line-drawing.js';
 import {GroupDrawing} from './third-party/hex-lines/src/2d/group-drawing.js';
-import {acceptDeath} from './utils.js';
+import {discardDeathSignal} from './utils.js';
 
 export class Engine {
   static hexLines2d;
@@ -34,8 +34,8 @@ export class Engine {
   static add(entity) {
     (async () => {
       this.entities.push(entity);
-      await acceptDeath(() => entity.run());
-      entity.die();
+      await discardDeathSignal(entity.run());
+      entity.destroy();
     })();
     return entity;
   }
