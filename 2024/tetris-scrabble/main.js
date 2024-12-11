@@ -29,12 +29,17 @@ async function main() {
   gameState.piece = makeRandomPiece();
   gameState.nextPiece = makeRandomPiece();
 
+  window.addEventListener('keydown', event => handleKeydown(event, gameState));
+
   while (true) {
     // await new Promise(requestAnimationFrame);
     await new Promise(resolve => setTimeout(resolve, 100));
     gameState.piece = makeRandomPiece();
-    draw({context, gameState});
+    draw(context, gameState);
   }
+}
+
+function handleKeydown(event, gameState) {
 }
 
 function makeRandomPiece() {
@@ -74,7 +79,7 @@ function range(n) {
   return result;
 }
 
-function draw({context, gameState: {grid, piece}}) {
+function draw(context, gameState) {
   context.clearRect(0, 0, kWidthPx, kHeightPx);
 
   context.reset();
@@ -82,24 +87,25 @@ function draw({context, gameState: {grid, piece}}) {
 
   context.lineWidth = 2;
   context.strokeStyle = '#555';
-  for (let y = 0; y <= kGridHeightPx; y += kCellSizePx) {
-    for (let x = 0; x <= kGridWidthPx; x += kCellSizePx) {
-      context.strokeRect(x, y, kCellSizePx, kCellSizePx);
+  for (let row = 0; row <= kGridRows; ++row) {
+    for (let col = 0; col <= kGridCols; ++col) {
+      context.strokeRect(col * kCellSizePx, row * kCellSizePx, kCellSizePx, kCellSizePx);
     }
   }
 
-  const pieceShape = kPieceShapes[piece.index];
+  const pieceShape = kPieceShapes[gameState.piece.index];
   context.fillStyle = pieceShape.colour;
   context.strokeStyle = '#0003';
-  const pieceOrientation = pieceShape.orientations[piece.orientationIndex];
+  const pieceOrientation = pieceShape.orientations[gameState.piece.orientationIndex];
   for (let row = 0; row < pieceShape.size; ++row) {
     for (let col = 0; col < pieceShape.size; ++col) {
-      if (pieceOrientation[row][col] !== ' ') {
-        const x = (piece.position.col + col) * kCellSizePx;
-        const y = (piece.position.row + row) * kCellSizePx;
-        context.fillRect(x, y, kCellSizePx, kCellSizePx);
-        context.strokeRect(x, y, kCellSizePx, kCellSizePx);
+      if (pieceOrientation[row][col] === ' ') {
+        continue;
       }
+      const x = (gameState.piece.position.col + col) * kCellSizePx;
+      const y = (gameState.piece.position.row + row) * kCellSizePx;
+      context.fillRect(x, y, kCellSizePx, kCellSizePx);
+      context.strokeRect(x, y, kCellSizePx, kCellSizePx);
     }
   }
 }
