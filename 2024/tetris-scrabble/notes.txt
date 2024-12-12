@@ -1,3 +1,8 @@
+# 2024-12-12
+- Changed up key to rotate piece.
+- Added game loop.
+- Added timer primitive.
+
 # 2024-12-11
 - Make Tetris with Scrabble:
   - Tetris game but pieces have letters in them.

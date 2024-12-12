@@ -20,78 +20,58 @@ async function main() {
     background-color: black;
   `;
 
-  let gameState = {
-    grid: range(kGridRows).map(row => range(kGridCols).map(col => null)),
-    piece: null,
-    nextPiece: null,
-  };
-
-  gameState.piece = makeRandomPiece();
-  gameState.nextPiece = makeRandomPiece();
-
+  const gameState = init();
   window.addEventListener('keydown', event => handleKeydown(event, gameState));
-
-  (async () => {
-    while (true) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      gameState.piece = makeRandomPiece();
-    }
-  })();
-
   while (true) {
-    await new Promise(requestAnimationFrame);
+    const time = await new Promise(requestAnimationFrame);
+    update(time, gameState);
     draw(context, gameState);
   }
 }
 
-function handleKeydown(event, gameState) {
-  switch (event.code) {
-  case 'ArrowLeft':
-  case 'ArrowRight':
-    gameState.piece.position.col += event.code === 'ArrowLeft' ? -1 : 1;
-    break;
-  case 'ArrowUp':
-  case 'ArrowDown':
-    gameState.piece.position.row += event.code === 'ArrowUp' ? -1 : 1;
-    break;
-  }
-}
-
-function makeRandomPiece() {
-  const index = chooseIndexWeighted(kPieceShapes);
+function init() {
   return {
-    index,
-    orientationIndex: Math.floor(Math.random() * kPieceShapes[index].orientations.length),
-    position: {
-      // row: 0,
-      row: Math.round((kGridRows - kPieceShapes[index].size) / 2),
-      col: Math.round((kGridCols - kPieceShapes[index].size) / 2),
-    },
+    grid: range(kGridRows).map(row => range(kGridCols).map(col => null)),
+    piece: createRandomPiece(),
+    nextPiece: createRandomPiece(),
+    lastTime: performance.now(),
+    stepDownTimer: createRepeatingTimer(1000),
   };
 }
 
-function chooseItem(list) {
-  return list[Math.random() * list.length];
+function update(time, gameState) {
+  const timeDelta = Math.min(time - gameState.lastTime, 50);
+  gameState.lastTime = time;
+
+  tickRepeatingTimer(timeDelta, gameState.stepDownTimer, () => {
+    gameState.piece.position.row += 1;
+  });
 }
 
-function chooseIndexWeighted(weightedList) {
-  const total = weightedList.reduce((acc, {weight}) => acc + weight, 0);
-  let remaining = Math.random() * total;
-  for (let i = 0; i < weightedList.length; ++i) {
-    remaining -= weightedList[i].weight;
-    if (remaining <= 0) {
-      return i;
-    }
+function handleKeydown(event, gameState) {
+  const {piece} = gameState;
+  switch (event.code) {
+  case 'ArrowLeft':
+  case 'ArrowRight':
+    piece.position.col += event.code === 'ArrowLeft' ? -1 : 1;
+    break;
+  case 'ArrowUp':
+    piece.orientationIndex = (piece.orientationIndex + 1) % kPieceShapes[piece.index].orientations.length;
+    break;
+  case 'ArrowDown':
+    piece.position.row += 1;
+    break;
+  case 'Space':
+    piece.position.row = kGridRows - kPieceShapes[piece.index].size;
+    break;
   }
-  return weightedList.length - 1;
-}
 
-function range(n) {
-  const result = [];
-  for (let i = 0; i < n; ++i) {
-    result.push(i);
+  switch (event.key) {
+  case 'n':
+    gameState.piece = gameState.nextPiece;
+    gameState.nextPiece = createRandomPiece();
+    break;
   }
-  return result;
 }
 
 function draw(context, gameState) {
@@ -123,6 +103,57 @@ function draw(context, gameState) {
       context.strokeRect(x, y, kCellSizePx, kCellSizePx);
     }
   }
+}
+
+function createRepeatingTimer(duration) {
+  return {
+    duration,
+    remaining: duration,
+  };
+}
+
+function tickRepeatingTimer(timeDelta, timer, callback) {
+  timer.remaining -= timeDelta;
+  while (timer.remaining <= 0) {
+    timer.remaining += timer.duration;
+    callback();
+  }
+}
+
+function createRandomPiece() {
+  const index = chooseIndexWeighted(kPieceShapes);
+  return {
+    index,
+    orientationIndex: Math.floor(Math.random() * kPieceShapes[index].orientations.length),
+    position: {
+      row: 0,
+      col: Math.round((kGridCols - kPieceShapes[index].size) / 2),
+    },
+  };
+}
+
+function chooseItem(list) {
+  return list[Math.random() * list.length];
+}
+
+function chooseIndexWeighted(weightedList) {
+  const total = weightedList.reduce((acc, {weight}) => acc + weight, 0);
+  let remaining = Math.random() * total;
+  for (let i = 0; i < weightedList.length; ++i) {
+    remaining -= weightedList[i].weight;
+    if (remaining <= 0) {
+      return i;
+    }
+  }
+  return weightedList.length - 1;
+}
+
+function range(n) {
+  const result = [];
+  for (let i = 0; i < n; ++i) {
+    result.push(i);
+  }
+  return result;
 }
 
 main();
