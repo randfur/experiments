@@ -1,3 +1,13 @@
+# 2025-01-03
+- Copy paste row col code is dangerous.
+  - Made mistake with code that converted to x y and got the ordering wrong.
+- Reconsidered the rotating plan, just use numbers in the hard coded orientations and have a mapping from numbers to letters in each live piece.
+- Added collisions with grid board edges and existing pieces.
+- Added baking pieces into the grid when they land.
+- Added collision checks for arrow keyboard inputs.
+  - Need to add same for Space drop.
+- Added game over check with temporary set grid all red, will work out something more permanent later.
+
 # 2024-12-12
 - Changed up key to rotate piece.
 - Added game loop.

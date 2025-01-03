@@ -21,6 +21,7 @@ async function main() {
   `;
 
   const gameState = init();
+  console.log(gameState.grid);
   window.addEventListener('keydown', event => handleKeydown(event, gameState));
   while (true) {
     const time = await new Promise(requestAnimationFrame);
@@ -44,7 +45,17 @@ function update(time, gameState) {
   gameState.lastTime = time;
 
   tickRepeatingTimer(timeDelta, gameState.stepDownTimer, () => {
+    if (pieceCollided(gameState)) {
+      gameState.grid = range(kGridRows).map(row => range(kGridCols).map(col => 'red'));
+    }
     gameState.piece.position.row += 1;
+    if (pieceCollided(gameState)) {
+      gameState.piece.position.row -= 1;
+      bakePieceIntoGrid(gameState);
+      gameState.piece = gameState.nextPiece;
+      gameState.nextPiece = createRandomPiece();
+      gameState.piece.position.row = 0;
+    }
   });
 }
 
@@ -54,12 +65,27 @@ function handleKeydown(event, gameState) {
   case 'ArrowLeft':
   case 'ArrowRight':
     piece.position.col += event.code === 'ArrowLeft' ? -1 : 1;
+    if (pieceCollided(gameState)) {
+      piece.position.col -= event.code === 'ArrowLeft' ? -1 : 1;
+    }
     break;
-  case 'ArrowUp':
+  case 'ArrowUp': {
+    const oldOrientationIndex = piece.orientationIndex;
     piece.orientationIndex = (piece.orientationIndex + 1) % kPieceShapes[piece.index].orientations.length;
+    if (pieceCollided(gameState)) {
+      piece.orientationIndex = oldOrientationIndex;
+    }
     break;
+  }
   case 'ArrowDown':
     piece.position.row += 1;
+    if (pieceCollided(gameState)) {
+      piece.position.row -= 1;
+      bakePieceIntoGrid(gameState);
+      gameState.piece = gameState.nextPiece;
+      gameState.nextPiece = createRandomPiece();
+      gameState.piece.position.row = 0;
+    }
     break;
   case 'Space':
     piece.position.row = kGridRows - kPieceShapes[piece.index].size;
@@ -84,10 +110,18 @@ function draw(context, gameState) {
   context.strokeStyle = '#555';
   for (let row = 0; row < kGridRows; ++row) {
     for (let col = 0; col < kGridCols; ++col) {
-      context.strokeRect(col * kCellSizePx, row * kCellSizePx, kCellSizePx, kCellSizePx);
+      const gridCell = gameState.grid[row][col];
+      if (gridCell === null) {
+        context.strokeStyle = '#555';
+        context.strokeRect(col * kCellSizePx, row * kCellSizePx, kCellSizePx, kCellSizePx);
+      } else {
+        context.fillStyle = gridCell;
+        context.fillRect(col * kCellSizePx, row * kCellSizePx, kCellSizePx, kCellSizePx);
+      }
     }
   }
 
+  // Current piece
   const pieceShape = kPieceShapes[gameState.piece.index];
   context.fillStyle = pieceShape.colour;
   context.strokeStyle = '#0003';
@@ -97,10 +131,50 @@ function draw(context, gameState) {
       if (pieceOrientation[row][col] === ' ') {
         continue;
       }
-      const x = (gameState.piece.position.col + col) * kCellSizePx;
       const y = (gameState.piece.position.row + row) * kCellSizePx;
+      const x = (gameState.piece.position.col + col) * kCellSizePx;
       context.fillRect(x, y, kCellSizePx, kCellSizePx);
       context.strokeRect(x, y, kCellSizePx, kCellSizePx);
+    }
+  }
+}
+
+function pieceCollided(gameState) {
+  // Refactor to dedupe with bakePieceIntoGrid and drawing the piece.
+  const pieceShape = kPieceShapes[gameState.piece.index];
+  const pieceOrientation = pieceShape.orientations[gameState.piece.orientationIndex];
+  for (let row = 0; row < pieceShape.size; ++row) {
+    for (let col = 0; col < pieceShape.size; ++col) {
+      if (pieceOrientation[row][col] === ' ') {
+        continue;
+      }
+      const gridCol = gameState.piece.position.col + col;
+      const gridRow = gameState.piece.position.row + row;
+      if (gridCol < 0 || gridCol >= kGridCols || gridRow >= kGridRows) {
+        return true;
+      }
+      if (gameState.grid[gridRow][gridCol] !== null) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+function bakePieceIntoGrid(gameState) {
+  const pieceShape = kPieceShapes[gameState.piece.index];
+  const pieceOrientation = pieceShape.orientations[gameState.piece.orientationIndex];
+  for (let row = 0; row < pieceShape.size; ++row) {
+    for (let col = 0; col < pieceShape.size; ++col) {
+      if (pieceOrientation[row][col] === ' ') {
+        continue;
+      }
+      const gridCol = gameState.piece.position.col + col;
+      const gridRow = gameState.piece.position.row + row;
+      if (gridCol < 0 || gridCol >= kGridCols || gridRow >= kGridRows) {
+        continue;
+      }
+      gameState.grid[gridRow][gridCol] = pieceShape.colour;
     }
   }
 }
