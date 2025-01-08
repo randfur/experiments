@@ -60,6 +60,9 @@ function update(time, gameState) {
 }
 
 function handleKeydown(event, gameState) {
+  if (pieceCollided(gameState)) {
+    return
+  }
   const {piece} = gameState;
   switch (event.code) {
   case 'ArrowLeft':
@@ -88,7 +91,14 @@ function handleKeydown(event, gameState) {
     }
     break;
   case 'Space':
-    piece.position.row = kGridRows - kPieceShapes[piece.index].size;
+    while (!pieceCollided(gameState)) {
+      piece.position.row += 1;
+    }
+    piece.position.row -= 1;
+    bakePieceIntoGrid(gameState);
+    gameState.piece = gameState.nextPiece;
+    gameState.nextPiece = createRandomPiece();
+    gameState.piece.position.row = 0;
     break;
   }
 
