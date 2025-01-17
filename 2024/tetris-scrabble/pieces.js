@@ -1,3 +1,11 @@
+// @ts-check
+/**
+ * @typedef {import('./types.ts').PieceShape} PieceShape
+ */
+
+/**
+ * @type {Array<PieceShape>}
+ */
 export const kPieceShapes = [{
   name: 'T',
   weight: 10,

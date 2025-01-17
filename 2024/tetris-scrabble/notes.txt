@@ -1,3 +1,11 @@
+# 2025-01-17
+- Added type checking using JSDoc and Deno to run the actual checking.
+  - https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html
+  - https://docs.deno.com/runtime/reference/cli/check/
+- It works amazingly well yay.
+- Put types on everything.
+- Added a script for running the checker with watch.
+
 # 2025-01-03
 - Copy paste row col code is dangerous.
   - Made mistake with code that converted to x y and got the ordering wrong.

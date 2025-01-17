@@ -1,7 +1,15 @@
+// @ts-check
+/**
+ * @typedef {import('./types.ts').GameState} GameState
+ * @typedef {import('./types.ts').Cell} Cell
+ * @typedef {import('./types.ts').Piece} Piece
+ * @typedef {import('./types.ts').Timer} Timer
+ */
+
 import {kPieceShapes} from './pieces.js';
 
-const kWidthPx = innerWidth;
-const kHeightPx = innerHeight;
+const kWidthPx = window.innerWidth;
+const kHeightPx = window.innerHeight;
 const kCellSizePx = 30;
 const kGridRows = 25;
 const kGridCols = 11;
@@ -14,14 +22,13 @@ async function main() {
   canvas.height = kHeightPx;
   const context = canvas.getContext('2d');
   document.body.append(canvas);
-  document.body.style = `
+  document.body.setAttribute('style', `
     padding: 0;
     margin: 0;
     background-color: black;
-  `;
+  `);
 
   const gameState = init();
-  console.log(gameState.grid);
   window.addEventListener('keydown', event => handleKeydown(event, gameState));
   while (true) {
     const time = await new Promise(requestAnimationFrame);
@@ -30,6 +37,7 @@ async function main() {
   }
 }
 
+/** @returns {GameState} */
 function init() {
   return {
     grid: range(kGridRows).map(row => range(kGridCols).map(col => null)),
@@ -40,6 +48,10 @@ function init() {
   };
 }
 
+/**
+ * @param {number} time
+ * @param {GameState} gameState
+ */
 function update(time, gameState) {
   const timeDelta = Math.min(time - gameState.lastTime, 50);
   gameState.lastTime = time;
@@ -59,6 +71,10 @@ function update(time, gameState) {
   });
 }
 
+/**
+ * @param {KeyboardEvent} event
+ * @param {GameState} gameState
+ */
 function handleKeydown(event, gameState) {
   if (pieceCollided(gameState)) {
     return
@@ -110,7 +126,14 @@ function handleKeydown(event, gameState) {
   }
 }
 
+/**
+ * @param {CanvasRenderingContext2D | null} context
+ * @param {GameState} gameState
+ */
 function draw(context, gameState) {
+  if (!context) {
+    return;
+  }
   context.clearRect(0, 0, kWidthPx, kHeightPx);
 
   context.reset();
@@ -149,6 +172,9 @@ function draw(context, gameState) {
   }
 }
 
+/**
+ * @param {GameState} gameState
+ */
 function pieceCollided(gameState) {
   // Refactor to dedupe with bakePieceIntoGrid and drawing the piece.
   const pieceShape = kPieceShapes[gameState.piece.index];
@@ -171,6 +197,9 @@ function pieceCollided(gameState) {
   return false;
 }
 
+/**
+ * @param {GameState} gameState
+ */
 function bakePieceIntoGrid(gameState) {
   const pieceShape = kPieceShapes[gameState.piece.index];
   const pieceOrientation = pieceShape.orientations[gameState.piece.orientationIndex];
@@ -189,6 +218,10 @@ function bakePieceIntoGrid(gameState) {
   }
 }
 
+/**
+ * @param {number} duration
+ * @returns Timer
+ */
 function createRepeatingTimer(duration) {
   return {
     duration,
@@ -196,6 +229,11 @@ function createRepeatingTimer(duration) {
   };
 }
 
+/**
+ * @param {number} timeDelta
+ * @param {Timer} timer
+ * @param {() => void} callback
+ */
 function tickRepeatingTimer(timeDelta, timer, callback) {
   timer.remaining -= timeDelta;
   while (timer.remaining <= 0) {
@@ -204,6 +242,9 @@ function tickRepeatingTimer(timeDelta, timer, callback) {
   }
 }
 
+/**
+ * @returns Piece
+ */
 function createRandomPiece() {
   const index = chooseIndexWeighted(kPieceShapes);
   return {
@@ -216,10 +257,19 @@ function createRandomPiece() {
   };
 }
 
+/**
+ * @template T
+ * @param {Array<T>} list
+ * @returns T
+ */
 function chooseItem(list) {
   return list[Math.random() * list.length];
 }
 
+/**
+ * @param {Array<{weight: number}>} weightedList
+ * @returns number
+ */
 function chooseIndexWeighted(weightedList) {
   const total = weightedList.reduce((acc, {weight}) => acc + weight, 0);
   let remaining = Math.random() * total;
@@ -232,6 +282,10 @@ function chooseIndexWeighted(weightedList) {
   return weightedList.length - 1;
 }
 
+/**
+ * @param {number} n
+ * @returns {Array<number>}
+ */
 function range(n) {
   const result = [];
   for (let i = 0; i < n; ++i) {
