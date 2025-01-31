@@ -30,3 +30,8 @@ export interface PieceShape {
   size: number;
   orientations: Array<Array<string>>;
 }
+
+export interface KeyboardState {
+  justPressed: {[keyOrCode: string]: true | undefined};
+  whenPressedFrame: {[keyOrCode: string]: number};
+}

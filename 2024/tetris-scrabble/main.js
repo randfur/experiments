@@ -7,6 +7,7 @@
  */
 
 import {kPieceShapes} from './pieces.js';
+import {Inputs} from './inputs.js';
 
 const kWidthPx = window.innerWidth;
 const kHeightPx = window.innerHeight;
@@ -29,10 +30,10 @@ async function main() {
   `);
 
   const gameState = init();
-  window.addEventListener('keydown', event => handleKeydown(event, gameState));
+  const inputs = new Inputs();
   while (true) {
     const time = await new Promise(requestAnimationFrame);
-    update(time, gameState);
+    update(time, inputs, gameState);
     draw(context, gameState);
   }
 }
@@ -50,9 +51,10 @@ function init() {
 
 /**
  * @param {number} time
+ * @param {Inputs} inputs
  * @param {GameState} gameState
  */
-function update(time, gameState) {
+function update(time, inputs, gameState) {
   const timeDelta = Math.min(time - gameState.lastTime, 50);
   gameState.lastTime = time;
 
@@ -69,34 +71,25 @@ function update(time, gameState) {
       gameState.piece.position.row = 0;
     }
   });
-}
 
-/**
- * @param {KeyboardEvent} event
- * @param {GameState} gameState
- */
-function handleKeydown(event, gameState) {
   if (pieceCollided(gameState)) {
     return
   }
   const {piece} = gameState;
-  switch (event.code) {
-  case 'ArrowLeft':
-  case 'ArrowRight':
-    piece.position.col += event.code === 'ArrowLeft' ? -1 : 1;
+  if (inputs.isCodeJustPressed('ArrowLeft') || inputs.isCodeJustPressed('ArrowRight')) {
+    piece.position.col += inputs.isCodeJustPressed('ArrowLeft') ? -1 : 1;
     if (pieceCollided(gameState)) {
-      piece.position.col -= event.code === 'ArrowLeft' ? -1 : 1;
+      piece.position.col -= inputs.isCodeJustPressed('ArrowLeft') ? -1 : 1;
     }
-    break;
-  case 'ArrowUp': {
+  }
+  if (inputs.isCodeJustPressed('ArrowUp')) {
     const oldOrientationIndex = piece.orientationIndex;
     piece.orientationIndex = (piece.orientationIndex + 1) % kPieceShapes[piece.index].orientations.length;
     if (pieceCollided(gameState)) {
       piece.orientationIndex = oldOrientationIndex;
     }
-    break;
   }
-  case 'ArrowDown':
+  if (inputs.isCodeJustPressed('ArrowDown')) {
     piece.position.row += 1;
     if (pieceCollided(gameState)) {
       piece.position.row -= 1;
@@ -104,9 +97,10 @@ function handleKeydown(event, gameState) {
       gameState.piece = gameState.nextPiece;
       gameState.nextPiece = createRandomPiece();
       gameState.piece.position.row = 0;
+      inputs.resetCodeRepeat('ArrowDown');
     }
-    break;
-  case 'Space':
+  }
+  if (inputs.isCodeJustPressed('Space')) {
     while (!pieceCollided(gameState)) {
       piece.position.row += 1;
     }
@@ -115,15 +109,14 @@ function handleKeydown(event, gameState) {
     gameState.piece = gameState.nextPiece;
     gameState.nextPiece = createRandomPiece();
     gameState.piece.position.row = 0;
-    break;
   }
 
-  switch (event.key) {
-  case 'n':
+  if (inputs.isKeyJustPressed('n')) {
     gameState.piece = gameState.nextPiece;
     gameState.nextPiece = createRandomPiece();
-    break;
   }
+
+  inputs.update();
 }
 
 /**

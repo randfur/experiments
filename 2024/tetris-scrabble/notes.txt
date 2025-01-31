@@ -1,3 +1,10 @@
+# 2025-01-32
+- Update input system to be more state based than event based.
+  - Expose input changes to the frame update loop.
+  - Have isolated input code that turns the events into queryable state.
+  - Done!
+  - Implemented key repeating manually out of necessity but also enables us to reset the repeating for ArrowDown.
+
 # 2025-01-17
 - Added type checking using JSDoc and Deno to run the actual checking.
   - https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html
