@@ -4,6 +4,9 @@
   - Have isolated input code that turns the events into queryable state.
   - Done!
   - Implemented key repeating manually out of necessity but also enables us to reset the repeating for ArrowDown.
+- Fixed the line piece, 5 blocks -> 4 blocks.
+  - "Tetris" contains the word tetromino which means shapes comprised of four squares.
+  - The other part of "Tetris" is tennis because the creator liked tennis.
 
 # 2025-01-17
 - Added type checking using JSDoc and Deno to run the actual checking.
