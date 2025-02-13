@@ -1,6 +1,6 @@
 import {Animation} from './animation.js';
 import {sampleAnimationData} from './sample-animation-data.js';
-import {HexLines2d} from './third-party/hex-lines/src/2d/hex-lines-2d.js';
+import {HexLines2d} from '../third-party/hex-lines/src/2d/hex-lines-2d.js';
 
 async function main() {
   const {hexLines2d, width, height} = HexLines2d.setupFullPageCanvas();

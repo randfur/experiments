@@ -1,3 +1,6 @@
+# 2025-02-13
+- Moved third-party directory up to 2024 for sharing. Still working out git submodule business.
+
 # 2024-09-14
 - Removed reverse-repeat fill mode.
   - Cargo culted from CSS animations.
