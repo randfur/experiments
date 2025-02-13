@@ -7,6 +7,9 @@
 [submodule "2023/third-party/rojs"]
 	path = 2023/third-party/rojs
 	url = git@github.com:randfur/rojs.git
+[submodule "2024/animate-hex-lines/third-party/hex-lines"]
+	path = 2024/animate-hex-lines/third-party/hex-lines
+	url = https://github.com/randfur/hex-lines
 [submodule "2024/third-party/hex-lines"]
 	path = 2024/third-party/hex-lines
-	url = https://github.com/randfur/hex-lines
+	url = git@github.com:randfur/hex-lines.git
