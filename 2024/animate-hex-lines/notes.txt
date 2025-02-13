@@ -1,5 +1,6 @@
 # 2025-02-13
 - Moved third-party directory up to 2024 for sharing. Still working out git submodule business.
+- git submodules are hard. Eventually managed to clean up old submodules and add 2024/third-party/hex-lines fresh.
 
 # 2024-09-14
 - Removed reverse-repeat fill mode.
