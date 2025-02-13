@@ -1,5 +1,5 @@
-import {HexLines2d} from './third-party/hex-lines/src/2d/hex-lines-2d.js';
-import {GroupDrawing} from './third-party/hex-lines/src/2d/group-drawing.js';
+import {HexLines2d} from '../third-party/hex-lines/src/2d/hex-lines-2d.js';
+import {GroupDrawing} from '../third-party/hex-lines/src/2d/group-drawing.js';
 import {Particle} from './particle.js';
 import {sleep, repeat, deviate, makeGrid} from './utils.js';
 

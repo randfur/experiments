@@ -1,6 +1,6 @@
 import {Engine} from './engine.js';
 import {Entity} from './entity.js';
-import {LineDrawing} from './third-party/hex-lines/src/2d/line-drawing.js';
+import {LineDrawing} from '../third-party/hex-lines/src/2d/line-drawing.js';
 import {sleep, once, deviate} from './utils.js';
 
 export class Ship extends Entity {
