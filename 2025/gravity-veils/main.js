@@ -7,7 +7,7 @@ const vec4Bytes = f32Bytes * 4;
 const maxParticleCount = 100;
 const maxMassCount = 2;
 const maxSimulationStepCount = 1000;
-const meshIndexCount = (maxParticleCount - 1) * (maxSimulationStepCount * 2);
+const meshIndexCount = (maxParticleCount - 1) * (maxSimulationStepCount * 2 + 1);
 const simulationTimeStep = 0.01;
 const workgroupSize = 64;
 const zoom = 0.25;
@@ -57,8 +57,6 @@ async function main() {
     usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.INDEX,
   });
 
-  // const zoomBuffer = device
-
   const shaderModule = device.createShaderModule({
     code: `
       override maxMassCount: u32;
@@ -87,7 +85,6 @@ async function main() {
       @group(0) @binding(0) var<storage, read> particles: array<Particle>;
       @group(0) @binding(1) var<storage, read> masses: array<Mass>;
       @group(0) @binding(2) var<storage, read_write> trajectories: array<TrajectoryPoint>;
-      @group(0) @binding(3)
 
       @compute @workgroup_size(${workgroupSize})
       fn simulate(@builtin(global_invocation_id) id: vec3u) {
@@ -219,7 +216,7 @@ async function main() {
           i * maxSimulationStepCount + j,
           (i + 1) * maxSimulationStepCount + j,
         ]),
-        // 0xFFFFFFFF,
+        0xFFFFFFFF,
       ]).flat(Infinity),
       2,
       4,
