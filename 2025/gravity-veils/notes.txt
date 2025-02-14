@@ -1,0 +1,118 @@
+# 2025-02-14
+- Copied over from 2024.
+
+# 2024-02-22
+- Moved mesh building outside animation loop, whoops.
+
+# 2024-02-21
+- Asked GPT4 what was wrong.
+  - https://chat.openai.com/c/b700bbb2-758d-4ae3-a532-5f945750e50e
+  - Forgot to include the particle's position.
+- Maybe structs aren't tighly packed and have padding and alignment.
+  - Yes and it's not simple: https://www.w3.org/TR/WGSL/#memory-layouts
+  - Need a tool to help compute offsets and padding for this.
+  - Just converting everything to vec4f for simplicity, that size won't incur struct padding.
+- Changed index buffer to u32 as well to avoid alignment weirdness as well.
+- Rendered something.
+  - Cyan blob that's much less random than previously.
+  - Has some dark gradients in it.
+  - Should be white still, something is broken with colours but at least it's not ranbow now.
+- Cyan colour
+  - The colour appears to be offset by one f32 either in the trajectory buffer or its reader.
+  - Found it, forgot to update the vertex attribute offset. Fixed.
+- Working!
+  - Got swirly veils.
+- Fixed up blending.
+  - dstFactor should be one rather than one-minus-src-alpha for additive colours.
+- Added animation loop to move the masses around.
+- Switched to only 2 masses.
+  - 3 Had too much chaotic flipping back and forth.
+- Tweaked colours a bit.
+  - Primarily red with small bits of green and smaller bits of blue.
+- Tested NaN.
+  - Setting a particle to NaN causes it to not be rendered.
+  - Can have separate veils using this without altering the meshIndexBuffer.
+- Would like to fix up the alignment to avoid everything being vec4f.
+  - Can do that incrementally now that there's a working version.
+
+# 2024-02-20
+- Wrote data into buffers.
+- Added mesh index buffer.
+- Wrote compute pass.
+- No errors yet, need render pass to see anything.
+- Wrote render pass.
+- Fixed up index buffer issues.
+  - Need to specify uint16 in primitive part of render pipeline creation.
+  - Buffer size needs to be a multiple of 4.
+- Rendered some stuff, top right quadrant filled with blue and white gradient.
+  - Need to tweak all the numbers.
+  - 1000 particles and 1000 simulation steps took a bit of time to render, might be mainly in the CPU generating the mesh index buffer, need multiple frames to see GPU cost.
+  - Dropped down to 10 each for now.
+  - Added zoom factor.
+  - Tweaked the initial values, rendering in all quadrants now, didn't have big enough angles.
+  - Getting all sorts of colours, shouldn't be getting any colour as all the particles are white.
+    - Must be reading the data incorrectly.
+    - Everything is mess lol, big debugging time now.
+
+# 2024-02-19
+- Added initial particle values.
+  - First action device caused pipeline logic to actually execute, discovered all the compile issues.
+  - Fixed errors:
+    - Structs don't get constructed like in Rust.
+    - Have to use override variables instead of const for pipeline constant overrides.
+    - Can't use overrides in array lengths without them being stored in the workgroup which doesn't get connected to a buffer.
+    - Storage variables can't be write only, have to be read_write.
+    - Pipeline constants have to exist in the shader function to be valid, can't dump all constants in there.
+
+# 2024-02-17
+- How to convert the trajectories into a mesh.
+  - Discussed the idea with GPT4.
+  - Creating individual triangles seems data heavy and cumbersome and hard to track offsets of things in the overall mesh buffer.
+  - Using a triangle strip is easier as pairs of positions will work fine, though they do need repeating on the other side but that's probably fine.
+    - Using indexed buffers would avoid the duplication but it seems simple enough to not worry about for now.
+  - One problem with triangle strips is the zig zag pattern of traversing through trajectories will create joins between the end of one and the start of the other.
+    - GPT4 suggested adding degenerate triangles to the end to avoid that.
+    - Adding two points that are in the same position such that the next point won't form a visible triangle as the area will be 0.
+  - The pattern of converting trajectories to a mesh will not change and does not need to be computed with every frame.
+    - Less compute and memory to use a statically computed index buffer.
+    - Need to work out the API for it.
+- Index buffers
+  - Turns out index buffers support restarting the topology sequence by using the max integer value: https://developer.mozilla.org/en-US/docs/Web/API/GPURenderPassEncoder/setIndexBuffer
+  - No need to do the repeat existing vertex hack.
+- Buffer structure
+  - Mass buffer
+    - List of {position, mass}.
+  - Particle buffer
+    - List of {position, velocity, colour}.
+  - Trajectory buffer
+    - 2D array of {position, colour}.
+  - Mesh index buffer
+    - Triangle strip indicies into trajectory buffer.
+- Worked on writing the pipelines and now need to fill the buffers with initial data.
+
+# 2024-02-06
+- Recreation of http://four-venom.glitch.me/ in 3D using WebGPU.
+- Use the compute stage to parallelise the computation of many many more points than four-venom which is completely CPU driven.
+- Be in space with stars in the background.
+- Camera rotating around origin.
+- Veils:
+  - Veils spawning from origin in different directions.
+  - Multiple veils.
+  - Use the historical path of a smooth 3D walkers to generate veil points in those directions.
+  - Additive colouring.
+  - Start and end of veils fade to transparent.
+  - Not made up of dots like in four-venom, will be triangles.
+- Maybe consider volumes as well as veils.
+  - Possibly a separate experiment.
+- Architecture:
+  - WebGPU shaders.
+    - Gravity path compute.
+    - Veil rendering.
+    - Data buffers between pipeline stages.
+    - Blending configuration.
+  - Veil directions computation.
+    - 3D walker path history.
+  - Gravity points over time.
+    - Orbiting origin.
+    - Fading in and out.
+  - Camera orientation.
