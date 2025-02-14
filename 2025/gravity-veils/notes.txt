@@ -1,5 +1,13 @@
 # 2025-02-14
 - Copied over from 2024.
+- Went over all the code again, learning WebGPU.
+- Added zoom and transform uniforms.
+  - Needs their own dedicated buffer.
+  - Had to deal with padding.
+  - Error messages made things okay.
+- Added mouse wheel zoom and mouse movement translation.
+  - Took out translation because more work to sync the code with the debug canvas.
+- Added a canvas 2D debug canvas overlay to draw the masses.
 
 # 2024-02-22
 - Moved mesh building outside animation loop, whoops.
