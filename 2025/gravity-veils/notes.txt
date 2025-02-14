@@ -8,6 +8,9 @@
 - Added mouse wheel zoom and mouse movement translation.
   - Took out translation because more work to sync the code with the debug canvas.
 - Added a canvas 2D debug canvas overlay to draw the masses.
+- Added z div perspective.
+- Added camera rotation.
+- Tweaked the numbers.
 
 # 2024-02-22
 - Moved mesh building outside animation loop, whoops.

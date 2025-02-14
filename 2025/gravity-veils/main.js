@@ -5,7 +5,7 @@ const vec3Bytes = f32Bytes * 3;
 const vec4Bytes = f32Bytes * 4;
 
 const maxParticleCount = 100;
-const maxMassCount = 2;
+const maxMassCount = 5;
 const maxSimulationStepCount = 1000;
 const meshIndexCount = (maxParticleCount - 1) * (maxSimulationStepCount * 2 + 1);
 const simulationTimeStep = 0.01;
@@ -121,17 +121,19 @@ async function main() {
         let trajectoryIndexStart = particleIndex * maxSimulationStepCount;
 
         for (var i: u32 = 0; i < maxSimulationStepCount; i += 1) {
-          for (var j: u32 = 0; j < maxMassCount; j += 1) {
-            let delta = masses[j].position - particle.position;
-            particle.velocity += delta * masses[j].size.x / dot(delta, delta) * simulationTimeStep;
-          }
-
-          particle.position += particle.velocity * simulationTimeStep;
-
           trajectories[trajectoryIndexStart + i] = TrajectoryPoint(
             particle.position,
             particle.colour,
           );
+
+          for (var j: u32 = 0; j < maxMassCount; j += 1) {
+            let delta = masses[j].position - particle.position;
+            particle.velocity += delta * masses[j].size.x / (0.1 + dot(delta, delta)) * simulationTimeStep;
+          }
+
+          particle.velocity *= (1 - 1 / 500);
+
+          particle.position += particle.velocity * simulationTimeStep;
         }
       }
 
@@ -142,8 +144,13 @@ async function main() {
 
       @vertex
       fn vertex(trajectoryPoint: TrajectoryPoint) -> Vertex {
+        const origin = vec4f(0, 0, 0.5, 0);
+        var position = transpose(camera.transform) * vec4f(((trajectoryPoint.position - origin) * camera.zoom).xyz, 1);
+        position.z /= 100;
+        position += origin;
+        position.w = 1 + position.z * 80;
         return Vertex(
-          transpose(camera.transform) * vec4f((trajectoryPoint.position * camera.zoom).xyz, 1),
+          position,
           trajectoryPoint.colour,
         );
       }
@@ -258,7 +265,7 @@ async function main() {
     ),
   );
 
-  let zoom = 0.25;
+  let zoom = 10;
   window.addEventListener('wheel', event => {
     zoom *= 2**(-event.deltaY / 1000);
   });
@@ -272,21 +279,24 @@ async function main() {
   while (true) {
     const time = await new Promise(requestAnimationFrame);
 
-    const masses = range(maxMassCount).map(i => ({
-      x: 0.9 * Math.cos(time / 10000 + i * 10),
-      y: 0.9 * Math.sin(time / 10000 + i * 10),
-      z: 0.9 * Math.cos(time / 10000 + i * 4),
-      size: 1,
-    }));
-    debugContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
-    debugContext.fillStyle = 'blue';
-    for (const mass of masses) {
-      const drawnSize = mass.size * 10;
-      debugContext.fillRect(
-        (window.innerWidth * (mass.x + 1) / 2) - drawnSize / 2,
-        (window.innerHeight * (-mass.y + 1) / 2) - drawnSize / 2,
-        drawnSize, drawnSize);
-    }
+    const masses = range(maxMassCount).map(i => {
+      const fraction = i / maxMassCount;
+      return {
+        x: -1.8 * Math.sin(time / 400000 + fraction * 10.5 + 2.9),
+        y: 2.3 * Math.cos(time / 400000 + fraction * 15.0 + 3.0),
+        z: 0.5 + 1.9 * Math.cos(time / 400000 + fraction * 6.1 + 3.4),
+        size: (i + 1),
+      };
+    });
+    // debugContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    // debugContext.fillStyle = 'blue';
+    // for (const mass of masses) {
+    //   const drawnSize = mass.size * 10;
+    //   debugContext.fillRect(
+    //     (window.innerWidth * (mass.x + 1) / 2) - drawnSize / 2,
+    //     (window.innerHeight * (-mass.y + 1) / 2) - drawnSize / 2,
+    //     drawnSize, drawnSize);
+    // }
 
     device.queue.writeBuffer(
       massBuffer,
@@ -301,12 +311,13 @@ async function main() {
       particleBuffer,
       0,
       new Float32Array(range(maxParticleCount).flatMap(i => [
-        0, 0, 0, 0,
-        Math.cos(i / 2), Math.sin(i / 2), 0, 1,
-        0.2, 0.02, 0.01, 0.5,
+        0, 0, 0.5, 0,
+        Math.cos(i / 4), Math.sin(i / 4), 0, 1,
+        0.2, 0.01 + 0.04 * i / maxParticleCount, 0.01, 0.5,
       ])),
     );
 
+    const angle = time / 4000;
     device.queue.writeBuffer(
       cameraBuffer,
       0,
@@ -314,9 +325,9 @@ async function main() {
         zoom, 0, 0, 0,
         // 1, 0, 0, 2 * (mouseX / window.innerWidth) - 1,
         // 0, 1, 0, -2 * (mouseY / window.innerHeight) + 1,
-        1, 0, 0, 0,
+        Math.cos(angle), 0, Math.sin(angle), 0,
         0, 1, 0, 0,
-        0, 0, 1, 0,
+        -Math.sin(angle), 0, Math.cos(angle), 0,
         0, 0, 0, 1,
       ]),
     );
