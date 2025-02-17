@@ -3,6 +3,7 @@
 - Updated the z div, messed around with it to get more pronounced perspective.
 - Changed particle starts to be more linear.
 - Added aspect ratio correction.
+- Added ridges and gaps to the particle starts.
 
 # 2025-02-14
 - Copied over from 2024.

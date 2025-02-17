@@ -267,7 +267,7 @@ async function main() {
     ),
   );
 
-  let zoom = 50;
+  let zoom = 60;
   window.addEventListener('wheel', event => {
     zoom *= 2**(-event.deltaY / 1000);
   });
@@ -289,7 +289,7 @@ async function main() {
       const bx = Math.cos(i + 2);
       const by = Math.cos(i + 3);
       const bz = Math.cos(i + 4);
-      const angle = 3 + time / 40000 + fraction + i * 10.29;
+      const angle = 3 + time / 5000 + fraction + i * 10.29;
       const c = Math.cos(angle);
       const s = Math.sin(angle);
       const radiusFactor = 1;
@@ -322,13 +322,15 @@ async function main() {
       particleBuffer,
       0,
       new Float32Array(range(maxParticleCount).flatMap(i => {
+        const alpha = i % 20 < 4 ? 0 : 0.2;
+        const bump = Math.floor(i / 20);
         const fraction = i / maxParticleCount;
         return [
-          4 * (fraction - 0.5) + 2 * Math.cos(time / 10000), 0, 0, 0,
+          2 * (fraction - 0.5) + 2 * Math.cos(time / 10000), bump - 5, 0, 1,
           // fraction, 0, 1, 1,
           0, 0, 4 * (fraction - 0.5), 1,
           // Math.cos(i / 5), Math.sin(i / 5), fraction - 0.5, 1,
-          0.5, 0.5 * Math.abs(fraction - 0.5), 0.01, 0.2,
+          0.5, 0.5 * Math.abs(fraction - 0.5), 0.01, alpha,
         ];
       })),
     );
