@@ -72,8 +72,8 @@ async function main() {
     usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.INDEX,
   });
 
-  const cameraBuffer = device.createBuffer({
-    size: f32Bytes * (/*zoom=*/1 + /*width=*/1 + /*height=*/1 + /*padding=*/1 + /*transform=*/4 * 4),
+  const uniformBuffer = device.createBuffer({
+    size: f32Bytes * (/*zoom=*/1 + /*width=*/1 + /*height=*/1 + /*highlightStep=*/1 + /*transform=*/4 * 4),
     usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.UNIFORM,
   });
 
@@ -100,17 +100,18 @@ async function main() {
         @location(1) colour: vec4f,
       }
 
-      struct Camera {
+      struct Uniforms {
         zoom: f32,
         width: f32,
         height: f32,
+        highlightStep: f32,
         transform: mat4x4<f32>,
       }
 
       @group(0) @binding(0) var<storage, read> particles: array<Particle>;
       @group(0) @binding(1) var<storage, read> masses: array<Mass>;
       @group(0) @binding(2) var<storage, read_write> trajectories: array<TrajectoryPoint>;
-      @group(0) @binding(0) var<uniform> camera: Camera;
+      @group(1) @binding(0) var<uniform> uniforms: Uniforms;
 
       @compute @workgroup_size(${workgroupSize})
       fn simulate(@builtin(global_invocation_id) id: vec3u) {
@@ -124,7 +125,7 @@ async function main() {
         for (var i: u32 = 0; i < maxSimulationStepCount; i += 1) {
           trajectories[trajectoryIndexStart + i] = TrajectoryPoint(
             particle.position,
-            particle.colour,
+            select(particle.colour, vec4(1, 1, 1, 1), bool(particle.colour.a) && f32(i) == uniforms.highlightStep),
           );
 
           for (var j: u32 = 0; j < maxMassCount; j += 1) {
@@ -145,9 +146,9 @@ async function main() {
 
       @vertex
       fn vertex(trajectoryPoint: TrajectoryPoint) -> Vertex {
-        var position = transpose(camera.transform) * vec4f((trajectoryPoint.position * camera.zoom).xyz, 1);
-        position.x *= select(1, camera.height / camera.width, camera.width < camera.height);
-        position.y *= select(camera.width / camera.height, 1, camera.width < camera.height);
+        var position = transpose(uniforms.transform) * vec4f((trajectoryPoint.position * uniforms.zoom).xyz, 1);
+        position.x *= select(1, uniforms.height / uniforms.width, uniforms.width < uniforms.height);
+        position.y *= select(uniforms.width / uniforms.height, 1, uniforms.width < uniforms.height);
         position.z /= 1000;
         position.z += 0.5;
         position.w = 1 + position.z * 400;
@@ -178,7 +179,7 @@ async function main() {
     },
   });
 
-  const trajectorySimulationBindGroup = device.createBindGroup({
+  const trajectorySimulationBindGroup0 = device.createBindGroup({
     layout: trajectorySimulationPipeline.getBindGroupLayout(0),
     entries: [{
       binding: 0,
@@ -194,6 +195,15 @@ async function main() {
       binding: 2,
       resource: {
         buffer: trajectoriesBuffer,
+      },
+    }],
+  });
+  const trajectorySimulationBindGroup1 = device.createBindGroup({
+    layout: trajectorySimulationPipeline.getBindGroupLayout(1),
+    entries: [{
+      binding: 0,
+      resource: {
+        buffer: uniformBuffer,
       },
     }],
   });
@@ -241,12 +251,12 @@ async function main() {
     },
   });
 
-  const trajectoryRenderBindGroup = device.createBindGroup({
-    layout: trajectoryRenderPipeline.getBindGroupLayout(0),
+  const trajectoryRenderBindGroup1 = device.createBindGroup({
+    layout: trajectoryRenderPipeline.getBindGroupLayout(1),
     entries: [{
       binding: 0,
       resource: {
-        buffer: cameraBuffer,
+        buffer: uniformBuffer,
       },
     }],
   });
@@ -278,8 +288,10 @@ async function main() {
     mouseY = event.offsetY;
   });
 
+  let frame = 0;
   while (true) {
     const time = await new Promise(requestAnimationFrame);
+    ++frame;
 
     const masses = range(maxMassCount).map(i => {
       const fraction = i / maxMassCount;
@@ -337,10 +349,13 @@ async function main() {
 
     const angle = time / 4000;
     device.queue.writeBuffer(
-      cameraBuffer,
+      uniformBuffer,
       0,
       new Float32Array([
-        zoom, window.innerWidth, window.innerHeight, 0,
+        zoom,
+        window.innerWidth,
+        window.innerHeight,
+        -1, //frame % maxSimulationStepCount,
         // 1, 0, 0, 2 * (mouseX / window.innerWidth) - 1,
         // 0, 1, 0, -2 * (mouseY / window.innerHeight) + 1,
         Math.cos(angle), 0, Math.sin(angle), 0,
@@ -354,7 +369,8 @@ async function main() {
 
     const computePass = commandEncoder.beginComputePass();
     computePass.setPipeline(trajectorySimulationPipeline);
-    computePass.setBindGroup(0, trajectorySimulationBindGroup);
+    computePass.setBindGroup(0, trajectorySimulationBindGroup0);
+    computePass.setBindGroup(1, trajectorySimulationBindGroup1);
     computePass.dispatchWorkgroups(Math.ceil(maxParticleCount / workgroupSize));
     computePass.end();
 
@@ -366,7 +382,7 @@ async function main() {
       }],
     });
     renderPass.setPipeline(trajectoryRenderPipeline);
-    renderPass.setBindGroup(0, trajectoryRenderBindGroup);
+    renderPass.setBindGroup(1, trajectoryRenderBindGroup1);
     renderPass.setVertexBuffer(0, trajectoriesBuffer);
     renderPass.setIndexBuffer(meshIndexBuffer, 'uint32');
     renderPass.drawIndexed(meshIndexCount);

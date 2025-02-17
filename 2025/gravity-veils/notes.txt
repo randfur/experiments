@@ -5,6 +5,9 @@
 - Added aspect ratio correction.
 - Added ridges and gaps to the particle starts.
 - Varied the mass orbit speeds.
+- Added a highlight line that runs along the simulation steps.
+  - Reveals the veils have an ugly sharp turn in them, disabled it for now.
+  - Had to split the uniform buffer out into a different bind group.
 
 # 2025-02-14
 - Copied over from 2024.
