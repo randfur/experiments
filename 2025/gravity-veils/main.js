@@ -289,7 +289,7 @@ async function main() {
       const bx = Math.cos(i + 2);
       const by = Math.cos(i + 3);
       const bz = Math.cos(i + 4);
-      const angle = 3 + time / 5000 + fraction + i * 10.29;
+      const angle = 3 + time / ((5 + i) * 1000) + fraction + i * 10.29;
       const c = Math.cos(angle);
       const s = Math.sin(angle);
       const radiusFactor = 1;

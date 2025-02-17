@@ -4,6 +4,7 @@
 - Changed particle starts to be more linear.
 - Added aspect ratio correction.
 - Added ridges and gaps to the particle starts.
+- Varied the mass orbit speeds.
 
 # 2025-02-14
 - Copied over from 2024.
