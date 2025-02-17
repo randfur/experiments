@@ -1,3 +1,9 @@
+# 2025-02-17
+- Tweaked the masses to orbit random angles.
+- Updated the z div, messed around with it to get more pronounced perspective.
+- Changed particle starts to be more linear.
+- Added aspect ratio correction.
+
 # 2025-02-14
 - Copied over from 2024.
 - Went over all the code again, learning WebGPU.

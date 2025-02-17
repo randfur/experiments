@@ -10,7 +10,6 @@ const maxSimulationStepCount = 1000;
 const meshIndexCount = (maxParticleCount - 1) * (maxSimulationStepCount * 2 + 1);
 const simulationTimeStep = 0.01;
 const workgroupSize = 64;
-const zoom = 0.25;
 
 const massBytes = vec4Bytes + vec4Bytes;
 const particleBytes = vec4Bytes + vec4Bytes + vec4Bytes;
@@ -74,7 +73,7 @@ async function main() {
   });
 
   const cameraBuffer = device.createBuffer({
-    size: f32Bytes * (/*zoom=*/1 + /*padding=*/3 + /*transform=*/4 * 4),
+    size: f32Bytes * (/*zoom=*/1 + /*width=*/1 + /*height=*/1 + /*padding=*/1 + /*transform=*/4 * 4),
     usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.UNIFORM,
   });
 
@@ -103,6 +102,8 @@ async function main() {
 
       struct Camera {
         zoom: f32,
+        width: f32,
+        height: f32,
         transform: mat4x4<f32>,
       }
 
@@ -128,7 +129,7 @@ async function main() {
 
           for (var j: u32 = 0; j < maxMassCount; j += 1) {
             let delta = masses[j].position - particle.position;
-            particle.velocity += delta * masses[j].size.x / (0.1 + dot(delta, delta)) * simulationTimeStep;
+            particle.velocity += delta * masses[j].size.x / (1 + dot(delta, delta)) * simulationTimeStep;
           }
 
           particle.velocity *= (1 - 1 / 500);
@@ -144,11 +145,12 @@ async function main() {
 
       @vertex
       fn vertex(trajectoryPoint: TrajectoryPoint) -> Vertex {
-        const origin = vec4f(0, 0, 0.5, 0);
-        var position = transpose(camera.transform) * vec4f(((trajectoryPoint.position - origin) * camera.zoom).xyz, 1);
-        position.z /= 100;
-        position += origin;
-        position.w = 1 + position.z * 80;
+        var position = transpose(camera.transform) * vec4f((trajectoryPoint.position * camera.zoom).xyz, 1);
+        position.x *= select(1, camera.height / camera.width, camera.width < camera.height);
+        position.y *= select(camera.width / camera.height, 1, camera.width < camera.height);
+        position.z /= 1000;
+        position.z += 0.5;
+        position.w = 1 + position.z * 400;
         return Vertex(
           position,
           trajectoryPoint.colour,
@@ -265,7 +267,7 @@ async function main() {
     ),
   );
 
-  let zoom = 10;
+  let zoom = 50;
   window.addEventListener('wheel', event => {
     zoom *= 2**(-event.deltaY / 1000);
   });
@@ -281,11 +283,21 @@ async function main() {
 
     const masses = range(maxMassCount).map(i => {
       const fraction = i / maxMassCount;
+      const ax = Math.sin(i + 2);
+      const ay = Math.sin(i + 3);
+      const az = Math.sin(i + 4);
+      const bx = Math.cos(i + 2);
+      const by = Math.cos(i + 3);
+      const bz = Math.cos(i + 4);
+      const angle = 3 + time / 40000 + fraction + i * 10.29;
+      const c = Math.cos(angle);
+      const s = Math.sin(angle);
+      const radiusFactor = 1;
       return {
-        x: -1.8 * Math.sin(time / 400000 + fraction * 10.5 + 2.9),
-        y: 2.3 * Math.cos(time / 400000 + fraction * 15.0 + 3.0),
-        z: 0.5 + 1.9 * Math.cos(time / 400000 + fraction * 6.1 + 3.4),
-        size: (i + 1),
+        x: radiusFactor * (c * ax + s * bx),
+        y: radiusFactor * (c * ay + s * by),
+        z: radiusFactor * (c * az + s * bz),
+        size: 3,
       };
     });
     // debugContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
@@ -297,7 +309,6 @@ async function main() {
     //     (window.innerHeight * (-mass.y + 1) / 2) - drawnSize / 2,
     //     drawnSize, drawnSize);
     // }
-
     device.queue.writeBuffer(
       massBuffer,
       0,
@@ -310,11 +321,16 @@ async function main() {
     device.queue.writeBuffer(
       particleBuffer,
       0,
-      new Float32Array(range(maxParticleCount).flatMap(i => [
-        0, 0, 0.5, 0,
-        Math.cos(i / 4), Math.sin(i / 4), 0, 1,
-        0.2, 0.01 + 0.04 * i / maxParticleCount, 0.01, 0.5,
-      ])),
+      new Float32Array(range(maxParticleCount).flatMap(i => {
+        const fraction = i / maxParticleCount;
+        return [
+          4 * (fraction - 0.5) + 2 * Math.cos(time / 10000), 0, 0, 0,
+          // fraction, 0, 1, 1,
+          0, 0, 4 * (fraction - 0.5), 1,
+          // Math.cos(i / 5), Math.sin(i / 5), fraction - 0.5, 1,
+          0.5, 0.5 * Math.abs(fraction - 0.5), 0.01, 0.2,
+        ];
+      })),
     );
 
     const angle = time / 4000;
@@ -322,7 +338,7 @@ async function main() {
       cameraBuffer,
       0,
       new Float32Array([
-        zoom, 0, 0, 0,
+        zoom, window.innerWidth, window.innerHeight, 0,
         // 1, 0, 0, 2 * (mouseX / window.innerWidth) - 1,
         // 0, 1, 0, -2 * (mouseY / window.innerHeight) + 1,
         Math.cos(angle), 0, Math.sin(angle), 0,
