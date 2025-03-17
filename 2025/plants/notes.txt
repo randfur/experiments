@@ -1,0 +1,8 @@
+# 2025-03-17
+- Use hex-lines to draw plant simulation.
+- Seeds grow roots, stem, leaves, flower.
+- Random bugs fly from flower to flower pollinating.
+- Flowers turn to seeds that blow away in the breeze and grow where they land.
+- Plant dies off once done.
+- Maybe other types of plants.
+  - Maybe generalised plant code with DNA configurations that allow it to be any kind of plant.
