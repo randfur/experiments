@@ -13,6 +13,3 @@
 [submodule "2025/plants/third-party/hex-lines"]
 	path = 2025/plants/third-party/hex-lines
 	url = git@github.com:randfur/hex-lines.git
-[submodule "2025/bell-conducting/third-party/rojs"]
-	path = 2025/bell-conducting/third-party/rojs
-	url = git@github.com:randfur/rojs.git

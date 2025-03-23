@@ -36,3 +36,10 @@
     - A non-Rojs approach would be to render everything every time.
       - Probably way simpler and would work perfectly fine.
       - No need for Rojs.
+      - Will just do this.
+- Implementation
+  - Started from scratch with regular HTML inputs.
+    - Rerenders everything on any user change.
+    - TIL replaceChildren().
+  - Defined the initial model state with method definitions.
+  - Up to actually rendering the bell sequence.
