@@ -1,0 +1,38 @@
+# 2025-03-23
+- Create app that helps plan out bell ringing method conducting.
+- Needs:
+  - UI:
+    - Mobile friendly.
+    - Sequence of conductor calls.
+      - Plain, bob, single.
+      - Editing sequence.
+    - Different bell sequence displays.
+      - Number grid.
+      - Lines.
+      - Selected line over number grid.
+      - Highlight lead end work sequence.
+  - Logic:
+    - Method place notation.
+    - Lead detection.
+    - Repetition detection.
+    - True detection.
+  - Data model:
+    - Saved methods.
+      - Presets.
+      - Custom saved.
+      - Saved conducting sequences.
+    - Selected method.
+      - Current editing sequence.
+- UI implementation.
+  - Maybe rojs outputting SVG.
+  - Haven't done that before.
+  - Had to add the concept of XML namespaces and attributes to get it to work.
+    - Tested out creating SVG elements, setting SVG styles, setting SVG attributes dynamically.
+  - One problem is SVGs don't take on the size of their contents, they're absolutely sized.
+    - Would need like a render callback to keep updating the SVG size on every change maybe.
+      - This is a case that Rojs really doesn't work well for.
+      - Might instead chunk the output up into multiple known size SVGs.
+      - Might have to give them overlapping regions.
+    - A non-Rojs approach would be to render everything every time.
+      - Probably way simpler and would work perfectly fine.
+      - No need for Rojs.
