@@ -10,3 +10,6 @@
 [submodule "2024/third-party/hex-lines"]
 	path = 2024/third-party/hex-lines
 	url = git@github.com:randfur/hex-lines.git
+[submodule "2025/plants/third-party/hex-lines"]
+	path = 2025/plants/third-party/hex-lines
+	url = git@github.com:randfur/hex-lines.git

@@ -6,3 +6,12 @@
 - Plant dies off once done.
 - Maybe other types of plants.
   - Maybe generalised plant code with DNA configurations that allow it to be any kind of plant.
+- Basic plant data:
+  - Root.
+    - Sub roots.
+  - Stem.
+    - Branches.
+      - Leaves.
+      - Flower.
+- Started implementing, is a lot of work to get started.
+- Probably need primitives to make basic concepts easier like having a root grow in various directions over time.
