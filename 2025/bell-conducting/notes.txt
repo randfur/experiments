@@ -1,8 +1,8 @@
 # 2025-03-26
 - Finished implementing the place notation touch overlay code.
 - Implemented applying places to the bells.
+- Implemented loop until repeat after end of calls.
 - TODO:
-  - Loop until repeat after end of calls.
   - Render bell sequences with place notation and lines and work highlights.
   - Add buttons for editing the touch.
 

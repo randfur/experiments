@@ -101,26 +101,25 @@ function computeSequence() {
   }
   sequence.bellsList.push(bells);
 
+  // Run through all the touches.
   // while (touchIndex < touch.length) {
   //   touchCall = touch[touchIndex];
   //   console.log('todo');
   // }
 
   // Run until we see a repeated sequence.
-  let count = 0;
+  const seenBells = new Set([arrayLast(sequence.bellsList).join('')]);
   while (true) {
-    // const annotatedPlaces = computeAnnotatedPlaces(sequence.bellsList.length - 1);
-    const annotatedPlaces = computeAnnotatedPlaces(count++);
-    // console.log(annotatedPlaces.places, annotatedPlaces.isWork);
+    const annotatedPlaces = computeAnnotatedPlaces(sequence.bellsList.length - 1);
     sequence.annotatedPlacesList.push(annotatedPlaces);
-    sequence.bellsList.push(makePlaces(sequence.bellsList[sequence.bellsList.length - 1], annotatedPlaces.places));
-
-    // TODO: if repeated sequence seen:
-    if (count === 30) {
+    const bells = makePlaces(arrayLast(sequence.bellsList), annotatedPlaces.places);
+    sequence.bellsList.push(bells);
+    const bellsKey = bells.join('');
+    if (seenBells.has(bellsKey)) {
       break;
     }
+    seenBells.add(bellsKey);
   }
-
 
   return sequence;
 }
@@ -189,13 +188,17 @@ function arrayGet(array, index) {
   return (index < 0 || index >= array.length) ? null : array[index];
 }
 
-function makePlaces(bells, places) {
-  const result = [...bells];
+function arrayLast(array) {
+  return array[array.length - 1];
+}
+
+function makePlaces(initialBells, places) {
+  const bells = [...initialBells];
   let i = 0;
   for (const place of places) {
     while (true) {
       if (i + 1 < place) {
-        [result[i], result[i + 1]] = [result[i + 1], result[i]];
+        [bells[i], bells[i + 1]] = [bells[i + 1], bells[i]];
         i += 2;
       } else {
         i += 1;
@@ -203,12 +206,12 @@ function makePlaces(bells, places) {
       }
     }
   }
-  while (i < result.length) {
-    [result[i], result[i + 1]] = [result[i + 1], result[i]];
+  while (i < bells.length) {
+    [bells[i], bells[i + 1]] = [bells[i + 1], bells[i]];
     i += 2;
   }
 
-  return result;
+  return bells;
 }
 
 function loadSavedModel() {
