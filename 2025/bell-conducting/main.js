@@ -1,3 +1,5 @@
+const svgNamespace = 'http://www.w3.org/2000/svg';
+
 let model = null;
 let container = null;
 
@@ -9,7 +11,6 @@ function main() {
 }
 
 function render() {
-  console.log('render');
   container.replaceChildren(
     renderMethodPicker(),
     renderBr(),
@@ -19,7 +20,7 @@ function render() {
     renderBr(),
     // renderBellLinePicker(),
     renderBr(),
-    // renderSequence(),
+    renderSequence(),
   );
 }
 
@@ -72,6 +73,63 @@ function renderTouch() {
   input.value = model.selected.touch;
   input.disabled = true;
   return input;
+}
+
+function renderSequence() {
+  const svg = document.createElementNS(svgNamespace, 'svg');
+  const sequence = computeSequence();
+  const text = document.createElementNS(svgNamespace, 'text');
+  text.setAttribute('x', 10);
+  text.setAttribute('y', 40);
+  text.textContent = sequence.bellsList;
+  svg.append(text);
+  return svg;
+}
+
+function computeSequence() {
+  const method = model.methods[model.selected.methodName];
+  const touch = model.selected.touch;
+  const sequence = {
+    bellsList: [],
+    placesList: [],
+  };
+
+  let bells = [];
+  for (let i = 1; i <= method.bells; ++i) {
+    bells.push(i);
+  }
+  sequence.bellsList.push(bells);
+
+  // while (touchIndex < touch.length) {
+  //   touchCall = touch[touchIndex];
+  //   console.log('todo');
+  // }
+
+  // Run until we see a repeated sequence.
+  while (true) {
+    const places = computePlaces(sequence.bellsList.length - 1);
+
+    // if repeated sequence seen:
+    break;
+  }
+
+
+  return sequence;
+}
+
+function computePlaces(step) {
+  const method = model.methods[model.selected.methodName];
+  const touch = model.selected.touch;
+  // Find where step is inside a placeNotation sequence.
+  const repeatLength = method.placeNotation.length;
+  const placeNotationIndex = step % repeatLength;
+  const touchIndex = Math.floor(step / repeatLength);
+  const lastTouchCall = touchIndex > 0 && touchIndex <= touch.length ? touch[touchIndex - 1] : 'P';
+  const touchCall = touchIndex >= 0 && touchIndex < touch.length ? touch[touchIndex] : 'P';
+
+  // Overlay lastTouchCall work over the beginning.
+
+  // Overlay touchCall work over the ending.
 }
 
 function loadSavedModel() {

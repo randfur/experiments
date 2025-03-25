@@ -1,3 +1,10 @@
+# 2025-03-25
+- Implementing the sequence code.
+  - computeSequence().
+  - computePlaces().
+    - For a step index find where in the placeNotation it is and overlay the touches over the beginning/end.
+  - Use the places to update the bell sequence.
+
 # 2025-03-23
 - Create app that helps plan out bell ringing method conducting.
 - Needs:
