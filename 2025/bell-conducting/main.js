@@ -78,6 +78,7 @@ function renderTouch() {
 function renderSequence() {
   const svg = document.createElementNS(svgNamespace, 'svg');
   const sequence = computeSequence();
+  console.log(sequence.bellsList);
   const text = document.createElementNS(svgNamespace, 'text');
   text.setAttribute('x', 10);
   text.setAttribute('y', 40);
@@ -91,7 +92,7 @@ function computeSequence() {
   const touch = model.selected.touch;
   const sequence = {
     bellsList: [],
-    placesList: [],
+    annotatedPlacesList: [],
   };
 
   let bells = [];
@@ -106,30 +107,108 @@ function computeSequence() {
   // }
 
   // Run until we see a repeated sequence.
+  let count = 0;
   while (true) {
-    const places = computePlaces(sequence.bellsList.length - 1);
+    // const annotatedPlaces = computeAnnotatedPlaces(sequence.bellsList.length - 1);
+    const annotatedPlaces = computeAnnotatedPlaces(count++);
+    // console.log(annotatedPlaces.places, annotatedPlaces.isWork);
+    sequence.annotatedPlacesList.push(annotatedPlaces);
+    sequence.bellsList.push(makePlaces(sequence.bellsList[sequence.bellsList.length - 1], annotatedPlaces.places));
 
-    // if repeated sequence seen:
-    break;
+    // TODO: if repeated sequence seen:
+    if (count === 30) {
+      break;
+    }
   }
 
 
   return sequence;
 }
 
-function computePlaces(step) {
+function computeAnnotatedPlaces(step) {
   const method = model.methods[model.selected.methodName];
   const touch = model.selected.touch;
   // Find where step is inside a placeNotation sequence.
   const repeatLength = method.placeNotation.length;
   const placeNotationIndex = step % repeatLength;
   const touchIndex = Math.floor(step / repeatLength);
-  const lastTouchCall = touchIndex > 0 && touchIndex <= touch.length ? touch[touchIndex - 1] : 'P';
-  const touchCall = touchIndex >= 0 && touchIndex < touch.length ? touch[touchIndex] : 'P';
+  const lastOffsetWork = getOffsetWork(method, touch, touchIndex - 1);
+  const offsetWork = getOffsetWork(method, touch, touchIndex);
 
-  // Overlay lastTouchCall work over the beginning.
+  // Overlay lastOffsetWork work over the beginning.
+  if (lastOffsetWork) {
+    const places = arrayGet(
+      lastOffsetWork.work,
+      placeNotationIndex + 1 - lastOffsetWork.offset,
+    );
+    if (places) {
+      return {
+        places,
+        isWork: true,
+      };
+    }
+  }
 
-  // Overlay touchCall work over the ending.
+  // Overlay offsetWork work over the ending.
+  if (offsetWork) {
+    const places = arrayGet(
+      offsetWork.work,
+      placeNotationIndex - repeatLength + 1 - offsetWork.offset,
+    );
+    if (places) {
+      return {
+        places,
+        isWork: true,
+      };
+    }
+  }
+
+  return {
+    places: method.placeNotation[placeNotationIndex],
+    isWork: false,
+  };
+}
+
+function getOffsetWork(method, touch, touchIndex) {
+  if (touchIndex < 0 || touchIndex >= touch.length) {
+    return null;
+  }
+  const call = touch[touchIndex];
+  return (
+    call === 'B'
+    ? method.bob
+    : (
+      call === 'S'
+      ? method.single
+      : null
+    )
+  );
+}
+
+function arrayGet(array, index) {
+  return (index < 0 || index >= array.length) ? null : array[index];
+}
+
+function makePlaces(bells, places) {
+  const result = [...bells];
+  let i = 0;
+  for (const place of places) {
+    while (true) {
+      if (i + 1 < place) {
+        [result[i], result[i + 1]] = [result[i + 1], result[i]];
+        i += 2;
+      } else {
+        i += 1;
+        break;
+      }
+    }
+  }
+  while (i < result.length) {
+    [result[i], result[i + 1]] = [result[i + 1], result[i]];
+    i += 2;
+  }
+
+  return result;
 }
 
 function loadSavedModel() {
@@ -160,8 +239,6 @@ function loadSavedModel() {
         bob: {
           work: [
             [3],
-            [1],
-            [3],
           ],
           offset: -1,
         },
@@ -169,7 +246,6 @@ function loadSavedModel() {
           work: [
             [3],
             [1, 2, 3],
-            [3],
           ],
           offset: -1,
         },
@@ -231,7 +307,7 @@ function loadSavedModel() {
       },
     },
     selected: {
-      methodName: 'Plain Bob Doubles',
+      methodName: 'Grandsire Doubles',
       touch: '',
       bellLine: 2,
     },
