@@ -1,3 +1,18 @@
+# 2025-03-29
+- Split render functions out into separate files.
+  - Cleans things up a bit.
+- Added more SVG elements to render the bells list and places.
+- Rendered blue line.
+- How to render red line?
+  - Not clear when there is a red line.
+    - Method could specify maybe.
+  - Hunt bell can change, should be a red line?
+    - Much harder to detect.
+    - But possible.
+  - Leaving red lines out for now.
+  - Will add as specified on the method maybe and leave out hunt bells.
+- Still need to add blue line picker.
+
 # 2025-03-26
 - Finished implementing the place notation touch overlay code.
 - Implemented applying places to the bells.
