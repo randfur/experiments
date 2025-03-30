@@ -10,18 +10,17 @@ export function renderSequence(model, rerender) {
         font-family: sans-serif;
       }
       .bell {
-        font-size: 80px;
+        font-size: 20px;
       }
       .places {
-        font-size: 30px;
+        font-size: 12px;
         fill: #ccc;
         text-align: end;
       }
       .blue-line {
         fill: none;
         stroke: blue;
-        stroke-width: 20px;
-        stroke-linecap: round;
+        stroke-width: 4px;
         stroke-linejoin: round;
       }
     `,
@@ -32,29 +31,26 @@ export function renderSequence(model, rerender) {
 
   const blueLineXy = [];
 
-  let y = 90;
+  let y = 30;
   for (const bells of sequence.bellsList) {
-    let x = 150;
+    let x = 70;
     for (const bell of bells) {
       if (bell === model.selected.blueLine) {
-        blueLineXy.push({
-          x: x + 25,
-          y: y - 30,
-        });
+        blueLineXy.push({x, y});
       } else {
         svg.append(createSvgElement({
           tag: 'text',
           className: 'bell',
           textContent: bell,
           attributes: {
-            x,
-            y,
+            x: x,
+            y: y,
           },
         }));
       }
-      x += 120;
+      x += 40;
     }
-    y += 90;
+    y += 40;
   }
 
   svg.append(createSvgElement({
@@ -62,38 +58,36 @@ export function renderSequence(model, rerender) {
     className: 'blue-line',
     attributes: {
       d: blueLineXy.map(({x, y}, i) => `${i === 0 ? 'M' : 'L'} ${x} ${y} `).join(''),
-      'stroke-linejoin': 'round',
     },
   }));
 
-  y = 120;
+  y = 48;
   for (const annotatedPlaces of sequence.annotatedPlacesList) {
-    let x = 100;
+    let x = 50;
     svg.append(createSvgElement({
       tag: 'text',
       className: 'places',
-      textContent: annotatedPlaces.places.join(''),
+      textContent: annotatedPlaces.places.join(' '),
       attributes: {
         'text-anchor': 'end',
-        x,
-        y,
+        x: x,
+        y: y,
       },
     }));
-    y += 90;
+    y += 40;
   }
-
-  svg.setAttribute(
-    'height',
-    100 + Array.from(svg.children).reduce(
-      (acc, child) => Math.max(acc, child.y?.baseVal[0]?.value ?? 0),
-      0,
-    ),
-  );
 
   svg.setAttribute(
     'width',
     100 + Array.from(svg.children).reduce(
       (acc, child) => Math.max(acc, child.x?.baseVal[0]?.value ?? 0),
+      0,
+    ),
+  );
+  svg.setAttribute(
+    'height',
+    100 + Array.from(svg.children).reduce(
+      (acc, child) => Math.max(acc, child.y?.baseVal[0]?.value ?? 0),
       0,
     ),
   );

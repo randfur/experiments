@@ -2,6 +2,8 @@
 - Refactored code to use a createElement helper function.
   - A bit nicer.
 - Made the sequence bigger.
+  - Too big now, can't zoom out on mobile, maybe was better as it was.
+  - Reverted size changes.
 
 # 2025-03-29
 - Split render functions out into separate files.
