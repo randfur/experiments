@@ -1,9 +1,29 @@
 import {createSvgElement} from './create-element.js';
 
-export function renderSequence(model, rerender) {
-  const svg = createSvgElement({tag: 'svg'});
+const rowHeight = 22;
+const columnWidth = 30;
 
-  svg.append(createSvgElement({
+export function renderSequence(model, rerender) {
+  const sequence = computeSequence(model);
+  console.log(sequence);
+  return createSvgElement({
+    tag: 'svg',
+    attributes: {
+      width: 100 + model.methods[model.selected.methodName].bells * 60,
+      height: 100 + sequence.bellsList.length * 50,
+    },
+    children: [
+      renderStyle(),
+      renderBells(model, sequence),
+      renderBlueLine(model, sequence),
+      renderPlaces(sequence),
+      // renderRepeatLines(model),
+    ],
+  });
+}
+
+function renderStyle() {
+  return createSvgElement({
     tag: 'style',
     textContent: `
       text {
@@ -11,6 +31,10 @@ export function renderSequence(model, rerender) {
       }
       .bell {
         font-size: 20px;
+      }
+      .work {
+        fill: green;
+        font-weight: bold;
       }
       .places {
         font-size: 12px;
@@ -24,75 +48,73 @@ export function renderSequence(model, rerender) {
         stroke-linejoin: round;
       }
     `,
-  }));
+  });
+}
 
-  const sequence = computeSequence(model);
-  console.log(sequence);
-
-  const blueLineXy = [];
-
-  let y = 30;
-  for (const bells of sequence.bellsList) {
-    let x = 70;
-    for (const bell of bells) {
-      if (bell === model.selected.blueLine) {
-        blueLineXy.push({x, y});
-      } else {
-        svg.append(createSvgElement({
-          tag: 'text',
-          className: 'bell',
-          textContent: bell,
-          attributes: {
-            x: x,
-            y: y,
-          },
-        }));
-      }
-      x += 40;
-    }
-    y += 40;
-  }
-
-  svg.append(createSvgElement({
-    tag: 'path',
-    className: 'blue-line',
+function renderBells(model, sequence) {
+  return createSvgElement({
+    tag: 'g',
     attributes: {
-      d: blueLineXy.map(({x, y}, i) => `${i === 0 ? 'M' : 'L'} ${x} ${y} `).join(''),
+      transform: 'translate(60, 50)',
     },
-  }));
+    children: sequence.bellsList.flatMap((bells, i) => {
+      return bells.map((bell, j) => {
+        return bell === model.selected.blueLine
+          ? null
+          : createSvgElement({
+            tag: 'text',
+            classes: [...(isDoingWork(sequence, i) ? ['work'] : []), 'bell'],
+            textContent: bell,
+            attributes: {
+              x: j * columnWidth,
+              y: i * rowHeight,
+            },
+          });
+      }).filter(x => x !== null);
+    }),
+  });
+}
 
-  y = 48;
-  for (const annotatedPlaces of sequence.annotatedPlacesList) {
-    let x = 50;
-    svg.append(createSvgElement({
-      tag: 'text',
-      className: 'places',
-      textContent: annotatedPlaces.places.join(' '),
-      attributes: {
-        'text-anchor': 'end',
-        x: x,
-        y: y,
-      },
-    }));
-    y += 40;
-  }
+function renderBlueLine(model, sequence) {
+  return createSvgElement({
+    tag: 'path',
+    classes: ['blue-line'],
+    attributes: {
+      transform: `translate(65, ${31 + rowHeight / 2})`,
+      d: sequence.bellsList.map((bells, i) => {
+        const j = bells.indexOf(model.selected.blueLine);
+        return `${i === 0 ? 'M' : 'L'} ${j * columnWidth} ${i * rowHeight}`
+      }).join(''),
+    },
+  });
+}
 
-  svg.setAttribute(
-    'width',
-    100 + Array.from(svg.children).reduce(
-      (acc, child) => Math.max(acc, child.x?.baseVal[0]?.value ?? 0),
-      0,
-    ),
+function renderPlaces(sequence) {
+  return createSvgElement({
+    tag: 'g',
+    attributes: {
+      transform: `translate(50, ${47 + rowHeight / 2})`,
+    },
+    children: sequence.annotatedPlacesList.map((annotatedPlaces, i) => {
+      return createSvgElement({
+        tag: 'text',
+        classes: ['places'],
+        textContent: annotatedPlaces.places.join(' '),
+        attributes: {
+          'text-anchor': 'end',
+          y: i * rowHeight,
+        },
+      });
+    }),
+  });
+}
+
+function isDoingWork(sequence, index) {
+  return (
+    index > 0 && sequence.annotatedPlacesList[index - 1].isWork
+  ) || (
+    index < sequence.annotatedPlacesList.length && sequence.annotatedPlacesList[index].isWork
   );
-  svg.setAttribute(
-    'height',
-    100 + Array.from(svg.children).reduce(
-      (acc, child) => Math.max(acc, child.y?.baseVal[0]?.value ?? 0),
-      0,
-    ),
-  );
-
-  return svg;
 }
 
 function computeSequence(model) {
@@ -101,6 +123,7 @@ function computeSequence(model) {
   const sequence = {
     bellsList: [],
     annotatedPlacesList: [],
+    touches: [],
   };
 
   let bells = [];

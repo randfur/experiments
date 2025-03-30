@@ -1,4 +1,10 @@
 # 2025-03-30
+- Refactored sequence rendering code out into functions.
+- Much neater with each returning a createSvgElement().
+- Added work detection and colouring.
+- Added grouping for general placement.
+
+# 2025-03-30
 - Refactored code to use a createElement helper function.
   - A bit nicer.
 - Made the sequence bigger.

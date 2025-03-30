@@ -2,7 +2,7 @@ export function createElement(params) {
   const {
     tag,
     namespaceUri='http://www.w3.org/1999/xhtml',
-    className,
+    classes,
     events,
     attributes,
     children,
@@ -10,8 +10,10 @@ export function createElement(params) {
   } = params;
   const element = document.createElementNS(namespaceUri, tag);
 
-  if (className) {
-    element.classList.add(className);
+  if (classes) {
+    for (const className of classes) {
+      element.classList.add(className);
+    }
   }
 
   if (events) {
