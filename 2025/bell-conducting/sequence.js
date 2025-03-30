@@ -1,79 +1,100 @@
-const svgNamespace = 'http://www.w3.org/2000/svg';
+import {createSvgElement} from './create-element.js';
 
 export function renderSequence(model, rerender) {
-  const svg = document.createElementNS(svgNamespace, 'svg');
+  const svg = createSvgElement({tag: 'svg'});
 
-  const style = document.createElementNS(svgNamespace, 'style');
-  style.textContent = `
-    text {
-      font-family: sans-serif;
-    }
-    .bell {
-      font-size: 20px;
-    }
-    .places {
-      font-size: 12px;
-      fill: #ccc;
-      text-align: end;
-    }
-    .blue-line {
-      fill: none;
-      stroke: blue;
-      stroke-width: 4px;
-      stroke-linejoin: round;
-    }
-  `;
-  svg.append(style);
+  svg.append(createSvgElement({
+    tag: 'style',
+    textContent: `
+      text {
+        font-family: sans-serif;
+      }
+      .bell {
+        font-size: 80px;
+      }
+      .places {
+        font-size: 30px;
+        fill: #ccc;
+        text-align: end;
+      }
+      .blue-line {
+        fill: none;
+        stroke: blue;
+        stroke-width: 20px;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+    `,
+  }));
 
   const sequence = computeSequence(model);
   console.log(sequence);
 
   const blueLineXy = [];
 
-  let y = 30;
+  let y = 90;
   for (const bells of sequence.bellsList) {
-    let x = 70;
+    let x = 150;
     for (const bell of bells) {
       if (bell === model.selected.blueLine) {
-        blueLineXy.push({x, y});
+        blueLineXy.push({
+          x: x + 25,
+          y: y - 30,
+        });
       } else {
-        const text = document.createElementNS(svgNamespace, 'text');
-        text.classList.add('bell');
-        text.textContent = bell;
-        text.setAttribute('x', x);
-        text.setAttribute('y', y);
-        svg.append(text);
+        svg.append(createSvgElement({
+          tag: 'text',
+          className: 'bell',
+          textContent: bell,
+          attributes: {
+            x,
+            y,
+          },
+        }));
       }
-      x += 40;
+      x += 120;
     }
-    y += 40;
+    y += 90;
   }
 
-  const blueLinePath = document.createElementNS(svgNamespace, 'path');
-  blueLinePath.classList.add('blue-line');
-  blueLinePath.setAttribute('d', blueLineXy.map(({x, y}, i) => `${i === 0 ? 'M' : 'L'} ${x} ${y} `).join(''));
-  svg.append(blueLinePath);
+  svg.append(createSvgElement({
+    tag: 'path',
+    className: 'blue-line',
+    attributes: {
+      d: blueLineXy.map(({x, y}, i) => `${i === 0 ? 'M' : 'L'} ${x} ${y} `).join(''),
+      'stroke-linejoin': 'round',
+    },
+  }));
 
-  y = 48;
+  y = 120;
   for (const annotatedPlaces of sequence.annotatedPlacesList) {
-    let x = 50;
-    const text = document.createElementNS(svgNamespace, 'text');
-    text.classList.add('places');
-    text.setAttribute('text-anchor', 'end');
-    text.textContent = annotatedPlaces.places.join(' ');
-    text.setAttribute('x', x);
-    text.setAttribute('y', y);
-    svg.append(text);
-    y += 40;
+    let x = 100;
+    svg.append(createSvgElement({
+      tag: 'text',
+      className: 'places',
+      textContent: annotatedPlaces.places.join(''),
+      attributes: {
+        'text-anchor': 'end',
+        x,
+        y,
+      },
+    }));
+    y += 90;
   }
 
   svg.setAttribute(
     'height',
     100 + Array.from(svg.children).reduce(
-      (a, b) => Math.max(
-        a.y?.baseVal[0]?.value ?? 0,
-        b.y?.baseVal[0]?.value ?? 0,
-      ),
+      (acc, child) => Math.max(acc, child.y?.baseVal[0]?.value ?? 0),
+      0,
+    ),
+  );
+
+  svg.setAttribute(
+    'width',
+    100 + Array.from(svg.children).reduce(
+      (acc, child) => Math.max(acc, child.x?.baseVal[0]?.value ?? 0),
+      0,
     ),
   );
 

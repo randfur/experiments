@@ -1,3 +1,8 @@
+# 2025-03-30
+- Refactored code to use a createElement helper function.
+  - A bit nicer.
+- Made the sequence bigger.
+
 # 2025-03-29
 - Split render functions out into separate files.
   - Cleans things up a bit.
@@ -12,6 +17,7 @@
   - Leaving red lines out for now.
   - Will add as specified on the method maybe and leave out hunt bells.
 - Still need to add blue line picker.
+- Tried it on mobile, everything is tiny, need to scale everything up 4x.
 
 # 2025-03-26
 - Finished implementing the place notation touch overlay code.

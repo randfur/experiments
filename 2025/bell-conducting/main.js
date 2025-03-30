@@ -4,6 +4,7 @@ import {renderTouchPicker} from './touch-picker.js';
 import {renderTouch} from './touch.js';
 // import {renderBlueLinePicker} from './blue-line-picker.js';
 import {renderSequence} from './sequence.js';
+import {createElement} from './create-element.js';
 
 let model = null;
 let container = null;
@@ -19,19 +20,15 @@ function main() {
 function render() {
   container.replaceChildren(
     renderMethodPicker(model, render),
-    renderBr(),
+    createElement({tag: 'br'}),
     renderTouchPicker(model, render),
-    renderBr(),
+    createElement({tag: 'br'}),
     renderTouch(model),
-    renderBr(),
+    createElement({tag: 'br'}),
     // renderBlueLinePicker(model, render),
-    renderBr(),
+    createElement({tag: 'br'}),
     renderSequence(model, render),
   );
-}
-
-function renderBr() {
-  return document.createElement('br');
 }
 
 main();

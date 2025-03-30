@@ -10,7 +10,7 @@ export function loadSavedModel() {
     version: 1,
     selected: {
       methodName: 'Plain Bob Doubles',
-      touch: '',
+      touch: 'BPBPBP',
       blueLine: 2,
     },
     methods: {
@@ -42,7 +42,7 @@ export function loadSavedModel() {
           offset: -1,
         },
         touches: [
-          '',
+          'BPSPBPBPSPBP',
         ],
       },
       'Plain Bob Doubles': {
@@ -72,7 +72,7 @@ export function loadSavedModel() {
           offset: 0,
         },
         touches: [
-          '',
+          'BPBPBP',
         ],
       },
       'Original Doubles': {
@@ -94,7 +94,7 @@ export function loadSavedModel() {
           offset: -1,
         },
         touches: [
-          '',
+          'BPBPBP',
         ],
       },
     },
