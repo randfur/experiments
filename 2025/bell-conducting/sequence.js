@@ -5,7 +5,6 @@ const columnWidth = 30;
 
 export function renderSequence(model, rerender) {
   const sequence = computeSequence(model);
-  console.log(sequence);
   return createSvgElement({
     tag: 'svg',
     attributes: {
@@ -126,8 +125,8 @@ function renderRepeatLines(model, sequence) {
     attributes: {
       transform: `translate(50, ${21 + rowHeight / 2})`,
     },
-    children: range(sequence.bellsList.length / placeNotationLength).map(i => {
-      const y = i * placeNotationLength * rowHeight;
+    children: range(sequence.bellsList.length / placeNotationLength - 1).map(i => {
+      const y = (i + 1) * placeNotationLength * rowHeight;
       return createSvgElement({
         tag: 'path',
         classes: ['repeat-line'],
