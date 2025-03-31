@@ -17,7 +17,8 @@ export function renderSequence(model, rerender) {
       renderBells(model, sequence),
       renderBlueLine(model, sequence),
       renderPlaces(sequence),
-      // renderRepeatLines(model),
+      renderRepeatLines(model, sequence),
+      renderTouches(model, sequence),
     ],
   });
 }
@@ -46,6 +47,14 @@ function renderStyle() {
         stroke: blue;
         stroke-width: 4px;
         stroke-linejoin: round;
+      }
+      .repeat-line {
+        stroke: #ccc;
+      }
+      .touch-call {
+        fill: black;
+        font-weight: bold;
+        font-size: 25px;
       }
     `,
   });
@@ -107,6 +116,58 @@ function renderPlaces(sequence) {
       });
     }),
   });
+}
+
+function renderRepeatLines(model, sequence) {
+  const method = model.methods[model.selected.methodName];
+  const placeNotationLength = method.placeNotation.length;
+  return createSvgElement({
+    tag: 'g',
+    attributes: {
+      transform: `translate(50, ${21 + rowHeight / 2})`,
+    },
+    children: range(sequence.bellsList.length / placeNotationLength).map(i => {
+      const y = i * placeNotationLength * rowHeight;
+      return createSvgElement({
+        tag: 'path',
+        classes: ['repeat-line'],
+        attributes: {
+          d: `M 0 ${y} L ${method.bells * columnWidth} ${y}`,
+        },
+      });
+    }),
+  });
+}
+
+function renderTouches(model, sequence) {
+  const touch = model.selected.touch;
+  const method = model.methods[model.selected.methodName];
+  const placeNotationLength = method.placeNotation.length;
+  return createSvgElement({
+    tag: 'g',
+    attributes: {
+      transform: `translate(${70 + method.bells * columnWidth}, ${29 + rowHeight / 2})`,
+    },
+    children: range(sequence.bellsList.length / placeNotationLength).map(i => {
+      const y = i * placeNotationLength * rowHeight;
+      return createSvgElement({
+        tag: 'text',
+        classes: ['touch-call'],
+        textContent: i === 0 ? '' : ((i - 1) < touch.length ? touch[i - 1] : 'P'),
+        attributes: {
+          y,
+        },
+      });
+    }),
+  });
+}
+
+function range(n) {
+  const result = [];
+  for (let i = 0; i < n; ++i) {
+    result.push(i);
+  }
+  return result;
 }
 
 function isDoingWork(sequence, index) {

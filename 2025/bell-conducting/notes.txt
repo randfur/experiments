@@ -1,3 +1,6 @@
+# 2025-04-01
+- Added basic touch rendering and repeat lines.
+
 # 2025-03-30
 - Refactored sequence rendering code out into functions.
 - Much neater with each returning a createSvgElement().
