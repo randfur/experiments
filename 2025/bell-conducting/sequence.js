@@ -14,9 +14,9 @@ export function renderSequence(model, rerender) {
     children: [
       renderStyle(),
       renderBells(model, sequence),
+      renderRepeatLines(model, sequence),
       renderBlueLine(model, sequence),
       renderPlaces(sequence),
-      renderRepeatLines(model, sequence),
       renderTouches(model, sequence),
     ],
   });
@@ -31,6 +31,10 @@ function renderStyle() {
       }
       .bell {
         font-size: 20px;
+      }
+      .rounds {
+        fill: orange;
+        font-weight: bold;
       }
       .work {
         fill: green;
@@ -51,9 +55,20 @@ function renderStyle() {
         stroke: #ccc;
       }
       .touch-call {
-        fill: black;
-        font-weight: bold;
+        fill: #ccc;
         font-size: 25px;
+      }
+      .called {
+        font-weight: bold;
+      }
+      .called.plain {
+        fill: black;
+      }
+      .called.bob {
+        fill: brown;
+      }
+      .called.single {
+        fill: purple;
       }
     `,
   });
@@ -67,18 +82,20 @@ function renderBells(model, sequence) {
     },
     children: sequence.bellsList.flatMap((bells, i) => {
       return bells.map((bell, j) => {
-        return bell === model.selected.blueLine
-          ? null
-          : createSvgElement({
+        return createSvgElement({
             tag: 'text',
-            classes: [...(isDoingWork(sequence, i) ? ['work'] : []), 'bell'],
+            classes: [
+              'bell',
+              ...(isRounds(bells) ? ['rounds'] : []),
+              ...(isDoingWork(sequence, i) ? ['work'] : []),
+            ],
             textContent: bell,
             attributes: {
               x: j * columnWidth,
               y: i * rowHeight,
             },
           });
-      }).filter(x => x !== null);
+      });
     }),
   });
 }
@@ -147,15 +164,28 @@ function renderTouches(model, sequence) {
     attributes: {
       transform: `translate(${70 + method.bells * columnWidth}, ${29 + rowHeight / 2})`,
     },
-    children: range(sequence.bellsList.length / placeNotationLength).map(i => {
-      const y = i * placeNotationLength * rowHeight;
-      return createSvgElement({
-        tag: 'text',
-        classes: ['touch-call'],
-        textContent: i === 0 ? '' : ((i - 1) < touch.length ? touch[i - 1] : 'P'),
-        attributes: {
-          y,
-        },
+    children: range(sequence.bellsList.length / placeNotationLength - 1).flatMap(i => {
+      const y = (i + 1) * placeNotationLength * rowHeight;
+      const currentTouchCall = i < touch.length ? touch[i] : 'P';
+      return ['P', 'B', 'S'].map((touchCall, j) => {
+        return createSvgElement({
+          tag: 'text',
+          classes: [
+            ...(currentTouchCall === touchCall ? ['called'] : []),
+            touchCall === 'P' ? 'plain' : (touchCall === 'B' ? 'bob' : 'single'),
+            'touch-call',
+          ],
+          textContent: touchCall,
+          attributes: {
+            x: j * 30,
+            y,
+          },
+          events: {
+            click: () => {
+              model.selected.touch
+            },
+          },
+        });
       });
     }),
   });
@@ -167,6 +197,10 @@ function range(n) {
     result.push(i);
   }
   return result;
+}
+
+function isRounds(bells) {
+  return bells.every((bell, i) => i === 0 || bell > bells[i - 1]);
 }
 
 function isDoingWork(sequence, index) {
