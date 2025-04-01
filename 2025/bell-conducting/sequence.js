@@ -17,7 +17,7 @@ export function renderSequence(model, rerender) {
       renderRepeatLines(model, sequence),
       renderBlueLine(model, sequence),
       renderPlaces(sequence),
-      renderTouches(model, sequence),
+      renderTouches(model, sequence, rerender),
     ],
   });
 }
@@ -155,7 +155,7 @@ function renderRepeatLines(model, sequence) {
   });
 }
 
-function renderTouches(model, sequence) {
+function renderTouches(model, sequence, rerender) {
   const touch = model.selected.touch;
   const method = model.methods[model.selected.methodName];
   const placeNotationLength = method.placeNotation.length;
@@ -182,7 +182,15 @@ function renderTouches(model, sequence) {
           },
           events: {
             click: () => {
-              model.selected.touch
+              let touch = model.selected.touch;
+              if (i >= touch.length) {
+                touch += 'P'.repeat(i - touch.length + 1);
+              }
+              if (touch[i] === touchCall) {
+                return;
+              }
+              model.selected.touch = touch.substring(0, i) + touchCall + touch.substring(i + 1);
+              rerender();
             },
           },
         });
@@ -232,18 +240,20 @@ function computeSequence(model) {
   //   console.log('todo');
   // }
 
-  // Run until we see a repeated sequence.
-  const seenBells = new Set([arrayLast(sequence.bellsList).join('')]);
-  while (true) {
+  // // Run until we see a repeated sequence.
+  // const seenBells = new Set([arrayLast(sequence.bellsList).join('')]);
+  // while (true) {
+  // Run for a set number of changes
+  for (let i = 0; i < 100; ++i) {
     const annotatedPlaces = computeAnnotatedPlaces(model, sequence.bellsList.length - 1);
     sequence.annotatedPlacesList.push(annotatedPlaces);
     const bells = makePlaces(arrayLast(sequence.bellsList), annotatedPlaces.places);
     sequence.bellsList.push(bells);
-    const bellsKey = bells.join('');
-    if (seenBells.has(bellsKey)) {
-      break;
-    }
-    seenBells.add(bellsKey);
+    // const bellsKey = bells.join('');
+    // if (seenBells.has(bellsKey)) {
+    //   break;
+    // }
+    // seenBells.add(bellsKey);
   }
 
   return sequence;
