@@ -1,8 +1,9 @@
 import {loadSavedModel} from './storage.js';
+import {renderTopContainer} from './top-container.js';
 import {renderMethodPicker} from './method-picker.js';
 import {renderTouchPicker} from './touch-picker.js';
 import {renderTouch} from './touch.js';
-// import {renderBlueLinePicker} from './blue-line-picker.js';
+import {renderBlueLinePicker} from './blue-line-picker.js';
 import {renderSequence} from './sequence.js';
 import {createElement} from './create-element.js';
 
@@ -11,22 +12,20 @@ let container = null;
 
 function main() {
   model = loadSavedModel();
+  document.body.style.margin = '0';
   container = document.createElement('div');
-  container.style.paddingLeft = '20px';
   document.body.append(container);
   render();
 }
 
 function render() {
   container.replaceChildren(
-    renderMethodPicker(model, render),
-    createElement({tag: 'br'}),
-    renderTouchPicker(model, render),
-    createElement({tag: 'br'}),
-    renderTouch(model),
-    createElement({tag: 'br'}),
-    // renderBlueLinePicker(model, render),
-    createElement({tag: 'br'}),
+    renderTopContainer([
+      renderMethodPicker(model, render),
+      renderTouchPicker(model, render),
+      renderTouch(model),
+      renderBlueLinePicker(model, render),
+    ]),
     renderSequence(model, render),
   );
 }

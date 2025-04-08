@@ -1,4 +1,5 @@
 import {createSvgElement} from './create-element.js';
+import {range} from './utils.js';
 
 const rowHeight = 22;
 const columnWidth = 30;
@@ -7,6 +8,10 @@ export function renderSequence(model, rerender) {
   const sequence = computeSequence(model);
   return createSvgElement({
     tag: 'svg',
+    style: {
+      transformOrigin: 'top left',
+      transform: 'scale(1.2)',
+    },
     attributes: {
       width: 100 + model.methods[model.selected.methodName].bells * 60,
       height: 100 + sequence.bellsList.length * 50,
@@ -32,11 +37,15 @@ function renderStyle() {
       .bell {
         font-size: 20px;
       }
-      .rounds {
+      .bell.highlight {
+        fill: blue;
+        font-weight: bold;
+      }
+      .bell.rounds {
         fill: orange;
         font-weight: bold;
       }
-      .work {
+      .bell.work {
         fill: green;
         font-weight: bold;
       }
@@ -57,6 +66,7 @@ function renderStyle() {
       .touch-call {
         fill: #ccc;
         font-size: 25px;
+        user-select: none;
       }
       .called {
         font-weight: bold;
@@ -86,6 +96,7 @@ function renderBells(model, sequence) {
             tag: 'text',
             classes: [
               'bell',
+              ...(bell === model.selected.blueLine ? ['highlight'] : []),
               ...(isRounds(bells) ? ['rounds'] : []),
               ...(isDoingWork(sequence, i) ? ['work'] : []),
             ],
@@ -199,14 +210,6 @@ function renderTouches(model, sequence, rerender) {
   });
 }
 
-function range(n) {
-  const result = [];
-  for (let i = 0; i < n; ++i) {
-    result.push(i);
-  }
-  return result;
-}
-
 function isRounds(bells) {
   return bells.every((bell, i) => i === 0 || bell > bells[i - 1]);
 }
@@ -244,7 +247,7 @@ function computeSequence(model) {
   // const seenBells = new Set([arrayLast(sequence.bellsList).join('')]);
   // while (true) {
   // Run for a set number of changes
-  for (let i = 0; i < 100; ++i) {
+  for (let i = 0; i < 500; ++i) {
     const annotatedPlaces = computeAnnotatedPlaces(model, sequence.bellsList.length - 1);
     sequence.annotatedPlacesList.push(annotatedPlaces);
     const bells = makePlaces(arrayLast(sequence.bellsList), annotatedPlaces.places);

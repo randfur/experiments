@@ -3,6 +3,7 @@ export function createElement(params) {
     tag,
     namespaceUri='http://www.w3.org/1999/xhtml',
     classes,
+    style,
     events,
     attributes,
     children,
@@ -13,6 +14,12 @@ export function createElement(params) {
   if (classes) {
     for (const className of classes) {
       element.classList.add(className);
+    }
+  }
+
+  if (style) {
+    for (const [propertyName, value] of Object.entries(style)) {
+      element.style[propertyName] = value;
     }
   }
 
@@ -44,4 +51,8 @@ export function createSvgElement(params) {
     ...params,
     namespaceUri: 'http://www.w3.org/2000/svg',
   });
+}
+
+export function createText(text) {
+  return document.createTextNode(text);
 }

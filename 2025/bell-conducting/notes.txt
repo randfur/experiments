@@ -1,3 +1,16 @@
+# 2025-04-09
+- Added blue line highlight picker.
+- Extended temporary sequence length to 500, 100 wasn't enough.
+- Highlighted blue line number in blue.
+- Added `style` property to createElement(), much easier to do stuff now.
+- Put top controls into a sticky container and gave it styling.
+- Added transform zoom to sequence SVG, easy to control overall sizing.
+- Made the controls much bigger via font-size.
+- Zooming:
+  - Currently zooming zooms the top controls, this isn't really desirable.
+  - Doesn't seem to be a nice way to zoom inside a div.
+  - Will need to implement all the transforming stuff myself in JS it seems.
+
 # 2025-04-01
 - Added basic touch rendering and repeat lines.
 
