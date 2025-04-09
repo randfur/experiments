@@ -10,8 +10,8 @@ export function loadSavedModel() {
     version: 1,
     viewport: {
       initialTouches: {},
-      pan: {x: 100, y: -100},
-      zoom: 2,
+      pan: {x: 0, y: 0},
+      zoom: 1,
     },
     selected: {
       methodName: 'Plain Bob Doubles',
