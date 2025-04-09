@@ -10,6 +10,17 @@
   - Currently zooming zooms the top controls, this isn't really desirable.
   - Doesn't seem to be a nice way to zoom inside a div.
   - Will need to implement all the transforming stuff myself in JS it seems.
+- Coding session:
+  - Added renderPinchZoomableSection().
+  - Kinda complex handling of touch events, touch states.
+  - Keeping a snapshot of the viewport pan and zoom and the set of touches at that point in time.
+  - As touch moves happen update the viewport element's transform inplace rather than rerendering.
+  - When the set of touches changes bake in the current pinch zoom into the model and re-snapshot.
+  - It works!
+  - Used chrome://inspect/#devices to connect DevTools to Chrome on phone to debug.
+  - Currently panning and zooming don't take each other into account.
+  - Pan should be scaled by the current zoom.
+  - Zoom should be centered around the touch centre.
 
 # 2025-04-01
 - Added basic touch rendering and repeat lines.

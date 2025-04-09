@@ -4,6 +4,7 @@ import {renderMethodPicker} from './method-picker.js';
 import {renderTouchPicker} from './touch-picker.js';
 import {renderTouch} from './touch.js';
 import {renderBlueLinePicker} from './blue-line-picker.js';
+import {renderPinchZoomableSection} from './pinch-zoomable-section.js';
 import {renderSequence} from './sequence.js';
 import {createElement} from './create-element.js';
 
@@ -13,6 +14,7 @@ let container = null;
 function main() {
   model = loadSavedModel();
   document.body.style.margin = '0';
+  document.body.style.touchAction = 'none';
   container = document.createElement('div');
   document.body.append(container);
   render();
@@ -26,7 +28,9 @@ function render() {
       renderTouch(model),
       renderBlueLinePicker(model, render),
     ]),
-    renderSequence(model, render),
+    renderPinchZoomableSection(model, render, [
+      renderSequence(model, render),
+    ]),
   );
 }
 
