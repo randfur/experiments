@@ -21,7 +21,7 @@ export function renderPinchZoomableSection(model, rerender, children) {
 
     const initialCentre = calculateCentre(viewport.initialTouches);
     const activeCentre = calculateCentre(activeTouches);
-    const panDelta = subtractXy(activeCentre, initialCentre);
+    const panDelta = scaleXy(subtractXy(activeCentre, initialCentre), 1 / viewport.zoom);
 
     let zoomDelta = 1;
     if (Object.keys(activeTouches).length > 1) {
@@ -108,6 +108,13 @@ function hasSameKeys(a, b) {
   return new Set(Object.keys(a)).difference(new Set(Object.keys(b))).size === 0;
 }
 
+function addXy(a, b) {
+  return {
+    x: a.x + b.x,
+    y: a.y + b.y,
+  };
+}
+
 function subtractXy(a, b) {
   return {
     x: a.x - b.x,
@@ -115,10 +122,10 @@ function subtractXy(a, b) {
   };
 }
 
-function addXy(a, b) {
+function scaleXy({x, y}, k) {
   return {
-    x: a.x + b.x,
-    y: a.y + b.y,
+    x: x * k,
+    y: y * k,
   };
 }
 

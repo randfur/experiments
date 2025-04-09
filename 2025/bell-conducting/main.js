@@ -14,7 +14,7 @@ let container = null;
 function main() {
   model = loadSavedModel();
   document.body.style.margin = '0';
-  document.body.style.touchAction = 'none';
+  // document.body.style.touchAction = 'none';
   container = document.createElement('div');
   document.body.append(container);
   render();
@@ -28,9 +28,9 @@ function render() {
       renderTouch(model),
       renderBlueLinePicker(model, render),
     ]),
-    renderPinchZoomableSection(model, render, [
+    // renderPinchZoomableSection(model, render, [
       renderSequence(model, render),
-    ]),
+    // ]),
   );
 }
 
