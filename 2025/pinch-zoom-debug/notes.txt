@@ -1,0 +1,5 @@
+# 2025-04-09
+- Noticed laggy touch events for a single finger after pinch zooming with two fingers.
+- Creating a touch events debug page to inspect the live behaviour on mobile.
+- Implemented basic rendering of touch events.
+- Looks like no lag at all.
