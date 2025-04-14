@@ -1,3 +1,7 @@
+# 2025-04-15
+- Added more methods.
+- Made rounds appear over work highlight.
+
 # 2025-04-09
 - Added blue line highlight picker.
 - Extended temporary sequence length to 500, 100 wasn't enough.

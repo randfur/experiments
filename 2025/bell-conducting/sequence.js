@@ -41,12 +41,12 @@ function renderStyle() {
         fill: blue;
         font-weight: bold;
       }
-      .bell.rounds {
-        fill: orange;
-        font-weight: bold;
-      }
       .bell.work {
         fill: green;
+        font-weight: bold;
+      }
+      .bell.rounds {
+        fill: orange;
         font-weight: bold;
       }
       .places {

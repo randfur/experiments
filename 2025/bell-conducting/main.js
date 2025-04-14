@@ -14,6 +14,7 @@ let container = null;
 function main() {
   model = loadSavedModel();
   document.body.style.margin = '0';
+  document.body.style.touchAction = 'manipulation';
   // document.body.style.touchAction = 'none';
   container = document.createElement('div');
   document.body.append(container);

@@ -1,11 +1,11 @@
 export function loadSavedModel() {
-  try {
-    const saved = JSON.parse(localStorage.getItem('storage'));
-    if (saved) {
-      return saved;
-    }
-  } catch (e) {
-  }
+  // try {
+  //   const saved = JSON.parse(localStorage.getItem('storage'));
+  //   if (saved) {
+  //     return saved;
+  //   }
+  // } catch (e) {
+  // }
   return {
     version: 1,
     viewport: {
@@ -14,22 +14,15 @@ export function loadSavedModel() {
       zoom: 1,
     },
     selected: {
-      methodName: 'Plain Bob Doubles',
-      touch: 'BPBPBP',
+      methodName: 'Original Doubles',
+      touch: 'P',
       blueLine: 2,
     },
     methods: {
-      'Grandsire Doubles': {
+
+      'Original Doubles': {
         bells: 5,
         placeNotation: [
-          [3],
-          [1],
-          [5],
-          [1],
-          [5],
-          [1],
-          [5],
-          [1],
           [5],
           [1],
         ],
@@ -41,15 +34,15 @@ export function loadSavedModel() {
         },
         single: {
           work: [
-            [3],
-            [1, 2, 3],
+            [3, 4, 5],
           ],
           offset: -1,
         },
         touches: [
-          'BPSPBPBPSPBP',
+          'P',
         ],
       },
+
       'Plain Bob Doubles': {
         bells: 5,
         placeNotation: [
@@ -77,31 +70,273 @@ export function loadSavedModel() {
           offset: 0,
         },
         touches: [
-          'BPBPBP',
+          'P',
         ],
       },
-      'Original Doubles': {
+
+      'St Martin\'s Bob Doubles': {
         bells: 5,
         placeNotation: [
+          [5],
+          [1],
+          [5],
+          [1, 2, 3],
+          [5],
+          [1, 2, 3],
+          [5],
+          [1],
+          [5],
+          [1, 2, 5],
+        ],
+        bob: {
+          work: [
+            [1],
+            [5],
+            [1, 4, 5],
+            [5],
+            [1],
+          ],
+          offset: -2,
+        },
+        single: {
+          work: [
+            [1],
+            [5],
+            [1, 2, 3],
+            [5],
+            [1],
+          ],
+          offset: -2,
+        },
+        touches: [
+          'P',
+        ],
+      },
+
+      'Grandsire Doubles': {
+        bells: 5,
+        placeNotation: [
+          [3],
+          [1],
+          [5],
+          [1],
+          [5],
+          [1],
+          [5],
+          [1],
           [5],
           [1],
         ],
         bob: {
           work: [
+            [5],
+            [1],
             [3],
+            [1],
+            [3],
+            [1],
           ],
-          offset: -1,
+          offset: -3,
         },
         single: {
           work: [
-            [3, 4, 5],
+            [5],
+            [1],
+            [3],
+            [1, 2, 3],
+            [3],
+            [1],
           ],
-          offset: -1,
+          offset: -3,
         },
         touches: [
-          'BPBPBP',
+          'P',
         ],
       },
+
+      'Grandsire Triples': {
+        bells: 7,
+        placeNotation: [
+          [3],
+          [1],
+          [7],
+          [1],
+          [7],
+          [1],
+          [7],
+          [1],
+          [7],
+          [1],
+          [7],
+          [1],
+          [7],
+          [1],
+        ],
+        bob: {
+          work: [
+            [7],
+            [1],
+            [3],
+            [1],
+            [3],
+            [1],
+          ],
+          offset: -3,
+        },
+        single: {
+          work: [
+            [7],
+            [1],
+            [3],
+            [1, 2, 3],
+            [3],
+            [1],
+          ],
+          offset: -3,
+        },
+        touches: [
+          'P',
+        ],
+      },
+
+      'Cambridge Surprise Minor': {
+        bells: 6,
+        placeNotation: [
+          [],
+          [3, 6],
+          [],
+          [1, 4],
+          [],
+          [1, 2],
+          [],
+          [3, 6],
+          [],
+          [1, 4],
+          [],
+          [5, 6],
+          [],
+          [1, 4],
+          [],
+          [3, 6],
+          [],
+          [1, 2],
+          [],
+          [1, 4],
+          [],
+          [3, 6],
+          [],
+          [1, 2],
+        ],
+        bob: {
+          work: [
+            [1, 4],
+            [],
+            [3, 6],
+            [],
+            [1, 4],
+            [],
+            [3, 6],
+            [],
+            [1, 4],
+          ],
+          offset: -4,
+        },
+        single: {
+          work: [
+            [1, 4],
+            [],
+            [3, 6],
+            [],
+            [1, 2, 3, 4],
+            [],
+            [3, 6],
+            [],
+            [1, 4],
+          ],
+          offset: -4,
+        },
+        touches: [
+          'P',
+        ],
+      },
+
+      'Cambridge Surprise Major': {
+        bells: 8,
+        placeNotation: [
+          [],
+          [3, 8],
+          [],
+          [1, 4],
+          [],
+          [1, 2, 5, 8],
+          [],
+          [3, 6],
+          [],
+          [1, 4],
+          [],
+          [5, 8],
+          [],
+          [1, 6],
+          [],
+          [7, 8],
+          [],
+          [1, 6],
+          [],
+          [5, 8],
+          [],
+          [1, 4],
+          [],
+          [3, 6],
+          [],
+          [1, 2, 5, 8],
+          [],
+          [1, 4],
+          [],
+          [3, 8],
+          [],
+          [1, 2],
+        ],
+        bob: {
+          work: [
+            [1, 2, 5, 8],
+            [],
+            [1, 4],
+            [],
+            [3, 8],
+            [],
+            [1, 4],
+            [],
+            [3, 8],
+            [],
+            [1, 4],
+            [],
+            [1, 2, 5, 8],
+          ],
+          offset: -6,
+        },
+        single: {
+          work: [
+            [1, 2, 5, 8],
+            [],
+            [1, 4],
+            [],
+            [3, 8],
+            [],
+            [1, 2, 3, 4],
+            [],
+            [3, 8],
+            [],
+            [1, 4],
+            [],
+            [1, 2, 5, 8],
+          ],
+          offset: -6,
+        },
+        touches: [
+          'P',
+        ],
+      },
+
     },
   };
 }
