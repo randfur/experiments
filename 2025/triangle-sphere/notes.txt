@@ -11,3 +11,5 @@
   - Implemented basis planar rotation matrices.
     - Not sure if I got rotateYMatrix polarity correct but it works.
     - All depends on which side of the matrix I multiplied the vector in the hex-lines shader...
+- Added click action.
+  - Rotates the triangles in place randomly.

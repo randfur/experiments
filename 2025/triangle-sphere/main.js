@@ -5,13 +5,20 @@ async function main() {
   const {width, height, canvas, hexLinesContext} = HexLinesContext.setupFullPageContext({is3d: true});
 
   const hexLines = hexLinesContext.createLines();
-  for (let i = 0; i < 300; ++i) {
-    addTriangle({
-      hexLines,
-      direction: {x: deviate(1), y: deviate(1), z: deviate(1)},
-      radius: 100,
-    });
+
+  function generateTriangles() {
+    hexLines.clear();
+    const triangleHalfDirection = setLength({x: 1, y: deviate(1), z: deviate(1)}, 1);
+    for (let i = 0; i < 300; ++i) {
+      addTriangle({
+        hexLines,
+        direction: {x: deviate(1), y: deviate(1), z: deviate(1)},
+        radius: 100,
+        triangleHalfDirection,
+      });
+    }
   }
+  generateTriangles();
 
   let pointerX = 0;
   let pointerY = 0;
@@ -20,10 +27,12 @@ async function main() {
     pointerY = (event.offsetY - (canvas.height / 2)) / 80;
   });
 
+  window.addEventListener('click', event => {
+    generateTriangles();
+  });
+
   while (true) {
     await new Promise(requestAnimationFrame);
-    // hexLinesContext.transformMatrix[12] = pointerX;
-    // hexLinesContext.transformMatrix[13] = -pointerY;
     hexLinesContext.transformMatrix = multiplyMatrices(
       rotateYMatrix(-pointerX),
       rotateXMatrix(-pointerY),
@@ -33,7 +42,7 @@ async function main() {
   }
 }
 
-function addTriangle({hexLines, direction, radius}) {
+function addTriangle({hexLines, direction, radius, triangleHalfDirection}) {
   const trianglePoints = [
     {position: {x: 0, y: -10, z: 10}, colour: {r: 255, g: 0, b: 0}, size: 2},
     {position: {x: 0, y: -10, z: -10}, colour: {r: 0, g: 255, b: 0}, size: 2},
@@ -41,11 +50,17 @@ function addTriangle({hexLines, direction, radius}) {
     {position: {x: 0, y: -10, z: 10}, colour: {r: 255, g: 0, b: 0}, size: 2},
   ];
 
-  const halfDirection = setLength(add({x: 1, y: 0, z: 0}, setLength(direction, 1)), 1);
+  const sphereHalfDirection = setLength(add({x: 1, y: 0, z: 0}, setLength(direction, 1)), 1);
 
   hexLines.addPoints([
     ...trianglePoints.map(({position, colour, size}) => ({
-      position: add(rotateTo(position, halfDirection), setLength(direction, radius)),
+      position: add(
+        rotateTo(
+          rotateTo(position, triangleHalfDirection),
+          sphereHalfDirection,
+        ),
+        setLength(direction, radius),
+      ),
       colour,
       size,
     })),
@@ -83,6 +98,10 @@ function rotateTo(v, halfDirection) {
 
 function deviate(x) {
   return (Math.random() * 2 - 1) * x;
+}
+
+function coinFlip() {
+  return Math.random() < 0.5;
 }
 
 function rotateXMatrix(angle) {
