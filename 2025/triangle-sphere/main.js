@@ -89,6 +89,27 @@ function setLength(v, length) {
 function rotateTo(v, halfDirection) {
   const {x: a, y: b, z: c} = halfDirection;
   const {x: d, y: e, z: f} = v;
+  // r = x * (ax + by + cz)
+  //   = a + bxy - czx
+  // p = dx + ey + fz
+  //
+  // result = conjugate(r) * p * r
+  // = (a - bxy + czx) * (dx + ey + fz) * (a + bxy - czx)
+  // = (adx + aey + afz - bdxyx - bexyy - bfxyz + cdzxx + cezxy + cfzxz) * (a + bxy - czx)
+  // = (
+  //     aadx + aaey + aafz - abdxyx - abexyy - abfxyz + acdzxx + acezxy + acfzxz +
+  //     abdxxy + abeyxy + abfzxy - bbdxyxxy - bbexyyxy - bbfxyzxy + bcdzxxxy + bcezxyxy + bcfzxzxy +
+  //     -acdxzx - aceyzx - acfzzx + bcdxyxzx + bcexyyzx + bcfxyzzx - ccdzxxzx - ccezxyzx - ccfzxzzx
+  //   )
+  // = (
+  //     aadx + aaey + aafz + abdy - abex - abfxyz + acdz + acexyz - acfx +
+  //     abdy - abex + abfxyz - bbdx - bbey + bbfz + bcdxyz - bcez - bcfy +
+  //     acdz - acexyz - acfx - bcdxyz - bcez - bcfy - ccdx + ccey - ccfz
+  //   )
+  // = (aad - 2abe - 2acf - bbd - ccd)x +
+  //   (aae + 2abd - 2bcf - bbe + cce)y +
+  //   (aaf + 2acd - 2bce + bbf - ccf)z
+
   return {
     x: a*a*d - 2*a*b*e - 2*a*c*f - b*b*d - c*c*d,
     y: a*a*e + 2*a*b*d - 2*b*c*f - b*b*e + c*c*e,
