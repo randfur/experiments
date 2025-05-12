@@ -1,0 +1,13 @@
+# 2025-05-12
+- Position triangles randomly in space then set distance to origin to a fixed length to put it on a sphere.
+- Rotate triangles to be facing outwards.
+  - Needs vector to vector rotation that doesn't usually come with quaternion math.
+  - Needs geometric algebra math.
+    - Derived it by hand but I put the conjugate on the right instead of the left so a bunch of signs were off.
+    - Calculated it by computer: https://randfur.github.io/experiments/2024/ga-expander/#v1%20%3D%20B0%3B%0Av2%20%3D%20a*B0%20%2B%20b*B1%20%2B%20c*B2%3B%0Arotor%20%3D%20v1%20*%20v2%3B%0Aposition%20%3D%20d*B0%20%2B%20e*B1%20%2B%20f*B2%3B%0A%0Aconjugate(rotor)%20*%20position%20*%20rotor%0A
+  - It works, got sphere of triangles with each triangle rotated.
+- Added camera rotation.
+  - Implemented matrix multiplication using Sublime Text multicursors.
+  - Implemented basis planar rotation matrices.
+    - Not sure if I got rotateYMatrix polarity correct but it works.
+    - All depends on which side of the matrix I multiplied the vector in the hex-lines shader...

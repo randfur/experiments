@@ -27,7 +27,7 @@ export function renderMethodPicker(model, rerender) {
             model.selected.methodName = select.value;
             const method = model.methods[select.value];
             model.selected.touch = method.touches[0];
-            model.selected.bellLine = Math.min(model.selected.bellLine, method.bells);
+            model.selected.blueLine = Math.min(model.selected.blueLine, method.bells);
             rerender();
           },
         },

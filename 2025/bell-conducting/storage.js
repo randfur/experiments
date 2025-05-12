@@ -8,15 +8,10 @@ export function loadSavedModel() {
   // }
   return {
     version: 1,
-    viewport: {
-      initialTouches: {},
-      pan: {x: 0, y: 0},
-      zoom: 1,
-    },
     selected: {
-      methodName: 'Original Doubles',
+      methodName: 'Grandsire Doubles',
       touch: 'P',
-      blueLine: 2,
+      blueLine: 5,
     },
     methods: {
 
