@@ -1,5 +1,5 @@
 import {Vec3} from './vec3.js';
-import {deviate, random, range, TAU} from './utils.js';
+import {deviate, random, randomSign, range, TAU} from './utils.js';
 
 export class Ship {
   constructor() {
@@ -11,8 +11,8 @@ export class Ship {
 
     this.model = createIceShardModel();
 
-    this.position = new Vec3().deviate(20, 20, 0);
-    this.velocity = new Vec3(0, 0, 2);
+    this.position = new Vec3(0, 0, randomSign() * 1000);
+    this.velocity = new Vec3().deviate(10)
   }
 
   update(objects) {
@@ -27,7 +27,7 @@ export class Ship {
     }
 
     this.position.add(this.velocity);
-    this.velocity.addScaled(this.position, -0.0001);
+    this.velocity.addScaled(this.position, -0.0002);
 
     // Pick a run up path.
     // Build up speed.
@@ -48,7 +48,7 @@ export class Ship {
 }
 
 function createIceShardModel() {
-  const size = 2;
+  const size = 3;
   const front = new Vec3(50 + deviate(30), 0, 0);
   const back = new Vec3(-30 + deviate(10), 0, 0);
   const sideCount = Math.round(3 + random(3));

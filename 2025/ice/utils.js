@@ -6,6 +6,10 @@ export function random(n) {
   return Math.random() * n;
 }
 
+export function randomSign(n) {
+  return Math.random() < 0.5 ? 1 : -1;
+}
+
 export function range(n) {
   const result = [];
   for (let i = 0; i < n; ++i) {

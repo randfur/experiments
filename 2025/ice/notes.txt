@@ -4,6 +4,7 @@
   - Model is expected to be pointing along x axis.
   - Model is rotated to point in the direction of velocity.
   - Worked first try.
+- Made the ice shards burst out from a point at the start.
 
 # 2025-06-01
 - Implemented ships with random positions and velocities.
