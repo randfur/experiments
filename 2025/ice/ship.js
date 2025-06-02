@@ -27,8 +27,8 @@ export class Ship {
     }
 
     this.position.add(this.velocity);
-    this.velocity.addScaled(this.position, -0.0003);
-    this.velocity.addScaled(this.velocity, -0.005);
+    this.velocity.addScaled(this.position, -0.0005);
+    this.velocity.addScaled(this.velocity, -0.004);
 
     // Pick a run up path.
     // Build up speed.
