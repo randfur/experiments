@@ -1,3 +1,7 @@
+# 2025-06-03
+- Tweaked the parameters, added friction.
+- Moved camera back.
+
 # 2025-06-02
 - Added ice model to ship.
 - Added rotation using GA.

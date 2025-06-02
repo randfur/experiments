@@ -11,7 +11,7 @@ export class Ship {
 
     this.model = createIceShardModel();
 
-    this.position = new Vec3(0, 0, randomSign() * 1000);
+    this.position = new Vec3(0, 0, 1000);
     this.velocity = new Vec3().deviate(10)
   }
 
@@ -27,7 +27,8 @@ export class Ship {
     }
 
     this.position.add(this.velocity);
-    this.velocity.addScaled(this.position, -0.0002);
+    this.velocity.addScaled(this.position, -0.0003);
+    this.velocity.addScaled(this.velocity, -0.005);
 
     // Pick a run up path.
     // Build up speed.
@@ -77,8 +78,8 @@ function createIceShardModel() {
 class Meander {
   constructor() {
     this.alive = true;
-    this.acceleration = new Vec3().deviate(0.1);
-    this.maxLife = Math.random() * 100;
+    this.acceleration = new Vec3().deviate(0.2);
+    this.maxLife = random(200);
     this.life = this.maxLife;
   }
 

@@ -19,6 +19,12 @@ async function main() {
     for (const object of objects) {
       object.draw(hexLines);
     }
+    hexLines.transformMatrix = [
+      1, 0, 0, 0,
+      0, 1, 0, 0,
+      0, 0, 1, 0,
+      0, 0, 1000, 1,
+    ];
     hexLines.draw();
   }
 }
