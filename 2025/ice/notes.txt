@@ -1,0 +1,27 @@
+# 2025-06-02
+- Added ice model to ship.
+- Added rotation using GA.
+  - Model is expected to be pointing along x axis.
+  - Model is rotated to point in the direction of velocity.
+  - Worked first try.
+
+# 2025-06-01
+- Implemented ships with random positions and velocities.
+- Added behaviour rotation system.
+  - Ship cycles through behaviour objects in a loop, progressing whenever a behaviour says it's finished.
+  - Behaviours control the ship movement.
+- Basic dot drawing works.
+
+# 2025-05-31
+- Little ships in space flying around.
+  - Picking a run up path.
+  - Builds up speed.
+  - Creates a large ice path in an arc, exhausting their built up speed in a big pitch up maneuver.
+  - Wanders around before repeating.
+- Ice runner out in space.
+  - Camera following them.
+  - Skates along the ice paths.
+  - Little ships try to create ice paths for them to skate on.
+  - Jumps from one path towards the next one.
+  - If no path around just floats until a path is created for them to land on.
+

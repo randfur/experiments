@@ -16,3 +16,6 @@
 [submodule "2025/triangle-sphere/third-party/hex-lines"]
 	path = 2025/triangle-sphere/third-party/hex-lines
 	url = git@github.com:randfur/hex-lines
+[submodule "2025/ice/third-party/hex-lines"]
+	path = 2025/ice/third-party/hex-lines
+	url = git@github.com:randfur/hex-lines.git
