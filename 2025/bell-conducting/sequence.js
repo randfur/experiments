@@ -11,6 +11,9 @@ export function renderSequence(model, rerender) {
     style: {
       transformOrigin: 'top left',
       transform: 'scale(1.2)',
+      position: 'absolute',
+      left: '0px',
+      top: '0px',
     },
     attributes: {
       width: 100 + model.methods[model.selected.methodName].bells * 60,

@@ -1,3 +1,12 @@
+# 2025-05-05
+- Started working on minimap.
+  - Added window event listeners with global tracking of added ones that gets cleared on re-render to prevent memory leakage.
+  - Scrapped that because we really need to listen to events within the render tree so shouldn't need to worry about memory leaking hopefully.
+    - Once the element is removed and destroyed it should be able to clean up all event listeners on it.
+  - Added ability to event listen to parent elements via IDs.
+    - Because children are created before parents in this system they just declare the parent ID they want to listen to, this is stored globally, then later when the parent element is created with the target ID the event listeners are attached to the parent element.
+    - Should maybe add an assertion that all pending event listeners actually get fulfilled by the end of the render.
+
 # 2025-05-03
 - Fixed typo bellLine -> blueLine when changing methods.
 - Removed custom pinch zoom code.
