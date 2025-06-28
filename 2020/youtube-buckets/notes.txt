@@ -1,0 +1,12 @@
+# 2025-06-28
+- Migrated from glitch.com to experiments repo.
+  - Glitch shutting down.
+  - https://blog.glitch.com/post/changes-are-coming-to-glitch/
+
+# 2020
+- Stuff to do
+ - Count and display quota usage
+ - Mock the YouTube API for non-expensive dev and testing
+ - Cache downloaded data
+ - Explicit user button action for clearing cache.
+ - signin page

@@ -1,0 +1,13 @@
+/* CSS files add styling rules to your content */
+
+body {
+  font-family: helvetica, arial, sans-serif;
+  margin: 2em;
+  background-image: url("https://media.allure.com/photos/5ac6ac71035a3077b9933c27/1:1/w_2847,h_2847,c_limit/GettyImages-926885862%202.jpg");
+  background-size: cover;
+}
+
+h1 {
+  font-style: italic;
+  color: white;
+}

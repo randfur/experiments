@@ -1,0 +1,55 @@
+# 2025-06-28
+- Imported many Glitch projects.
+  - Glitch is shutting down.
+  - https://blog.glitch.com/post/changes-are-coming-to-glitch/
+- Used bulk downloader:
+  - https://support.glitch.com/t/glitch-project-bulk-downloading/75872
+- Sorted everything by year.
+  - Made a guess based on last modified dates of files.
+  - Not totally accurate since it's last modified rather than true creation date.
+  - Also many projects are forks of others so the creation date of untouched files would be inaccurate as well.
+  - Also don't know the relative ordering within the year.
+  - Not a big deal if +/- 1 year, doesn't really matter.
+- Cleaned up non-static projects that were just serving static data anyway.
+- Moved assets out of glitch-assets/ into project root folder.
+- Cleaned up unnecessary Glitch files:
+  - .bash_history
+  - .config/
+  - .data/
+  - .env
+  - .git/
+  - .glitchdotcom.json
+  - .viminfo
+  - assets/
+  - glitch-assets/
+  - illustration.svg
+  - my-folder/
+  - package-lock.json
+  - package.json
+  - public/
+  - README.md
+  - server.js
+  - shrinkwrap.yaml
+  - static/
+  - styles/
+  - views/
+- TODO:
+  - Rewrite use of assets to use new location.
+  - Remove the pattern of:
+    ```js
+    if (location.protocol != 'https:')
+      location.protocol = 'https:';
+    ```
+    - This breaks localhost serving which is http:.
+    - Done.
+  - Remove use of https://glitch.com/edit/favicon-app.ico as the site icon.
+    - Done.
+  - Figure out what to do with the ones that use a service worker.
+    - Need to scope it to the subdirectory.
+    - Turns out that's the default behaviour, should be fine but need to check.
+  - Check to see that each one works in the new environment.
+  - Clean up the ones with nothing worthwhile in them.
+  - Add them to the experiments index listing.
+  - Spruce up the index listing.
+    - Add screenshots and links to the notes.txt files for each project.
+    - Make it clear which ones are still WIP and there's nothing to play with.

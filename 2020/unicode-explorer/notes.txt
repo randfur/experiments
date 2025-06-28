@@ -1,0 +1,8 @@
+# 2025-06-28
+- Migrated from glitch.com to experiments repo.
+  - Glitch shutting down.
+  - https://blog.glitch.com/post/changes-are-coming-to-glitch/
+
+# 2020
+- TODO
+  - Click to copy character into clipboard.

@@ -1,0 +1,185 @@
+:root {
+  height: 100%;
+}
+
+.root {
+  overflow: hidden;
+  position: absolute;
+  padding: 0;
+  margin: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #111;
+  color: white;
+}
+
+
+.graphLayer {
+  position: absolute;
+  transform-origin: top left;
+}
+
+
+/* Nodes */
+
+.nodeLayer {
+  position: absolute;
+}
+
+.node {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  min-width: 60px;
+  contain: content;
+  user-select: none;
+  padding: 10px;
+  border-radius: 20px;
+  background-color: hsl(var(--hue), 100%, 70%);
+  border-style: none;
+  color: black;
+}
+
+.node.selected {
+  outline-style: dashed;
+  outline-color: white;
+  outline-width: 5px;
+}
+
+.node.marked {
+  border-style: solid;
+  border-width: 8px;
+  border-color: white;
+}
+
+.node.collapsed {
+  box-shadow: 10px 10px 0px 0px hsl(var(--hue), 50%, 50%);
+}
+
+.node.hidden {
+  display: none;
+}
+
+.nodeText {
+  contain: content;
+  font-family: monospace;
+  font-size: 14px;
+  padding: 5px;
+  margin: 0px;
+}
+
+.nodeHitLayer {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 25% auto 25%;
+}
+
+.nodeHitLayer.disable {
+  display: none;
+}
+
+.nodeHitTarget.nodeLeft {
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+}
+
+.nodeHitTarget.nodeRight {
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+:is(.nodeLeft, .nodeRight):hover {
+  background-color: #0001;
+  filter: blur(2px);
+}
+
+
+/* Edges */
+
+.edgeLayer {
+  position: absolute;
+}
+
+.edge {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  transform-origin: left center;
+}
+
+.edge.hidden {
+  display: none;
+}
+
+.attachmentEdge {
+  --edge-color: #777;
+  background-color: var(--edge-color);
+  height: 3px;
+}
+
+.associationEdge {
+  --edge-color: #666;
+  background-image: linear-gradient(90deg, var(--edge-color) 50%, transparent 50%);
+  background-size: 10px auto;
+  height: 2px;
+}
+
+.edgeArrow {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    clip-path: polygon(0px 0px, 20px 0px, 20px 20px, 17px 20px, 17px 3px, 0px 3px);
+    background-color: var(--edge-color);
+    --mid-length: 0px;
+    transform: translate(calc(var(--mid-length) - 20px), -8.5px)  rotate(45deg) skew(-10deg, -10deg);
+}
+
+.debugLayer {
+  position: absolute;
+  margin: 10px;
+}
+
+
+/* Graph menu */
+
+.graphMenuLayer {
+  position: absolute;
+}
+
+.nodeMenu {
+  display: flex;
+  flex-direction: column;
+  background-color: #bbb6;
+  border-radius: 10px;
+}
+
+.nodeMenuButton {
+  padding: 10px;
+  border-radius: 10px;
+  background-color: #ccc;
+  font-family: sans-serif;
+  font-size: 20px;
+  user-select: none;
+  color: black;
+}
+
+.nodeMenuButton:hover {
+  background-color: #ddd;
+}
+
+.nodeMenuButton:nth-child(n+2) {
+  margin-top: 2px;
+}
+
+
+/* HUD */
+
+.hudLayer {
+  position: absolute;
+}

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="250"
+   height="250"
+   viewBox="0 0 66.145832 66.145835"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   sodipodi:docname="youtube-buckets.svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#202020"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="2.8284271"
+     inkscape:cx="141.34665"
+     inkscape:cy="125.34231"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     units="px"
+     inkscape:snap-global="false"
+     inkscape:window-width="1680"
+     inkscape:window-height="987"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     showguides="false" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-230.85416)">
+    <path
+       style="fill:#ff0000;stroke:none;stroke-width:0.43656698;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 63.822495,231.10313 -62.1819353,8.2079 0.7960659,8.18035 41.6725214,-8.26378 2.454791,-3.13528 c 0,0 0.720553,-0.79639 1.275234,-0.27326 0.578282,0.54536 -0.03138,1.27983 -0.03138,1.27983 l -1.309683,1.6549 14.438647,-2.86354 -15.588348,4.31559 -2.631613,3.32358 C 28.557654,261.68356 18.74495,270.6757 12.608664,273.8978 l 4.189297,22.85322 42.773998,-3.71089 1.529368,-57.18203 3.403945,-0.67513 z m -21.035278,9.81152 -34.4757781,9.54437 3.6733851,20.03637 c 6.742524,-3.17024 18.232747,-13.65917 29.557775,-27.99091 z"
+       id="path819"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:#efefef;fill-opacity:1;stroke:none;stroke-width:0.49365419;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 28.874931,282.58797 -0.103079,-18.21862 18.861293,8.73829 z"
+       id="path823"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccc" />
+    <path
+       sodipodi:nodetypes="ccccscc"
+       inkscape:connector-curvature="0"
+       id="path836"
+       d="m -6.8587574,237.77154 c -14.7038096,18.60756 -29.8260636,27.62839 -21.7523196,10.33894 -7.531969,11.85546 -2.825942,22.88174 22.5448476,-9.64741 l 3.436986,-4.34121 c 0,0 0.411645,-0.49593 0.02124,-0.86411 -0.374474,-0.35317 -0.860972,0.18456 -0.860972,0.18456 z"
+       style="opacity:1;vector-effect:none;fill:#202020;fill-opacity:1;stroke:none;stroke-width:0.27784687px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+    <path
+       style="fill:#ff0000;stroke:none;stroke-width:0.41155577px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 40.17588,241.68308 C 18.39612,269.24518 -3.2196286,281.82333 8.7394598,256.21361 -2.4171344,273.7743 4.5653427,289.91118 42.145375,241.72797 Z"
+       id="path832"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccc" />
+  </g>
+</svg>

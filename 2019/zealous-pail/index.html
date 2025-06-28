@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+
+<style>
+body {
+  background: black;
+  overflow: hidden;
+  margin: 0;
+  font-family: sans-serif;
+}
+
+canvas {
+  image-rendering: pixelated;
+  transform-origin: top left;
+}
+
+#presetButton {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+  
+#presetName {
+  position: absolute;
+  left: 100px;
+  top: 13px;
+  color: white;
+}
+</style>
+
+<canvas id="canvas"></canvas>
+
+<button id="presetButton">Load preset</button>
+<div id="presetName"></div>
+
+<script type="module" src="/js/main.js"></script>

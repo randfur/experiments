@@ -1,0 +1,22 @@
+# 2025-06-28
+- Migrated from glitch.com to experiments repo.
+  - Glitch shutting down.
+  - https://blog.glitch.com/post/changes-are-coming-to-glitch/
+
+# 2020
+- TODO:
+ - Make move tool general transform tool
+    - Left drag move.
+    - Right click flip.
+    - Right click mouse wheel rotate.
+    - Left click mouse wheel scale.
+ - Right click drag pan camera.
+ - Right click mouse wheel background zoom camera.
+ - Tests.
+ - Cut polygon.
+ - Cut box.
+ - Draw cut points more prominently than closing line.
+- Order of tasks:
+ - Convert to Typescript.
+ - Move into separate files.
+ - Add new mouse fields.

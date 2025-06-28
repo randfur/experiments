@@ -1,0 +1,65 @@
+# 2025-06-28
+- Migrated from glitch.com to experiments repo.
+  - Glitch shutting down.
+  - https://blog.glitch.com/post/changes-are-coming-to-glitch/
+
+# 2020
+- Features:
+  - Pixel editor:
+    - Brush
+    - Line
+    - Sizes
+    - Shapes
+    - Resizing
+    - Cropping
+  - Viewing:
+    - Background colour
+    - Zooming
+    - Saved camera locations
+  - Controls:
+    - Keyboard shortcuts
+    - GUI
+  - Animation:
+    - Frames
+    - Recyclable components
+    - Templates
+    - Diff frames
+- Animation data model plan:
+  - Shared assets:
+    - Graphics:
+      - Graphic:
+        - Graphic ID
+        - Name?
+        - Layers:
+          - Layer:
+            - Transform
+            - Bitmap or Graphic ID
+  - List of animations:
+    - Animation:
+      - Name
+      - Viewing background colour
+      - Frames:
+        - Frame:
+          - Frame ID
+          - Duration:
+            - Frame count or seconds
+          - Frame ID to diff against
+          - Layers (same as above)
+- Editor model plan:
+  - Menu bar
+    - New
+    - Open
+    - Save
+    - Save as
+    - Settings
+  - Brush box
+  - Colour box
+  - Editor
+  - Layers
+  - Frame bar:
+    - Playback buttons
+    - Editing buttons
+    - Onion skining
+    - Overflow menu
+  - Frames box
+  - Shared assets box

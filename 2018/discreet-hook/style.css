@@ -1,0 +1,15 @@
+:root {
+  background: black;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+}
+
+#output {
+  position: absolute;
+  top: 0;
+  left: 10px;
+  color: white;
+}

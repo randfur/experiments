@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+
+<style>
+body {
+  background-color: #000;
+  margin: 0;
+  overflow: hidden;
+}
+#output {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  color: white;
+  margin: 0;
+}
+.board {
+  position: absolute;
+  left: 50vw;
+  top: 50vh;
+  white-space: pre;
+  text-shadow: black 0px 0px 5px;
+  text-align: center;
+}
+#score-board {
+  left: 50vw;
+  top: 20px;
+  transform: translate(-50%, 0px);
+  font-family: monospace;
+  font-size: 20px;
+  color: white;
+}
+#high-score-board {
+  left: 50vw;
+  top: 20vh;
+  transform: translate(-50%, -50%);
+  font-family: sans-serif;
+  font-size: 4vmin;
+  color: white;
+}
+</style>
+
+<canvas id="canvas"></canvas>
+<pre id="output"></pre>
+<div id="high-score-board" class="board"></div>
+<div id="score-board" class="board"></div>
+
+<script type="module" src="main.js"></script>

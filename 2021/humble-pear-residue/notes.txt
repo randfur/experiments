@@ -1,0 +1,35 @@
+# 2025-06-28
+- Migrated from glitch.com to experiments repo.
+  - Glitch shutting down.
+  - https://blog.glitch.com/post/changes-are-coming-to-glitch/
+
+# 2020
+- Architecture:
+  - Data:
+    - <root>
+      - [Scene]
+    - Scene:
+      - [Object]
+    - Object:
+      - x, y, width, height
+      - transform?
+      - Sprite
+    - Sprite:
+      - Pixel image
+      - Displacement image
+  - Interaction model:
+    - Stack of modes, top of stack is active.
+    - Mouse events passed to active mode.
+    - Modes:
+      - SceneMode:
+        - Scene editor.
+        - Can create objects, position objects, edit timeline.
+      - SpriteMode:
+        - Sprite editor.
+        - Has drawing tools.
+- TODO:
+  - Drawing.
+  - Record pen strokes to randomise and regenerate line.
+  - Displacement pixels layer.
+  - Timeline.
+  - Clones.

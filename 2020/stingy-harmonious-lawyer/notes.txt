@@ -1,0 +1,21 @@
+# 2025-06-28
+- Migrated from glitch.com to experiments repo.
+  - Glitch shutting down.
+  - https://blog.glitch.com/post/changes-are-coming-to-glitch/
+
+# 2020
+- Infinite winding tube, camera flying through it.
+- Tube made up of gems arranged around its surface, not an actual surface, variably sparce gem arrangement.
+- Gems are made of two pyramids stuck together <> with variably angled "spokes" radiating from the point.
+- Some gems have their peaks culled to make them more flat:
+    ^
+   / \        ____
+  /   \  ->  /    \
+  \   /      \____/
+   \ /
+    v
+- Gems are reflective, should look very shiny as they rotate and move with respect to the camera.
+- Can attempt faux internal reflections by ray casting onto a fake interior with a set number of internal bounces.
+- Each fake interior can be parameterised differently for each face.
+- Colour of gems can evolve via a slice of a cellular automata with a random value row at the bottom
+- (e.g. like reading the middle row of https://ash-swordtail.glitch.me/) for each forward step of the tube surface.

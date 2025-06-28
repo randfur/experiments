@@ -1,0 +1,1 @@
+importScripts('https://randfur.github.io/typescript-service-worker/sw.js');

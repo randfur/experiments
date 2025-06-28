@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+
+<script>
+  navigator.serviceWorker.register('./sw.js');
+  if (!navigator.serviceWorker.controller) {
+    navigator.serviceWorker.ready.then(() => location.reload());
+  }
+</script>
+
+<style>
+  body {
+    margin: 0px;
+    padding: 0px;
+    overflow: hidden;
+  }
+  #testLink {
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    color: #0005;
+    font-family: monospace;
+  }
+</style>
+
+<canvas id="canvas"></canvas>
+<a id="testLink" href="test.html">test.html</a>
+
+<script type="module" src="index.ts"></script>

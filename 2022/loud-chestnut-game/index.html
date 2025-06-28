@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+
+<style>
+  body {
+    background: #410031;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    touch-action: manipulation;
+    overflow: hidden;
+  }
+  canvas {
+    image-rendering: pixelated;
+    transform-origin: top left;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  a {
+    color: #605;
+    text-decoration: none;
+  }
+  a:hover {
+    color: #fae;
+  }
+  #link {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-family: sans-serif;
+  }
+  #speaker {
+    position: absolute;
+    top: 0px;
+    right: 10px;
+    font-size: 10vw;
+  }
+</style>
+
+<canvas id="canvas"></canvas>
+<a id="link" href="https://pokyfriends.com/sugar-rush/">https://pokyfriends.com/sugar-rush/</a>
+<a id="speaker" href="#">♫</a>
+
+<script type="module" src="/main.js"></script>

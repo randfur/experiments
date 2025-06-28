@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+
+<script>
+  navigator.serviceWorker.register('./sw.js');
+  if (!navigator.serviceWorker.controller) {
+    navigator.serviceWorker.ready.then(() => location.reload());
+  }
+</script>
+
+<div id="target"></div>
+<script type="module" src="main.ts"></script>

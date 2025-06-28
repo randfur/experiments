@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<style>
+  #container {
+    display: grid;
+    grid-template:
+      "space-top  ."
+      "space-left space-right"
+      "peg-left-0 peg-right-0"
+      "peg-left-1 peg-right-1"
+      "peg-left-2 peg-right-2"
+      "peg-left-3 peg-right-3"
+      "peg-left-4 peg-right-4"
+      "peg-left-5 peg-right-5";
+  }
+  .node {
+    width: 100px;
+    height: 40px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-style: solid;
+    border-radius: 4px;
+
+    font-size: 20px;
+    font-family: sans-serif;
+    user-select: none;
+  }
+  .selected {
+    border-style: dashed;
+  }
+</style>
+<div style="display: inline-block">
+  <div id="container">
+  </div>
+</div>
+
+<script>
+  function range(n) {
+    const result = [];
+    for (let i = 0; i < n; ++i) {
+      result.push(i);
+    }
+    return result;
+  }
+  const spaceNames = ['top', 'left', 'right'];
+  const pegCount = 6;
+  const nodes = [
+    ...spaceNames.map(name => ({
+      name: `space-${name}`,
+      minSize: -Infinity,
+      currentSize: null,
+    })),
+    ...range(pegCount).flatMap(i => ['left', 'right'].map(side => ({
+      name: `peg-${side}-${i}`,
+      minSize: i,
+      currentSize: side == 'left' ? i : null,
+    }))),
+  ];
+  for (const node of nodes) {
+    const element = document.createElement('div');
+    element.className = 'node';
+    element.style.gridArea = node.name;
+    container.appendChild(element);
+    if (node.minSize >= 0) {
+      element.style.borderColor = `hsl(${node.minSize * 50}, 100%, 40%)`;
+    }
+    element.addEventListener('click', nodeClicked);
+    node.element = element;
+    element.node = node;
+  }
+  function currentSizesChanged() {
+    for (const {currentSize, element} of nodes) {
+      if (currentSize !== null) {
+        element.textContent = currentSize;
+        element.style.backgroundColor = `hsl(${currentSize * 50}, 100%, 60%)`;
+      } else {
+        element.textContent = '';
+        element.style.backgroundColor = '';
+      }
+    }
+  }
+  currentSizesChanged();
+  let selectedNode = null;
+  function nodeClicked(event) {
+    const element = event.target;
+    const node = element.node;
+    if (selectedNode == null) {
+      if (node.currentSize != null) {
+        selectedNode = node;
+        selectedNode.element.classList.add('selected');
+      }
+    } else if (selectedNode == node) {
+      selectedNode.element.classList.remove('selected');
+      selectedNode = null;
+    } else if (node.currentSize == null) {
+      node.currentSize = selectedNode.currentSize;
+      selectedNode.currentSize = null;
+      selectedNode.element.classList.remove('selected');
+      selectedNode = null;
+      currentSizesChanged();
+    }
+  }
+</script>

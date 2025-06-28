@@ -1,0 +1,11 @@
+# 2025-06-28
+- Migrated from glitch.com to experiments repo.
+  - Glitch shutting down.
+  - https://blog.glitch.com/post/changes-are-coming-to-glitch/
+
+# 2020
+- Ideas:
+  - Slider bars to control constants.
+  - Painter's algorithm.
+  - Camera position and direction.
+  - Laser dodging game.

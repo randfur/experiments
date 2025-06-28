@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+<style>
+  #headerScrollable {
+    background-color: black;
+    color: white;
+    height: 200px;
+  }
+  #headerSticky {
+    background-color: darkred;
+    color: white;
+    height: 100px;
+    z-index: 1;
+    position: sticky;
+    top: 0px;
+  }
+</style>
+
+<div id="headerScrollable">
+  This top section can scroll away.
+</div>
+<div id="headerSticky">
+  This section is the persistent header and is always on the page.
+</div>
+<div id="content">
+  <p>
+    This is the content section that creates the scrollbar.
+  </p>
+</div>
+
+<script>
+for (let i = 0; i < 50; ++i) {
+  const element = document.createElement('div');
+  element.style.position = 'relative';
+  element.style.left = `${Math.random() * (innerWidth - 100)}px`;
+  element.style.width = '100px';
+  element.style.height = '40px';
+  element.style.backgroundColor = 'black';
+  content.appendChild(element);
+}
+</script>

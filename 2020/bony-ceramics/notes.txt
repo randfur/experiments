@@ -1,0 +1,28 @@
+# 2025-06-28
+- Migrated from glitch.com to experiments repo.
+  - Glitch shutting down.
+  - https://blog.glitch.com/post/changes-are-coming-to-glitch/
+
+# 2020
+- emoji stamp
+- combine sprites into rig
+- onion skin frames
+- Ideas for UI:
+  - 1. WSAD movement controls for easy panning
+  - 2. Hold Shift + Mouse drags for panning?
+  - (freeform)
+  - 3. Ctrl + Mouse drag for rotation
+  - 4. Minecraft Tool box at bottom for different things (can be customisable)
+  - 5. 1,2,3,4,5,6,7 Shortcuts for switching for each tool designated in minecraft tool box
+  - 6. i for Inventory with all the things we can drag into the mInecraft tool bar
+- moarte things
+ - Control wheel
+   - undo/redo
+   - select
+   - erase
+   - rectangle
+ - Select
+   - cut out to new sprite
+   - copy out to new sprite
+ - Background layer
+ - Sprite extraction & editing & moving & stacking & transforming

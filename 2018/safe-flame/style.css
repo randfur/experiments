@@ -1,0 +1,14 @@
+:root {
+  background: black;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+}
+
+pre {
+  margin: 0;
+  font-size: 11px;
+  color: white;
+}

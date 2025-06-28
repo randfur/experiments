@@ -1,0 +1,37 @@
+# 2025-06-28
+- Migrated from glitch.com to experiments repo.
+  - Glitch shutting down.
+  - https://blog.glitch.com/post/changes-are-coming-to-glitch/
+
+# 2020
+- Top: Primary colour
+- Bottom: Secondary colour
+- Left: Brush
+- Right: Undo
+- Top right: Eraser
+- Bottom right: Menu
+- Bottom left: Select
+- Top left: Pan
+- Colour:
+ - Palette colours
+    - Picker
+ - Picker
+- Picker:
+ - RGB/HSV
+ - Mode
+ - Dropper
+- Brush/Eraser:
+ - Shapes
+ - Sizes
+- Undo:
+ - Redo
+- Menu:
+ - Release right mouse will open menu instead of exit.
+ - Save
+ - Cancel
+ - Clear
+- Select:
+ - Rectangle
+ - Polygon
+ - Freeform
+- Pan

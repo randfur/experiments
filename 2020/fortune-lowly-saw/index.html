@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+
+<script>
+(async () => {
+  const ready = navigator.serviceWorker.register('./sw.js');
+  if (!navigator.serviceWorker.controller) {
+    await ready;
+    location.reload();
+  }
+})();
+</script>
+
+<style>
+  body {
+    background-color: black;
+  }
+</style>
+
+<script type="module" src="test.ts"></script>

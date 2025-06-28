@@ -1,0 +1,12 @@
+{
+  "name": "Notes Graph",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "minimal-ui",
+  "theme_color": "#111",
+  "icons": [{
+    "src": "https://cdn.glitch.com/e2528451-3aab-477c-b738-e7469753d78b%2Fdune-vanilla-lantana.svg?v=1624510423557",
+    "sizes": "144x144",
+    "type": "image/svg+xml"
+  }]
+}

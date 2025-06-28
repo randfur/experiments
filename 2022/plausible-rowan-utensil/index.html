@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+
+<style>
+  #rootContainer {
+    position: absolute;
+    left: 100px;
+    top: -200px;
+    animation: rootBob 2.53s ease-in-out infinite alternate;
+  }
+  img {
+    opacity: 75%;
+  }
+  .container {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    animation: wave 1s ease-in-out infinite alternate;
+  }
+  @keyframes wave {
+    from { transform: scale(0.6) translate(-50%, 30%) rotate(-40deg); }
+    to { transform: scale(0.6) translate(-60%, 20%) rotate(20deg); }
+  }
+  @keyframes rootBob {
+    from { transform: scale(0.5) rotate(1deg); }
+    to { transform: scale(0.5) rotate(-1deg) translate(0px, 5px); }
+  }
+</style>
+
+<div id="rootContainer"></div>
+
+<script>
+const deliverooSvgUrl = 'https://cdn.glitch.global/dfff1dd4-f749-46af-9998-b71a70a20836/deliveroo.svg?v=1646112146307';
+const svg = document.createElement('img');
+svg.src = deliverooSvgUrl;
+rootContainer.appendChild(svg);
+
+let outerContainer = rootContainer;
+for (let i = 0; i < 10; ++i) {
+  const container = document.createElement('div');
+  const svg = document.createElement('img');
+  svg.src = deliverooSvgUrl;
+  container.appendChild(svg);
+  container.classList.add('container');
+  outerContainer.appendChild(container);
+  outerContainer = container;
+}
+</script>

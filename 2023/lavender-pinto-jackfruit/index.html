@@ -1,0 +1,56 @@
+<body>
+  <input type="text" id="input" size="80" value="123454545545454332112112332123321233211211233454545545454321">
+  <div id="output"></div>
+</body>
+
+<script>
+const TAU = Math.PI * 2;
+const width = 1000;
+const height = 1000;
+const maxRadius = Math.min(width, height) / 2 - 10;
+
+function range(n) {
+  const result = [];
+  for (let i = 0; i < n; ++i) {
+    result.push(i);
+  }
+  return result;
+}
+
+function maxOf(list) {
+  let max = -Infinity;
+  for (const x of list) {
+    max = Math.max(max, x);
+  }
+  return max;
+}
+  
+input.addEventListener('input', renderSvg);
+  
+function renderSvg() {
+  const points = input.value.split('').map(Number).map(x => isNaN(x) ? 0 : x);
+  const maxLevel = maxOf(points);
+  const radiusStep = maxRadius / maxLevel;
+
+  function getXy(i) {
+    const angle = (i + (1 - points.length % 2) / 2) / points.length * TAU
+    const radius = points[i] * radiusStep;
+    return [
+      width / 2 + Math.sin(angle) * radius,
+      height / 2 - Math.cos(angle) * radius,
+    ].join(' '); 
+  }
+
+  output.innerHTML = `
+    <svg version="1.1" width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+      ${range(maxLevel).map(level => `<circle fill="transparent" stroke="#f808" stroke-width="4" cx="${width / 2}" cy="${height / 2}" r="${(level + 1) * radiusStep}"></circle>`).join('\n')}
+      <path fill="transparent" stroke="navy" stroke-width="8" stroke-linejoin="round" stroke-linecap="round" d="${points.flatMap((point, i) => [
+        i === 0 ? `M ${getXy(points.length - 1)}` : '',
+        `L ${getXy(i)}`,
+      ]).join(' ')}"></path>
+    </svg>
+  `;
+}
+  
+renderSvg();
+</script>

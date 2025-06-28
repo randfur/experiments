@@ -1,0 +1,21 @@
+# 2025-06-28
+- Migrated from glitch.com to experiments repo.
+  - Glitch shutting down.
+  - https://blog.glitch.com/post/changes-are-coming-to-glitch/
+
+# 2023-06-30
+- Things that make up the thing:
+  - Draw lines with thickness.
+  - Divide by z.
+  - Near culling.
+  - Camera rotation.
+  - Beziers.
+- Smoother bezier lines
+  - Rewrite bezier drawing primitive.
+  - Continue to do bisection.
+  - Use camera transformed positions for distance threshold.
+  - Sort screen points and screen width along t.
+  - Generate quads to draw that join the edges of the line continuously.
+- Bezier arc bug
+  - When a bezier does a loop the bisect may hit either side of the intersection area and short circuit the loop.
+  - Should test whether the midpoint is beyond the minimum distance threshold.

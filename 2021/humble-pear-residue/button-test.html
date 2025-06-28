@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+
+<script>
+  navigator.serviceWorker.register('./sw.js');
+  if (!navigator.serviceWorker.controller) {
+    navigator.serviceWorker.ready.then(() => location.reload());
+  }
+</script>
+
+<style>
+  body {
+    margin: 0px;
+    padding: 0px;
+    overflow: hidden;
+  }
+</style>
+
+<canvas id="canvas"></canvas>
+<script type="module" src="button-test.ts"></script>
