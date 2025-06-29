@@ -1,3 +1,32 @@
+# 2025-06-29
+- Try out the Glitch imported projects to see if they work and fix what doesn't.
+- Fixes:
+  - Fixed up absolute paths to be relative.
+  - Renamed uuid image files to have normal names.
+  - ablaze-abundant-jump:
+    - Big Twilight Sparkle mash up wallpaper URL no longer working.
+    - https://pbs.twimg.com/media/FB7lCGKXsAMcB0r?format=jpg
+    - Replaced with another random Twilight Sparkle wallpaper.
+- Clean ups:
+  - WIPs with nothing to look at:
+    - 2019/brief-umbra
+    - 2021/awesome-peach-anorak.
+    - 2021/chartreuse-translucent-pig.
+    - 2021/lake-dot-donut
+    - 2021/massive-transparent-hail
+    - 2023/honeysuckle-shrouded-patio.
+  - hickory-nightingale: Was an earlier version of four-venom.
+  - regular-slash-alto: Duplicate of absolute-meerkat.
+- Dependency on https://randfur.github.io/typescript-service-worker/sw-ts-compiler.js currently broken.
+  - These projects have been left in as it might get fixed eventually:
+    - 2020/bony-ceramics
+    - 2020/crimson-shadow-rise
+    - 2020/fortune-lowly-saw
+    - 2020/political-juicy-bag
+    - 2020/witty-legend-velociraptor
+    - 2020/youtube-buckets
+    - 2021/humble-pear-residue
+
 # 2025-06-28
 - Imported many Glitch projects.
   - Glitch is shutting down.

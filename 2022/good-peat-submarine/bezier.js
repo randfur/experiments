@@ -1,6 +1,6 @@
-import {Vec3} from '../utils/vec3.js';
-import {Line} from '../shapes/line.js';
-import {random, randomRange, deviate} from '../utils/random.js';
+import {Vec3} from './utils/vec3.js';
+import {Line} from './shapes/line.js';
+import {random, randomRange, deviate} from './utils/random.js';
 
 export function queryBezier(a, b, c, d, t, out) {
   const e = Vec3.pool.acquire();

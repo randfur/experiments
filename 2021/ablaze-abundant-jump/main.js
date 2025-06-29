@@ -1,6 +1,11 @@
 const TAU = Math.PI * 2;
 const maskSrc = 'https://static.wikia.nocookie.net/maditsmadfunny/images/4/4e/Twilight_Sparkle.png';
-const twiSrc = 'https://pbs.twimg.com/media/FB7lCGKXsAMcB0r?format=jpg';
+// From: https://x.com/OddEyesDuelist/status/296489358297550848
+const twiSrc = 'https://pbs.twimg.com/media/BB1XgCFCUAE51T_?format=png';
+// Original, no longer works:
+// const twiSrc = 'https://pbs.twimg.com/media/FB7lCGKXsAMcB0r?format=jpg';
+// Another back up image from: https://x.com/WallpapersOnWeb/status/710692028477259776
+// const twiSrc = 'https://pbs.twimg.com/media/CdziomcXEAAv7ke?format=jpg';
 
 function range(n) {
   let result = [];

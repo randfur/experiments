@@ -1,7 +1,7 @@
 import { render, html } from 'https://unpkg.com/lit-html@1.3.0/lit-html.js';
 import { renderSketchPad } from './ui/sketchpad';
-import { SketchPad } from '/core/sketchpad';
-import { Controls } from '/core/controls';
+import { SketchPad } from './core/sketchpad';
+import { Controls } from './core/controls';
 
 const appDiv = document.getElementById('app');
 let controls = new Controls();

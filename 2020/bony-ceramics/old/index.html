@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <script>
 (async () => {
-  const ready = navigator.serviceWorker.register('/sw.js');
+  const ready = navigator.serviceWorker.register('../sw.js');
   if (!navigator.serviceWorker.controller) {
     await ready;
     location.reload();
@@ -27,4 +27,4 @@ body {
 
 <canvas id="canvas"></canvas>
 
-<script type="module" src="/old/dog.js"></script>
+<script type="module" src="dog.js"></script>
