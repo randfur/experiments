@@ -1,8 +1,11 @@
 import {Vec3} from './vec3.js';
 import {deviate, random, randomSign, range, TAU} from './utils.js';
 
+const trailMaxLength = 20;
+const trailHeadSize = 10;
+
 export class Ship {
-  constructor() {
+  constructor(i) {
     this.alive = true;
 
     this.behaviours = [Meander];
@@ -11,8 +14,10 @@ export class Ship {
 
     this.model = createIceShardModel();
 
-    this.position = new Vec3(0, 0, 1000);
-    this.velocity = new Vec3().deviate(10)
+    this.position = new Vec3(10 * (i * 2 - 1), -100, 1000);
+    this.velocity = new Vec3(0, 5, 0);
+
+    this.trail = [];
   }
 
   update(objects) {
@@ -27,8 +32,13 @@ export class Ship {
     }
 
     this.position.add(this.velocity);
-    this.velocity.addScaled(this.position, -0.0005);
-    this.velocity.addScaled(this.velocity, -0.004);
+    this.velocity.addScaled(this.position, -0.001);
+    this.velocity.addScaled(this.velocity, -0.006);
+
+    this.trail.push(this.position.clone());
+    if (this.trail.length > trailMaxLength) {
+      this.trail.splice(0, 1);
+    }
 
     // Pick a run up path.
     // Build up speed.
@@ -38,6 +48,7 @@ export class Ship {
   }
 
   draw(hexLines) {
+    // Model.
     hexLines.addPoints(
       this.model.map(point => (point ? {
           ...point,
@@ -45,6 +56,19 @@ export class Ship {
         } : null
       ))
     );
+
+    // Trail.
+    hexLines.addPoints(
+      this.trail.map((position, i) => {
+        const progress = (i + 1) / this.trail.length;
+        return {
+          position,
+          size: trailHeadSize * progress,
+          colour: {r: 255 * progress, g: 255 * (1 + progress) / 2, b: 255},
+        };
+      })
+    );
+    hexLines.addNull();
   }
 }
 
@@ -59,8 +83,8 @@ function createIceShardModel() {
     return new Vec3(deviate(20), Math.cos(angle) * radius, Math.sin(angle) * radius);
   });
   const frontColour = {r: 100, g: 200, b: 255};
-  const sideColour = {r: 100, g: 100, b: 255};
-  const backColour = {r: 50, g: 50, b: 255};
+  const sideColour = {r: 100, g: 150, b: 255};
+  const backColour = {r: 0, g: 100, b: 255};
   return [
     ...sides.flatMap(side => [
       {position: front, size, colour: frontColour},

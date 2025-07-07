@@ -18,7 +18,7 @@
   - hickory-nightingale: Was an earlier version of four-venom.
   - regular-slash-alto: Duplicate of absolute-meerkat.
 - Dependency on https://randfur.github.io/typescript-service-worker/sw-ts-compiler.js currently broken.
-  - These projects have been left in as it might get fixed eventually:
+  - These projects don't work but have been left in as it might get fixed eventually:
     - 2020/bony-ceramics
     - 2020/crimson-shadow-rise
     - 2020/fortune-lowly-saw

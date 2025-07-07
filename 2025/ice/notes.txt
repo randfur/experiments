@@ -1,3 +1,12 @@
+# 2025-07-07
+- Give them white trails.
+  - Added trails.
+  - Reduced the number.
+  - Increased the friction.
+  - Got closer.
+- Don't like the purple that much.
+  - Poked the colours a bit.
+
 # 2025-06-03
 - Tweaked the parameters, added friction.
 - Moved camera back.

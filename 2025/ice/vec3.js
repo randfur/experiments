@@ -77,4 +77,8 @@ export class Vec3 {
     this.z = a * a * f + 2 * a * c * d + b * b * f - 2 * b * c * e + c * c * e;
     return this;
   }
+
+  clone() {
+    return new Vec3(this.x, this.y, this.z);
+  }
 }

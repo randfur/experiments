@@ -23,7 +23,7 @@ async function main() {
       1, 0, 0, 0,
       0, 1, 0, 0,
       0, 0, 1, 0,
-      0, 0, 800, 1,
+      0, 0, 500, 1,
     ];
     hexLines.draw();
   }
@@ -31,8 +31,9 @@ async function main() {
 
 function initialScene() {
   const objects = [];
-  for (let i = 0; i < 200; ++i) {
-    objects.push(new Ship());
+  const count = 20;
+  for (let i = 0; i < count; ++i) {
+    objects.push(new Ship(i / (count - 1)));
   }
   return objects;
 }
