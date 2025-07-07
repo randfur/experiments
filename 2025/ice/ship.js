@@ -82,9 +82,9 @@ function createIceShardModel() {
     const radius = 10 + random(10);
     return new Vec3(deviate(20), Math.cos(angle) * radius, Math.sin(angle) * radius);
   });
-  const frontColour = {r: 100, g: 200, b: 255};
-  const sideColour = {r: 100, g: 150, b: 255};
-  const backColour = {r: 0, g: 100, b: 255};
+  const frontColour = {r: 200, g: 255, b: 255};
+  const sideColour = {r: 100, g: 200, b: 255};
+  const backColour = {r: 0, g: 150, b: 255};
   return [
     ...sides.flatMap(side => [
       {position: front, size, colour: frontColour},
