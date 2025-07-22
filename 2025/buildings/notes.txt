@@ -6,3 +6,4 @@
   - Find all edges that intersect the plane, create new vertices at those locations.
   - Create a new face using those vertices and split the existing faces.
   - Randomly add points in the middle of the split face to create a non-flat breakage.
+- Created a box with faces and size and position that draws.
