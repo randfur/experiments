@@ -19,8 +19,8 @@ async function main() {
       position: new Vec3(0, 20, 500),
       normal: new Vec3(
         1,
-        10 + 8 * Math.cos(time / 4000),
-        -5 + 4 * Math.sin(time / 1000),
+        2 * Math.cos(time / 1000),
+        4 * Math.sin(time / 1000),
       ).inplaceNormalise(),
       push: new Vec3(0, 200, 0),
     });

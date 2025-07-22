@@ -11,5 +11,6 @@
   - Works for simple case.
   - Doesn't work so well for when the plane is upside down.
   - Haven't thought too hard about the face slice code just adding verticies to face A and B according to which side of the plane they're on, maybe ordering matters? Need to pen and paper it.
-- Added simple time based variation of the slicing (within the nice working input space).
+- Added simple time based variation of the slicing.
+  - Showing off the broken slices.
   - Will get to broken inputs later.
