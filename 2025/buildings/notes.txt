@@ -14,3 +14,4 @@
 - Added simple time based variation of the slicing.
   - Showing off the broken slices.
   - Will get to broken inputs later.
+- Nvm it wasn't broken, I was just pushing them into each other.
