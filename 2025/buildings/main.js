@@ -10,6 +10,7 @@ async function main() {
   const model = createBox({
     position: new Vec3(0, 0, 600),
     size: new Vec3(200, 400, 200),
+    colour: {r: 255, g: 255, b: 255, a: 255},
   });
 
   while (true) {
@@ -20,7 +21,7 @@ async function main() {
       normal: new Vec3(
         1,
         2 * Math.cos(time / 1000),
-        4 * Math.sin(time / 1000),
+        4 * Math.sin(time / 1234),
       ).inplaceNormalise(),
       push: new Vec3(0, 200 * Math.cos(time / 1000), 0),
     });

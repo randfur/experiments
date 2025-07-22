@@ -2,8 +2,9 @@ import {Vec3} from '../third-party/ga/vec3.js';
 import {Temp} from '../third-party/ga/temp.js';
 
 class Face {
-  constructor(vertices) {
+  constructor(vertices, colour) {
     this.vertices = vertices;
+    this.colour = colour;
   }
 
   *edges() {
@@ -36,16 +37,17 @@ class Face {
       }
     }
     return [
-      verticesA.length ? new Face(verticesA) : null,
-      verticesB.length ? new Face(verticesB) : null,
+      verticesA.length ? new Face(verticesA, this.colour) : null,
+      verticesB.length ? new Face(verticesB, this.colour) : null,
     ];
   }
 
   draw(position, hexLines) {
     const temp = Temp.vec3();
+    const {r, g, b, a} = this.colour;
     for (let i = 0; i <= this.vertices.length; ++i) {
       const {x, y, z} = temp.setAdd(position, this.vertices[i % this.vertices.length]);
-      hexLines.addPointFlat(x, y, z, 10, 255, 255, 255, 255);
+      hexLines.addPointFlat(x, y, z, 10, r, g, b, a);
     }
     hexLines.addNull();
   }
@@ -68,6 +70,8 @@ class Model {
       faceA && facesA.push(faceA);
       faceB && facesB.push(faceB);
     }
+    // TODO: Work into the API somehow.
+    facesB.forEach(face => face.colour = {r: 100, g: 0, b: 255, a: 255});
     return [
       facesA.length ? new Model({
         position: new Vec3().set(this.position).inplaceScaleAdd(0.5, push),
@@ -87,7 +91,7 @@ class Model {
   }
 }
 
-export function createBox({position, size}) {
+export function createBox({position, size, colour}) {
   const {x, y, z} = Temp.vec3().setScale(0.5, size);
   const frontTopLeft = new Vec3(-x, -y, -z);
   const frontTopRight = new Vec3(x, -y, -z);
@@ -101,17 +105,17 @@ export function createBox({position, size}) {
     position,
     faces: [
       // Front.
-      new Face([frontTopLeft, frontTopRight, frontBottomRight, frontBottomLeft]),
+      new Face([frontTopLeft, frontTopRight, frontBottomRight, frontBottomLeft], colour),
       // Right.
-      new Face([frontTopRight, frontBottomRight, backBottomRight, backTopRight]),
+      new Face([frontTopRight, frontBottomRight, backBottomRight, backTopRight], colour),
       // Top.
-      new Face([frontTopLeft, frontTopRight, backTopRight, backTopLeft]),
+      new Face([frontTopLeft, frontTopRight, backTopRight, backTopLeft], colour),
       // Back.
-      new Face([backTopLeft, backTopRight, backBottomRight, backBottomLeft]),
+      new Face([backTopLeft, backTopRight, backBottomRight, backBottomLeft], colour),
       // Left.
-      new Face([frontTopLeft, backTopLeft, backBottomLeft, frontBottomLeft]),
+      new Face([frontTopLeft, backTopLeft, backBottomLeft, frontBottomLeft], colour),
       // Bottom.
-      new Face([frontBottomLeft, frontBottomRight, backBottomRight, backBottomLeft]),
+      new Face([frontBottomLeft, frontBottomRight, backBottomRight, backBottomLeft], colour),
     ],
   });
 }

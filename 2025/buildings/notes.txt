@@ -15,3 +15,8 @@
   - Showing off the broken slices.
   - Will get to broken inputs later.
 - Nvm it wasn't broken, I was just pushing them into each other.
+- Added different colour to one of the halves.
+  - Hard coded, needs an API for it.
+- TODO:
+  - Add a face for the slice face.
+  - Can't tell it's not there due to all the redundant rendering the model does.
