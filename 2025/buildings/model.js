@@ -30,7 +30,7 @@ class Face {
       if (t > 0 && t < 1) {
         const middle = new Vec3().setScaleAdd(a, t, aToB);
         (pToADotN >= 0 ? verticesA : verticesB).push(a, middle);
-        (pToADotN >= 0 ? verticesB : verticesA).push(middle.clone(), b);
+        (pToADotN >= 0 ? verticesB : verticesA).push(middle, b);
       } else {
         (pToADotN >= 0 ? verticesA : verticesB).push(a);
       }
