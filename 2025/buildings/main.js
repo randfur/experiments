@@ -14,7 +14,18 @@ async function main() {
 
   while (true) {
     const time = await new Promise(requestAnimationFrame);
-    model.draw(hexLines);
+
+    const [modelA, modelB] = model.slice({
+      position: new Vec3(0, 20, 500),
+      normal: new Vec3(
+        1,
+        10 + 8 * Math.cos(time / 4000),
+        -5 + 4 * Math.sin(time / 1000),
+      ).inplaceNormalise(),
+      push: new Vec3(0, 200, 0),
+    });
+    modelA.draw(hexLines);
+    modelB.draw(hexLines);
     hexLines.draw();
     hexLines.clear();
     Temp.reclaimAll();
