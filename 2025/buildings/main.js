@@ -23,7 +23,11 @@ async function main() {
         2 * Math.cos(time / 1000),
         4 * Math.sin(time / 1234),
       ).inplaceNormalise(),
-      push: new Vec3(0, 200 * Math.cos(time / 1000), 0),
+      push: new Vec3(
+        0,
+        200 * Math.cos(time / 1000),
+        0,
+      ),
     });
     modelA.draw(hexLines);
     modelB.draw(hexLines);

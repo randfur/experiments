@@ -1,0 +1,48 @@
+# 2025-07-28
+- Implementing model with edges.
+- Going to define a map of directional edges to reduce the overpainting that building/ had with drawing each face's edge, all edges being drawn twice.
+- Compute the faces from the edges as needed.
+- Doesn't make good use of hex-lines' ability to draw continuous lines, would have null points inbetween each edge.
+- Not as bad as redundant draws but not as optimal.
+- How to fill in a cube's edges with as few breaks as possible?
+- Hard to find fewer than 4, each vertex needs to be visited 3 times, makes it hard to visit them all cleanly.
+- Unsure if this optimisation is worth it.
+  - Defining each face allows for the faces to have their own size and colour.
+- Going to stick with a face list instead of edge map.
+- Considering how to make impact fractures rather than a slice.
+  - This would split the model up into more than two pieces and be able to keep the resulting pieces convex.
+  - Ideally has a degree of randomness in the structure of the fracture and multiple directions that turn rather than going on forever like the plane split.
+  - This involves creating new vertices that are within the face rather than on its edges.
+    - Testing for whether a point is inside a face would probably need the SALT method.
+    - Separating axis line theorum.
+    - This assumes every face is convex.
+      - If the fractured pieces are convex then so are all its faces.
+    - For each edge check that the point is not on the outer side of it.
+      - Would need to inspect two connected non-parallel edges to know which way "out" is.
+- How to structure the 3 dimensional form of the fracture?
+  - Maybe an initial number of spikes followed by splitting trapezoids.
+  - Maybe a jagged cone shape.
+    - Inner ring, random number of vertices.
+    - At each ring edge have a split coming back towards the impact to have small pieces.
+    - Then splits going into the model for the large fractures that span the entire thing.
+    - Maybe a single line going inwards before creating the ring.
+      - Probably can't be a jagged line or it might create concave pieces.
+  - In order to remain convex every fracture edge going in must split into two fracture edges.
+    - If the edge bends one way that will be convex for one side and concave for the other, it needs to bend both ways and split into 3 instead of 2.
+  - A bifurcating split explains how to get through the entire material.
+  - How to have the split turn around in a circle? What happens at that joint? Split into 3 again probobly.
+  - Would need to deal with these fracture splits colliding.
+  - Would need to detect when splits create a closed set of faces.
+  - Cone fracture idea:
+    - Cone:
+      - Create a convex ring around impact point.
+      - Create smaller ring set inside.
+        - Unsure of how to pick these points to ensure convex slices.
+      - Create middle point inside smaller ring and set further inside.
+      - This makes a cake lump shape, cut into slices.
+      - Send these pieces flying back towards where the impact came from.
+    - Sides:
+
+# 2025-07-27
+- Auto face detection for a 3D model with edges.
+  - Find connected edges that lie on the same plane.

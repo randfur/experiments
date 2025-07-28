@@ -20,3 +20,6 @@
 - TODO:
   - Add a face for the slice face.
   - Can't tell it's not there due to all the redundant rendering the model does.
+
+# 2025-07-07
+- This looks good as is, going to leave this one be and start another project to continue the building slicing.
