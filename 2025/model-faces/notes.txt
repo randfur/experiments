@@ -1,3 +1,38 @@
+# 2025-08-01
+- Decided to do n way splits.
+  - Like cutting cake slices.
+  - Plane splits that all join at a line.
+  - Considering constraint that the largest angle between two planes can't be more than 180 degrees.
+    - Will need to figure out how to test that.
+    - Maybe provide helper to add a mid plane in such cases.
+- Whiteboarding.
+  - https://photos.google.com/photo/AF1QipMlhPhH3ZuOBuZnw3SmxLxZPqmdrXEGGSlCdQ2d
+    - How to sort points in a circle without using atan2().
+    - Four categories:
+      - 1: Pointing straight up.
+      - 2: Pointing to the right.
+      - 3: Pointing straight down.
+      - 4: Pointing to the left.
+    - Get numeric category of points a and b and just subtract.
+    - If both are the same and in either category 2 or 4 then compare gradient slopes.
+  - https://photos.google.com/photo/AF1QipOCbo4GrRrH2JrCUjyeXDxIIj7vQAQFYO-AqOfm
+    - Slicing planes A, B, C.
+    - Face with vertices 1, 2, 3, 4.
+    - Iterate through the edges 1->2, 2->3, 3->4, 4->1.
+    - Add vertices and intersections with slicing planes into respective buckets.
+    - Each plane has two vertex buckets:
+      - On: Vertices that lie on the plane.
+      - In: Vertices that lie within the angle between the plane and the next one e.g. A->B.
+    - The On verticies are collected over the course of the entire model slicing and are sorted by angle to form a new convex face shared by adjacent split models.
+    - The In vertices form the face for the respective split model inside that slice segment.
+- How to determine whether a point lies within the A->B segment?
+  - Use SALT.
+  - This would work best in 2D space.
+  - All these vectors and vertices are 3D.
+  - Should maybe add Vec2 to the ga repo and have some Vec3 methods that return Vec2s that represent position on a 3D plane.
+    - Can probably just use arbitrary basis vectors.
+    - (x, y, z) -> (z, x, -y) is a good way to generate a non-parallel vector to the normal that can be projected to be orthogonal.
+
 # 2025-07-28
 - Implementing model with edges.
 - Going to define a map of directional edges to reduce the overpainting that building/ had with drawing each face's edge, all edges being drawn twice.
