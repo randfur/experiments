@@ -1,5 +1,4 @@
 import {Vec3} from '../third-party/ga/vec3.js';
-import {Temp} from '../third-party/ga/temp.js';
 
 class Face {
   constructor(vertices, colour) {
@@ -24,8 +23,8 @@ class Face {
       // ((A + t(B - A)) - P).N = 0
       // A.N + t(B - A).N - P.N = 0
       // t = -(A - P).N / (B - A).N
-      const pToADotN = Temp.vec3().setDelta(position, a).dot(normal);
-      const aToB = Temp.vec3().setDelta(a, b);
+      const pToADotN = Vec3.temp().setDelta(position, a).dot(normal);
+      const aToB = Vec3.temp().setDelta(a, b);
       const aToBDotN = aToB.dot(normal)
       const t = -pToADotN / aToBDotN;
       if (t > 0 && t < 1) {
@@ -43,7 +42,7 @@ class Face {
   }
 
   draw(position, hexLines) {
-    const temp = Temp.vec3();
+    const temp = Vec3.temp();
     const {r, g, b, a} = this.colour;
     for (let i = 0; i <= this.vertices.length; ++i) {
       const {x, y, z} = temp.setAdd(position, this.vertices[i % this.vertices.length]);
@@ -62,7 +61,7 @@ class Model {
   // Returns two new models, the first has a positive dot product with the normal, the second a negative dot product.
   // If either has no faces it will be null.
   slice({position, normal, push}) {
-    const localPosition = Temp.vec3().setDelta(this.position, position);
+    const localPosition = Vec3.temp().setDelta(this.position, position);
     const facesA = [];
     const facesB = [];
     for (const face of this.faces) {
@@ -92,7 +91,7 @@ class Model {
 }
 
 export function createBox({position, size, colour}) {
-  const {x, y, z} = Temp.vec3().setScale(0.5, size);
+  const {x, y, z} = Vec3.temp().setScale(0.5, size);
   const frontTopLeft = new Vec3(-x, -y, -z);
   const frontTopRight = new Vec3(x, -y, -z);
   const frontBottomLeft = new Vec3(-x, y, -z);

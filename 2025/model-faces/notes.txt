@@ -42,6 +42,18 @@
       - This makes a cake lump shape, cut into slices.
       - Send these pieces flying back towards where the impact came from.
     - Sides:
+      - ...
+  - Maybe just need trisplits.
+    - Do enough of those and it should look good enough probably.
+    - Trisplit has a centre line.
+    - All faces the that the centre line intersects with will get split 3 ways.
+    - Should be exactly two faces ideally.
+      - Unles it intersects a vertex, then things are harder.
+      - Might be able to ignore that and let floating point chaos make it a rarity.
+    - All other faces are either split in two or not split.
+      - See which pair of the trisplit directions each vertex lies within.
+      - Project the vertex onto the plane perpendicular to the centre line.
+      - Put find which pair of trisplit directions the projected vertex has a positive (x,y) representation in their skewed co-ordinate space.
 
 # 2025-07-27
 - Auto face detection for a 3D model with edges.

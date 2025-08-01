@@ -1,5 +1,4 @@
 import {Vec3} from '../third-party/ga/vec3.js';
-import {Temp} from '../third-party/ga/temp.js';
 
 export function createBox(dimensions, size, colour) {
   const x = dimensions.x / 2;
