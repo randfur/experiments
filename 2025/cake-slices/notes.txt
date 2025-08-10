@@ -1,3 +1,26 @@
+# 2025-08-10
+- Worked on sorting 2D vectors by angle.
+  - Came up with a different scheme to approximate an angle to sort by:
+    - https://www.shadertoy.com/view/tXVXRK
+    - abs(x) > abs(y)
+      ? ((x < 0) * 4) + 1 - y / x
+      : ((y > 0) * 4) + 3 + x / y;
+- Thoughts about what to ultimately make with this cake slicing:
+  - A very large box that's too close to the camera for its edges to be seen.
+  - A snake that glides through space and slices the box whenever it encounters a face.
+    - Starts behind the camera and moves forward to hit the front face of the big box.
+    - Has a cooldown of a few seconds between slices so it doesn't spam slices on the pieces it just sliced.
+  - The colour the snake slices with changes over time, maybe some bias based on 3D position.
+  - Slice pieces slowly drift away from the impact point.
+    - Would be neat to have rotation involved too.
+  - A cap on the max number of pieces, excess small pieces fade away.
+  - Pieces that float off screen are culled also.
+  - When there are no pieces wait for the snake to go off screen and then restart the whole thing.
+- Slicing needs at least 3 vectors and the max angle between any adjacent pair must be < tau/2.
+  - How to detect angle of over tau/2?
+  - Take dot product with tau/4 rotation of first vector.
+  - Result must be > 0.
+
 # 2025-08-01
 - Decided to do n way splits.
   - Like cutting cake slices.
