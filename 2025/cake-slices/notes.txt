@@ -20,6 +20,10 @@
   - How to detect angle of over tau/2?
   - Take dot product with tau/4 rotation of first vector.
   - Result must be > 0.
+- Renamed experiment from model-faces to cake-slices.
+- Need to get basis vectors for a plane normal and put 3D points on the plane in terms of those basis vectors.
+- Tested out the new Vec3.setPlaneProjection() method.
+  - Looks like it works.
 
 # 2025-08-01
 - Decided to do n way splits.
