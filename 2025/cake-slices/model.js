@@ -1,4 +1,5 @@
 import {Vec3} from '../third-party/ga/vec3.js';
+import {PlaneBasis} from '../third-party/ga/plane-basis.js';
 
 export function createBox(dimensions, size, colour) {
   const x = dimensions.x / 2;
@@ -44,11 +45,15 @@ class Model {
     this.faces = faces;
   }
 
-  split() {
-    return [
-      new Model(),
-      new Model(),
-    ];
+  split({position, direction, cuts, distance}) {
+    const planeBasis = PlaneBasis.temp(position, direction);
+    const planeCuts = cuts.map(cut => cut.clone().inplace2dPlaneProjection(planeBasis));
+    const intersectingFaces = [];
+    for (const face of this.faces) {
+
+    }
+
+    return [];
   }
 
   draw(hexLines) {

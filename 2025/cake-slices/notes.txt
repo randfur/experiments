@@ -1,3 +1,20 @@
+# 2025-08-21
+- Removed testing projection dots.
+- Rewrote main to be a testing cake slice.
+- Will add model orientation support after this works to test cornery cases.
+- Added plane basis concept; normal plus arbitrary plane basis vectors.
+- Added Vec2 and place projection down into Vec2 land using the arbitrary plan basis vectors.
+  - Seems like I could just use Vec3 with z = 0.
+  - Might do that instead actually, save a lot of duplicate code.
+  - Went with Vec3 and upstreaming it all including a new PlaneBasis class into the ga library.
+- Need to detect if middle line intersects a face.
+  - Need to get the plane basis of a face and do the collision detection in 2D.
+
+# 2025-08-18
+- Added another inplacePlaneProjection() on top of the first one for double plane projection.
+  - Just curious how it would look.
+  - Occasional squashing into a straight line otherwise not much different.
+
 # 2025-08-10
 - Worked on sorting 2D vectors by angle.
   - Came up with a different scheme to approximate an angle to sort by:
