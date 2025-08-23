@@ -1,3 +1,21 @@
+# 2025-08-23
+- To do the SALT 2D collision detection all the face vertices will need to have the same winding.
+  - The direction of the normal and subsequent plane basis vectors also affect how to do the SALT check.
+  - Will need to do some testing.
+- Created test hexagon face.
+  - Extracted normal.
+  - Created plane basis from normal.
+  - Updated Vec3.setNonParallel() to produce a plane basis that's the same handedness as the co-ordinate space (left handed) when the face runs counter clockwise in the XY plane and has the basis X->Y also run counter clockwise.
+    - This works fine for a front face but what happens for a back face where points run clockwise instead?
+      - The normal should be in the opposite direction and produce opposite results.
+      - Needs testing.
+      - Reversed the face points, observed that the normal reversed and the plane basis is still left handed and still follows the direction of the points (clockwise).
+    - Should update the angle sort approximation function below to increase counter clockwise rather than clockwise.
+      - Done:
+        abs(pos.x) > abs(pos.y)
+        ? (float(pos.x < 0.) * 4.) + 1. + (pos.y / pos.x)
+        : (float(pos.y < 0.) * 4.) + 3. - (pos.x / pos.y);
+
 # 2025-08-21
 - Removed testing projection dots.
 - Rewrote main to be a testing cake slice.
