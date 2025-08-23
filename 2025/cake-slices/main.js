@@ -28,7 +28,7 @@ async function main() {
   const planeBasisA = facePlaneBasis(faceA);
   const planeBasisB = facePlaneBasis(faceB);
 
-  const dots = range(100).map(i => new Vec3(0, 0, i));
+  const dots = range(100).map(i => new Vec3(0, i * (i % 2 === 0 ? 1 : -1), 0));
 
   function facePlaneBasis(face) {
     return new PlaneBasis().set(
@@ -62,18 +62,26 @@ async function main() {
   }
 
   function drawPlaneBasis(planeBasis) {
-    drawUnitVector(planeBasis.origin, planeBasis.xDirection, 50, 4, {r: 255});
-    drawUnitVector(planeBasis.origin, planeBasis.yDirection, 50, 4, {g: 255});
-    drawUnitVector(planeBasis.origin, planeBasis.normal, 50, 4, {b: 255});
+    drawUnitVector(planeBasis.origin, planeBasis.xDirection, 20, 4, {r: 255});
+    drawUnitVector(planeBasis.origin, planeBasis.yDirection, 20, 4, {g: 255});
+    drawUnitVector(planeBasis.origin, planeBasis.normal, 20, 4, {b: 255});
   }
 
   function isProjectionColliding(face, facePlaneBasis, v) {
     const planePoint = Vec3.temp().set2dPlaneProjection(facePlaneBasis, v);
-    const edge = Vec3.temp();
+    const planePointDelta = Vec3.temp();
+    const edgeStart = Vec3.temp();
+    const edgeNormal = Vec3.temp();
     for (let i = 0; i < face.length; ++i) {
-      edge.set
-
+      edgeStart.set2dPlaneProjection(facePlaneBasis, face[i]);
+      edgeNormal.setDelta(face[i], face[(i + 1) % face.length])
+        .inplaceRelative2dPlaneProjection(facePlaneBasis)
+        .inplaceTurnXy();
+      if (planePointDelta.setDelta(edgeStart, planePoint).dot(edgeNormal) < 0) {
+        return false;
+      }
     }
+    return true;
   }
 
   while (true) {
@@ -82,11 +90,8 @@ async function main() {
     hexLines.clear();
 
     // Spin camera.
-    Mat4.temp()
-      .setMultiply(
-        Mat4.temp().setTranslateXyz(0, 0, 300),
-        Mat4.temp().setRotateZx(time / 4000),
-      )
+    Mat4.temp().setTranslateXyz(0, 0, 300)
+      .inplaceMultiplyRight(Mat4.temp().setRotateZx(time / 1000))
       .exportToArrayBuffer(hexLines.transformMatrix);
 
     drawFace(faceA, 4, {r: 255, g: 255, b: 255});
@@ -98,7 +103,21 @@ async function main() {
       dot.x += Math.cos(dot.y);
       dot.y += Math.cos(dot.z);
       dot.z += Math.cos(dot.x);
-      hexLines.addDot({position: dot, size: 4, colour: {r: 255, g: 255}});
+      hexLines.addDot({
+        position: dot,
+        size: 4,
+        colour: {r: 100, g: 100, b: 100},
+      });
+      hexLines.addDot({
+        position: Vec3.temp().setPlaneProjection(planeBasisA.origin, planeBasisA.normal, dot),
+        size: 4,
+        colour: {r: 255, g: 255, b: isProjectionColliding(faceA, planeBasisA, dot) ? 255 : 0},
+      });
+      hexLines.addDot({
+        position: Vec3.temp().setPlaneProjection(planeBasisB.origin, planeBasisB.normal, dot),
+        size: 4,
+        colour: {r: 255, g: isProjectionColliding(faceB, planeBasisB, dot) ? 255 : 0, b: 255},
+      });
     }
 
     // const parts = box.split({

@@ -15,6 +15,8 @@
         abs(pos.x) > abs(pos.y)
         ? (float(pos.x < 0.) * 4.) + 1. + (pos.y / pos.x)
         : (float(pos.y < 0.) * 4.) + 3. - (pos.x / pos.y);
+  - Implemented projected collision detection.
+    - It works, yay.
 
 # 2025-08-21
 - Removed testing projection dots.
