@@ -1,0 +1,2 @@
+# 2025-08-24
+- Forked from cake-slices to preserve the hexagon collision detection test.

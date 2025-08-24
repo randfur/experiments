@@ -1,3 +1,6 @@
+# 2025-08-24
+- Forked this off as slanted-hexagons to preserve the collision detection test.
+
 # 2025-08-23
 - To do the SALT 2D collision detection all the face vertices will need to have the same winding.
   - The direction of the normal and subsequent plane basis vectors also affect how to do the SALT check.
