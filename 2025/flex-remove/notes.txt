@@ -1,0 +1,14 @@
+# 2025-09-11
+- Trying out a layout computation where groups of items are specified for the left, middle and right of a section with fixed width.
+- Each section has a list of list of items.
+- The whole thing has a list of the same items in a "removeOrder" which tells the layout what order to remove items to make more room.
+- It takes the first item in each list of items that hasn't been removed and tries laying out everything.
+- If layout fails (runs out of space) then it reports failure and tries again with the next item in the removeOrder removed.
+- Each list of items should be sorted from biggest to smallest since removing one for the other is supposed to make room.
+- Also items have min/max widths, this enables the items to shrink a bit before being removed, once no item can shrink any further then it should remove.
+- This is a multi pass kind of layout, many attempts to arrive at a set of removed items that allows everything to be present in the container.
+- Did an implementation.
+  - Haven't generalised flex beyond the first couple of passes.
+  - Removal doesn't work right, it appears to flicker on/off.
+    - Strange since different layout runs for different container widths shouldn't have any influence on each other.
+    - Not sure how it's flickering between "states".
