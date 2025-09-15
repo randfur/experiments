@@ -1,0 +1,12 @@
+# 2025-09-15
+- Do https://randfur.github.io/experiments/2022/working-dynamic-cup/ but with a volume rather than just a surface.
+- Have a 4x4 grid of 16 beziers going up the z axis.
+- Generate 4 beziers for every layer.
+- Generate n beziers for each of those 4 layer beziers.
+- How to animate all this?
+  - Maybe every control point flies through a little localised random bezier track in their space.
+  - Then have two globally affecting bezier tracks that attract and repel the control points based on distance.
+- Started implementing.
+  - Rendered the scaffolding beziers with a bit of deviation.
+  - Looks like seaweed.
+  - Added dumb fish and made them swim in and out.
