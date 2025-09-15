@@ -1,3 +1,9 @@
+# 2025-09-16
+- Added wobble and direction to fish.
+- Split out into separate class.
+- Added bubbler with bubbles.
+- Renamed experiment to seaweed, will do the bezier-volume stuff again separately.
+
 # 2025-09-15
 - Do https://randfur.github.io/experiments/2022/working-dynamic-cup/ but with a volume rather than just a surface.
 - Have a 4x4 grid of 16 beziers going up the z axis.
