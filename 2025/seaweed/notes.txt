@@ -3,6 +3,7 @@
 - Split out into separate class.
 - Added bubbler with bubbles.
 - Renamed experiment to seaweed, will do the bezier-volume stuff again separately.
+- Made the seaweed sway.
 
 # 2025-09-15
 - Do https://randfur.github.io/experiments/2022/working-dynamic-cup/ but with a volume rather than just a surface.

@@ -10,7 +10,7 @@ async function main() {
   const hexLines = hexLinesContext.createLines();
 
   const objects = [
-    new BezierVolume(),
+    new SeaweedFloor(),
     new FishSchool(),
     new Bubbler(),
   ];
@@ -198,45 +198,65 @@ class Fish {
   }
 }
 
-class BezierVolume {
+class SeaweedFloor {
   constructor() {
-    this.scaffolding = range(4).map(x =>
+    this.seaweeds = range(8).flatMap(x =>
       range(4).map(z =>
-        new Bezier(
-          range(4).map(y =>
-            new Vec3(x, y, z)
-              .inplaceAddXyz(-1.5, -1.5, 2)
-              .inplaceScale(30)
-              .inplaceAddXyz(deviate(10), deviate(10), deviate(10))
-          )
+        new Seaweed(
+          range(4).map(y => {
+            const deviationRange = 5 + y * 3;
+            return new ControlPoint({
+              basePosition: new Vec3(x, y, z)
+                .inplaceAddXyz(-3.5, -1.25, 2)
+                .inplaceScale(30),
+              deviationA: new Vec3(
+                deviate(deviationRange),
+                deviate(deviationRange),
+                deviate(deviationRange),
+              ),
+              deviationB: new Vec3(
+                deviate(deviationRange),
+                deviate(deviationRange),
+                deviate(deviationRange),
+              ),
+            })
+          })
         )
       )
     );
   }
 
   update(time) {
+    for (const seaweed of this.seaweeds) {
+      seaweed.update(time);
+    }
   }
 
   draw(hexLines) {
-    for (const row of this.scaffolding) {
-      for (const bezier of row) {
-        bezier.draw(hexLines);
-      }
+    for (const seaweed of this.seaweeds) {
+      seaweed.draw(hexLines);
     }
   }
 }
 
-class Bezier {
+class Seaweed {
   constructor(controlPoints) {
     this.controlPoints = controlPoints;
+    this.size = 2 + deviate(0.5);
+  }
+
+  update(time) {
+    for (const controlPoint of this.controlPoints) {
+      controlPoint.update(time);
+    }
   }
 
   evaluate(t, output) {
     const [a, b, c, d] = this.controlPoints;
 
-    const e = Vec3.temp().setLerp(a, b, t);
-    const f = Vec3.temp().setLerp(b, c, t);
-    const g = Vec3.temp().setLerp(c, d, t);
+    const e = Vec3.temp().setLerp(a.position, b.position, t);
+    const f = Vec3.temp().setLerp(b.position, c.position, t);
+    const g = Vec3.temp().setLerp(c.position, d.position, t);
 
     const h = Vec3.temp().setLerp(e, f, t);
     const i = Vec3.temp().setLerp(f, g, t);
@@ -245,15 +265,34 @@ class Bezier {
   }
 
   draw(hexLines) {
-    const count = 100;
+    const count = 10;
     for (let i = 0; i < count; ++i) {
-      hexLines.addDot({
+      hexLines.addPoint({
         position: this.evaluate(i / count, Vec3.temp()),
-        size: 2 + deviate(0.2),
+        size: this.size,
         colour: {g: 255 * (i + 1) / count},
       });
     }
     hexLines.addNull();
+  }
+}
+
+class ControlPoint {
+  constructor({basePosition, deviationA, deviationB}) {
+    this.basePosition = basePosition;
+    this.deviationA = deviationA;
+    this.deviationB = deviationB;
+    this.position = new Vec3();
+  }
+
+  update(time) {
+    this.position
+      .setLerp(
+        this.deviationA,
+        this.deviationB,
+        (Math.cos(time / 10000 + this.deviationA.x) + 1) / 2,
+      )
+      .inplaceAdd(this.basePosition);
   }
 }
 
