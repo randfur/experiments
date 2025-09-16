@@ -151,7 +151,7 @@ class Fish {
     new Vec3(-9, 4, 0),
     new Vec3(-9, 8, 0),
     new Vec3(-7, 6, 0),
-    new Vec3(-9, 9, 0),
+    new Vec3(-8, 9, 0),
     new Vec3(-5, 8, 0),
     new Vec3(-2, 6, 0),
   ]);
