@@ -5,14 +5,18 @@ import {Temp} from '../third-party/ga/temp.js';
 
 const TAU = Math.PI * 2;
 
+let input;
+
 async function main() {
   const {hexLinesContext} = HexLinesContext.setupFullPageContext({is3d: true});
   const hexLines = hexLinesContext.createLines();
 
+  input = new Input();
+
   const objects = [
     new SeaweedFloor(),
-    new FishSchool(),
-    new Bubbler(),
+    new FishSchool(input),
+    new Bubbler(input),
   ];
 
   while (true) {
@@ -30,6 +34,18 @@ async function main() {
   }
 }
 
+class Input {
+  constructor() {
+    this.pointerDown = false;
+    window.addEventListener('pointerdown', () => {
+      this.pointerDown = true;
+    });
+    window.addEventListener('pointerup', () => {
+      this.pointerDown = false;
+    });
+  }
+}
+
 class Bubbler {
   constructor() {
     this.wait = 0;
@@ -37,6 +53,9 @@ class Bubbler {
   }
 
   update(time) {
+    if (input.pointerDown) {
+      this.wait = 0;
+    }
     if (this.wait <= 0) {
       this.wait = 100 + deviate(100);
       const count = 4 + deviate(3);
@@ -126,7 +145,7 @@ class FishSchool {
 
   update(time) {
     this.position.setXyz(
-      Math.cos(time / 10000) * 200,
+      Math.cos(1 + time / 10000) * 200,
       0,
       100,
     );
@@ -163,13 +182,17 @@ class Fish {
     this.position = new Vec3();
     this.lastPosition = new Vec3();
     this.orientation = new Rotor3();
+    this.fastForward = 0;
   }
 
   update(time) {
+    if (input.pointerDown) {
+      this.fastForward += 0.1;
+    }
     this.wobble.setXyz(
       0,
-      Math.sin(time / 10000 + this.basePosition.x) * 50,
-      Math.cos(time / 1000 + this.basePosition.y) * 20,
+      Math.sin(this.fastForward + time / 10000 + this.basePosition.x) * 50,
+      Math.cos(this.fastForward + time / 1000 + this.basePosition.y) * 20,
     );
     this.position
       .setZero()
@@ -283,14 +306,18 @@ class ControlPoint {
     this.deviationA = deviationA;
     this.deviationB = deviationB;
     this.position = new Vec3();
+    this.fastForward = 0;
   }
 
   update(time) {
+    if (input.pointerDown) {
+      this.fastForward += 0.3;
+    }
     this.position
       .setLerp(
         this.deviationA,
         this.deviationB,
-        (Math.cos(time / 10000 + this.deviationA.x) + 1) / 2,
+        (Math.cos(time / 10000 + this.deviationA.x + this.fastForward) + 1) / 2,
       )
       .inplaceAdd(this.basePosition);
   }
