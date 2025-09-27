@@ -194,7 +194,7 @@ function main() {
             ? `<div class="collapsable-container collapsed">
                 <button class="collapse-toggle" onclick="this.parentElement.classList.toggle('collapsed')">
                   unfinished experiments
-                  <div class="collapse-turnstyle">△</div>
+                  <div class="collapse-turnstyle">◭</div>
                 </button>
                 <ul class="collapsing-list">
                   ${wipExperiments.map(experiment => renderExperiment(year, experiment)).join('')}
