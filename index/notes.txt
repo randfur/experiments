@@ -1,5 +1,8 @@
 # 2025-09-27
+- Updated index with more CSS.
 - Added thumbnails for all experiments that had something to look at.
+- Added dog logo and favicon.
+- Added wip status for experiments and hid wip experiments in index by default.
 
 # 2025-06-29
 - Try out the Glitch imported projects to see if they work and fix what doesn't.

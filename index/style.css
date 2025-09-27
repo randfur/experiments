@@ -1,0 +1,143 @@
+/* https://fonts.google.com/specimen/Tiny5 */
+@import url('https://fonts.googleapis.com/css2?family=Tiny5&display=swap');
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  background: linear-gradient(27deg, #001, #213);
+  background-attachment: fixed;
+
+  font-family: "Tiny5", sans-serif;
+  color: white;
+}
+
+#logo {
+  image-rendering: pixelated;
+  transform: scale(8);
+  margin-block-start: 80px;
+}
+
+a {
+  text-decoration: none;
+  color: currentColor;
+}
+a:hover {
+  color: white !important;
+}
+
+h1 {
+  font-weight: normal;
+  font-size: 100px;
+  color: #a0f;
+  text-decoration: underline;
+  margin-block: 40px;
+}
+h2 {
+  font-weight: normal;
+  font-size: 50px;
+  color: #a6f;
+  margin-block-start: 100px;
+  margin-block-end: 20px;
+}
+
+ul {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  row-gap: 40px;
+  margin-inline: 50px;
+  color: white;
+  padding: 0;
+}
+li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px;
+  color: #ccf;
+
+  a:visited {
+    color: #66f;
+  }
+  a:hover {
+    color: white;
+  }
+}
+
+.main-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.experiment-name {
+  text-align: center;
+  font-size: 28px;
+  width: 180px;
+}
+
+.thumbnail {
+  width: 100px;
+  height: 100px;
+  border-radius: 20px;
+}
+
+.sub-links {
+  color: #88a;
+  font-size: 16px;
+
+  a:visited {
+    color: #44a;
+  }
+}
+
+.collapsable-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.collapse-toggle {
+  border-style: solid;
+  border-width: 1px;
+  border-color: #aaf;
+
+  background: transparent;
+  color: #88a;
+  font-family: "Tiny5", sans-serif;
+  font-size: 20px;
+}
+
+.collapse-toggle:hover {
+  background: #88a;
+  color: white;
+}
+
+.collapse-turnstyle {
+  display: inline-block;
+  transform: rotate(-180deg);
+  transition: transform 200ms;
+}
+
+.collapsing-list {
+  margin-block-start: -1px;
+
+  padding: 10px;
+
+  border-style: solid;
+  border-width: 1px;
+  border-color: #aaf;
+}
+
+.collapsed {
+  .collapse-turnstyle {
+    transform: none;
+  }
+
+  .collapsing-list {
+    display: none;
+  }
+}
