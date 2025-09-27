@@ -6,7 +6,8 @@ body {
   flex-direction: column;
   align-items: center;
 
-  background: linear-gradient(27deg, #001, #213);
+  background-image: url("favicon.png"), linear-gradient(27deg, #001, #213);
+  background-blend-mode: overlay, normal;
   background-attachment: fixed;
 
   font-family: "Tiny5", sans-serif;
