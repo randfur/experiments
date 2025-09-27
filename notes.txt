@@ -1,3 +1,6 @@
+# 2025-09-27
+- Added thumbnails for all experiments that had something to look at.
+
 # 2025-06-29
 - Try out the Glitch imported projects to see if they work and fix what doesn't.
 - Fixes:

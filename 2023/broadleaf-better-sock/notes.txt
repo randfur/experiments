@@ -1,3 +1,6 @@
+# 2025-09-27
+- Added character and artist credits.
+
 # 2025-06-28
 - Migrated from glitch.com to experiments repo.
   - Glitch shutting down.

@@ -3,7 +3,6 @@
 const directory = {
   2025: [
     'seaweed',
-    'flex-remove',
     'cake-slices',
     'slanted-hexagons',
     'buildings',
@@ -170,16 +169,124 @@ const directory = {
   ],
 };
 
-document.body.innerHTML =
-  Object.entries(directory)
-    .sort((a, b) => b[0] - a[0])
+document.body.innerHTML = `
+  <h1>
+    <a href="https://github.com/randfur/experiments">Experiments</a>
+  </h1>
+  ${Object.entries(directory)
+    .sort(([keyA, valueA], [keyB, valueB]) => keyB - keyA)
     .map(([year, experiments]) => `
-      ${year}<br>
+      <h2>
+        <a href="https://github.com/randfur/experiments/tree/main/${year}">${year}</a>
+      </h2>
       <ul>
         ${experiments.map(experiment => `
-          <li><a href="${year}/${experiment}">${experiment}</a></li>
+          <li>
+            <a href="${year}/${experiment}">
+              <div class="main-link">
+                <img src="${year}/${experiment}/thumbnail.png" onerror="this.src='wip.png'">
+                <div class="experiment-name">${experiment}</div>
+              </div>
+            </a>
+            <div class="sub-links">
+              <a href="${year}/${experiment}/notes.txt">notes</a>
+              |
+              <a href="https://github.com/randfur/experiments/tree/main/${year}/${experiment}">src</a>
+            </div>
+          </li>
         `).join('')}
       </ul>
     `)
-    .join('');
+    .join('')
+  }`;
 </script>
+<style>
+/* https://fonts.google.com/specimen/Tiny5 */
+@import url('https://fonts.googleapis.com/css2?family=Tiny5&display=swap');
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  background: linear-gradient(27deg, black, #213);
+  background-attachment: fixed;
+
+  font-family: "Tiny5", sans-serif;
+  color: white;
+}
+
+a {
+  text-decoration: none;
+  color: currentColor;
+}
+a:hover {
+  color: white !important;
+}
+
+h1 {
+  font-weight: normal;
+  font-size: 100px;
+  color: #a0f;
+  text-decoration: underline;
+  margin-block-end: 40px;
+}
+h2 {
+  font-weight: normal;
+  font-size: 50px;
+  color: #88f;
+  margin-block-end: 20px;
+}
+
+ul {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  row-gap: 40px;
+  margin-inline: 100px;
+  color: white;
+  padding: 0;
+}
+li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px;
+  color: #ccf;
+
+  a:visited {
+    color: #66f;
+  }
+  a:hover {
+    color: white;
+  }
+}
+
+.main-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.experiment-name {
+  text-align: center;
+  font-size: 28px;
+  width: 180px;
+}
+
+img {
+  width: 100px;
+  height: 100px;
+  border-width: 1px;
+  border-radius: 20px;
+}
+
+.sub-links {
+  color: #88a;
+  font-size: 16px;
+
+  a:visited {
+    color: #44a;
+  }
+}
+</style>
