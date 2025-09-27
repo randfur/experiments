@@ -7,7 +7,7 @@ const directory = {
     {name: 'linear-solver', wip: true},
     {name: 'ice', wip: false},
     {name: 'triangle-sphere', wip: false},
-    {name: 'pinch-zoom-debug', wip: false},
+    {name: 'pinch-zoom-debug', wip: true},
     {name: 'bell-conducting', wip: false},
     {name: 'plants', wip: true},
     {name: 'gravity-veils', wip: false},
