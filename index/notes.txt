@@ -1,3 +1,11 @@
+# 2025-09-28
+- Updated wip collapse toggle logic to toggle all contains below and including the clicked one.
+  - Tedious to have to click every toggle to see all.
+  - Having each toggle toggle all of them messes up scroll position.
+  - Having a global toggle is probably ideal but the logic of its state being dependent on the other toggles is a bit finicky.
+  - Not sure where positionally would be best for the global toggle either.
+  - Toggling all below is an effective enough middle ground but is a bit weird and counter-intuitive.
+
 # 2025-09-27
 - Updated index with more CSS.
 - Added thumbnails for all experiments that had something to look at.

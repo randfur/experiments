@@ -192,7 +192,7 @@ function main() {
           ${
             wipExperiments && wipExperiments.length > 0
             ? `<div class="collapsable-container collapsed">
-                <button class="collapse-toggle" onclick="this.parentElement.classList.toggle('collapsed')">
+                <button class="collapse-toggle" onclick="toggleClick(this)">
                   unfinished experiments
                   <div class="collapse-turnstyle">◭</div>
                 </button>
@@ -207,6 +207,23 @@ function main() {
       })
       .join('')
     }`;
+}
+
+// Toggle everything below the current toggle.
+// Helps support the common case of wanting to expand all.
+// Tried toggling everything but it messes up the scroll position most of the time.
+window.toggleClick = function(clickedToggle) {
+  let found = false;
+  let operation;
+  for (const toggle of Array.from(document.querySelectorAll('.collapse-toggle'))) {
+    if (toggle === clickedToggle) {
+      found = true;
+      operation = clickedToggle.parentElement.classList.contains('collapsed') ? 'remove' : 'add';
+    }
+    if (found) {
+      toggle.parentElement.classList[operation]('collapsed')
+    }
+  }
 }
 
 function renderExperiment(year, experiment) {
