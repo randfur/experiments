@@ -1,3 +1,25 @@
+# 2025-10-04
+- Removed hexagon plane test, back to simple cube.
+- Recollecting algorithm on pen and paper:
+  - For each arc:
+    - Create arc model.
+    - Create temp arc face.
+    - For each face in model:
+      - Create temp side face.
+      - For each edge in face:
+        - Test if start point is inside arc, add to temp side face.
+        - If projected start and end points straddle the arc start line:
+          - Get intersection point.
+          - Add point to temp side face.
+          - Add point to temp arc face.
+      - If edge start points were both inside and outside the arc:
+        - Get intersection point of slice direction with face.
+        - If point is inside face:
+          - Add point to temp arc face.
+      - Add temp side face to arc model.
+    - Sort temp arc face points by angle.
+    - Add temp arc face to arc model.
+
 # 2025-08-24
 - Forked this off as slanted-hexagons to preserve the collision detection test.
 

@@ -1,3 +1,6 @@
+# 2025-10-04
+- Fixed h1 text style to be centred.
+
 # 2025-09-28
 - Updated wip collapse toggle logic to toggle all contains below and including the clicked one.
   - Tedious to have to click every toggle to see all.
