@@ -1,3 +1,7 @@
+# 2025-10-09
+- Recreated drawings in notepad in JSPaint.
+  - arc-slice.png
+
 # 2025-10-04
 - Removed hexagon plane test, back to simple cube.
 - Recollecting algorithm on pen and paper:
@@ -19,6 +23,10 @@
       - Add temp side face to arc model.
     - Sort temp arc face points by angle.
     - Add temp arc face to arc model.
+
+# 2025-09-29
+- The algorithm is a bit complicated and would be hard to remember.
+  - Maybe creating an animation of it would be helpful.
 
 # 2025-08-24
 - Forked this off as slanted-hexagons to preserve the collision detection test.
