@@ -1,3 +1,6 @@
+# 2025-10-11
+- Maybe start implementing algorithm.
+
 # 2025-10-09
 - Recreated drawings in notepad in JSPaint.
   - arc-slice.png
