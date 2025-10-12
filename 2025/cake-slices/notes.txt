@@ -1,3 +1,6 @@
+# 2025-10-13
+- Test out separating a model's points into arc parts.
+
 # 2025-10-11
 - Maybe start implementing algorithm.
 

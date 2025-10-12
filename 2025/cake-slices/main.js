@@ -23,21 +23,34 @@ async function main() {
       // .inplaceMultiplyRight(Mat4.temp().setRotateZx(time / 1000))
       .exportToArrayBuffer(hexLines.transformMatrix);
 
-    box.draw(hexLines);
-    // const parts = box.split({
-    //   position: Vec3.temp(0, 0, 0),
-    //   direction: Vec3.temp(0, 0, 1),
-    //   cuts: [
-    //     Vec3.temp().setPolarXy(time / 1000),
-    //     Vec3.temp().setPolarXy(1 + time / 2000),
-    //     Vec3.temp().setPolarXy(2 + time / 3000),
-    //   ],
-    //   distance: Math.abs(Math.cos(time / 4000)),
-    // });
+    const position = Vec3.temp(0, 0, 0);
+    const direction = Vec3.temp(0, 0, 1);
+    const cuts = [
+      Vec3.temp().setPolarXy(time / 1000 + TAU * 0 / 3),
+      Vec3.temp().setPolarXy(time / 1000 + TAU * 1 / 3),
+      Vec3.temp().setPolarXy(time / 1000 + TAU * 2 / 3),
+    ];
 
-    // for (const part of parts) {
-    //   part.draw(hexLines);
-    // }
+    for (const cut of cuts) {
+      hexLines.addPoint({position, size: 4, colour: {b: 255}})
+      hexLines.addPoint({
+        position: Vec3.temp().setScaleAdd(position, 100, cut),
+        size: 4,
+        colour: {b: 255},
+      })
+      hexLines.addNull();
+    }
+
+    const parts = box.split({
+      position,
+      direction,
+      cuts,
+      distance: Math.abs(Math.cos(time / 4000)),
+    });
+
+    for (const part of parts) {
+      part.draw(hexLines);
+    }
 
     hexLines.draw();
   }
