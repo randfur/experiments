@@ -41,7 +41,7 @@ async function main() {
       hexLines.addNull();
     }
 
-    const parts = box.split({
+    const parts = box.slice({
       position,
       direction,
       cuts,

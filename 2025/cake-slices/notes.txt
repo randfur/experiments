@@ -1,3 +1,10 @@
+# 2025-10-14
+- More implementing of the algorithm.
+- Algorithm is missing some cases, need to consider intersections with start and end arc lines.
+  - Added projected-edge.png working out.
+- Figured out intersection algorithm, in 2D is a regular line intersection against a normal.
+  - Use the same t lerp value on the original start and end positions to get 3D space intersection point.
+
 # 2025-10-13
 - Test out separating a model's points into arc parts.
 

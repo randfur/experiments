@@ -6,7 +6,7 @@ export class Model {
     this.faces = faces;
   }
 
-  split({position, direction, cuts, distance}) {
+  slice({position, direction, cuts, distance}) {
     const planeBasis = PlaneBasis.temp(position, direction);
     const planeCuts = cuts.map(cut => Vec3.temp().setRelative2dPlaneProjection(planeBasis, cut).inplaceNormalise());
     planeCuts.sort((a, b) => getCheapAngle(a) - getCheapAngle(b));
@@ -18,21 +18,40 @@ export class Model {
       const arcEnd = planeCuts[(i + 1) % planeCuts.length];
       const arcEndNormal = Vec3.temp().setUnturnXy(arcEnd);
 
-      const slicePositions = [];
+      const arcFaces = [];
       for (const face of this.faces) {
-        for (const point of face.positions) {
-          const projectedPoint = Vec3.temp().set2dPlaneProjection(planeBasis, point);
-          if (projectedPoint.dot(arcStartNormal) >= 0 && projectedPoint.dot(arcEndNormal) > 0) {
-            slicePositions.push(point.clone());
+        const arcPositions = [];
+        for (let j = 0; j < face.positions.length; ++j) {
+          const startPosition = face.positions[j];
+          const endPosition = face.positions[(j + 1) % face.positions.length];
+
+          const startProjected = Vec3.temp().set2dPlaneProjection(planeBasis, startPosition);
+          const endProjected = Vec3.temp().set2dPlaneProjection(planeBasis, endPosition);
+
+          const isStartInside = startProjected.dot(arcStartNormal) >= 0 && startProjected.dot(arcEndNormal) > 0;
+          const isEndInside = endProjected.dot(arcStartNormal) >= 0 && endProjected.dot(arcEndNormal) > 0;
+
+          if (isStartInside) {
+            arcPositions.push(startPosition.clone());
+          }
+
+          if (isStartInside != isEndInside) {
+            // const intersectPosition
+            // arcPositions.push();
+            // TODO: Calculate intersection with arc start plane.
           }
         }
+        // TODO: Calculate intersection with direction and face plane and add if inside.
+        if (arcPositions.length > 0) {
+          arcFaces.push({
+            size: 10,
+            colour: {r: 255, g: 255, b: 255},
+            positions: arcPositions,
+          });
+        }
       }
-      if (slicePositions.length > 0) {
-        result.push(new Model([{
-          size: 10,
-          colour: {r: 255, g: 255, b: 255},
-          positions: slicePositions,
-        }]));
+      if (arcFaces.length > 0) {
+        result.push(new Model(arcFaces));
       }
     }
 
