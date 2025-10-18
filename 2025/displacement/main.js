@@ -32,7 +32,7 @@ async function main() {
     const trigScaleXy = 2303 + 20 * Math.cos(time / 1e5);
     const trigScaleYx = 3202 + 30 * Math.cos(time / 5e5);
     const trigScaleYy = 4141 + pointerY;
-    const displacement = 20 + 10 * Math.cos(10 + time / 1e8);
+    const displacement = 10 - 5 * Math.sin(time / 1e6);
     const step = 23;
 
     context.beginPath();
