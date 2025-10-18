@@ -1,5 +1,7 @@
 const directory = {
   2025: [
+    {name: 'displacement', wip: false},
+    {name: 'propagate', wip: true},
     {name: 'seaweed', wip: false},
     {name: 'cake-slices', wip: true},
     {name: 'slanted-hexagons', wip: false},

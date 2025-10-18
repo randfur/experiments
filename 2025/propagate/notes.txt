@@ -1,0 +1,28 @@
+# 2025-10-19
+- Created a pattern of thick horizontal lines and thin vertical lines going between a grid of displaced points governed by trig.
+  - Found a nice looking configuration.
+  - Changing the parameters alters the shape very drastically, worth being its own animation experiment.
+
+# 2025-10-18
+- Same basis as 2023/forest-abrasive-regnosaurus but turned into a game of spreading everywhere with the time constraint removed and more focus on overcoming a very large map over time.
+- Maybe with similar turtling aspects of Creeper World.
+- Just at the stage of exploring ideas and building the foundation of the game code.
+  - Need to just play different variants to see what feels nice.
+- Initial ideas:
+  - Mimic predator prey population dynamics in idle mode by having conversion to your side give you "energy" which if you run out of causes you to turn back neutral.
+  - Ability to create connections between blobs that link them as one across the map.
+  - More walls in the world, concave areas to trap blobs in to varying degrees.
+  - Different shaped blobs; squares, circles, stars, etc.
+  - More visual indication about group size.
+  - Early detection of groups about to form or split.
+  - Emitter walls or objects on the map that convert blobs.
+  - Give the blobs eyes facing the direction they're travelling.
+  - Walking animation that impacts its collision area.
+  - Player max speed capped.
+    - Maybe depends on distance to friendly.
+  - Multiplayer competitive mode.
+  - Power ups/special abilities.
+  - Temporary blobs that spawn and disappear.
+- Started implementing a test mode with a first pass of the blobs and collision BB tree.
+  - Played around with different textured background images.
+  - Decided to generate a pattern.

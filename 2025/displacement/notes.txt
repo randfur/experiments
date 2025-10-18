@@ -1,0 +1,4 @@
+# 2025-10-19
+- Imported background generating code from 2025/propagate.
+- Adding animation and pointer move control.
+- Implemented time and pointer based animation.
