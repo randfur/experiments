@@ -27,7 +27,7 @@ async function main() {
 
     context.fillStyle = '#555';
     context.fillRect(0, 0, canvas.width, canvas.height);
-    context.strokeStyle = '#444';
+    context.strokeStyle = '#222';
     const trigScaleXx = 1414 + pointerX;
     const trigScaleXy = 2303 + 20 * Math.cos(time / 100000);
     const trigScaleYx = 3202 + 30 * Math.cos(time / 100000);
