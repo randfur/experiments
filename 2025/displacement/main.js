@@ -35,15 +35,31 @@ async function main() {
     const displacement = 10 - 5 * Math.sin(time / 1e6);
     const step = 23;
 
+    function displacementX(x, y) {
+      return displacement * Math.cos(
+        (x - canvas.width / 2) * trigScaleXx
+        + (y - canvas.height / 2) * trigScaleXy
+      );
+    }
+
+    function displacementY(x, y) {
+      return displacement * Math.cos(
+        (x - canvas.width / 2) * trigScaleYx
+        + (y - canvas.height / 2) * trigScaleYy
+      );
+    }
+
     context.beginPath();
     for (let y = 0; y < canvas.height; y += step) {
       for (let x = 0; x < canvas.width; x += step) {
-        const cornerX = x + displacement * Math.cos((x - canvas.width / 2) * trigScaleXx + (y - canvas.height / 2) * trigScaleXy);
-        const cornerY = y + displacement * Math.cos((x - canvas.width / 2) * trigScaleYx + (y - canvas.height / 2) * trigScaleYy);
-        const topX = (x + step) + displacement * Math.cos((x + step - canvas.width / 2) * trigScaleXx + (y - canvas.height / 2) * trigScaleXy);
-        const topY = y + displacement * Math.cos((x + step - canvas.width / 2) * trigScaleYx + (y - canvas.height / 2) * trigScaleYy);
-        context.moveTo(cornerX, cornerY);
-        context.lineTo(topX, topY);
+        context.moveTo(
+          x + displacementX(x, y),
+          y + displacementY(x, y),
+        );
+        context.lineTo(
+          x + step + displacementX(x + step, y),
+          y + displacementY(x + step, y),
+        );
       }
     }
     context.lineWidth = 5;
@@ -52,12 +68,14 @@ async function main() {
     context.beginPath();
     for (let y = 0; y < canvas.height; y += step) {
       for (let x = 0; x < canvas.width; x += step) {
-        const cornerX = x + displacement * Math.cos((x - canvas.width / 2) * trigScaleXx + (y - canvas.height / 2) * trigScaleXy);
-        const cornerY = y + displacement * Math.cos((x - canvas.width / 2) * trigScaleYx + (y - canvas.height / 2) * trigScaleYy);
-        const bottomX = x + displacement * Math.cos((x - canvas.width / 2) * trigScaleXx + (y + step - canvas.height / 2) * trigScaleXy);
-        const bottomY = (y + step) + displacement * Math.cos((x - canvas.width / 2) * trigScaleYx + (y + step - canvas.height / 2) * trigScaleYy);
-        context.moveTo(cornerX, cornerY);
-        context.lineTo(bottomX, bottomY);
+        context.moveTo(
+          x + displacementX(x, y),
+          y + displacementY(x, y),
+        );
+        context.lineTo(
+          x + displacementX(x, y + step),
+          y + step + displacementY(x, y + step),
+        );
       }
     }
     context.lineWidth = 2;
