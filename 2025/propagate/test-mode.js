@@ -21,29 +21,29 @@ export class TestMode {
     const displacement = 10;
     const step = 23;
 
+    function displaceX(x, y) {
+      return x + displacement * Math.cos(x * trigScaleXx + y * trigScaleXy);
+    }
+
+    function displaceY(x, y) {
+      return y + displacement * Math.cos(x * trigScaleYx + y * trigScaleYy);
+    }
+
     context.beginPath();
     for (let y = 0; y < height; y += step) {
-      for (let x = 0; x < height; x += step) {
-        const cornerX = x + displacement * Math.cos(x * trigScaleXx + y * trigScaleXy);
-        const cornerY = y + displacement * Math.cos(x * trigScaleYx + y * trigScaleYy);
-        const topX = (x + step) + displacement * Math.cos((x + step) * trigScaleXx + y * trigScaleXy);
-        const topY = y + displacement * Math.cos((x + step) * trigScaleYx + y * trigScaleYy);
-        context.moveTo(cornerX, cornerY);
-        context.lineTo(topX, topY);
+      context.moveTo(displaceX(0, y), displaceY(0, y));
+      for (let x = 0; x < width; x += step) {
+        context.lineTo(displaceX(x, y), displaceY(x, y));
       }
     }
     context.lineWidth = 5;
     context.stroke();
 
     context.beginPath();
-    for (let y = 0; y < height; y += step) {
-      for (let x = 0; x < height; x += step) {
-        const cornerX = x + displacement * Math.cos(x * trigScaleXx + y * trigScaleXy);
-        const cornerY = y + displacement * Math.cos(x * trigScaleYx + y * trigScaleYy);
-        const bottomX = x + displacement * Math.cos(x * trigScaleXx + (y + step) * trigScaleXy);
-        const bottomY = (y + step) + displacement * Math.cos(x * trigScaleYx + (y + step) * trigScaleYy);
-        context.moveTo(cornerX, cornerY);
-        context.lineTo(bottomX, bottomY);
+    for (let x = 0; x < width; x += step) {
+      context.moveTo(displaceX(x, 0), displaceY(x, 0));
+      for (let y = 0; y < height; y += step) {
+        context.lineTo(displaceX(x, y), displaceY(x, y));
       }
     }
     context.lineWidth = 2;

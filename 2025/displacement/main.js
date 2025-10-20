@@ -34,48 +34,37 @@ async function main() {
     const trigScaleYy = 4141 + pointerY;
     const displacement =  9 + 2 * Math.cos(time / 1e6);
     const step = 23;
+    const start = - step;
 
     function displacementX(x, y) {
-      return displacement * Math.cos(
+      return x + displacement * Math.cos(
         (x - canvas.width / 2) * trigScaleXx
         + (y - canvas.height / 2) * trigScaleXy
       );
     }
 
     function displacementY(x, y) {
-      return displacement * Math.cos(
+      return y + displacement * Math.cos(
         (x - canvas.width / 2) * trigScaleYx
         + (y - canvas.height / 2) * trigScaleYy
       );
     }
 
     context.beginPath();
-    for (let y = 0; y < canvas.height; y += step) {
-      for (let x = 0; x < canvas.width; x += step) {
-        context.moveTo(
-          x + displacementX(x, y),
-          y + displacementY(x, y),
-        );
-        context.lineTo(
-          x + step + displacementX(x + step, y),
-          y + displacementY(x + step, y),
-        );
+    for (let y = start; y < canvas.height + step; y += step) {
+      context.moveTo(displacementX(start, y), displacementY(start, y));
+      for (let x = start; x < canvas.width + step; x += step) {
+        context.lineTo(displacementX(x, y), displacementY(x, y));
       }
     }
     context.lineWidth = 5;
     context.stroke();
 
     context.beginPath();
-    for (let y = 0; y < canvas.height; y += step) {
-      for (let x = 0; x < canvas.width; x += step) {
-        context.moveTo(
-          x + displacementX(x, y),
-          y + displacementY(x, y),
-        );
-        context.lineTo(
-          x + displacementX(x, y + step),
-          y + step + displacementY(x, y + step),
-        );
+    for (let x = start; x < canvas.width + step; x += step) {
+      context.moveTo(displacementX(x, start), displacementY(x, start));
+      for (let y = start; y < canvas.height + step; y += step) {
+        context.lineTo(displacementX(x, y), displacementY(x, y));
       }
     }
     context.lineWidth = 2;

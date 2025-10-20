@@ -1,3 +1,7 @@
+# 2025-10-21
+- Reduced displacement magnitude.
+- Simplified loop and reduced draw calls.
+
 # 2025-10-19
 - Imported background generating code from 2025/propagate.
 - Adding animation and pointer move control.
