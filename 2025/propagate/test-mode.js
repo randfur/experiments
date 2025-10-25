@@ -62,9 +62,9 @@ export class TestMode {
 
   draw(context) {
     context.drawImage(this.backgroundImage, 0, 0);
-    // for (const blob of this.blobs) {
-    //   blob.draw(context);
-    // }
+    for (const blob of this.blobs) {
+      blob.draw(context);
+    }
   }
 }
 
