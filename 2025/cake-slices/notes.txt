@@ -1,3 +1,10 @@
+# 2025-10-25
+- Adding implementation with start and end arc direction intersection points.
+- Adding slice middle direction interspection implementation.
+- Added comments to implementation.
+- Added TODOs for testing intersection point inside face and arc slice face computation.
+- Coming along steadily.
+
 # 2025-10-14
 - More implementing of the algorithm.
 - Algorithm is missing some cases, need to consider intersections with start and end arc lines.

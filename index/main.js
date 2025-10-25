@@ -3,7 +3,7 @@ const directory = {
     {name: 'displacement', wip: false},
     {name: 'propagate', wip: true},
     {name: 'seaweed', wip: false},
-    {name: 'cake-slices', wip: true},
+    {name: 'cake-slices', wip: false},
     {name: 'slanted-hexagons', wip: false},
     {name: 'buildings', wip: false},
     {name: 'linear-solver', wip: true},

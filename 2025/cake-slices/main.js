@@ -20,23 +20,32 @@ async function main() {
     hexLines.clear();
 
     Mat4.temp().setTranslateXyz(0, 0, 400)
-      // .inplaceMultiplyRight(Mat4.temp().setRotateZx(time / 1000))
+      .inplaceMultiplyRight(Mat4.temp().setRotateZx(time / 2000))
       .exportToArrayBuffer(hexLines.transformMatrix);
 
     const position = Vec3.temp(0, 0, 0);
     const direction = Vec3.temp(0, 0, 1);
+    const angle = time / 1000;
     const cuts = [
-      Vec3.temp().setPolarXy(time / 1000 + TAU * 0 / 3),
-      Vec3.temp().setPolarXy(time / 1000 + TAU * 1 / 3),
-      Vec3.temp().setPolarXy(time / 1000 + TAU * 2 / 3),
+      Vec3.temp().setPolarXy(angle + TAU * 0 / 5),
+      Vec3.temp().setPolarXy(angle + TAU * 1 / 5),
+      Vec3.temp().setPolarXy(angle + TAU * 2 / 5),
+      Vec3.temp().setPolarXy(angle + TAU * 3 / 5),
+      Vec3.temp().setPolarXy(angle + TAU * 4 / 5),
     ];
 
-    for (const cut of cuts) {
-      hexLines.addPoint({position, size: 4, colour: {b: 255}})
+    for (let i = 0; i < cuts.length; ++i) {
+      const cut = cuts[i];
+      const colour = {r: i / cuts.length * 255, b: 255};
+      hexLines.addPoint({
+        position,
+        size: 4,
+        colour,
+      })
       hexLines.addPoint({
         position: Vec3.temp().setScaleAdd(position, 100, cut),
         size: 4,
-        colour: {b: 255},
+        colour,
       })
       hexLines.addNull();
     }
@@ -45,7 +54,7 @@ async function main() {
       position,
       direction,
       cuts,
-      distance: Math.abs(Math.cos(time / 4000)),
+      distance: 40,
     });
 
     for (const part of parts) {
