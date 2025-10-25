@@ -44,15 +44,16 @@ async function main() {
 
     for (let i = 0; i < cuts.length; ++i) {
       const cut = cuts[i];
+      const size = 10;
       const colour = {r: i / cuts.length * 255, b: 255};
       hexLines.addPoint({
         position,
-        size: 4,
+        size,
         colour,
       })
       hexLines.addPoint({
-        position: Vec3.temp().setScaleAdd(position, 100, cut),
-        size: 4,
+        position: Vec3.temp().setScaleAdd(position, 140, cut),
+        size,
         colour,
       })
       hexLines.addNull();
