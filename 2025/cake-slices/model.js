@@ -28,34 +28,6 @@ export class Model {
       const arcFaces = [];
       for (const face of this.faces) {
         const arcFacePositions = [];
-        for (let j = 0; j < face.positions.length; ++j) {
-          const startPosition = face.positions[j];
-          const endPosition = face.positions[(j + 1) % face.positions.length];
-
-          const startProjected = Vec3.temp().set2dPlaneProjection(planeBasis, startPosition);
-          const endProjected = Vec3.temp().set2dPlaneProjection(planeBasis, endPosition);
-
-          // Start is inside arc.
-          if (startProjected.dot(arcStartNormal) >= 0 && startProjected.dot(arcEndNormal) > 0) {
-            arcFacePositions.push(new Vec3().set(startPosition));
-          }
-
-          // Intersection with arc start direction is on edge.
-          const startArcIntersectT = getSegmentIntersectionT(startProjected, endProjected, arcStartNormal);
-          if (startArcIntersectT >= 0
-              && startArcIntersectT < 1
-              && Vec3.temp().setLerp(startProjected, endProjected, startArcIntersectT).dot(arcStart) > 0) {
-            arcFacePositions.push(new Vec3().setLerp(startPosition, endPosition, startArcIntersectT));
-          }
-
-          // Intersection with arc end direction is on edge.
-          const endArcIntersectT = getSegmentIntersectionT(startProjected, endProjected, arcEndNormal);
-          if (endArcIntersectT >= 0
-              && endArcIntersectT < 1
-              && Vec3.temp().setLerp(startProjected, endProjected, endArcIntersectT).dot(arcEnd) > 0) {
-            arcFacePositions.push(new Vec3().setLerp(startPosition, endPosition, endArcIntersectT));
-          }
-        }
 
         // Compute intersection of slice direction with face.
         const faceNormal = Vec3.temp().setCross(
@@ -67,10 +39,62 @@ export class Model {
           direction,
           faceNormal,
         );
+        let middle = null;
         if (Math.abs(middleIntersectionT) < Infinity) {
-          const middle = Vec3.temp().setScaleAdd(position, middleIntersectionT, direction);
           // TODO: Test if middle is on face.
-          arcFacePositions.push(new Vec3().set(middle));
+          middle = Vec3.temp().setScaleAdd(position, middleIntersectionT, direction);
+        }
+        let wasOutsideArc = null;
+        function maybeAddMiddle() {
+          if (middle !== null && wasOutsideArc === true) {
+            arcFacePositions.push(new Vec3().set(middle));
+            middle = null;
+          }
+        }
+
+        for (let j = 0; j < face.positions.length; ++j) {
+          const startPosition = face.positions[j];
+          const endPosition = face.positions[(j + 1) % face.positions.length];
+
+          const startProjected = Vec3.temp().set2dPlaneProjection(planeBasis, startPosition);
+          const endProjected = Vec3.temp().set2dPlaneProjection(planeBasis, endPosition);
+
+          const startInsideArc = startProjected.dot(arcStartNormal) >= 0 && startProjected.dot(arcEndNormal) > 0;
+          if (startInsideArc) {
+            maybeAddMiddle();
+            arcFacePositions.push(new Vec3().set(startPosition));
+          } else {
+            wasOutsideArc = true;
+          }
+
+          let intersectionsAdded = 0;
+
+          // Intersection with arc start direction is on edge.
+          const startArcIntersectT = getSegmentIntersectionT(startProjected, endProjected, arcStartNormal);
+          if (startArcIntersectT >= 0
+              && startArcIntersectT < 1
+              && Vec3.temp().setLerp(startProjected, endProjected, startArcIntersectT).dot(arcStart) > 0) {
+            maybeAddMiddle();
+            ++intersectionsAdded;
+            arcFacePositions.push(new Vec3().setLerp(startPosition, endPosition, startArcIntersectT));
+          }
+
+          // Intersection with arc end direction is on edge.
+          const endArcIntersectT = getSegmentIntersectionT(startProjected, endProjected, arcEndNormal);
+          if (endArcIntersectT >= 0
+              && endArcIntersectT < 1
+              && Vec3.temp().setLerp(startProjected, endProjected, endArcIntersectT).dot(arcEnd) > 0) {
+            maybeAddMiddle();
+            ++intersectionsAdded;
+            arcFacePositions.push(new Vec3().setLerp(startPosition, endPosition, endArcIntersectT));
+          }
+
+          // Swap intersections if they were added backwards.
+          if (intersectionsAdded === 2 && endArcIntersectT < startArcIntersectT) {
+            const temp = arcFacePositions[arcFacePositions.length - 1];
+            arcFacePositions[arcFacePositions.length - 1] = arcFacePositions[arcFacePositions.length - 2];
+            arcFacePositions[arcFacePositions.length - 2] = temp;
+          }
         }
 
         // Push sliced face outwards by distance.
@@ -81,8 +105,6 @@ export class Model {
         for (const position of arcFacePositions) {
           position.inplaceAdd(push);
         }
-
-        // TODO: Sort arcFacePositions by simple angle.
 
         if (arcFacePositions.length > 0) {
           arcFaces.push({

@@ -20,11 +20,19 @@ async function main() {
     hexLines.clear();
 
     Mat4.temp().setTranslateXyz(0, 0, 400)
-      .inplaceMultiplyRight(Mat4.temp().setRotateZx(time / 2000))
+      .inplaceMultiplyRight(Mat4.temp().setRotateZx(time / 1800))
       .exportToArrayBuffer(hexLines.transformMatrix);
 
-    const position = Vec3.temp(0, 0, 0);
-    const direction = Vec3.temp(0, 0, 1);
+    const position = Vec3.temp(
+      Math.cos(time / 800) * 90,
+      Math.cos(time / 900) * 90,
+      0,
+    );
+    const direction = Vec3.temp(
+      0,
+      0,
+      1,
+    );
     const angle = time / 1000;
     const cuts = [
       Vec3.temp().setPolarXy(angle + TAU * 0 / 5),

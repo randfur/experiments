@@ -4,6 +4,10 @@
 - Added comments to implementation.
 - Added TODOs for testing intersection point inside face and arc slice face computation.
 - Coming along steadily.
+- Worked out the correct ordering of adding points including the intersection point.
+- Added some movement to the cake slice position.
+  - Still can't turn arbitrarily or have the intersection point outside the faces yet.
+  - Needs intersection inside face detection added.
 
 # 2025-10-14
 - More implementing of the algorithm.
