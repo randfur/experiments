@@ -24,8 +24,8 @@ async function main() {
       .exportToArrayBuffer(hexLines.transformMatrix);
 
     const position = Vec3.temp(
-      Math.cos(time / 800) * 90,
-      Math.cos(time / 900) * 90,
+      Math.cos(time / 800) * 150,
+      Math.cos(time / 900) * 150,
       0,
     );
     const direction = Vec3.temp(
@@ -63,7 +63,7 @@ async function main() {
       position,
       direction,
       cuts,
-      distance: 40,
+      distance: (1 + Math.cos(time / 1100)) / 2 * 100 + 20,
     });
 
     for (const part of parts) {

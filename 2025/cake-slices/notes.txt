@@ -1,3 +1,12 @@
+# 2025-10-26
+- Added middle intersection point check if inside face.
+  - Confusingly the check for which direction the face positions travel seems to break it no matter which polarity it uses.
+  - Fixed it, turns out I needed to rotate the second edge by 90, in the box case every single pair of edges were 90 degrees of each other and dot producting to 0 which set the sign to 0 and disabled the check entirely.
+- Made the star fly outside the region of the box to show off middle intersection face inside detection.
+- Made the distance the slices are pushed out vary over time.
+- TODO: Add the arc slice faces.
+- TODO: Refactor into a class with methods encaptulating the various steps and static temp vec3s.
+
 # 2025-10-25
 - Adding implementation with start and end arc direction intersection points.
 - Adding slice middle direction interspection implementation.

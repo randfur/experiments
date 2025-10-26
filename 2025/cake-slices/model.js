@@ -41,8 +41,10 @@ export class Model {
         );
         let middle = null;
         if (Math.abs(middleIntersectionT) < Infinity) {
-          // TODO: Test if middle is on face.
           middle = Vec3.temp().setScaleAdd(position, middleIntersectionT, direction);
+          if (!isInsideFace(middle, face.positions, faceNormal)) {
+            middle = null;
+          }
         }
         let wasOutsideArc = null;
         function maybeAddMiddle() {
@@ -135,6 +137,33 @@ export class Model {
       hexLines.addNull();
     }
   }
+}
+
+function isInsideFace(position, facePositions, faceNormal) {
+  const facePlaneBasis = PlaneBasis.temp(facePositions[0], faceNormal);
+  const position2d = Vec3.temp().set2dPlaneProjection(facePlaneBasis, position);
+
+  const facePosition2d0 = Vec3.temp().set2dPlaneProjection(facePlaneBasis, facePositions[0]);
+  const facePosition2d1 = Vec3.temp().set2dPlaneProjection(facePlaneBasis, facePositions[1]);
+  const facePosition2d2 = Vec3.temp().set2dPlaneProjection(facePlaneBasis, facePositions[2]);
+  const sign = Math.sign(
+    Vec3.temp()
+    .setDelta(facePosition2d0, facePosition2d1)
+    .dot(Vec3.temp().setDelta(facePosition2d1, facePosition2d2).inplaceUnturnXy())
+  );
+
+  for (let i = 0; i < facePositions.length; ++i) {
+    const edgeStart2d = Vec3.temp().set2dPlaneProjection(facePlaneBasis, facePositions[i]);
+    const edgeNormal2d = Vec3.temp()
+      .setDelta(facePositions[i], facePositions[(i + 1) % facePositions.length])
+      .inplaceRelative2dPlaneProjection(facePlaneBasis)
+      .inplaceTurnXy();
+
+    if (Vec3.temp().setDelta(edgeStart2d, position2d).dot(edgeNormal2d) * sign < 0) {
+      return false;
+    }
+  }
+  return true;
 }
 
 function getRayIntersectionT(position, direction, normal) {
