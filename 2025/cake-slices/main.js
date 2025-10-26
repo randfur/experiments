@@ -12,10 +12,10 @@ async function main() {
   const {hexLinesContext} = HexLinesContext.setupFullPageContext({is3d: true});
   const hexLines = hexLinesContext.createLines();
 
-  const box = createBox(Vec3.temp(200, 300, 100), 10, {r: 255, g: 255, b: 255});
+  const box = createBox(Vec3.temp(200, 200, 200), 10, {r: 255, g: 255, b: 255});
 
   while (true) {
-    const time = await new Promise(requestAnimationFrame);
+    const time = await new Promise(requestAnimationFrame) + 22000;
     Temp.reclaimAll();
     hexLines.clear();
 
@@ -24,22 +24,23 @@ async function main() {
       .exportToArrayBuffer(hexLines.transformMatrix);
 
     const position = Vec3.temp(
-      Math.cos(time / 800) * 150,
-      Math.cos(time / 900) * 150,
+      Math.cos(time / 800) * 100,
+      Math.cos(time / 900) * 100,
       0,
     );
     const direction = Vec3.temp(
-      0,
-      0,
+      Math.cos(time / 1500),
+      Math.cos(time / 1300),
       1,
     );
+    const planeBasis = PlaneBasis.temp(Vec3.temp(), direction);
     const angle = time / 1000;
     const cuts = [
-      Vec3.temp().setPolarXy(angle + TAU * 0 / 5),
-      Vec3.temp().setPolarXy(angle + TAU * 1 / 5),
-      Vec3.temp().setPolarXy(angle + TAU * 2 / 5),
-      Vec3.temp().setPolarXy(angle + TAU * 3 / 5),
-      Vec3.temp().setPolarXy(angle + TAU * 4 / 5),
+      Vec3.temp().setPolarXy(angle + TAU * 0 / 5).inplace3dPlanePosition(planeBasis),
+      Vec3.temp().setPolarXy(angle + TAU * 1 / 5).inplace3dPlanePosition(planeBasis),
+      Vec3.temp().setPolarXy(angle + TAU * 2 / 5).inplace3dPlanePosition(planeBasis),
+      Vec3.temp().setPolarXy(angle + TAU * 3 / 5).inplace3dPlanePosition(planeBasis),
+      Vec3.temp().setPolarXy(angle + TAU * 4 / 5).inplace3dPlanePosition(planeBasis),
     ];
 
     for (let i = 0; i < cuts.length; ++i) {
@@ -63,7 +64,7 @@ async function main() {
       position,
       direction,
       cuts,
-      distance: (1 + Math.cos(time / 1100)) / 2 * 100 + 20,
+      distance: (1 + Math.cos(time / 1100)) / 2 * 50 + 50,
     });
 
     for (const part of parts) {

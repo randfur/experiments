@@ -6,6 +6,13 @@
 - Made the distance the slices are pushed out vary over time.
 - TODO: Add the arc slice faces.
 - TODO: Refactor into a class with methods encaptulating the various steps and static temp vec3s.
+- With the inside face detection this can now change the direction to be non-perpendicular to the faces and look right.
+  - The slicing appears to work correctly.
+  - Need to now also orient the drawn star to reflect this direction, currently they're locked to XY and it looks off.
+  - Easily done using PlaneBasis, however the hack of getting arbitrary XY directions is starting to show with weird backwards jerk twists happening occasionally.
+    - Proper thing to do would be to use oscillating stacked rotations to rotate a set of XYZ bases.
+  - Changed box to be a proper cube to show off the different angles better.
+  - Got a sweet angle for the thumbnail.
 
 # 2025-10-25
 - Adding implementation with start and end arc direction intersection points.
