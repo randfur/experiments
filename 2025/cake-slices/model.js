@@ -16,7 +16,7 @@ export class Model {
   slice({position, direction, cuts, distance}) {
     const planeBasis = PlaneBasis.temp(position, direction);
     const planeCuts = cuts.map(cut => Vec3.temp().setRelative2dPlaneProjection(planeBasis, cut).inplaceNormalise());
-    // planeCuts.sort((a, b) => getCheapAngle(a) - getCheapAngle(b));
+    planeCuts.sort((a, b) => getCheapAngle(a) - getCheapAngle(b));
 
     const result = [];
     for (let i = 0; i < planeCuts.length; ++i) {
@@ -25,11 +25,16 @@ export class Model {
       const arcEnd = planeCuts[(i + 1) % planeCuts.length];
       const arcEndNormal = Vec3.temp().setUnturnXy(arcEnd);
 
-      const arcFaces = [];
+      const arcStartFacePositions = [];
+      const arcEndFacePositions = [];
+      // TODO: Fix glitchy arc start/end faces.
+      // const arcFacePositionsList = [arcStartFacePositions, arcEndFacePositions];
+      const arcFacePositionsList = [];
       for (const face of this.faces) {
         const arcFacePositions = [];
 
         // Compute intersection of slice direction with face.
+        console.assert(face.positions.length > 2);
         const faceNormal = Vec3.temp().setCross(
           Vec3.temp().setDelta(face.positions[0], face.positions[1]),
           Vec3.temp().setDelta(face.positions[1], face.positions[2]),
@@ -49,7 +54,9 @@ export class Model {
         let wasOutsideArc = null;
         function maybeAddMiddle() {
           if (middle !== null && wasOutsideArc === true) {
-            arcFacePositions.push(new Vec3().set(middle));
+            arcStartFacePositions.push(middle.clone());
+            arcFacePositions.push(middle.clone());
+            arcEndFacePositions.push(middle.clone());
             middle = null;
           }
         }
@@ -78,7 +85,9 @@ export class Model {
               && Vec3.temp().setLerp(startProjected, endProjected, startArcIntersectT).dot(arcStart) > 0) {
             maybeAddMiddle();
             ++intersectionsAdded;
-            arcFacePositions.push(new Vec3().setLerp(startPosition, endPosition, startArcIntersectT));
+            const position = new Vec3().setLerp(startPosition, endPosition, startArcIntersectT);
+            arcStartFacePositions.push(position.clone());
+            arcFacePositions.push(position);
           }
 
           // Intersection with arc end direction is on edge.
@@ -88,7 +97,9 @@ export class Model {
               && Vec3.temp().setLerp(startProjected, endProjected, endArcIntersectT).dot(arcEnd) > 0) {
             maybeAddMiddle();
             ++intersectionsAdded;
-            arcFacePositions.push(new Vec3().setLerp(startPosition, endPosition, endArcIntersectT));
+            const position = new Vec3().setLerp(startPosition, endPosition, endArcIntersectT);
+            arcFacePositions.push(position.clone());
+            arcEndFacePositions.push(position);
           }
 
           // Swap intersections if they were added backwards.
@@ -99,25 +110,34 @@ export class Model {
           }
         }
 
-        // Push sliced face outwards by distance.
-        const push = Vec3.temp().setRelative3dPlanePosition(
-          planeBasis,
-          Vec3.temp().setAdd(arcStart, arcEnd).inplaceNormalise(),
-        ).inplaceScale(distance);
-        for (const position of arcFacePositions) {
-          position.inplaceAdd(push);
-        }
-
         if (arcFacePositions.length > 0) {
-          arcFaces.push({
-            size: 10,
-            colour: {r: 255, g: 255, b: 255},
-            positions: arcFacePositions,
-          });
+          arcFacePositionsList.push(arcFacePositions);
         }
       }
 
-      // TODO: Compute and add arc start and end slice faces.
+      // How far to push the faces out for the arc segment.
+      const arcPush = Vec3.temp().setRelative3dPlanePosition(
+        planeBasis,
+        Vec3.temp().setAdd(arcStart, arcEnd).inplaceNormalise(),
+      ).inplaceScale(distance);
+
+      sortConvexByAngle(arcStartFacePositions);
+      sortConvexByAngle(arcEndFacePositions);
+
+      const arcFaces = [];
+      for (const facePositions of arcFacePositionsList) {
+        for (const position of facePositions) {
+          position.inplaceAdd(arcPush);
+        }
+
+        if (facePositions.length > 0) {
+          arcFaces.push({
+            size: 10,
+            colour: {r: 255, g: 255, b: 255},
+            positions: facePositions,
+          });
+        }
+      }
 
       if (arcFaces.length > 0) {
         result.push(new Model(arcFaces));
@@ -183,4 +203,40 @@ function getCheapAngle(v) {
   return Math.abs(v.x) > Math.abs(v.y)
     ? (v.x < 0 ? 4 : 0) + 1 + (v.y / v.x)
     : (v.y < 0 ? 4 : 0) + 3 - (v.x / v.y);
+  // return Math.atan2(v.y, v.x);
 }
+
+const sortConvexByAngle = (() => {
+  const normal = new Vec3();
+  const edge0 = new Vec3();
+  const edge1 = new Vec3();
+  const planeBasis = new PlaneBasis();
+  const middle2d = new Vec3();
+  const position2d = new Vec3();
+  const positionA2d = new Vec3();
+  const positionB2d = new Vec3();
+
+  return positions => {
+    if (positions.length === 0) {
+      return;
+    }
+    console.assert(positions.length > 2);
+    normal.setCross(
+      edge0.setDelta(positions[0], positions[1]),
+      edge1.setDelta(positions[1], positions[2]),
+    ).inplaceNormalise();
+
+    planeBasis.set(positions[0], normal);
+
+    middle2d.setZero();
+    for (const position of positions) {
+      middle2d.inplaceAdd(position2d.set2dPlaneProjection(planeBasis, position));
+    }
+    middle2d.inplaceScale(1 / positions.length);
+
+    positions.sort((a, b) => (
+      getCheapAngle(positionA2d.set2dPlaneProjection(planeBasis, a).inplaceSubtract(middle2d))
+      - getCheapAngle(positionB2d.set2dPlaneProjection(planeBasis, b).inplaceSubtract(middle2d))
+    ));
+  }
+})();

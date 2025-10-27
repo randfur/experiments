@@ -1,3 +1,10 @@
+# 2025-10-28
+- Added arc start and end faces.
+  - Implemented angle sorting.
+  - Used a new technique of creating static temp Vec3s in an IIFE.
+  - Works pretty well.
+  - Some positions are glitchy, needs investigation.
+
 # 2025-10-26
 - Added middle intersection point check if inside face.
   - Confusingly the check for which direction the face positions travel seems to break it no matter which polarity it uses.
