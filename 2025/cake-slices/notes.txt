@@ -1,3 +1,6 @@
+# 2025-10-39
+- Made the spoke display a star.
+
 # 2025-10-28
 - Added arc start and end faces.
   - Implemented angle sorting.

@@ -15,7 +15,7 @@ async function main() {
   const box = createBox(Vec3.temp(200, 200, 200), 10, {r: 255, g: 255, b: 255});
 
   while (true) {
-    const time = await new Promise(requestAnimationFrame) + 22000;
+    const time = await new Promise(requestAnimationFrame);
     Temp.reclaimAll();
     hexLines.clear();
 
@@ -35,27 +35,33 @@ async function main() {
     );
     const planeBasis = PlaneBasis.temp(Vec3.temp(), direction);
     const angle = time / 1000;
-    const cuts = [
-      Vec3.temp().setPolarXy(angle + TAU * 0 / 5).inplace3dPlanePosition(planeBasis),
-      Vec3.temp().setPolarXy(angle + TAU * 1 / 5).inplace3dPlanePosition(planeBasis),
-      Vec3.temp().setPolarXy(angle + TAU * 2 / 5).inplace3dPlanePosition(planeBasis),
-      Vec3.temp().setPolarXy(angle + TAU * 3 / 5).inplace3dPlanePosition(planeBasis),
-      Vec3.temp().setPolarXy(angle + TAU * 4 / 5).inplace3dPlanePosition(planeBasis),
-    ];
+    const points = 5;
+    const cuts = range(points).map(i =>
+      Vec3.temp().setPolarXy(angle + TAU * i / points).inplace3dPlanePosition(planeBasis),
+    );
 
-    for (let i = 0; i < cuts.length; ++i) {
+    for (let i = 0; i < points; ++i) {
+      const prevCut = cuts[(points + i - 1) % points];
       const cut = cuts[i];
+      const nextCut = cuts[(i + 1) % points];
+      const baseLength = 20;
+      const spokeLength = 120;
       const size = 10;
-      const colour = {r: i / cuts.length * 255, b: 255};
+      const colour = {r: i / points * 255, b: 255};
       hexLines.addPoint({
-        position,
+        position: Vec3.temp().setAdd(prevCut, cut).inplaceNormalise().inplaceScale(baseLength).inplaceAdd(position),
         size,
-        colour,
+        colour: {r: (i + 1 / 3) / points * 255, b: 255},
       })
       hexLines.addPoint({
-        position: Vec3.temp().setScaleAdd(position, 140, cut),
+        position: Vec3.temp().setScaleAdd(position, spokeLength, cut),
         size,
-        colour,
+        colour: {r: (i + 2 / 3) / points * 255, b: 255},
+      })
+      hexLines.addPoint({
+        position: Vec3.temp().setAdd(cut, nextCut).inplaceNormalise().inplaceScale(baseLength).inplaceAdd(position),
+        size,
+        colour: {r: (i + 3 / 3) / points * 255, b: 255},
       })
       hexLines.addNull();
     }
