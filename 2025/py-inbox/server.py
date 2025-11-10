@@ -19,17 +19,20 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
     self.send_error(400, 'Usage /push/<tag>/<message> or /pull/<tag> .')
 
   def do_GET(self):
-    pieces = self.path.split('/', 3)[1:]
-    if len(pieces) == 0:
+    parameters = self.path.split('/', 3)[1:]
+    if len(parameters) < 2:
       self.send_usage()
       return
 
-    if pieces[0] == 'push':
-      if len(pieces) != 3:
+    command, tag = parameters[:2]
+
+    if command == 'push':
+      if len(parameters) != 3:
         self.send_usage()
         return
-      inbox = get_inbox(pieces[1])
-      inbox.messages.append(pieces[2])
+      message = parameters[2]
+      inbox = get_inbox(tag)
+      inbox.messages.append(message)
       inbox.has_messages.set()
       self.send_response(200)
       self.send_header('Content-Type', 'text/plain')
@@ -37,11 +40,11 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
       self.wfile.write(b'Received.')
       return
 
-    if pieces[0] == 'pull':
-      if len(pieces) != 2:
+    if command == 'pull':
+      if len(parameters) != 2:
         self.send_usage()
         return
-      inbox = get_inbox(pieces[1])
+      inbox = get_inbox(tag)
       inbox.has_messages.wait()
       message = inbox.messages.pop(0)
       if len(inbox.messages) == 0:
