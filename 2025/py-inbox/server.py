@@ -1,7 +1,6 @@
 import http.server
 import socketserver
 import threading
-import time
 
 tag_store = {}
 
