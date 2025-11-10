@@ -1,0 +1,11 @@
+# 2025-11-10
+- A Python http server that receives and resends tagged messages.
+- REST API:
+  - /push/tag
+  - /pull/tag
+  - Body contains message.
+- Pull endpoint blocks until there is a message to receive.
+- Server can act as a synchronisation point between async receivers.
+- Asked Gemini how to http server in Python: https://gemini.google.com/share/c7860c93391f
+- Completed.
+- Used REST param instead of body because processing body got more difficult.
