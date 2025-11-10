@@ -1,18 +1,38 @@
+'''
+A little tagged message inbox server.
+Messages are pushed into a tag and pulled from a tag.
+
+Example interaction:
+- Client A:
+  - GET localhost:8080/push/test_a/abc -> Received.
+  - GET localhost:8080/push/test_a/def -> Received.
+  - GET localhost:8080/push/test_b/ghi -> Received.
+- Client B:
+  - GET localhost:8080/pull/test_a -> abc
+  - GET localhost:8080/pull/test_a -> def
+  - GET localhost:8080/pull/test_a <blocked>
+- Client A:
+  - GET localhost:8080/push/test_a/jkl -> Received.
+- Client B:
+  - <unblocked> -> jkl
+  - GET localhost:8080/pull/test_b -> ghi
+'''
+
 import http.server
 import socketserver
 import threading
 
-tag_store = {}
+tagged_inboxes = {}
 
-class TagInbox:
+class Inbox:
   def __init__(self):
     self.has_messages = threading.Event()
     self.messages = []
 
 def get_inbox(tag):
-  if not tag in tag_store:
-    tag_store[tag] = TagInbox()
-  return tag_store[tag]
+  if not tag in tagged_inboxes:
+    tagged_inboxes[tag] = Inbox()
+  return tagged_inboxes[tag]
 
 class RequestHandler(http.server.BaseHTTPRequestHandler):
   def send_usage(self):
