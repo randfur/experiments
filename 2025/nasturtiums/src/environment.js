@@ -198,8 +198,6 @@ function createTree(scene) {
     const foliageMaterial = new THREE.MeshStandardMaterial({
         color: 0x2d4c1e,
         side: THREE.DoubleSide,
-        transparent: true,
-        opacity: 0.9
     });
 
     const leafGeometry = new THREE.DodecahedronGeometry(0.2, 0); // Small geometric leaves

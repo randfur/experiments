@@ -11,6 +11,8 @@
   - After later edits I would see large chunks of code deleted randomly.
   - Something is wrong with the file editing action causing code to be applied incorrectly.
 - Started off with a very good beginning, ground, fence, nasturtium models.
+  - See: oneshot.png
 - Added interactive sliders with a copy button to be able to save the current configuration as hard coded initial values.
 - Added bloom, a tree, shade from leaves, clouds, grass patches, more nasturtiums, camera orbit.
 - Log of interaction with AI saved in chatlog.md, only contains prompts unfortunately, no AI responses that summarise what code changes were made.
+- Removed leaf transparency to help performance.
