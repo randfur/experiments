@@ -1,0 +1,16 @@
+# 2025-11-19
+- Trying out: https://antigravity.google/
+- Testing it out with generating a 3D scene of nasturtiums.png.
+  - Something I've intended to do by hand for a while.
+  - Test run of AI's abilities at this current stage.
+  - Gemini 3 and Antigravity IDE just released today.
+- Problems encountered:
+  - It wanted to set up an npm project but I don't have npm.
+    - Told it to create static web content, it used Three.js via CDN, worked just fine in this mode.
+  - After some early edits I would see the start of the file repeated sometimes.
+  - After later edits I would see large chunks of code deleted randomly.
+  - Something is wrong with the file editing action causing code to be applied incorrectly.
+- Started off with a very good beginning, ground, fence, nasturtium models.
+- Added interactive sliders with a copy button to be able to save the current configuration as hard coded initial values.
+- Added bloom, a tree, shade from leaves, clouds, grass patches, more nasturtiums, camera orbit.
+- Log of interaction with AI saved in chatlog.md, only contains prompts unfortunately, no AI responses that summarise what code changes were made.
