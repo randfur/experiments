@@ -1,0 +1,21 @@
+# 2025-12-01
+- Attempt at triangulating a polygon from scratch.
+- Convex case is trivial.
+  - All pairs of points go through the shape.
+  - Create triangles connecting one point to every other.
+- Concave harder.
+  - Requires detecting when the outside comes inside the shape.
+- First attempt:
+  - Figure out the winding of the shape.
+    - Can use atan2 and see what all the angles add up to.
+    - Maybe there's a cheaper way.
+      - Count all left and right turns.
+      - The one with the higher count is the one that's turning inwards.
+  - While there are remaining untriangluated points:
+    - Find a pair of two consecutive inward turns.
+    - Try making a triangle with the point before and after the pair.
+    - If one creates a trangle which no other remaining untriangulated point intersects:
+      - Add that triangle and remove the middle point.
+    - Otherwise:
+      - Keep looking for the next pair of two consecutive inward turns.
+  - Tested by hand with a complex G like shape, it worked.
