@@ -1,3 +1,10 @@
+# 2025-12-23
+- There can be more concave turns than convex turns, the convex angles have to add up to greater but the individual counts of each could be anything.
+- Second attempt:
+  - For every convex turn take the triangle out if there are no other points inside it.
+  - Can quadtrees be useful here?
+    - Worth trying out to see the perf difference.
+
 # 2025-12-01
 - Attempt at triangulating a polygon from scratch.
 - Convex case is trivial.

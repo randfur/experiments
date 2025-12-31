@@ -1,0 +1,9 @@
+# 2025-12-24
+- Make a display for bell methods.
+  - See whiteboard.png.
+  - Shows the positions each starting bell takes during a lead end.
+  - Shows what happens during a bob/single.
+  - Shows what bell each starting bell becomes at the end of their lead end.
+  - Shows when a bell passes the treble.
+- Need to detect hunt and treble bob bells that are never affected to display as reference.
+  - Or maybe not?
