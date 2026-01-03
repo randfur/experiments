@@ -1,6 +1,5 @@
 import {Engine} from './engine.js';
-import {Vec3} from '../third-party/ga/vec3.js';
-import {Temp} from '../third-party/ga/temp.js';
+import {Vec3} from '../../third-party/ga/vec3.js';
 import {
   randomRange,
   deviate,
@@ -12,7 +11,7 @@ export class Flame {
     this.speed = randomRange(1, 4);
     this.velocity = new Vec3(0, 0, 1)
       .inplaceRotateRotor(orientation)
-      .inplaceAdd(Temp.vec3(deviate(1), deviate(1), deviate(1)))
+      .inplaceAdd(Vec3.temp(deviate(1), deviate(1), deviate(1)))
       .inplaceNormalise();
     this.size = 10;
     this.maxLife = 1000;
@@ -28,7 +27,7 @@ export class Flame {
 
   step(secondsDelta) {
     this.position.inplaceAdd(
-      Temp.vec3().set(this.velocity).inplaceScale(this.speed * secondsDelta),
+      Vec3.temp().set(this.velocity).inplaceScale(this.speed * secondsDelta),
     );
   }
 

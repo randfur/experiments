@@ -1,4 +1,4 @@
-import {HexLinesContext} from '../third-party/hex-lines/src/hex-lines.js';
+import {HexLinesContext} from '../../third-party/hex-lines/src/hex-lines.js';
 import {Ship} from './ship.js';
 
 async function main() {

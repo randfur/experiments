@@ -1,5 +1,5 @@
-import {GroupDrawing} from '../third-party/hex-lines/src/2d/group-drawing.js';
-import {LineDrawing} from '../third-party/hex-lines/src/2d/line-drawing.js';
+import {GroupDrawing} from '../../third-party/hex-lines/src/2d/group-drawing.js';
+import {LineDrawing} from '../../third-party/hex-lines/src/2d/line-drawing.js';
 
 export class Animation {
   constructor(hexLines2d, animationData) {

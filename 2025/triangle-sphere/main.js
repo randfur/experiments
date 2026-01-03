@@ -1,5 +1,5 @@
-import {HexLinesContext} from '../third-party/hex-lines/src/hex-lines.js';
-import {createIdentityMatrix} from '../third-party/hex-lines/src/utils.js';
+import {HexLinesContext} from '../../third-party/hex-lines/src/hex-lines.js';
+import {createIdentityMatrix} from '../../third-party/hex-lines/src/utils.js';
 
 async function main() {
   const {width, height, canvas, hexLinesContext} = HexLinesContext.setupFullPageContext({is3d: true});

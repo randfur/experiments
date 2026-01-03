@@ -1,6 +1,6 @@
-import {Vec3} from '../third-party/ga/vec3.js';
-import {Temp} from '../third-party/ga/temp.js';
-import {Rotor3} from '../third-party/ga/rotor3.js';
+import {Vec3} from '../../third-party/ga/vec3.js';
+import {Mat4} from '../../third-party/ga/mat4.js';
+import {Rotor3} from '../../third-party/ga/rotor3.js';
 import {range, never, TAU} from './utils.js';
 
 export class Arrow {
@@ -25,41 +25,41 @@ export class Arrow {
   step() {
     this.orientation
       .inplaceMultiplyRight(
-        Temp.rotor3().setAxisAngle(Temp.y(), TAU * 0.001 + 0.01 * Math.sin(performance.now() * 0.001))
+        Rotor3.temp().setAxisAngle(Vec3.temp(0, 1, 0), TAU * 0.001 + 0.01 * Math.sin(performance.now() * 0.001))
       )
       .inplaceMultiplyRight(
-        Temp.rotor3().setAxisAngle(Temp.x(), TAU * 0.003)
+        Rotor3.temp().setAxisAngle(Vec3.temp(1, 0, 0), TAU * 0.003)
       )
   }
 
   draw(hexLines) {
     if (this.cameraBehind) {
-      Temp.mat4()
+      Mat4.temp()
         .setTranslateVec3(
-          Temp.vec3(0, 10, -50)
+          Vec3.temp(0, 10, -50)
             .inplaceRotateRotor(this.orientation)
             .inplaceAdd(this.position)
             .inplaceScale(-1)
         )
         .inplaceMultiplyLeft(
-          Temp.mat4().setRotateRotor(
-            Temp.rotor3().setConjugate(this.orientation)
+          Mat4.temp().setRotateRotor(
+            Rotor3.temp().setConjugate(this.orientation)
           )
         )
         .exportToArrayBuffer(hexLines.transformMatrix);
     } else {
-      Temp.mat4()
+      Mat4.temp()
         .setTranslateVec3(
-          Temp.vec3(0, 10, 80)
+          Vec3.temp(0, 10, 80)
             .inplaceRotateRotor(this.orientation)
             .inplaceAdd(this.position)
             .inplaceScale(-1)
         )
         .inplaceMultiplyLeft(
-          Temp.mat4().setRotateRotor(
-            Temp.rotor3()
+          Mat4.temp().setRotateRotor(
+            Rotor3.temp()
               .setMultiply(
-                Temp.rotor3().setTurnAround(Temp.z(), Temp.x()),
+                Rotor3.temp().setTurnAround(Vec3.temp(0, 0, 1), Vec3.temp(1, 0, 0)),
                 this.orientation,
               )
               .inplaceConjugate()
@@ -74,7 +74,7 @@ export class Arrow {
       colour: {r: 100, g: 100, b: 100},
     });
     hexLines.addPoint({
-      position: Temp.vec3(0, 0, 40).inplaceRotateRotor(this.orientation).inplaceAdd(this.position),
+      position: Vec3.temp(0, 0, 40).inplaceRotateRotor(this.orientation).inplaceAdd(this.position),
       size: 5,
       colour: {r: 255, g: 255, b: 255},
     });

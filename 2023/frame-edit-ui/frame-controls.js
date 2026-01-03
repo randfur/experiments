@@ -1,4 +1,4 @@
-import {button, Component, read, write, readWrite} from '../third-party/rojs/src/rojs.js';
+import {button, Component, read, write, readWrite} from '../../third-party/rojs/src/rojs.js';
 
 export class FrameControls extends Component {
   bundleInit() {

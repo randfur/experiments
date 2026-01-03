@@ -1,7 +1,7 @@
-import {HexLinesContext} from '../third-party/hex-lines/src/hex-lines.js';
-import {Temp} from '../third-party/ga/temp.js';
-import {Vec3} from '../third-party/ga/vec3.js';
-import {Rotor3} from '../third-party/ga/rotor3.js';
+import {HexLinesContext} from '../../third-party/hex-lines/src/hex-lines.js';
+import {Mat4} from '../../third-party/ga/mat4.js';
+import {Vec3} from '../../third-party/ga/vec3.js';
+import {Rotor3} from '../../third-party/ga/rotor3.js';
 
 async function main() {
   const {width, height, hexLinesContext} = HexLinesContext.setupFullPageContext({
@@ -38,20 +38,20 @@ async function main() {
       switch (button) {
       case '0':
         orientation.inplaceMultiplyRight(
-          Temp.rotor3().setVec3ToVec3(
-            Temp.vec3(0, 0, 1).inplaceRotateRotor(orientation),
-            Temp.vec3(-deltaX, deltaY, 1000).inplaceRotateRotor(orientation),
+          Rotor3.temp().setVec3ToVec3(
+            Vec3.temp(0, 0, 1).inplaceRotateRotor(orientation),
+            Vec3.temp(-deltaX, deltaY, 1000).inplaceRotateRotor(orientation),
           )
         );
         break;
       case '1':
         position.inplaceAdd(
-          Temp.vec3(0, 0, deltaY).inplaceScale(0.8).inplaceRotateRotor(orientation)
+          Vec3.temp(0, 0, deltaY).inplaceScale(0.8).inplaceRotateRotor(orientation)
         );
         break;
       case '2':
         position.inplaceAdd(
-          Temp.vec3(-deltaX, deltaY, 0).inplaceScale(0.2).inplaceRotateRotor(orientation)
+          Vec3.temp(-deltaX, deltaY, 0).inplaceScale(0.2).inplaceRotateRotor(orientation)
         );
         break;
       }
@@ -69,13 +69,13 @@ async function main() {
 }
 
 function camera(hexLines, position, orientation) {
-  Temp.mat4()
+  Mat4.temp()
     .setTranslateVec3(
-      Temp.vec3().setScale(-1, position)
+      Vec3.temp().setScale(-1, position)
     )
     .inplaceMultiplyLeft(
-      Temp.mat4().setRotateRotor(
-        Temp.rotor3().setConjugate(orientation)
+      Mat4.temp().setRotateRotor(
+        Rotor3.temp().setConjugate(orientation)
       )
     )
     .exportToArrayBuffer(hexLines.transformMatrix);

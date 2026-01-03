@@ -1,4 +1,4 @@
-import {write, Component} from '../third-party/rojs/src/rojs.js';
+import {write, Component} from '../../third-party/rojs/src/rojs.js';
 
 const kColours = [
   'white',

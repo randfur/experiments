@@ -1,15 +1,12 @@
 [submodule "2023/third-party/hex-lines"]
-	path = 2023/third-party/hex-lines
+	path = third-party/hex-lines
 	url = git@github.com:randfur/hex-lines.git
 [submodule "2023/third-party/ga"]
-	path = 2023/third-party/ga
+	path = third-party/ga
 	url = git@github.com:randfur/ga.git
 [submodule "2023/third-party/rojs"]
-	path = 2023/third-party/rojs
+	path = third-party/rojs
 	url = git@github.com:randfur/rojs.git
-[submodule "2024/third-party/hex-lines"]
-	path = 2024/third-party/hex-lines
-	url = git@github.com:randfur/hex-lines.git
 [submodule "2025/plants/third-party/hex-lines"]
 	path = 2025/plants/third-party/hex-lines
 	url = git@github.com:randfur/hex-lines.git
@@ -19,9 +16,3 @@
 [submodule "2025/ice/third-party/hex-lines"]
 	path = 2025/ice/third-party/hex-lines
 	url = git@github.com:randfur/hex-lines.git
-[submodule "2025/third-party/hex-lines"]
-	path = 2025/third-party/hex-lines
-	url = git@github.com:randfur/hex-lines.git
-[submodule "2025/third-party/ga"]
-	path = 2025/third-party/ga
-	url = git@github.com:randfur/ga

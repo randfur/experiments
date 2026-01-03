@@ -1,4 +1,4 @@
-import {joinSpace, Component, htmlRead, array, readMap} from '../third-party/rojs/src/rojs.js';
+import {joinSpace, Component, htmlRead, array, readMap} from '../../third-party/rojs/src/rojs.js';
 
 export class StatusText extends Component {
   bundleInit() {

@@ -1,4 +1,4 @@
-import {HexLinesContext} from '../third-party/hex-lines/src/hex-lines.js';
+import {HexLinesContext} from '../../third-party/hex-lines/src/hex-lines.js';
 
 import {Pool} from './pool.js';
 import {Vec3} from './vec3.js';
@@ -30,7 +30,7 @@ export class Drawing {
   }
 
   static draw() {
-      this.hexLinesContext.transformMatrix =       new Float32Array([
+      this.hexLinesContext.transformMatrix = new Float32Array([
         Math.cos(Camera.rotateYAngle), 0, Math.sin(Camera.rotateYAngle), 0,
         0, 1, 0, 0,
         -Math.sin(Camera.rotateYAngle), 0, Math.cos(Camera.rotateYAngle), 0,

@@ -1,5 +1,5 @@
-import {createObservableJsonProxy, readWrite, write} from '../third-party/rojs/src/observable-json.js';
-import {render} from '../third-party/rojs/src/render.js';
+import {createObservableJsonProxy, readWrite, write} from '../../third-party/rojs/src/observable-json.js';
+import {render} from '../../third-party/rojs/src/render.js';
 
 function main() {
   const model = createObservableJsonProxy({

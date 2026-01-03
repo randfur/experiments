@@ -1,5 +1,5 @@
-import {Vec3} from '../third-party/ga/vec3.js';
-import {PlaneBasis} from '../third-party/ga/plane-basis.js';
+import {Vec3} from '../../third-party/ga/vec3.js';
+import {PlaneBasis} from '../../third-party/ga/plane-basis.js';
 
 export class Model {
   constructor(faces) {

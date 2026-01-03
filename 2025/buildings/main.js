@@ -1,7 +1,7 @@
-import {HexLinesContext} from '../third-party/hex-lines/src/hex-lines.js';
+import {HexLinesContext} from '../../third-party/hex-lines/src/hex-lines.js';
 import {createBox} from './model.js';
-import {Vec3} from '../third-party/ga/vec3.js';
-import {Temp} from '../third-party/ga/temp.js';
+import {Vec3} from '../../third-party/ga/vec3.js';
+import {Temp} from '../../third-party/ga/temp.js';
 
 async function main() {
   const {hexLinesContext} = HexLinesContext.setupFullPageContext({is3d: true});

@@ -1,4 +1,4 @@
-import {Vec3} from '../third-party/ga/vec3.js';
+import {Vec3} from '../../third-party/ga/vec3.js';
 
 class Face {
   constructor(vertices, colour) {

@@ -1,8 +1,8 @@
 import {Engine} from './engine.js';
 import {Flame} from './flame.js';
-import {Vec3} from '../third-party/ga/vec3.js';
-import {Rotor3} from '../third-party/ga/rotor3.js';
-import {Temp} from '../third-party/ga/temp.js';
+import {Vec3} from '../../third-party/ga/vec3.js';
+import {Mat4} from '../../third-party/ga/mat4.js';
+import {Rotor3} from '../../third-party/ga/rotor3.js';
 import {
   secondsRange,
   never,
@@ -48,7 +48,7 @@ export class Ember {
               return;
             }
             this.orientation.inplaceMultiplyRight(
-              Temp.rotor3().setAxisAngle(
+              Rotor3.temp().setAxisAngle(
                 axis,
                 progressSmooth(progressUpDown(progress)) * maxAngle * secondsDelta,
               )
@@ -72,42 +72,42 @@ export class Ember {
   step(secondsDelta) {
     this.orientation.inplaceTurnTo(
       this.position,
-      Temp.z(),
-      Temp.vec3(),
+      Vec3.temp(0, 0, 1),
+      Vec3.temp(),
       0.005,
     );
     const speed = progressSmooth(Math.min(Engine.seconds / this.maxSpeedDuration, 1)) * this.maxSpeed;
     this.position.inplaceAdd(
-      Temp.z().inplaceRotateRotor(this.orientation).inplaceScale(speed * secondsDelta),
+      Vec3.temp(0, 0, 1).inplaceRotateRotor(this.orientation).inplaceScale(speed * secondsDelta),
     );
   }
 
   draw(hexLines) {
     if (this.follow) {
       if (this.cameraBehind) {
-        const trailPosition = Temp.vec3(0, 30, -150)
+        const trailPosition = Vec3.temp(0, 30, -150)
           .inplaceRotateRotor(this.orientation)
           .inplaceAdd(this.position);
-        Temp.mat4()
-          .setTranslateVec3(Temp.vec3().setScale(-1, trailPosition))
+        Mat4.temp()
+          .setTranslateVec3(Vec3.temp().setScale(-1, trailPosition))
           .inplaceMultiplyLeft(
-            Temp.mat4().setRotateRotor(
-              Temp.rotor3()
+            Mat4.temp().setRotateRotor(
+              Rotor3.temp()
                 .inplaceMultiplyRight(this.orientation)
                 .inplaceConjugate()
             )
           )
           .exportToArrayBuffer(hexLines.transformMatrix);
       } else {
-        const trailPosition = Temp.vec3(0, 20, 60)
+        const trailPosition = Vec3.temp(0, 20, 60)
           .inplaceRotateRotor(this.orientation)
           .inplaceAdd(this.position);
-        Temp.mat4()
-          .setTranslateVec3(Temp.vec3().setScale(-1, trailPosition))
+        Mat4.temp()
+          .setTranslateVec3(Vec3.temp().setScale(-1, trailPosition))
           .inplaceMultiplyLeft(
-            Temp.mat4().setRotateRotor(
-              Temp.rotor3()
-                .setTurnAround(Temp.z(), Temp.x())
+            Mat4.temp().setRotateRotor(
+              Rotor3.temp()
+                .setTurnAround(Vec3.temp(0, 0, 1), Vec3.temp(1, 0, 0))
                 .inplaceMultiplyRight(this.orientation)
                 .inplaceConjugate()
             )
