@@ -1,7 +1,9 @@
 const directory = {
+  2026: [
+    {name: 'triangulation', wip: true},
+  ],
   2025: [
     {name: 'bell-method-display', wip: true},
-    {name: 'triangulation', wip: true},
     {name: 'nasturtiums', wip: false},
     {name: 'displacement', wip: false},
     {name: 'propagate', wip: true},
