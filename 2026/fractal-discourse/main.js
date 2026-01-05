@@ -41,7 +41,11 @@ async function main() {
     if (inProgressSentence.length >= fullSentence.length) {
       fullSentence += ' ' + generatePhrase();
     } else {
-      inProgressSentence += fullSentence[inProgressSentence.length]
+      repeat(Math.random() * 1.5, () => {
+        if (inProgressSentence.length < fullSentence.length) {
+          inProgressSentence += fullSentence[inProgressSentence.length]
+        }
+      });
     }
     getElement('post-body').textContent = inProgressSentence;
   }
@@ -61,8 +65,16 @@ function shortenNumber(value) {
   return (value / 1000000).toFixed(1) + 'M';
 }
 
+function repeat(n, f) {
+  for (let i = 0; i < n; ++i) {
+    f();
+  }
+}
+
 const phrases = [
+  'you accept the fact that',
   'you aren’t sure whether',
+  'you are traumatized by the fact that',
   'you assume that',
   'you assume the worst when',
   'you avoid accountability for how',
@@ -72,8 +84,9 @@ const phrases = [
   'you believe that',
   'you blame others when',
   'you cling to the belief that',
-  'you consider',
-  'you contradict yourself when',
+  'you can\'t accept when',
+  'you consider why',
+  'you contradict them when',
   'you conveniently forget that',
   'you deflect when',
   'you dismiss concerns about how',
@@ -84,9 +97,9 @@ const phrases = [
   'you exaggerate how',
   'you expect that',
   'you feel that',
-  'you find yourself thinking that',
+  'you find they that',
   'you focus on how',
-  'you frame yourself as the victim when',
+  'you frame them as the victim when',
   'you get defensive when',
   'you have a tendancy to believe',
   'you haven\'t considered how',
@@ -94,8 +107,10 @@ const phrases = [
   'you ignore the fact that',
   'you implied that',
   'you insist on being right rather than',
+  'you insist that',
   'you invalidate how',
   'you keep insisting that',
+  'you make excuses for when',
   'you make excuses for why',
   'you minimize how',
   'you misjudge how',
@@ -117,11 +132,11 @@ const phrases = [
   'you struggle with how',
   'you talk about how',
   'you talk around the issue that',
-  'you tell yourself that',
+  'you tell them that',
   'you tend to think that',
   'you think that',
   'you thought that',
-  'you undermine your own argument that',
+  'you undermine their argument that',
   'you weaponize the idea that',
   'you weren\'t aware that',
   'you wonder whether',
