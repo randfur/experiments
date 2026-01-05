@@ -1,6 +1,8 @@
 # 2026-01-05
-- Inspired by David O'Rielly's The Fractals.
-  - https://www.davidoreilly.com/#TrashGalaxy (skip next until you reach The Fractals)
-  - Direct links:
-    - https://dor-media.b-cdn.net/media/TrashGalaxy/FRACTALS_I_720.mp4
-    - https://www.davidoreilly.com/media/TrashGalaxy/FRACTALS_I_720.mp4
+- Inspired by:
+  - https://bsky.app/profile/smoothdunk2.bsky.social/post/3mbnb37ckfk2r
+  - David O'Rielly's The Fractals.
+    - https://www.davidoreilly.com/#TrashGalaxy (skip next until you reach The Fractals)
+    - Direct links:
+      - https://dor-media.b-cdn.net/media/TrashGalaxy/FRACTALS_I_720.mp4
+      - https://www.davidoreilly.com/media/TrashGalaxy/FRACTALS_I_720.mp4
