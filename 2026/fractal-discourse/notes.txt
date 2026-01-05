@@ -6,3 +6,4 @@
     - Direct links:
       - https://dor-media.b-cdn.net/media/TrashGalaxy/FRACTALS_I_720.mp4
       - https://www.davidoreilly.com/media/TrashGalaxy/FRACTALS_I_720.mp4
+- Over half the phrases were generated via ChatGPT, asking it to follow the same pattern.
