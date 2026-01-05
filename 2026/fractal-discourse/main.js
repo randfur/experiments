@@ -1,32 +1,28 @@
-async function main() {
-  const counts = [{
-    id: 'view-count',
-    value: 0,
-    rate: 300,
-  }, {
-    id: 'comment-count',
-    value: 0,
-    rate: 5,
-  }, {
-    id: 'retort-count',
-    value: 0,
-    rate: 2,
-  }, {
-    id: 'report-count',
-    value: 0,
-    rate: 1,
-  }];
+const counts = [{
+  id: 'view-count',
+  value: 0,
+  rate: 300,
+}, {
+  id: 'comment-count',
+  value: 0,
+  rate: 5,
+}, {
+  id: 'retort-count',
+  value: 0,
+  rate: 2,
+}, {
+  id: 'report-count',
+  value: 0,
+  rate: 1,
+}];
 
-  let fullSentence = pick([
-    'Isn\'t it weird how',
-    'Has anyone noticed that',
-    'It\'s ridiculous that',
-    'It\'s obvious that',
-    'Addressing the allegation that',
-    'When will people finally see that',
-    'So why do',
-  ]);
-  let inProgressSentence = '';
+let fullSentence = '';
+let inProgressSentence = '';
+
+async function main() {
+  reset();
+
+  window.addEventListener('click', reset);
 
   while (true) {
     await new Promise(requestAnimationFrame);
@@ -49,6 +45,22 @@ async function main() {
     }
     getElement('post-body').textContent = inProgressSentence;
   }
+}
+
+function reset() {
+  for (const count of counts) {
+    count.value = 0;
+  }
+  fullSentence = pick([
+    'Isn\'t it weird how',
+    'Has anyone noticed that',
+    'It\'s ridiculous that',
+    'It\'s obvious that',
+    'Addressing the allegation that',
+    'When will people finally see that',
+    'So why do',
+  ]);
+  inProgressSentence = '';
 }
 
 function getElement(id) {
@@ -90,7 +102,7 @@ const phrases = [
   'you can’t tolerate the idea that',
   'you choose to ignore when',
   'you cling to the belief that',
-  'you close me off when',
+  'you close others off from the conversation when',
   'you conflate your feelings with the fact that',
   'you confuse disagreement with the idea that',
   'you conveniently forget that',
