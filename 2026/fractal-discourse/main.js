@@ -2,19 +2,19 @@ async function main() {
   const counts = [{
     id: 'view-count',
     value: 0,
-    rate: 30,
+    rate: 300,
   }, {
     id: 'comment-count',
     value: 0,
-    rate: 0.5,
+    rate: 5,
   }, {
     id: 'retort-count',
     value: 0,
-    rate: 0.2,
+    rate: 2,
   }, {
     id: 'report-count',
     value: 0,
-    rate: 0.1,
+    rate: 1,
   }];
 
   let fullSentence = pick([
