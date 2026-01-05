@@ -1,0 +1,178 @@
+async function main() {
+  const counts = [{
+    id: 'view-count',
+    value: 0,
+    rate: 30,
+  }, {
+    id: 'comment-count',
+    value: 0,
+    rate: 0.5,
+  }, {
+    id: 'retort-count',
+    value: 0,
+    rate: 0.2,
+  }, {
+    id: 'report-count',
+    value: 0,
+    rate: 0.1,
+  }];
+
+  let fullSentence = pick([
+    'Isn\'t it weird how',
+    'Has anyone noticed that',
+    'It\'s ridiculous that',
+    'It\'s obvious that',
+    'Addressing the allegation that',
+    'When will people finally see that',
+    'So why do',
+  ]);
+  let inProgressSentence = '';
+
+  while (true) {
+    await new Promise(requestAnimationFrame);
+
+    for (const count of counts) {
+      count.value += Math.random() * count.rate;
+      getElement(count.id).textContent = shortenNumber(Math.floor(count.value));
+    }
+
+    getElement('timestamp').textContent = Date();
+
+    if (inProgressSentence.length >= fullSentence.length) {
+      fullSentence += ' ' + generatePhrase();
+    } else {
+      inProgressSentence += fullSentence[inProgressSentence.length]
+    }
+    getElement('post-body').textContent = inProgressSentence;
+  }
+}
+
+function getElement(id) {
+  return document.getElementById(id);
+}
+
+function shortenNumber(value) {
+  if (value < 1000) {
+    return value;
+  }
+  if (value < 1000000) {
+    return (value / 1000).toFixed(1) + 'k';
+  }
+  return (value / 1000000).toFixed(1) + 'M';
+}
+
+const phrases = [
+  'you aren’t sure whether',
+  'you assume that',
+  'you assume the worst when',
+  'you avoid accountability for how',
+  'you avoid admitting that',
+  'you avoid the fact that',
+  'you avoid thinking about how',
+  'you believe that',
+  'you blame others when',
+  'you cling to the belief that',
+  'you consider',
+  'you contradict yourself when',
+  'you conveniently forget that',
+  'you deflect when',
+  'you dismiss concerns about how',
+  'you dismiss the idea that',
+  'you don\'t like when',
+  'you double down on the idea that',
+  'you doubt that',
+  'you exaggerate how',
+  'you expect that',
+  'you feel that',
+  'you find yourself thinking that',
+  'you focus on how',
+  'you frame yourself as the victim when',
+  'you get defensive when',
+  'you have a tendancy to believe',
+  'you haven\'t considered how',
+  'you hesitate when',
+  'you ignore the fact that',
+  'you implied that',
+  'you insist on being right rather than',
+  'you invalidate how',
+  'you keep insisting that',
+  'you make excuses for why',
+  'you minimize how',
+  'you misjudge how',
+  'you misrepresent how',
+  'you notice that',
+  'you often feel that',
+  'you overlook how',
+  'you overreact when',
+  'you pretend not to notice how',
+  'you question whether',
+  'you rationalise away how',
+  'you react as if',
+  'you reflect on how',
+  'you refuse to acknowledge that',
+  'you refuse to take responsibility when',
+  'you said that',
+  'you see how',
+  'you shut down when',
+  'you struggle with how',
+  'you talk about how',
+  'you talk around the issue that',
+  'you tell yourself that',
+  'you tend to think that',
+  'you think that',
+  'you thought that',
+  'you undermine your own argument that',
+  'you weaponize the idea that',
+  'you weren\'t aware that',
+  'you wonder whether',
+  'you worry about how',
+  'you\'ve got it twisted like',
+  'you\'re afraid that',
+  'you\'re concerned that',
+  'you\'re in denial about how',
+  'you\'re sensitive to how',
+  'you\'re uncomfortable when',
+  'you\'re unwilling to accept that',
+];
+
+function pick(list) {
+  return list[Math.floor(Math.random() * list.length)];
+}
+
+function titleCase(string) {
+  return string.substring(0, 1).toUpperCase() + string.substring(1);
+}
+
+function generatePhrase() {
+  const phrase = pick(phrases);
+  if (/you were/.test(phrase)) {
+    return phrase.replace(
+      'you were',
+      pick([
+        'I was',
+        'you were',
+        'they were',
+      ]),
+    );
+  }
+  if (/you\'re/.test(phrase)) {
+    return phrase.replace(
+      'you\'re',
+      pick([
+        'I\'m',
+        'you\'re',
+        'they\'re',
+      ]),
+    );
+  }
+  return phrase.replace(
+    'you',
+    pick([
+      'I',
+      'you',
+      'they',
+    ]),
+  );
+}
+
+main();
