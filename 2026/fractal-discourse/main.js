@@ -96,7 +96,7 @@ const phrases = [
   'you focus on how',
   'you frame them as the victim when',
   'you get defensive when',
-  'you have a tendancy to believe',
+  'you have a tendency to believe',
   'you have it twisted like',
   'you haven\'t considered how',
   'you haven\'t considered why',
