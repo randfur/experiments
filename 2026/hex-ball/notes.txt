@@ -1,0 +1,7 @@
+# 2026-01-15
+- Experiment with making a ball out of only hexagons.
+- Hexagons will overlap, just see what it looks like.
+- Started off with creating hex shapes on a sphere at random angles.
+- Added fixed angle sphere hex shapes.
+  - Need to rotate camera to see it better.
+- Having trouble applying a Mat4 to the HexLines.transformMatrix.

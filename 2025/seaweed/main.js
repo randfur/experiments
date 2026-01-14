@@ -97,7 +97,7 @@ class Bubble {
     this.alive = true;
     this.speed = speed;
     const points = 10;
-    this.model = range(points).map(i => new Vec3().setPolarXy(TAU * i / (points - 1), size));
+    this.model = range(points).map(i => new Vec3().setPolar(TAU * i / (points - 1), size));
     this.position = position;
     this.wobble = new Vec3(deviate(1), deviate(1), deviate(1));
   }
