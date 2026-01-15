@@ -6,10 +6,10 @@ import {Mat4} from '../../third-party/ga/mat4.js';
 const TAU = Math.PI * 2;
 
 async function main() {
-  const {hexLinesContext} = HexLinesContext.setupFullPageContext();
+  const {hexLinesContext} = HexLinesContext.setupFullPageContext({is3d: true});
   const hexLines = hexLinesContext.createLines();
-  const sphereRight = new Sphere(new Vec3(300, 0, 100), 200);
-  const sphereLeft = new Sphere(new Vec3(-300, 0, 100), 200);
+  const sphereRight = new Sphere(new Vec3(300, 0, 0), 200);
+  const sphereLeft = new Sphere(new Vec3(-300, 0, 0), 200);
   while (true) {
     const time = await new Promise(requestAnimationFrame);
     hexLines.clear();
@@ -44,7 +44,17 @@ async function main() {
       }
     }
 
-    // new Mat4().exportToArrayBuffer(hexLines.transformMatrix);
+    new Mat4()
+      .inplaceMultiplyLeft(
+        new Mat4().setRotateYz(time / 10000 * TAU)
+      )
+      .inplaceMultiplyLeft(
+        new Mat4().setRotateXy(0.125 * TAU)
+      )
+      .inplaceMultiplyLeft(
+        new Mat4().setTranslateXyz(0, 0, 800)
+      )
+      .exportToArrayBuffer(hexLines.transformMatrix);
     hexLines.draw();
   }
 }
@@ -55,12 +65,12 @@ class Sphere {
     this.radius = radius;
   }
 
-  createTangentPlane(angleXy, angleZ) {
+  createTangentPlane(angleXy, angleZ, guideXDirection) {
     const normal = new Vec3().setSpherical(angleXy, angleZ, 1);
     return new PlaneBasis().set(
       new Vec3().setScaleAdd(this.origin, this.radius, normal),
       normal,
-      new Vec3(1, 0, 0),
+      guideXDirection,
     );
   }
 }
