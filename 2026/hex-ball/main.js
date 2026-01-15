@@ -8,8 +8,8 @@ const TAU = Math.PI * 2;
 async function main() {
   const {hexLinesContext} = HexLinesContext.setupFullPageContext({is3d: true});
   const hexLines = hexLinesContext.createLines();
+  const sphereLeft = new Sphere(new Vec3(-300, 0, 0), 250);
   const sphereRight = new Sphere(new Vec3(300, 0, 0), 200);
-  const sphereLeft = new Sphere(new Vec3(-300, 0, 0), 200);
   while (true) {
     const time = await new Promise(requestAnimationFrame);
     hexLines.clear();
@@ -28,14 +28,15 @@ async function main() {
     }
 
     for (const i of range(4)) {
-      const up = i / 3;
-      const count = (up > 0 && up < 1) ? 6 : 1;
+      const pole = i === 0 || i === 3;
+      const count = pole ? 1 : 6;
       for (const j of range(count)) {
         drawHex({
           hexLines,
           planeBasis: sphereLeft.createTangentPlane(
-            (j / Math.max(count - 1, 1)) * TAU,
-            up * 0.5 * TAU,
+            pole ? 0 : (j + (i === 2 ? 0.5 : 0)) / count * TAU,
+            i / 6 * TAU,
+            pole ? (i === 0 ? new Vec3(1, 0, 0) : new Vec3().setPolar(TAU / 12, 1)) : new Vec3(0, 0, 1),
           ),
           radius: 100,
           size: 10,
@@ -52,7 +53,7 @@ async function main() {
         new Mat4().setRotateXy(0.125 * TAU)
       )
       .inplaceMultiplyLeft(
-        new Mat4().setTranslateXyz(0, 0, 800)
+        new Mat4().setTranslateXyz(0, 0, 700)
       )
       .exportToArrayBuffer(hexLines.transformMatrix);
     hexLines.draw();
@@ -76,14 +77,17 @@ class Sphere {
 }
 
 function drawHex({hexLines, planeBasis, radius, size, colour}) {
-  hexLines.addPoints(range(7).map(i => ({
-    position: new Vec3(
-        radius * Math.cos(i / 6 * TAU),
-        radius * Math.sin(i / 6 * TAU),
-      ).inplace3dPlanePosition(planeBasis),
-    size,
-    colour,
-  })));
+  hexLines.addPoints(range(7).map(i => {
+    const angle = ((i + 0.5) / 6) * TAU;
+    return {
+      position: new Vec3(
+          Math.cos(angle) * radius,
+          Math.sin(angle) * radius,
+        ).inplace3dPlanePosition(planeBasis),
+      size,
+      colour,
+    };
+  }));
   hexLines.addNull();
 }
 

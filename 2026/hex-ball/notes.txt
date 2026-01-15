@@ -6,3 +6,4 @@
   - Need to rotate camera to see it better.
 - Having trouble applying a Mat4 to the HexLines.transformMatrix.
   - Oops, forgot to set the hex lines to 3D.
+- Oriented the hex plates to face the poles.
