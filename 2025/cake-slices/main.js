@@ -37,7 +37,7 @@ async function main() {
     const angle = time / 1000;
     const points = 5;
     const cuts = range(points).map(i =>
-      Vec3.temp().setPolar(angle + TAU * i / points).inplace3dPlanePosition(planeBasis),
+      Vec3.temp().setPolar(angle + TAU * i / points).inplacePlanePosition3d(planeBasis),
     );
 
     for (let i = 0; i < points; ++i) {

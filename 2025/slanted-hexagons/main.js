@@ -59,14 +59,14 @@ async function main() {
   }
 
   function isProjectionColliding(face, facePlaneBasis, v) {
-    const planePoint = Vec3.temp().set2dPlaneProjection(facePlaneBasis, v);
+    const planePoint = Vec3.temp().setPlaneProjection2d(facePlaneBasis, v);
     const planePointDelta = Vec3.temp();
     const edgeStart = Vec3.temp();
     const edgeNormal = Vec3.temp();
     for (let i = 0; i < face.length; ++i) {
-      edgeStart.set2dPlaneProjection(facePlaneBasis, face[i]);
+      edgeStart.setPlaneProjection2d(facePlaneBasis, face[i]);
       edgeNormal.setDelta(face[i], face[(i + 1) % face.length])
-        .inplaceRelative2dPlaneProjection(facePlaneBasis)
+        .inplaceRelativePlaneProjection2d(facePlaneBasis)
         .inplaceTurnXy();
       if (planePointDelta.setDelta(edgeStart, planePoint).dot(edgeNormal) < 0) {
         return false;

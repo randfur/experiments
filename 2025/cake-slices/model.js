@@ -15,7 +15,7 @@ export class Model {
 
   slice({position, direction, cuts, distance}) {
     const planeBasis = PlaneBasis.temp(position, direction);
-    const planeCuts = cuts.map(cut => Vec3.temp().setRelative2dPlaneProjection(planeBasis, cut).inplaceNormalise());
+    const planeCuts = cuts.map(cut => Vec3.temp().setRelativePlaneProjection2d(planeBasis, cut).inplaceNormalise());
     planeCuts.sort((a, b) => getCheapAngle(a) - getCheapAngle(b));
 
     const result = [];
@@ -65,8 +65,8 @@ export class Model {
           const startPosition = face.positions[j];
           const endPosition = face.positions[(j + 1) % face.positions.length];
 
-          const startProjected = Vec3.temp().set2dPlaneProjection(planeBasis, startPosition);
-          const endProjected = Vec3.temp().set2dPlaneProjection(planeBasis, endPosition);
+          const startProjected = Vec3.temp().setPlaneProjection2d(planeBasis, startPosition);
+          const endProjected = Vec3.temp().setPlaneProjection2d(planeBasis, endPosition);
 
           const startInsideArc = startProjected.dot(arcStartNormal) >= 0 && startProjected.dot(arcEndNormal) > 0;
           if (startInsideArc) {
@@ -116,7 +116,7 @@ export class Model {
       }
 
       // How far to push the faces out for the arc segment.
-      const arcPush = Vec3.temp().setRelative3dPlanePosition(
+      const arcPush = Vec3.temp().setRelativePlanePosition3d(
         planeBasis,
         Vec3.temp().setAdd(arcStart, arcEnd).inplaceNormalise(),
       ).inplaceScale(distance);
@@ -161,11 +161,11 @@ export class Model {
 
 function isInsideFace(position, facePositions, faceNormal) {
   const facePlaneBasis = PlaneBasis.temp(facePositions[0], faceNormal);
-  const position2d = Vec3.temp().set2dPlaneProjection(facePlaneBasis, position);
+  const position2d = Vec3.temp().setPlaneProjection2d(facePlaneBasis, position);
 
-  const facePosition2d0 = Vec3.temp().set2dPlaneProjection(facePlaneBasis, facePositions[0]);
-  const facePosition2d1 = Vec3.temp().set2dPlaneProjection(facePlaneBasis, facePositions[1]);
-  const facePosition2d2 = Vec3.temp().set2dPlaneProjection(facePlaneBasis, facePositions[2]);
+  const facePosition2d0 = Vec3.temp().setPlaneProjection2d(facePlaneBasis, facePositions[0]);
+  const facePosition2d1 = Vec3.temp().setPlaneProjection2d(facePlaneBasis, facePositions[1]);
+  const facePosition2d2 = Vec3.temp().setPlaneProjection2d(facePlaneBasis, facePositions[2]);
   const sign = Math.sign(
     Vec3.temp()
     .setDelta(facePosition2d0, facePosition2d1)
@@ -173,10 +173,10 @@ function isInsideFace(position, facePositions, faceNormal) {
   );
 
   for (let i = 0; i < facePositions.length; ++i) {
-    const edgeStart2d = Vec3.temp().set2dPlaneProjection(facePlaneBasis, facePositions[i]);
+    const edgeStart2d = Vec3.temp().setPlaneProjection2d(facePlaneBasis, facePositions[i]);
     const edgeNormal2d = Vec3.temp()
       .setDelta(facePositions[i], facePositions[(i + 1) % facePositions.length])
-      .inplaceRelative2dPlaneProjection(facePlaneBasis)
+      .inplaceRelativePlaneProjection2d(facePlaneBasis)
       .inplaceTurnXy();
 
     if (Vec3.temp().setDelta(edgeStart2d, position2d).dot(edgeNormal2d) * sign < 0) {
@@ -230,13 +230,13 @@ const sortConvexByAngle = (() => {
 
     middle2d.setZero();
     for (const position of positions) {
-      middle2d.inplaceAdd(position2d.set2dPlaneProjection(planeBasis, position));
+      middle2d.inplaceAdd(position2d.setPlaneProjection2d(planeBasis, position));
     }
     middle2d.inplaceScale(1 / positions.length);
 
     positions.sort((a, b) => (
-      getCheapAngle(positionA2d.set2dPlaneProjection(planeBasis, a).inplaceSubtract(middle2d))
-      - getCheapAngle(positionB2d.set2dPlaneProjection(planeBasis, b).inplaceSubtract(middle2d))
+      getCheapAngle(positionA2d.setPlaneProjection2d(planeBasis, a).inplaceSubtract(middle2d))
+      - getCheapAngle(positionB2d.setPlaneProjection2d(planeBasis, b).inplaceSubtract(middle2d))
     ));
   }
 })();

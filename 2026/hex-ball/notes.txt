@@ -1,3 +1,9 @@
+# 2026-01-16
+- Extracted hex ball code into a function that just returns the points.
+- Made a Model class that takes a source set of points, has a set of transform properties, translation, orientation and scale, and applies them to the source points onto a structured copy for rendering into HexLines.
+- Using new singleton instances in ga library for transform matrices and orientation mutation.
+- Works well, got a ball rolling now.
+
 # 2026-01-15
 - Experiment with making a ball out of only hexagons.
 - Hexagons will overlap, just see what it looks like.

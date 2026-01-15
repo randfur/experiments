@@ -1,6 +1,7 @@
 import {HexLinesContext} from '../../third-party/hex-lines/src/hex-lines.js';
 import {PlaneBasis} from '../../third-party/ga/plane-basis.js';
 import {Vec3} from '../../third-party/ga/vec3.js';
+import {Rotor3} from '../../third-party/ga/rotor3.js';
 import {Mat4} from '../../third-party/ga/mat4.js';
 
 const TAU = Math.PI * 2;
@@ -8,54 +9,52 @@ const TAU = Math.PI * 2;
 async function main() {
   const {hexLinesContext} = HexLinesContext.setupFullPageContext({is3d: true});
   const hexLines = hexLinesContext.createLines();
-  const sphereLeft = new Sphere(new Vec3(-300, 0, 0), 250);
   const sphereRight = new Sphere(new Vec3(300, 0, 0), 200);
+
+  const hexBall = new Model(createHexBallPoints({
+    ballRadius: 350,
+    hexRadius: 150,
+    size: 10,
+    colour: {r: 255, g: 255, b: 255},
+  }));
+
   while (true) {
     const time = await new Promise(requestAnimationFrame);
     hexLines.clear();
 
-    for (const i of range(10)) {
-      drawHex({
-        hexLines,
-        planeBasis: sphereRight.createTangentPlane(
-          Math.cos(i + time / 3000) * TAU,
-          Math.sin(i + time / 8000) * TAU,
-        ),
-        radius: 100,
-        size: 10,
-        colour: {r: 255, g: 255, b: 255},
-      });
-    }
+    hexBall.orientation.inplaceMultiplyLeft(
+      Rotor3.vec3ToVec3(
+        Vec3.a.setZ(),
+        Vec3.b.setXyz(-0.002, -0.01, 1),
+      )
+    );
+    hexBall.render(hexLines);
 
-    for (const i of range(4)) {
-      const pole = i === 0 || i === 3;
-      const count = pole ? 1 : 6;
-      for (const j of range(count)) {
-        drawHex({
-          hexLines,
-          planeBasis: sphereLeft.createTangentPlane(
-            pole ? 0 : (j + (i === 2 ? 0.5 : 0)) / count * TAU,
-            i / 6 * TAU,
-            pole ? (i === 0 ? new Vec3(1, 0, 0) : new Vec3().setPolar(TAU / 12, 1)) : new Vec3(0, 0, 1),
-          ),
-          radius: 100,
-          size: 10,
-          colour: {r: 255, g: 255, b: 255},
-        });
-      }
-    }
+    // for (const i of range(10)) {
+    //   drawHex({
+    //     hexLines,
+    //     planeBasis: sphereRight.createTangentPlane(
+    //       Math.cos(i + time / 3000) * TAU,
+    //       Math.sin(i + time / 8000) * TAU,
+    //     ),
+    //     radius: 100,
+    //     size: 10,
+    //     colour: {r: 255, g: 255, b: 255},
+    //   });
+    // }
 
     new Mat4()
-      .inplaceMultiplyLeft(
-        new Mat4().setRotateYz(time / 10000 * TAU)
-      )
-      .inplaceMultiplyLeft(
-        new Mat4().setRotateXy(0.125 * TAU)
-      )
+      // .inplaceMultiplyLeft(
+      //   new Mat4().setRotateYz(time / 10000 * TAU)
+      // )
+      // .inplaceMultiplyLeft(
+      //   new Mat4().setRotateXy(0.125 * TAU)
+      // )
       .inplaceMultiplyLeft(
         new Mat4().setTranslateXyz(0, 0, 700)
       )
       .exportToArrayBuffer(hexLines.transformMatrix);
+
     hexLines.draw();
   }
 }
@@ -76,19 +75,95 @@ class Sphere {
   }
 }
 
-function drawHex({hexLines, planeBasis, radius, size, colour}) {
-  hexLines.addPoints(range(7).map(i => {
+class Model {
+  constructor(sourcePoints) {
+    this.sourcePoints = sourcePoints;
+    this.transformedPoints = sourcePoints.map(point => {
+      const clone = structuredClone(point);
+      if (clone !== null) {
+        clone.position = point.position.clone();
+      }
+      return clone;
+    });
+    this.translation = new Vec3();
+    this.scale = 1;
+    this.orientation = new Rotor3();
+    this.transformMatrix = new Mat4();
+  }
+
+  render(hexLines) {
+    this.transformMatrix
+      .setScale(this.scale)
+      .inplaceMultiplyLeft(
+        Mat4.rotateRotor(this.orientation)
+      )
+      .inplaceMultiplyLeft(
+        Mat4.translateVec3(this.translation)
+      );
+
+    for (let i = 0; i < this.sourcePoints.length; ++i) {
+      const sourcePoint = this.sourcePoints[i];
+      if (sourcePoint === null) {
+        continue;
+      }
+      const transformedPoint = this.transformedPoints[i];
+      transformedPoint.position.setMultiplyMat4Vec3(this.transformMatrix, sourcePoint.position);
+    }
+
+    hexLines.addPoints(this.transformedPoints);
+  }
+}
+
+function createHexBallPoints({ballRadius, hexRadius, size, colour}) {
+  const sphere = new Sphere(new Vec3(), ballRadius);
+
+  function createPresetHexPoints(angleXy, angleZ, guideXDirection) {
+    return createHexPoints({
+      planeBasis: sphere.createTangentPlane(angleXy, angleZ, guideXDirection),
+      radius: hexRadius,
+      size,
+      colour,
+    });
+  }
+
+  return [
+    ...createPresetHexPoints(0, 0, new Vec3(1, 0, 0)),
+    ...range(6).flatMap(i =>
+      createPresetHexPoints(
+        i / 6 * TAU,
+        1 / 3 / 2 * TAU,
+        new Vec3(0, 0, 1),
+      )
+    ),
+    ...range(6).flatMap(i =>
+      createPresetHexPoints(
+        (i + 0.5) / 6 * TAU,
+        2 / 3 / 2 * TAU,
+        new Vec3(0, 0, 1),
+      )
+    ),
+    ...createPresetHexPoints(
+      0,
+      3 / 3 / 2 * TAU,
+      new Vec3().setPolar(TAU / 12, 1),
+    ),
+  ];
+}
+
+function createHexPoints({planeBasis, radius, size, colour}) {
+  const result = range(7).map(i => {
     const angle = ((i + 0.5) / 6) * TAU;
     return {
       position: new Vec3(
           Math.cos(angle) * radius,
           Math.sin(angle) * radius,
-        ).inplace3dPlanePosition(planeBasis),
+        ).inplacePlanePosition3d(planeBasis),
       size,
       colour,
     };
-  }));
-  hexLines.addNull();
+  });
+  result.push(null);
+  return result;
 }
 
 function range(n) {
