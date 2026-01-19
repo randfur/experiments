@@ -18,14 +18,23 @@ async function main() {
     colour: {r: 255, g: 255, b: 255},
   }));
 
+  const key = new Key();
+  const direction = new Vec3();
+
   while (true) {
     const time = await new Promise(requestAnimationFrame);
     hexLines.clear();
 
-    hexBall.orientation.inplaceMultiplyLeft(
+    const horizontal = key.down.ArrowLeft !== key.down.ArrowRight ? (key.down.ArrowLeft ? -1 : 1) : 0;
+    direction.setXyz(
+      horizontal * 1 / 2,
+      (horizontal ? (Math.sqrt(3) / 2) : 1) * (key.down.ArrowDown ? -1 : 1) * ((key.down.ArrowUp || key.down.ArrowDown || horizontal) ? 1 : 0),
+    );
+    hexBall.translation.inplaceScaleAdd(20, direction);
+    hexBall.orientation.inplaceMultiplyRight(
       Rotor3.vec3ToVec3(
+        Vec3.set(direction).inplaceScale(0.05).inplaceAddXyz(0, 0, 1),
         Vec3.a.setZ(),
-        Vec3.b.setXyz(-0.002, -0.01, 1),
       )
     );
     hexBall.render(hexLines);
@@ -44,14 +53,14 @@ async function main() {
     // }
 
     new Mat4()
-      // .inplaceMultiplyLeft(
-      //   new Mat4().setRotateYz(time / 10000 * TAU)
-      // )
+      .inplaceMultiplyLeft(
+        new Mat4().setRotateYz(0.8 * TAU / 4)
+      )
       // .inplaceMultiplyLeft(
       //   new Mat4().setRotateXy(0.125 * TAU)
       // )
       .inplaceMultiplyLeft(
-        new Mat4().setTranslateXyz(0, 0, 700)
+        new Mat4().setTranslateXyz(0, 0, 1700)
       )
       .exportToArrayBuffer(hexLines.transformMatrix);
 
@@ -111,6 +120,18 @@ class Model {
     }
 
     hexLines.addPoints(this.transformedPoints);
+  }
+}
+
+class Key {
+  constructor() {
+    this.down = {};
+    window.addEventListener('keydown', event => {
+      this.down[event.code] = true;
+    });
+    window.addEventListener('keyup', event => {
+      this.down[event.code] = false;
+    });
   }
 }
 

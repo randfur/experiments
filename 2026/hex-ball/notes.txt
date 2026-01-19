@@ -1,3 +1,6 @@
+# 2026-01-19
+- Added ball hex directional keyboard movement.
+
 # 2026-01-16
 - Extracted hex ball code into a function that just returns the points.
 - Made a Model class that takes a source set of points, has a set of transform properties, translation, orientation and scale, and applies them to the source points onto a structured copy for rendering into HexLines.
