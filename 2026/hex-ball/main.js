@@ -7,64 +7,89 @@ import {Mat4} from '../../third-party/ga/mat4.js';
 const TAU = Math.PI * 2;
 
 async function main() {
-  const {hexLinesContext} = HexLinesContext.setupFullPageContext({is3d: true});
+  const {hexLinesContext} = HexLinesContext.setupFullPageContext({
+    is3d: true,
+    pixelSize: 1,
+  });
   const hexLines = hexLinesContext.createLines();
-  const sphereRight = new Sphere(new Vec3(300, 0, 0), 200);
 
-  const hexBall = new Model(createHexBallPoints({
-    ballRadius: 350,
-    hexRadius: 150,
-    size: 10,
-    colour: {r: 255, g: 255, b: 255},
-  }));
-
-  const key = new Key();
-  const direction = new Vec3();
+  const colourStops = [
+    {r: 255, g: 255, b: 255},
+    {r: 127, g: 0, b: 255},
+    {r: 0, g: 0, b: 127},
+    {r: 0, g: 0, b: 0},
+  ];
+  const hexBallCount = 200;
+  const hexBalls = range(hexBallCount).map(i => {
+    const t = i / (hexBallCount - 1);
+    const colour = interpolateColours(colourStops, t);
+    return new HexBall(colour, t);
+  });
 
   while (true) {
     const time = await new Promise(requestAnimationFrame);
     hexLines.clear();
 
-    const horizontal = key.down.ArrowLeft !== key.down.ArrowRight ? (key.down.ArrowLeft ? -1 : 1) : 0;
-    direction.setXyz(
-      horizontal * 1 / 2,
-      (horizontal ? (Math.sqrt(3) / 2) : 1) * (key.down.ArrowDown ? -1 : 1) * ((key.down.ArrowUp || key.down.ArrowDown || horizontal) ? 1 : 0),
-    );
-    hexBall.translation.inplaceScaleAdd(20, direction);
-    hexBall.orientation.inplaceMultiplyRight(
-      Rotor3.vec3ToVec3(
-        Vec3.set(direction).inplaceScale(0.05).inplaceAddXyz(0, 0, 1),
-        Vec3.a.setZ(),
-      )
-    );
-    hexBall.render(hexLines);
-
-    // for (const i of range(10)) {
-    //   drawHex({
-    //     hexLines,
-    //     planeBasis: sphereRight.createTangentPlane(
-    //       Math.cos(i + time / 3000) * TAU,
-    //       Math.sin(i + time / 8000) * TAU,
-    //     ),
-    //     radius: 100,
-    //     size: 10,
-    //     colour: {r: 255, g: 255, b: 255},
-    //   });
-    // }
+    for (const hexBall of hexBalls) {
+      hexBall.update(time);
+      hexBall.render(hexLines);
+    }
 
     new Mat4()
       .inplaceMultiplyLeft(
-        new Mat4().setRotateYz(0.8 * TAU / 4)
+        new Mat4().setRotateXy(TAU / 4 - time / 10000)
       )
-      // .inplaceMultiplyLeft(
-      //   new Mat4().setRotateXy(0.125 * TAU)
-      // )
       .inplaceMultiplyLeft(
-        new Mat4().setTranslateXyz(0, 0, 1700)
+        new Mat4().setTranslateXyz(0, 2000, -1000)
+      )
+      .inplaceMultiplyLeft(
+        new Mat4().setRotateYz(0.7 * TAU / 4)
+      )
+      .inplaceMultiplyLeft(
+        new Mat4().setTranslateXyz(0, 0, 6000)
       )
       .exportToArrayBuffer(hexLines.transformMatrix);
 
     hexLines.draw();
+  }
+}
+
+class HexBall {
+  constructor(colour, t) {
+    this.model = new Model(createHexBallPoints({
+      ballRadius: 350,
+      hexRadius: 150,
+      size: 30,
+      colour,
+    }));
+    this.timer = 0;
+    this.destination = new Vec3();
+    this.direction = new Vec3().setPolar(Math.random() * TAU);
+    this.t = t;
+  }
+
+  update(time) {
+    if (this.timer <= 0) {
+      this.timer = Math.random() * 100 + 100;
+      const arenaSize = 6000;
+      this.destination.setXyz(
+        deviate(arenaSize * 1.25),
+        -arenaSize + this.t * 2 * arenaSize + deviate(arenaSize / 4),
+      );
+    }
+    --this.timer;
+    this.direction.inplaceTurnTowards(this.model.translation, this.destination, Math.cos(TAU / 100));
+    this.model.translation.inplaceScaleAdd(20, this.direction);
+    this.model.orientation.inplaceMultiplyRight(
+      Rotor3.vec3ToVec3(
+        Vec3.b.set(this.direction).inplaceScale(0.05).inplaceAddXyz(0, 0, 1),
+        Vec3.c.setZ(),
+      )
+    );
+  }
+
+  render(hexLines) {
+    this.model.render(hexLines);
   }
 }
 
@@ -193,6 +218,31 @@ function range(n) {
     result.push(i);
   }
   return result;
+}
+
+function deviate(x) {
+  return Math.random() * 2 * x - x;
+}
+
+function clampAbs(x, abs) {
+  return x > abs ? abs : x < -abs ? -abs : x;
+}
+
+function interpolateColours(colourStops, t) {
+  const steps = colourStops.length - 1;
+  const index = Math.min(Math.floor(t * steps), steps - 1);
+  const start = colourStops[index];
+  const end = colourStops[index + 1];
+  const subT = t * steps - index;
+  return {
+    r: interpolate(start.r, end.r, subT),
+    g: interpolate(start.g, end.g, subT),
+    b: interpolate(start.b, end.b, subT),
+  }
+}
+
+function interpolate(a, b, t) {
+  return a + t * (b - a);
 }
 
 main();

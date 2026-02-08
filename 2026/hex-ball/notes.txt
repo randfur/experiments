@@ -1,3 +1,13 @@
+# 2026-02-08
+- Implemented independent hex balls moving on their own.
+  - Using random hex directions not very interesting and move too far away over time.
+  - Using random angles also moves too far away over time.
+  - Use random target destinations and angle towards them with a max turn rate.
+- Added many hex balls with a colour gradient across them and a rotating camera.
+
+# 2026-02-05
+- Idea: Make lots of hex balls run around in hexagonal movements randomly.
+
 # 2026-01-19
 - Added ball hex directional keyboard movement.
 
