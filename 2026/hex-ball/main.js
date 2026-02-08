@@ -9,7 +9,7 @@ const TAU = Math.PI * 2;
 async function main() {
   const {hexLinesContext} = HexLinesContext.setupFullPageContext({
     is3d: true,
-    pixelSize: 1,
+    pixelSize: 3,
   });
   const hexLines = hexLinesContext.createLines();
 

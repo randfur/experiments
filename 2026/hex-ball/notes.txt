@@ -1,3 +1,6 @@
+# 2026-02-09
+- Added some pixelation back in.
+
 # 2026-02-08
 - Implemented independent hex balls moving on their own.
   - Using random hex directions not very interesting and move too far away over time.
