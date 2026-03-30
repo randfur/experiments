@@ -7,3 +7,7 @@
   - No time pressure.
   - Graded time.
   - Fixed timer, progresses without you.
+- Used a MVE (model, view, events) pattern like 2025/bell-conducting.
+  - Should really finish that project one day, it would actually be useful for planning conducting.
+- Implemented options, place notation display, input place buttons.
+- TODO: The actual game logic.

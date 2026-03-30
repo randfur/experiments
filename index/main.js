@@ -1,10 +1,11 @@
 const directory = {
   2026: [
+    {name: 'handbell-place-notation', wip: false},
     {name: 'pixel-line', wip: false},
+    {name: 'eel', wip: true},
     {name: 'hex-ball', wip: false},
     {name: 'fractal-discourse', wip: false},
     {name: 'triangulation', wip: true},
-    {name: 'eel', wip: true},
   ],
   2025: [
     {name: 'bell-method-display', wip: true},
