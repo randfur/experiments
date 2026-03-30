@@ -1,0 +1,9 @@
+# 2026-03-14
+- 3D skeleton rig.
+- Attempt inverse kinematics.
+  - Maintain bones having the same length and attachment points.
+  - Adjust angles and positions to satisfy constraints.
+  - Maybe start with very simple iterative approach that converges on a correct answer.
+- Add muscles to pull bones together.
+  - Small increments each frame to allow the inverse kinematics to keep up.
+- Assess muscle pull effects on bone positions and use it to impart forces on the medium the body is in to simulate swimming.

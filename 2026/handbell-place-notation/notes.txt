@@ -1,0 +1,9 @@
+# 2026-03-30
+- Training page for quick recall of handbell position updates based on place notation.
+- Place notation like X, 14, 12.
+- User has a L/R switch to say which hand is in front.
+- User presses the place numbers they should be at after a place notation.
+- Different timing modes:
+  - No time pressure.
+  - Graded time.
+  - Fixed timer, progresses without you.
