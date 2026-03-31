@@ -14,7 +14,6 @@ const upDownStyle = {
   ...rowStyle,
   alignItems: 'center',
   borderRadius: '10px',
-  userSelect: 'none',
   cursor: 'pointer',
 };
 const centreStyle = {
@@ -41,6 +40,7 @@ function main() {
     ...columnStyle,
     touchAction: 'manipulation',
     fontFamily: 'sans-serif',
+    userSelect: 'none',
   });
 
   render();
@@ -244,7 +244,6 @@ function createPlaceInput() {
         fontSize: '50px',
         backgroundColor: model.selectedPlace === (i + 1) ? '#3af8' : '#7703',
         borderRadius: '10px',
-        userSelect: 'none',
         cursor: 'pointer',
       },
       events: {
@@ -307,7 +306,6 @@ function createLeadingHandInput() {
               ...centreStyle,
               width: '140px',
               height: '100px',
-              userSelect: 'none',
               cursor: 'pointer',
               backgroundColor: !model.nextRightLeading ? '#00fc' : '#0001',
               color: !model.nextRightLeading ? 'white' : 'black',
@@ -327,7 +325,6 @@ function createLeadingHandInput() {
               ...centreStyle,
               width: '140px',
               height: '100px',
-              userSelect: 'none',
               cursor: 'pointer',
               backgroundColor: model.nextRightLeading ? '#f00f' : '#0001',
               color: model.nextRightLeading ? 'white' : 'black',
