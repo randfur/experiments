@@ -1,3 +1,12 @@
+# 2026-03-31
+- Implemented turn logic.
+- Implemented place notation swapping logic.
+  - Assumes all staying places are listed, doesn't consider unlisted bells that are forced to stay e.g. 46 forces 5 to stay.
+- Added status display.
+- Added reset button.
+- Added random place notation generation.
+- Might be finished.
+
 # 2026-03-30
 - Training page for quick recall of handbell position updates based on place notation.
 - Place notation like X, 14, 12.
