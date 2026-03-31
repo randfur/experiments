@@ -40,6 +40,7 @@ function main() {
     ...columnStyle,
     touchAction: 'manipulation',
     fontFamily: 'sans-serif',
+    fontSize: '20px',
     userSelect: 'none',
   });
 
@@ -57,7 +58,6 @@ function render() {
         backgroundColor: '#8321',
         padding: '20px',
         gap: '50px',
-        fontSize: '20px',
       },
       children: [
         createTitle(),
