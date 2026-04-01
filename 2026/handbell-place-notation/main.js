@@ -272,7 +272,7 @@ function createPlaceInput() {
                 model.currentRightLeading = expectedRightLeading;
                 model.status = 'Correct';
                 model.turnHistory.push(true);
-                model.currentPlaceNotation = randomPlaceNotation();
+                model.currentPlaceNotation = rollNewValue(model.currentPlaceNotation, randomPlaceNotation);
               }
             }
           }
@@ -495,6 +495,16 @@ function score() {
     return 0;
   }
   return model.turnHistory.filter(x => x).length / model.turnHistory.length;
+}
+
+function rollNewValue(oldValue, createNewValue, maxAttempts=100) {
+  for (let i = 0; i < maxAttempts; ++i) {
+    const value = createNewValue();
+    if (value !== oldValue) {
+      return value;
+    }
+  }
+  return oldValue;
 }
 
 main();
