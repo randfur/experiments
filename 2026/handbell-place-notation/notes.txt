@@ -1,3 +1,8 @@
+# 2026-04-01
+- Added rerolling to make sure the random place notation is different.
+  - It kept doing x all the time.
+- Added keyboard controls.
+
 # 2026-03-31
 - Implemented turn logic.
 - Implemented place notation swapping logic.

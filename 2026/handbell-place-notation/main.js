@@ -44,6 +44,22 @@ function main() {
     userSelect: 'none',
   });
 
+  document.body.addEventListener('keydown', event => {
+    if (event.code === 'Space') {
+      event.preventDefault();
+      swapLeading();
+      render();
+      return;
+    }
+
+    const place = placeString.indexOf(event.key.toUpperCase());
+    if (place !== -1) {
+      selectPlace(place);
+      render();
+      return;
+    }
+  });
+
   render();
 }
 
@@ -248,34 +264,7 @@ function createPlaceInput() {
       },
       events: {
         click() {
-          const place = i + 1;
-          const {places: expectedPlaces, rightLeading: expectedRightLeading} = expectedPlacesAndHand();
-          if (model.nextRightLeading !== expectedRightLeading) {
-            model.status = 'Wrong hand leading';
-            model.turnHistory.push(false);
-          } else {
-            if (model.selectedPlace === null) {
-              if (place !== expectedPlaces[0]) {
-                model.status = 'Wrong place';
-                model.turnHistory.push(false);
-              } else {
-                model.selectedPlace = place;
-                model.status = 'Halfway there';
-              }
-            } else {
-              if (place !== expectedPlaces[1]) {
-                model.status = 'Wrong place';
-                model.turnHistory.push(false);
-              } else {
-                model.selectedPlace = null;
-                model.currentPlaces = expectedPlaces;
-                model.currentRightLeading = expectedRightLeading;
-                model.status = 'Correct';
-                model.turnHistory.push(true);
-                model.currentPlaceNotation = rollNewValue(model.currentPlaceNotation, randomPlaceNotation);
-              }
-            }
-          }
+          selectPlace(i + 1);
           render();
         },
       },
@@ -312,7 +301,7 @@ function createLeadingHandInput() {
             },
             events: {
               click() {
-                model.nextRightLeading = !model.nextRightLeading;
+                swapLeading();
                 render();
               },
             },
@@ -331,7 +320,7 @@ function createLeadingHandInput() {
             },
             events: {
               click() {
-                model.nextRightLeading = !model.nextRightLeading;
+                swapLeading();
                 render();
               },
             },
@@ -431,6 +420,40 @@ function range(n) {
     result.push(i);
   }
   return result;
+}
+
+function swapLeading() {
+  model.nextRightLeading = !model.nextRightLeading;
+}
+
+function selectPlace(place) {
+  const {places: expectedPlaces, rightLeading: expectedRightLeading} = expectedPlacesAndHand();
+  if (model.nextRightLeading !== expectedRightLeading) {
+    model.status = 'Wrong hand leading';
+    model.turnHistory.push(false);
+  } else {
+    if (model.selectedPlace === null) {
+      if (place !== expectedPlaces[0]) {
+        model.status = 'Wrong place';
+        model.turnHistory.push(false);
+      } else {
+        model.selectedPlace = place;
+        model.status = 'Halfway there';
+      }
+    } else {
+      if (place !== expectedPlaces[1]) {
+        model.status = 'Wrong place';
+        model.turnHistory.push(false);
+      } else {
+        model.selectedPlace = null;
+        model.currentPlaces = expectedPlaces;
+        model.currentRightLeading = expectedRightLeading;
+        model.status = 'Correct';
+        model.turnHistory.push(true);
+        model.currentPlaceNotation = rollNewValue(model.currentPlaceNotation, randomPlaceNotation);
+      }
+    }
+  }
 }
 
 function expectedPlacesAndHand() {
