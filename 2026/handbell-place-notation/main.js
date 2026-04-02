@@ -45,7 +45,7 @@ function main() {
   });
 
   document.body.addEventListener('keydown', event => {
-    if (event.code === 'Space') {
+    if (event.code === 'Space' || event.code === 'Enter' || event.code === 'NumpadEnter') {
       event.preventDefault();
       swapLeading();
       render();
