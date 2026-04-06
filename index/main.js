@@ -1,5 +1,6 @@
 const directory = {
   2026: [
+    {name: '3d-swirl-motion', wip: true},
     {name: 'handbell-place-notation', wip: false},
     {name: 'pixel-line', wip: false},
     {name: 'eel', wip: true},

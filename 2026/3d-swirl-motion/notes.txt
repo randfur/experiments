@@ -1,0 +1,6 @@
+# 2026-04-06
+- Velocity set to trig of position in 3D.
+- Apply random 3D rotation and transpose to each individual particle so the cyclic nature of the trig doesn't show in aggregate.
+- Mix with other forces, scale between trig motion and non-trig.
+- Different tiers of particles, sub particles orbiting larger ones, largest ones orbiting origin.
+- Particle death, explosion with trig motion.
