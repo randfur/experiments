@@ -12,7 +12,7 @@ async function main() {
     randomTranspose: new Vec3(),
     randomScale: (1 + random(1)) / 100,
     randomSpeed: (1 + random(1)) / 4,
-    targetPosition: new Vec3(0, 0, 300),
+    targetPosition: new Vec3(0, 0, 100),
     targetPull: 0.001,
   });
   boxes = range(100).map(i => new Box(targetSwirly.position));
@@ -61,7 +61,7 @@ class Box extends Swirly {
       randomScale: (1 + random(1)) / 100,
       randomSpeed: (1 + random(1)) / 4,
       targetPosition,
-      targetPull: 0.001,
+      targetPull: 0.002,
     });
 
     this.model = new Model(createCubePoints(20, 2, ([x, y, z]) => ({
