@@ -19,6 +19,8 @@
 - Created trails of bugs that follow each other and get smaller the further down the chain they are.
 - Gave the boxes a moving target position that's an invisible Swirly itself.
 - More parameter tweaks.
+- Replaced the bugs with stars.
+- Reused the base models across all instances of boxes and stars.
 
 # 2026-04-06
 - Velocity set to trig of position in 3D.

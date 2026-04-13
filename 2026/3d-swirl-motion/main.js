@@ -2,7 +2,7 @@ import {HexLinesContext} from '../../third-party/hex-lines/src/hex-lines.js';
 import {Vec3} from '../../third-party/ga/vec3.js';
 import {Rotor3} from '../../third-party/ga/rotor3.js';
 
-let boxes = [];
+const TAU = 2 * Math.PI;
 
 async function main() {
   const {hexLinesContext} = HexLinesContext.setupFullPageContext({is3d: true});
@@ -15,7 +15,7 @@ async function main() {
     targetPosition: new Vec3(0, 0, 100),
     targetPull: 0.001,
   });
-  boxes = range(100).map(i => new Box(targetSwirly.position));
+  const boxes = range(100).map(i => new Box(targetSwirly.position));
 
 
   while (true) {
@@ -55,6 +55,12 @@ class Swirly {
 }
 
 class Box extends Swirly {
+  static cubePoints = createCubePoints(20, 2, ([x, y, z]) => ({
+    r: ((x + y + z) / 3) ** 0.1 * 255,
+    g: ((x + y + z) / 3) ** 0.4 * 255,
+    b: (x + y + z) / 3 * 255,
+  }));
+
   constructor(targetPosition) {
     super({
       randomTranspose: new Vec3(deviate(100), deviate(100), deviate(100)),
@@ -64,26 +70,21 @@ class Box extends Swirly {
       targetPull: 0.002,
     });
 
-    this.model = new Model(createCubePoints(20, 2, ([x, y, z]) => ({
-      r: ((x + y + z) / 3) ** 0.1 * 255,
-      g: ((x + y + z) / 3) ** 0.4 * 255,
-      b: (x + y + z) / 3 * 255,
-    })));
-
+    this.model = new Model(Box.cubePoints);
     this.rotateVelocity = new Rotor3(100 + deviate(1), deviate(1), deviate(1), deviate(1)).inplaceNormalise();
 
-    const bugCount = 20;
-    this.bugs = [];
+    const starCount = 20;
+    this.stars = [];
     let distance = 0;
-    for (let i = 0; i < bugCount; ++i) {
-      let bugTargetPosition = this.position;
-      if (this.bugs.length === 0 || Math.random() < 0.2) {
+    for (let i = 0; i < starCount; ++i) {
+      let starTargetPosition = this.position;
+      if (this.stars.length === 0 || Math.random() < 0.2) {
         distance = 0;
       } else {
-        bugTargetPosition = this.bugs[this.bugs.length - 1].position;
+        starTargetPosition = this.stars[this.stars.length - 1].position;
         ++distance;
       }
-      this.bugs.push(new Bug(bugTargetPosition, distance));
+      this.stars.push(new Star(starTargetPosition, distance));
     }
   }
 
@@ -94,21 +95,27 @@ class Box extends Swirly {
     this.model.rotate.inplaceMultiplyRight(this.rotateVelocity).inplaceNormalise();
     this.model.transformPoints();
 
-    for (const bug of this.bugs) {
-      bug.update();
+    for (const star of this.stars) {
+      star.update();
     }
   }
 
   draw(hexLines) {
     hexLines.addPoints(this.model.transformedPoints);
 
-    for (const bug of this.bugs) {
-      bug.draw(hexLines);
+    for (const star of this.stars) {
+      star.draw(hexLines);
     }
   }
 }
 
-class Bug extends Swirly {
+class Star extends Swirly {
+  static starPoints = createStarPoints({
+    radius: 1,
+    strokeSize: 0.5,
+    colour: {r: 255, g: 200, b: 100},
+  });
+
   constructor(targetPosition, distance) {
     super({
       randomTranspose: new Vec3(deviate(10), deviate(10), deviate(10)),
@@ -117,15 +124,21 @@ class Bug extends Swirly {
       targetPosition: targetPosition,
       targetPull: 0.04,
     });
-    this.distance = distance;
+    this.model = new Model(Star.starPoints);
+    this.model.scale = 1 / (1 + distance);
+    this.rotateVelocity = new Rotor3(20 + deviate(1), deviate(1), deviate(1), deviate(1)).inplaceNormalise();
+  }
+
+  update() {
+    super.update();
+
+    this.model.translate.set(this.position);
+    this.model.rotate.inplaceMultiplyRight(this.rotateVelocity).inplaceNormalise();
+    this.model.transformPoints();
   }
 
   draw(hexLines) {
-    hexLines.addDot({
-      position: this.position,
-      size: 3 / (this.distance + 1),
-      colour: {r: 255, g: 200, b: 100},
-    });
+    hexLines.addPoints(this.model.transformedPoints);
   }
 }
 
@@ -194,6 +207,20 @@ function createCubePoints(sideLength, strokeSize, colourFunction) {
     }
     : null
   );
+}
+
+function createStarPoints({radius, strokeSize, colour}) {
+  return range(7).map(i => {
+    if (i > 5) {
+      return null;
+    }
+    const angle = 2 * i / 5 * TAU;
+    return {
+      position: new Vec3().setPolar(angle, radius),
+      size: strokeSize,
+      colour,
+    };
+  });
 }
 
 function range(n) {
