@@ -8,12 +8,21 @@ async function main() {
   const {hexLinesContext} = HexLinesContext.setupFullPageContext({is3d: true});
   const hexLines = hexLinesContext.createLines();
 
-  boxes = range(100).map(i => new Box());
+  const targetSwirly = new Swirly({
+    randomTranspose: new Vec3(),
+    randomScale: (1 + random(1)) / 100,
+    randomSpeed: (1 + random(1)) / 4,
+    targetPosition: new Vec3(0, 0, 300),
+    targetPull: 0.001,
+  });
+  boxes = range(100).map(i => new Box(targetSwirly.position));
+
 
   while (true) {
     await new Promise(requestAnimationFrame);
 
     hexLines.clear();
+    targetSwirly.update();
     for (const box of boxes) {
       box.update();
       box.draw(hexLines);
@@ -46,12 +55,12 @@ class Swirly {
 }
 
 class Box extends Swirly {
-  constructor() {
+  constructor(targetPosition) {
     super({
       randomTranspose: new Vec3(deviate(100), deviate(100), deviate(100)),
       randomScale: (1 + random(1)) / 100,
       randomSpeed: (1 + random(1)) / 4,
-      targetPosition: new Vec3(0, 0, 200),
+      targetPosition,
       targetPull: 0.001,
     });
 
@@ -61,21 +70,20 @@ class Box extends Swirly {
       b: (x + y + z) / 3 * 255,
     })));
 
-    this.model.rotate.setComponents(deviate(1), deviate(1), deviate(1), deviate(1)).inplaceNormalise();
     this.rotateVelocity = new Rotor3(100 + deviate(1), deviate(1), deviate(1), deviate(1)).inplaceNormalise();
 
-    const bugCount = 10;
+    const bugCount = 20;
     this.bugs = [];
     let distance = 0;
     for (let i = 0; i < bugCount; ++i) {
-      let targetPosition = this.position;
+      let bugTargetPosition = this.position;
       if (this.bugs.length === 0 || Math.random() < 0.2) {
         distance = 0;
       } else {
-        targetPosition = this.bugs[this.bugs.length - 1].position;
+        bugTargetPosition = this.bugs[this.bugs.length - 1].position;
         ++distance;
       }
-      this.bugs.push(new Bug(targetPosition, distance));
+      this.bugs.push(new Bug(bugTargetPosition, distance));
     }
   }
 
@@ -105,9 +113,9 @@ class Bug extends Swirly {
     super({
       randomTranspose: new Vec3(deviate(10), deviate(10), deviate(10)),
       randomScale: 0.1,
-      randomSpeed: 0.5,
+      randomSpeed: 0.8,
       targetPosition: targetPosition,
-      targetPull: 0.01,
+      targetPull: 0.04,
     });
     this.distance = distance;
   }
