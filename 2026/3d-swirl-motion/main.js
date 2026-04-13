@@ -9,6 +9,7 @@ async function main() {
   const hexLines = hexLinesContext.createLines();
 
   const targetSwirly = new Swirly({
+    startPosition: new Vec3(0, 0, -50),
     randomTranspose: new Vec3(),
     randomScale: (1 + random(1)) / 100,
     randomSpeed: (1 + random(1)) / 4,
@@ -32,8 +33,8 @@ async function main() {
 }
 
 class Swirly {
-  constructor({randomTranspose, randomScale, randomSpeed, targetPosition, targetPull}) {
-    this.position = targetPosition.clone();
+  constructor({startPosition, randomTranspose, randomScale, randomSpeed, targetPosition, targetPull}) {
+    this.position = startPosition ?? targetPosition.clone();
     this.randomScale = randomScale;
     this.randomSpeed = randomSpeed;
     this.randomTranspose = randomTranspose;
