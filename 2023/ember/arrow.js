@@ -37,12 +37,12 @@ export class Arrow {
       Mat4.temp()
         .setTranslateVec3(
           Vec3.temp(0, 10, -50)
-            .inplaceRotateRotor(this.orientation)
+            .inplaceRotateRotor3(this.orientation)
             .inplaceAdd(this.position)
             .inplaceScale(-1)
         )
         .inplaceMultiplyLeft(
-          Mat4.temp().setRotateRotor(
+          Mat4.temp().setRotateRotor3(
             Rotor3.temp().setConjugate(this.orientation)
           )
         )
@@ -51,12 +51,12 @@ export class Arrow {
       Mat4.temp()
         .setTranslateVec3(
           Vec3.temp(0, 10, 80)
-            .inplaceRotateRotor(this.orientation)
+            .inplaceRotateRotor3(this.orientation)
             .inplaceAdd(this.position)
             .inplaceScale(-1)
         )
         .inplaceMultiplyLeft(
-          Mat4.temp().setRotateRotor(
+          Mat4.temp().setRotateRotor3(
             Rotor3.temp()
               .setMultiply(
                 Rotor3.temp().setTurnAround(Vec3.temp(0, 0, 1), Vec3.temp(1, 0, 0)),
@@ -74,7 +74,7 @@ export class Arrow {
       colour: {r: 100, g: 100, b: 100},
     });
     hexLines.addPoint({
-      position: Vec3.temp(0, 0, 40).inplaceRotateRotor(this.orientation).inplaceAdd(this.position),
+      position: Vec3.temp(0, 0, 40).inplaceRotateRotor3(this.orientation).inplaceAdd(this.position),
       size: 5,
       colour: {r: 255, g: 255, b: 255},
     });

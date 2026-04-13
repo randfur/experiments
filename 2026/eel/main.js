@@ -37,7 +37,7 @@ async function main() {
 }
 
 function endPosition(bone) {
-  return Vec3.x(bone.length).inplaceRotateRotor(bone.orientation).inplaceAdd(bone.position);
+  return Vec3.x(bone.length).inplaceRotateRotor3(bone.orientation).inplaceAdd(bone.position);
 }
 
 function range(n) {

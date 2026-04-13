@@ -129,7 +129,7 @@ class Model {
     this.transformMatrix
       .setScale(this.scale)
       .inplaceMultiplyLeft(
-        Mat4.rotateRotor(this.orientation)
+        Mat4.rotateRotor3(this.orientation)
       )
       .inplaceMultiplyLeft(
         Mat4.translateVec3(this.translation)

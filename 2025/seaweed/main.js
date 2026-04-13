@@ -211,7 +211,7 @@ class Fish {
       hexLines.addPoint({
         position: Vec3.temp()
           .set(modelPosition)
-          .inplaceRotateRotor(this.orientation)
+          .inplaceRotateRotor3(this.orientation)
           .inplaceAdd(this.position),
         size: 1,
         colour: {r: 255, g: 200, b: 50},

@@ -39,19 +39,19 @@ async function main() {
       case '0':
         orientation.inplaceMultiplyRight(
           Rotor3.temp().setVec3ToVec3(
-            Vec3.temp(0, 0, 1).inplaceRotateRotor(orientation),
-            Vec3.temp(-deltaX, deltaY, 1000).inplaceRotateRotor(orientation),
+            Vec3.temp(0, 0, 1).inplaceRotateRotor3(orientation),
+            Vec3.temp(-deltaX, deltaY, 1000).inplaceRotateRotor3(orientation),
           )
         );
         break;
       case '1':
         position.inplaceAdd(
-          Vec3.temp(0, 0, deltaY).inplaceScale(0.8).inplaceRotateRotor(orientation)
+          Vec3.temp(0, 0, deltaY).inplaceScale(0.8).inplaceRotateRotor3(orientation)
         );
         break;
       case '2':
         position.inplaceAdd(
-          Vec3.temp(-deltaX, deltaY, 0).inplaceScale(0.2).inplaceRotateRotor(orientation)
+          Vec3.temp(-deltaX, deltaY, 0).inplaceScale(0.2).inplaceRotateRotor3(orientation)
         );
         break;
       }
@@ -74,7 +74,7 @@ function camera(hexLines, position, orientation) {
       Vec3.temp().setScale(-1, position)
     )
     .inplaceMultiplyLeft(
-      Mat4.temp().setRotateRotor(
+      Mat4.temp().setRotateRotor3(
         Rotor3.temp().setConjugate(orientation)
       )
     )

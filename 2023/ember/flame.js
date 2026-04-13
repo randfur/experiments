@@ -10,7 +10,7 @@ export class Flame {
     this.position = position;
     this.speed = randomRange(1, 4);
     this.velocity = new Vec3(0, 0, 1)
-      .inplaceRotateRotor(orientation)
+      .inplaceRotateRotor3(orientation)
       .inplaceAdd(Vec3.temp(deviate(1), deviate(1), deviate(1)))
       .inplaceNormalise();
     this.size = 10;

@@ -146,7 +146,7 @@ class Model {
         this.transformedPoints[i].position
           .set(originalPoint.position)
           .inplaceScale(this.scale)
-          .inplaceRotateRotor(this.rotate)
+          .inplaceRotateRotor3(this.rotate)
           .inplaceAdd(this.translate);
       }
     }

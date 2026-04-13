@@ -85,7 +85,7 @@
   - The rotation algorithm is very easy with inline mutations and chaining.
   - The multiplication of rotors is also very easy.
   - Just works.
-  - Messed up the implementation of inplaceScale() rather than inplaceRotateRotor() lol.
+  - Messed up the implementation of inplaceScale() rather than inplaceRotateRotor3() lol.
   - Engine made it very easy to have 100 test dots flying around randomly.
 
 # 2023-10-27
