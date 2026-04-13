@@ -1,3 +1,23 @@
+# 2026-04-13
+- Added a Bird class for the big particles.
+  - BigParticle/SmallParticle was too boring, will them birds and bugs.
+- Added motion.
+  - Added setMap and set Yzx to Vec3.
+  - Strange observation; rotating the position by a random rotor causes them to slow to a stop for some reason.
+  - There seem to be rotations that find stable states and loops that the yzx swizzle can't avoid.
+  - Seems like the swizzle operation needs to rotate by the same amount as well somehow...
+    - Performing the rotation after the swizzle and even after the sin doesn't help.
+    - Abandoned rotation.
+- Used cubes, renamed bird to box.
+  - Kept bug.
+- Added Model class similar to hex-ball.
+- Extracted common behaviour to Swirly super class.
+  - Relearned that super.method() works.
+- Tweaked the swirly parameters.
+- Tweaked the colours.
+  - Looks like a golden glow.
+- Created trails of bugs that follow each other and get smaller the further down the chain they are.
+
 # 2026-04-06
 - Velocity set to trig of position in 3D.
 - Apply random 3D rotation and transpose to each individual particle so the cyclic nature of the trig doesn't show in aggregate.
