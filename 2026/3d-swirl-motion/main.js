@@ -31,7 +31,7 @@ async function main() {
         Math.max(0, 600 - (Math.abs(mouse.x) + Math.abs(mouse.y)) * 0.8),
       );
     } else {
-      targetSwirly.targetPosition.inplaceFractionTowards(Vec3.xyz(0, 0, 100), 0.01);
+      targetSwirly.targetPosition.inplaceFractionTowards(Vec3.xyz(0, 0, 150), 0.01);
     }
     targetSwirly.targetPull = mouse.down ? 0.01 : 0.001;
 
