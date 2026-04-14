@@ -1,3 +1,8 @@
+# 2026-04-14
+- Split the classes up into different files.
+- Added a Mouse class to track mouse state.
+- Made mouse down cause the target position and various swirly parameters to change.
+
 # 2026-04-13
 - Added a Bird class for the big particles.
   - BigParticle/SmallParticle was too boring, will them birds and bugs.
