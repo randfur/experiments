@@ -1,3 +1,11 @@
+# 2026-04-15
+- When the boxes are bunched up it looks too square.
+  - Likely due to the cyclical nature of the sin on each axis.
+- Brought back the random rotation just for boxes.
+  - Applying it before the sin didn't change the square shape, needed to apply it after sin.
+  - Boxes getting stuck in stable states or loops should be not really an issue due to the target position constantly changing.
+  - This looks much better with the boxes swarmed in a sphere around the mouse click.
+
 # 2026-04-14
 - Split the classes up into different files.
 - Added a Mouse class to track mouse state.

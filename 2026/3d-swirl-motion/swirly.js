@@ -1,4 +1,5 @@
 import {Vec3} from '../../third-party/ga/vec3.js';
+import {Rotor3} from '../../third-party/ga/rotor3.js';
 
 export class Swirly {
   constructor({startPosition, randomTranspose, randomScale, randomSpeed, targetPosition, targetPull}) {
@@ -8,6 +9,8 @@ export class Swirly {
     this.randomTranspose = randomTranspose;
     this.targetPosition = targetPosition;
     this.targetPull = targetPull;
+
+    this.randomRotate = new Rotor3();
   }
 
   update() {
@@ -17,6 +20,7 @@ export class Swirly {
         .inplaceYzx()
         .inplaceAdd(this.randomTranspose)
         .inplaceMap(Math.sin)
+        .inplaceRotateRotor3(this.randomRotate)
         .inplaceScale(this.randomSpeed)
         .inplaceScaleAdd(this.targetPull, Vec3.b.setDelta(this.position, this.targetPosition))
     );

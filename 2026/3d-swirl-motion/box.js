@@ -21,6 +21,13 @@ export class Box extends Swirly {
       targetPull: 0,
     });
 
+    this.randomRotate.setComponents(
+      deviate(1),
+      deviate(1),
+      deviate(1),
+      deviate(1),
+    ).inplaceNormalise();
+
     this.originalRandomSpeed = this.randomSpeed;
     this.originalRandomScale = this.randomScale;
 
