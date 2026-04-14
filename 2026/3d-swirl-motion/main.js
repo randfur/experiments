@@ -16,7 +16,7 @@ async function main() {
     randomTranspose: new Vec3(),
     randomScale: (1 + random(1)) / 100,
     randomSpeed: (1 + random(1)) / 4,
-    targetPosition: new Vec3(),
+    targetPosition: new Vec3(0, 0, 400),
     targetPull: 0,
   });
   const boxes = range(100).map(i => new Box(targetSwirly.position, mouse));
