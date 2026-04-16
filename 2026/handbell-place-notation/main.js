@@ -40,7 +40,7 @@ function main() {
     ...columnStyle,
     touchAction: 'manipulation',
     fontFamily: 'sans-serif',
-    fontSize: '20px',
+    fontSize: '30px',
     userSelect: 'none',
   });
 
