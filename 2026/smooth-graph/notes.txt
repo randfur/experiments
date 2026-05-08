@@ -1,0 +1,22 @@
+# 2026-05-08
+- Experiment with taking a line graph and smoothing out the intermediate points.
+  - For each point find the average slope of the line gradient before and after it.
+  - For each line segment take the two lines formed by the start and its average slope and the end and its average slope.
+  - Linearly interpolate between the two lines.
+- Visualisation:
+  - Create a canvas where pointer events add points to graph.
+  - Draw the straight line graph, the average slope lines and the curved line.
+  - Add buttons to undo/clear.
+- Implemented:
+  - Doesn't work very well.
+  - Tried with smooth lerp progression (6x^5 - 15x^4 + 10x^3).
+    - Too flat at each point.
+    - Has a bumpy line when the derivative zigzags.
+      - Unsure how to resolve this issue.
+  - Tried with 0 slope when the slop changes direction.
+    - Better in some cases but not for zigzag, two adjacent 0 slope just results in linear.
+    - Tried with smooth lerp.
+      - Zigzag looks good.
+  - Tried averaging the slopes across a wider area.
+    - Didn't make much noticeable positive difference.
+    - When there was an extreme slope it would get transferred across multiple lines and make them all extreme.
