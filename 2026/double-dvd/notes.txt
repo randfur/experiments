@@ -1,0 +1,17 @@
+# 2026-05-20
+- Idea from friend.
+  - A variant of these videos: https://www.youtube.com/@simulando2d
+  - Start with two blocks of red, yellow, green, blue.
+  - If two blocks of the same colour collide they double to four blocks.
+  - If two different colours collide, whichever has fewer total blocks will be deleted.
+  - If they have the same count then they just bounce off each other.
+- Implemented blocks and walls.
+  - Rendering.
+  - Movement.
+  - Collision detection.
+  - Trail.
+  - Collision bouncing.
+  - Different colour collision handling.
+  - Max block detection and reset.
+- Turns out after just a few same colour collisions the number of blocks explodes very very quickly. Probably exponentially.
+
