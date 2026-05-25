@@ -1,6 +1,7 @@
 # 2026-05-25
 - Added cooldown before duplication is allowed to each new block.
   - Results in a slower explosion of blocks.
+- Expanded play space to width height of page.
 - Added collision grid optimisation.
 - Removed the map of colour to block list and just have one array of blocks.
 - Flipped the collision win condition, now the colour with fewer total blocks wins.
