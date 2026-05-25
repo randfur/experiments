@@ -1,6 +1,7 @@
 const blockSize = 32;
 const blockSpeed = 2;
 const blockTrailLength = 20;
+const initialColourBlocks = 3;
 const maxBlockCount = 2000;
 const width = window.innerWidth;
 const height = window.innerHeight;
@@ -8,7 +9,7 @@ const wallSize = 64;
 const floorColour = '#436';
 const wallColour = '#84a';
 const collisionGridCellSize = 200;
-const cooldownDuration = 60 * 5;
+const cooldownDuration = 60 * 4;
 
 let blocks = null;
 let walls = null;
@@ -44,25 +45,29 @@ function setup() {
 
 function init() {
   blocks = [
-    ...createBlockPair(
+    ...createBlocks(
+      initialColourBlocks,
       wallSize, width / 2 - blockSize,
       wallSize, height / 2 - blockSize,
       'red',
       'darkred',
     ),
-    ...createBlockPair(
+    ...createBlocks(
+      initialColourBlocks,
       width / 2, width - wallSize,
       wallSize, height / 2 - blockSize,
       'khaki',
       'darkkhaki',
     ),
-    ...createBlockPair(
+    ...createBlocks(
+      initialColourBlocks,
       width / 2, width - wallSize,
       height / 2, height - wallSize,
       'green',
       'darkgreen',
     ),
-    ...createBlockPair(
+    ...createBlocks(
+      initialColourBlocks,
       wallSize, width / 2 - blockSize,
       height / 2, height - wallSize,
       'blue',
@@ -112,7 +117,7 @@ function update() {
   const removeBlocks = new Set();
 
   for (const block of blocks) {
-    --block.cooldownLeft;
+    block.cooldownLeft = Math.max(block.cooldownLeft - 1, 0);
 
     block.trail.push({x: block.x, y: block.y})
     while (block.trail.length > blockTrailLength) {
@@ -243,31 +248,35 @@ function createBlockRandomDirection(x, y, fill, trailFill) {
   );
 }
 
-function createBlockPair(xMin, xMax, yMin, yMax, fill, trailFill) {
-  const first = createBlockRandomDirection(
-    randomRange(xMin, xMax),
-    randomRange(yMin, yMax),
-    fill,
-    trailFill,
-  );
-  let second = null;
+function createBlocks(count, xMin, xMax, yMin, yMax, fill, trailFill) {
+  const blocks = [];
   let attempts = 0;
   while (true) {
-    second = createBlockRandomDirection(
+    const block = createBlockRandomDirection(
       randomRange(xMin, xMax),
       randomRange(yMin, yMax),
       fill,
       trailFill,
     );
-    if (testBlockCollision(first, second) === null) {
-      break;
+    let collide = false;
+    for (const otherBlock of blocks) {
+      if (testBlockCollision(block, otherBlock) !== null) {
+        collide = true;
+        break;
+      }
     }
-    ++attempts;
-    if (attempts > 100) {
+    if (collide) {
+      ++attempts;
+      if (attempts < 100) {
+        continue;
+      }
+    }
+    blocks.push(block);
+    if (blocks.length >= count) {
       break;
     }
   }
-  return [first, second];
+  return blocks;
 }
 
 function createWall(x, y, width, height) {
