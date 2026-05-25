@@ -8,7 +8,7 @@ const wallSize = 64;
 const floorColour = '#436';
 const wallColour = '#84a';
 const collisionGridCellSize = 200;
-const cooldownDuration = 60 * 10;
+const cooldownDuration = 60 * 5;
 
 let blocks = null;
 let walls = null;
@@ -69,6 +69,9 @@ function init() {
       'darkblue',
     ),
   ];
+  for (const block of blocks) {
+    block.cooldownLeft = 0;
+  }
   walls = [
     createWall(0, 0, wallSize, height),
     createWall(width - wallSize, 0, wallSize, height),
@@ -199,7 +202,7 @@ function render() {
 
   // Blocks
   for (const block of blocks) {
-    context.fillStyle = block.fill;
+    context.fillStyle = block.cooldownLeft > 0 ? block.trailFill : block.fill;
     context.fillRect(block.x, block.y, blockSize, blockSize);
     context.strokeRect(block.x, block.y, blockSize, blockSize);
   }
