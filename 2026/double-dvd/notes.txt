@@ -8,6 +8,13 @@
 - Added a cross wall in the middle.
 - Increased the block speed.
 - Added win screen.
+- Added collision grid size check before duplicating blocks.
+  - If collision grid cell has as many blocks it can fit by area then don't add anymore.
+  - This should help the case where the visible volume of a colour is not proportional to its count due to too much overlapping going on.
+  - When this happens it can have win conditions that don't look like the winning colour has actually won.
+  - Dynamically set the win block count based on page area now that there's a cap based on area filled.
+    - Without this blocks may never reach the arbitrary win count.
+    - Added a cap to what the win count can be in case the user has an enormous screen that would eat all their CPU to fill up.
 
 # 2026-05-20
 - Idea from friend.

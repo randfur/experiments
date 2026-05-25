@@ -2,9 +2,9 @@ const blockSize = 32;
 const blockSpeed = 3;
 const blockTrailLength = 20;
 const initialColourBlocks = 2;
-const maxBlockCount = 2500;
 const width = window.innerWidth;
 const height = window.innerHeight;
+const maxBlockCount = Math.min((width * height) / (blockSize ** 2) * 0.75, 2000);
 const wallSize = 64;
 const floorColour = '#436';
 const wallColour = '#84a';
@@ -187,16 +187,18 @@ function update() {
               updateDxdy(otherBlock, oppositeDxdy(collisionDxdy));
             }
           } else if (block.fill === otherBlock.fill && block.cooldownLeft <= 0 && otherBlock.cooldownLeft <= 0) {
-            removeBlocks.add(block);
-            removeBlocks.add(otherBlock);
             const midX = Math.round((block.x + otherBlock.x) / 2);
             const midY = Math.round((block.y + otherBlock.y) / 2);
-            addBlocks.push(
-              createBlock(midX, midY, -blockSpeed, -blockSpeed, block.fill, block.trailFill),
-              createBlock(midX + blockSize + 1, midY, blockSpeed, -blockSpeed, block.fill, block.trailFill),
-              createBlock(midX, midY + blockSize + 1, -blockSpeed, blockSpeed, block.fill, block.trailFill),
-              createBlock(midX + blockSize + 1, midY + blockSize + 1, blockSpeed, blockSpeed, block.fill, block.trailFill),
-            );
+            if (collisionGrid.inRange(midX, midY) && collisionGrid.array[collisionGrid.getCellIndex(midX, midY)].length < (collisionGrid.cellSize ** 2) / (blockSize ** 2)) {
+              removeBlocks.add(block);
+              removeBlocks.add(otherBlock);
+              addBlocks.push(
+                createBlock(midX, midY, -blockSpeed, -blockSpeed, block.fill, block.trailFill),
+                createBlock(midX + blockSize + 1, midY, blockSpeed, -blockSpeed, block.fill, block.trailFill),
+                createBlock(midX, midY + blockSize + 1, -blockSpeed, blockSpeed, block.fill, block.trailFill),
+                createBlock(midX + blockSize + 1, midY + blockSize + 1, blockSpeed, blockSpeed, block.fill, block.trailFill),
+              );
+            }
           } else {
             if (colourTally[block.fill] > colourTally[otherBlock.fill]) {
               removeBlocks.add(block);
@@ -217,7 +219,7 @@ function update() {
     blocks.push(block);
   }
 
-  if (blocks.length >= maxBlockCount) {
+  if (!winner && blocks.length >= maxBlockCount) {
     let highestCount = 0;
     let highestColour = null;
     for (const colour in colourTally) {
