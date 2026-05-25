@@ -8,6 +8,7 @@ const wallSize = 64;
 const floorColour = '#436';
 const wallColour = '#84a';
 const collisionGridCellSize = 200;
+const cooldownDuration = 60 * 10;
 
 let blocks = null;
 let walls = null;
@@ -223,7 +224,7 @@ function createBlock(x, y, dx, dy, fill, trailFill) {
     fill,
     trailFill,
     trail: [],
-    cooldownLeft: 60,
+    cooldownLeft: cooldownDuration,
   };
 }
 
