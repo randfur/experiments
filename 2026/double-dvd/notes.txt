@@ -1,3 +1,7 @@
+# 2026-05-25
+- Added cooldown before duplication is allowed to each new block.
+  - Results in a slower explosion of blocks.
+
 # 2026-05-20
 - Idea from friend.
   - A variant of these videos: https://www.youtube.com/@simulando2d

@@ -97,6 +97,8 @@ function update() {
     for (let i = 0; i < blocks.length; ++i) {
       const block = blocks[i];
 
+      --block.cooldownLeft;
+
       block.trail.push({x: block.x, y: block.y})
       while (block.trail.length > blockTrailLength) {
         block.trail.shift();
@@ -121,7 +123,7 @@ function update() {
           const otherBlock = otherBlocks[j];
           const collisionDxdy = testBlockCollision(block, otherBlock);
           if (collisionDxdy) {
-            if (colour === otherColour) {
+            if (colour === otherColour && block.cooldownLeft <= 0 && otherBlock.cooldownLeft <= 0) {
               removeBlocks.add(block);
               removeBlocks.add(otherBlock);
               const midX = Math.round((block.x + otherBlock.x) / 2);
@@ -130,10 +132,10 @@ function update() {
                 addColourBlocks[colour] = [];
               }
               addColourBlocks[colour].push(
-                createBlock(midX, midY, 0),
-                createBlock(midX + blockSize + 1, midY, 1),
-                createBlock(midX, midY + blockSize + 1, 2),
-                createBlock(midX + blockSize + 1, midY + blockSize + 1, 3),
+                createBlock(midX, midY, -blockSpeed, -blockSpeed),
+                createBlock(midX + blockSize + 1, midY, blockSpeed, -blockSpeed),
+                createBlock(midX, midY + blockSize + 1, -blockSpeed, blockSpeed),
+                createBlock(midX + blockSize + 1, midY + blockSize + 1, blockSpeed, blockSpeed),
               );
             } else {
               const colourCount = colourBlocks[colour].length;
@@ -211,29 +213,37 @@ function render() {
   }
 }
 
-function createBlock(x, y, direction) {
+function createBlock(x, y, dx, dy) {
   return {
     x,
     y,
-    dx: getDx(direction),
-    dy: getDy(direction),
+    dx,
+    dy,
     trail: [],
+    cooldownLeft: 60,
   };
 }
 
+function createBlockRandomDirection(x, y) {
+  return createBlock(
+    x,
+    y,
+    blockSpeed * (Math.random() > 0.5 ? 1 : -1),
+    blockSpeed * (Math.random() > 0.5 ? 1 : -1),
+  );
+}
+
 function createBlockPair(xMin, xMax, yMin, yMax) {
-  const first = createBlock(
+  const first = createBlockRandomDirection(
     randomRange(xMin, xMax),
     randomRange(yMin, yMax),
-    randomRange(0, 3),
   );
   let second = null;
   let attempts = 0;
   while (true) {
-    second = createBlock(
+    second = createBlockRandomDirection(
       randomRange(xMin, xMax),
       randomRange(yMin, yMax),
-      randomRange(0, 3),
     );
     if (testBlockCollision(first, second) === null) {
       break;
@@ -261,18 +271,6 @@ function createWallCentred(x, y, width, height) {
 
 function randomRange(min, max) {
   return Math.round(Math.random() * (max - min) + min);
-}
-
-function getDx(direction) {
-  return ((direction & 1) * 2 - 1) * blockSpeed;
-}
-
-function getDy(direction) {
-  return ((direction >> 1 & 1) * 2 - 1) * blockSpeed;
-}
-
-function getDirection(dx, dy) {
-  return (dx > 0) * 1 + (dy > 0) * 2;
 }
 
 function updateDxdy(block, collisionDxdy) {
