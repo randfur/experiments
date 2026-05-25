@@ -2,7 +2,7 @@ const blockSize = 32;
 const blockSpeed = 3;
 const blockTrailLength = 20;
 const initialColourBlocks = 2;
-const maxBlockCount = 2500;
+const maxBlockCount = 25;
 const width = window.innerWidth;
 const height = window.innerHeight;
 const wallSize = 64;
@@ -10,7 +10,7 @@ const floorColour = '#436';
 const wallColour = '#84a';
 const collisionGridCellSize = 200;
 const cooldownDuration = 60 * 2;
-const winScreenDuration = 60 * 5;
+const winScreenDuration = 60 * 4;
 
 let blocks = null;
 let walls = null;
@@ -48,6 +48,8 @@ function setup() {
 
 function init() {
   winner = null;
+  winScreenLeft = 0;
+
   blocks = [
     ...createBlocks(
       initialColourBlocks,
@@ -137,8 +139,6 @@ function update() {
     --winScreenLeft;
     if (winScreenLeft <= 0) {
       init();
-    } else {
-      return;
     }
   }
 
@@ -179,7 +179,14 @@ function update() {
         }
         const collisionDxdy = testBlockCollision(block, otherBlock);
         if (collisionDxdy) {
-          if (block.fill === otherBlock.fill && block.cooldownLeft <= 0 && otherBlock.cooldownLeft <= 0) {
+          if (winner) {
+            if (block.fill === winner && otherBlock.fill !== block.fill) {
+              removeBlocks.add(otherBlock);
+            } else {
+              updateDxdy(block, collisionDxdy);
+              updateDxdy(otherBlock, oppositeDxdy(collisionDxdy));
+            }
+          } else if (block.fill === otherBlock.fill && block.cooldownLeft <= 0 && otherBlock.cooldownLeft <= 0) {
             removeBlocks.add(block);
             removeBlocks.add(otherBlock);
             const midX = Math.round((block.x + otherBlock.x) / 2);
@@ -229,7 +236,6 @@ function render() {
   context.fillRect(0, 0, width, height);
 
   context.strokeStyle = 'black';
-  context.lineWidth = 1;
 
   // Trails
   for (const block of blocks) {
@@ -262,16 +268,12 @@ function render() {
 
   // Win text
   if (winner) {
-    context.fillStyle = winner;
-    context.strokeStyle = 'black';
-    context.lineWidth = 5;
+    context.fillStyle = 'black';
     context.font = 'bold 200px sans-serif';
     context.textAlign = 'center';
     context.textBaseline = 'middle';
     context.fillText(winner.toUpperCase(), width / 2, height / 3);
-    context.strokeText(winner.toUpperCase(), width / 2, height / 3);
     context.fillText('WINS!', width / 2, height * 2 / 3);
-    context.strokeText('WINS!', width / 2, height * 2 / 3);
   }
 }
 
