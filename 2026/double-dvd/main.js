@@ -1,16 +1,18 @@
 const blockSize = 32;
 const blockSpeed = 2;
 const blockTrailLength = 20;
-const maxColourBlockCount = 1000;
+const maxBlockCount = 2000;
 const width = window.innerWidth;
 const height = window.innerHeight;
 const wallSize = 64;
 const floorColour = '#436';
 const wallColour = '#84a';
+const collisionGridCellSize = 200;
 
-let colourBlocks = null;
+let blocks = null;
 let walls = null;
 let context = null;
+let collisionGrid = null;
 
 async function main() {
   setup();
@@ -35,27 +37,37 @@ function setup() {
   canvas.height = height;
   document.body.append(canvas);
   context = canvas.getContext('2d');
+
+  collisionGrid = new CollisionGrid(width, height, collisionGridCellSize);
 }
 
 function init() {
-  colourBlocks = {
-    'red': createBlockPair(
+  blocks = [
+    ...createBlockPair(
       wallSize, width / 2 - blockSize,
       wallSize, height / 2 - blockSize,
+      'red',
+      'darkred',
     ),
-    'khaki': createBlockPair(
+    ...createBlockPair(
       width / 2, width - wallSize,
       wallSize, height / 2 - blockSize,
+      'khaki',
+      'darkkhaki',
     ),
-    'green': createBlockPair(
+    ...createBlockPair(
       width / 2, width - wallSize,
       height / 2, height - wallSize,
+      'green',
+      'darkgreen',
     ),
-    'blue': createBlockPair(
+    ...createBlockPair(
       wallSize, width / 2 - blockSize,
       height / 2, height - wallSize,
+      'blue',
+      'darkblue',
     ),
-  };
+  ];
   walls = [
     createWall(0, 0, wallSize, height),
     createWall(width - wallSize, 0, wallSize, height),
@@ -90,86 +102,77 @@ function init() {
 }
 
 function update() {
+  const colourTally = {};
+  collisionGrid.clear();
+  const addBlocks = [];
   const removeBlocks = new Set();
-  const addColourBlocks = {};
 
-  for (const colour in colourBlocks) {
-    const blocks = colourBlocks[colour];
-    for (let i = 0; i < blocks.length; ++i) {
-      const block = blocks[i];
+  for (const block of blocks) {
+    --block.cooldownLeft;
 
-      --block.cooldownLeft;
+    block.trail.push({x: block.x, y: block.y})
+    while (block.trail.length > blockTrailLength) {
+      block.trail.shift();
+    }
 
-      block.trail.push({x: block.x, y: block.y})
-      while (block.trail.length > blockTrailLength) {
-        block.trail.shift();
-      }
+    block.x += block.dx;
+    block.y += block.dy;
 
-      block.x += block.dx;
-      block.y += block.dy;
+    for (const wall of walls) {
+      updateDxdy(block, testWallCollision(block, wall));
+    }
 
-      for (const wall of walls) {
-        updateDxdy(block, testWallCollision(block, wall));
-      }
+    colourTally[block.fill] = (colourTally[block.fill] ?? 0) + 1;
 
-      for (const otherColour in colourBlocks) {
-        if (colour > otherColour) {
-          continue;
+    collisionGrid.addRect(block.x, block.y, block.x + blockSize, block.y + blockSize, block);
+  }
+
+  for (const block of blocks) {
+    collisionGrid.forEachCollision(
+      block.x,
+      block.y,
+      block.x + blockSize,
+      block.y + blockSize,
+      otherBlock => {
+        if (block.id <= otherBlock.id) {
+          return;
         }
-        const otherBlocks = colourBlocks[otherColour];
-        for (let j = 0; j < otherBlocks.length; ++j) {
-          if (colour === otherColour && i >= j) {
-            continue;
-          }
-          const otherBlock = otherBlocks[j];
-          const collisionDxdy = testBlockCollision(block, otherBlock);
-          if (collisionDxdy) {
-            if (colour === otherColour && block.cooldownLeft <= 0 && otherBlock.cooldownLeft <= 0) {
+        const collisionDxdy = testBlockCollision(block, otherBlock);
+        if (collisionDxdy) {
+          if (block.fill === otherBlock.fill && block.cooldownLeft <= 0 && otherBlock.cooldownLeft <= 0) {
+            removeBlocks.add(block);
+            removeBlocks.add(otherBlock);
+            const midX = Math.round((block.x + otherBlock.x) / 2);
+            const midY = Math.round((block.y + otherBlock.y) / 2);
+            addBlocks.push(
+              createBlock(midX, midY, -blockSpeed, -blockSpeed, block.fill, block.trailFill),
+              createBlock(midX + blockSize + 1, midY, blockSpeed, -blockSpeed, block.fill, block.trailFill),
+              createBlock(midX, midY + blockSize + 1, -blockSpeed, blockSpeed, block.fill, block.trailFill),
+              createBlock(midX + blockSize + 1, midY + blockSize + 1, blockSpeed, blockSpeed, block.fill, block.trailFill),
+            );
+          } else {
+            if (colourTally[block.fill] > colourTally[otherBlock.fill]) {
               removeBlocks.add(block);
+            } else if (colourTally[block.fill] < colourTally[otherBlock.fill]) {
               removeBlocks.add(otherBlock);
-              const midX = Math.round((block.x + otherBlock.x) / 2);
-              const midY = Math.round((block.y + otherBlock.y) / 2);
-              if (!(colour in addColourBlocks)) {
-                addColourBlocks[colour] = [];
-              }
-              addColourBlocks[colour].push(
-                createBlock(midX, midY, -blockSpeed, -blockSpeed),
-                createBlock(midX + blockSize + 1, midY, blockSpeed, -blockSpeed),
-                createBlock(midX, midY + blockSize + 1, -blockSpeed, blockSpeed),
-                createBlock(midX + blockSize + 1, midY + blockSize + 1, blockSpeed, blockSpeed),
-              );
             } else {
-              const colourCount = colourBlocks[colour].length;
-              const otherColourCount = colourBlocks[otherColour].length;
-              if (colourCount > otherColourCount) {
-                removeBlocks.add(otherBlock);
-              } else if (colourCount < otherColourCount) {
-                removeBlocks.add(block);
-              } else {
-                updateDxdy(block, collisionDxdy);
-                updateDxdy(otherBlock, oppositeDxdy(collisionDxdy));
-              }
+              updateDxdy(block, collisionDxdy);
+              updateDxdy(otherBlock, oppositeDxdy(collisionDxdy));
             }
           }
         }
-      }
-    }
+      },
+    );
   }
 
-  for (const colour in colourBlocks) {
-    colourBlocks[colour] = colourBlocks[colour].filter(block => !removeBlocks.has(block));
-  }
-  for (const colour in addColourBlocks) {
-    for (const block of addColourBlocks[colour]) {
-      colourBlocks[colour].push(block);
-    }
+  blocks = blocks.filter(block => !removeBlocks.has(block));
+  for (const block of addBlocks) {
+    blocks.push(block);
   }
 
-  for (const blocks of Object.values(colourBlocks)) {
-    if (blocks.length >= maxColourBlockCount) {
-      init();
-      return;
-    }
+  if (blocks.length >= maxBlockCount) {
+    init();
+    return;
   }
 }
 
@@ -180,30 +183,24 @@ function render() {
   context.strokeStyle = 'black';
 
   // Trails
-  for (const colour in colourBlocks) {
-    const blocks = colourBlocks[colour];
-    context.fillStyle = 'dark' + colour;
-    for (const block of blocks) {
-      for (let i = 0; i < block.trail.length; ++i) {
-        const trailSize = blockSize * i / blockTrailLength;
-        context.fillRect(
-          block.trail[i].x + blockSize / 2 - trailSize / 2,
-          block.trail[i].y + blockSize / 2 - trailSize / 2,
-          trailSize,
-          trailSize,
-        );
-      }
+  for (const block of blocks) {
+    context.fillStyle = block.trailFill;
+    for (let i = 0; i < block.trail.length; ++i) {
+      const trailSize = blockSize * i / blockTrailLength;
+      context.fillRect(
+        block.trail[i].x + blockSize / 2 - trailSize / 2,
+        block.trail[i].y + blockSize / 2 - trailSize / 2,
+        trailSize,
+        trailSize,
+      );
     }
   }
 
   // Blocks
-  for (const colour in colourBlocks) {
-    const blocks = colourBlocks[colour];
-    context.fillStyle = colour;
-    for (const block of blocks) {
-      context.fillRect(block.x, block.y, blockSize, blockSize);
-      context.strokeRect(block.x, block.y, blockSize, blockSize);
-    }
+  for (const block of blocks) {
+    context.fillStyle = block.fill;
+    context.fillRect(block.x, block.y, blockSize, blockSize);
+    context.strokeRect(block.x, block.y, blockSize, blockSize);
   }
 
   // Walls
@@ -212,32 +209,42 @@ function render() {
     context.fillRect(wall.x, wall.y, wall.width, wall.height);
     context.strokeRect(wall.x, wall.y, wall.width, wall.height);
   }
+
+  // collisionGrid.render();
 }
 
-function createBlock(x, y, dx, dy) {
+function createBlock(x, y, dx, dy, fill, trailFill) {
   return {
+    id: id++,
     x,
     y,
     dx,
     dy,
+    fill,
+    trailFill,
     trail: [],
     cooldownLeft: 60,
   };
 }
 
-function createBlockRandomDirection(x, y) {
+let id = 0;
+function createBlockRandomDirection(x, y, fill, trailFill) {
   return createBlock(
     x,
     y,
     blockSpeed * (Math.random() > 0.5 ? 1 : -1),
     blockSpeed * (Math.random() > 0.5 ? 1 : -1),
+    fill,
+    trailFill,
   );
 }
 
-function createBlockPair(xMin, xMax, yMin, yMax) {
+function createBlockPair(xMin, xMax, yMin, yMax, fill, trailFill) {
   const first = createBlockRandomDirection(
     randomRange(xMin, xMax),
     randomRange(yMin, yMax),
+    fill,
+    trailFill,
   );
   let second = null;
   let attempts = 0;
@@ -245,6 +252,8 @@ function createBlockPair(xMin, xMax, yMin, yMax) {
     second = createBlockRandomDirection(
       randomRange(xMin, xMax),
       randomRange(yMin, yMax),
+      fill,
+      trailFill,
     );
     if (testBlockCollision(first, second) === null) {
       break;
@@ -359,6 +368,105 @@ function testCollision(aMinX, aMinY, aMaxX, aMaxY, bMinX, bMinY, bMaxX, bMaxY) {
   }
   if (bottomPenetration === minPenetration) {
     return bottomDxdy;
+  }
+}
+
+class CollisionGrid {
+  constructor(width, height, cellSize) {
+    this.cellSize = cellSize;
+    this.width = Math.ceil(width / cellSize);
+    this.height = Math.ceil(height / cellSize);
+    this.array = Array(this.width * this.height).fill(0).map(_ => []);
+  }
+
+  clear() {
+    for (const cell of this.array) {
+      cell.length = 0;
+    }
+  }
+
+  addRect(minX, minY, maxX, maxY, item) {
+    if (!this.inRange(minX, minY) || !this.inRange(maxX, maxY)) {
+      return;
+    }
+
+    const topLeftIndex = this.getCellIndex(minX, minY);
+    const topRightIndex = this.getCellIndex(maxX, minY);
+    const bottomLeftIndex = this.getCellIndex(minX, maxY);
+    const bottomRightIndex = this.getCellIndex(maxX, maxY);
+
+    this.array[topLeftIndex].push(item);
+    if (topRightIndex !== topLeftIndex) {
+      this.array[topRightIndex].push(item);
+    }
+    if (bottomLeftIndex !== topLeftIndex && bottomLeftIndex !== topRightIndex) {
+      this.array[bottomLeftIndex].push(item);
+    }
+    if (bottomRightIndex !== topLeftIndex && bottomRightIndex !== topRightIndex && bottomRightIndex !== bottomLeftIndex) {
+      this.array[bottomRightIndex].push(item);
+    }
+  }
+
+  forEachCollision(minX, minY, maxX, maxY, f) {
+    if (!this.inRange(minX, minY) || !this.inRange(maxX, maxY)) {
+      return;
+    }
+
+    const topLeftIndex = this.getCellIndex(minX, minY);
+    const topRightIndex = this.getCellIndex(maxX, minY);
+    const bottomLeftIndex = this.getCellIndex(minX, maxY);
+    const bottomRightIndex = this.getCellIndex(maxX, maxY);
+
+    this.forEachCellItem(topLeftIndex, f);
+    if (topRightIndex !== topLeftIndex) {
+      this.forEachCellItem(topRightIndex, f);
+    }
+    if (bottomLeftIndex !== topLeftIndex && bottomLeftIndex !== topRightIndex) {
+      this.forEachCellItem(bottomLeftIndex, f);
+    }
+    if (bottomRightIndex !== topLeftIndex && bottomRightIndex !== topRightIndex && bottomRightIndex !== bottomLeftIndex) {
+      this.forEachCellItem(bottomRightIndex, f);
+    }
+  }
+
+  getCellIndex(x, y) {
+    return Math.floor(y / this.cellSize) * this.width + Math.floor(x / this.cellSize);
+  }
+
+  forEachCellItem(index, f) {
+    for (const item of this.array[index]) {
+      f(item);
+    }
+  }
+
+  inRange(x, y) {
+    return x >= 0 && x < width && y >= 0 && y < height;
+  }
+
+  render() {
+    context.beginPath();
+    for (let x = 1; x <= this.width; ++x) {
+      context.moveTo(x * this.cellSize, 0);
+      context.lineTo(x * this.cellSize, height);
+    }
+    for (let y = 1; y <= this.height; ++y) {
+      context.moveTo(0, y * this.cellSize);
+      context.lineTo(width, y * this.cellSize);
+    }
+    context.strokeStyle = 'pink';
+    context.stroke();
+
+    context.font = '20px sans-serif';
+    context.fillStyle = 'pink';
+    for (let x = 0; x < this.width; ++x) {
+      for (let y = 0; y < this.height; ++y) {
+        context.fillText(
+          this.array[y * this.width + x].length,
+          (x + 0.5) * this.cellSize,
+          (y + 0.5) * this.cellSize,
+        );
+      }
+    }
   }
 }
 
