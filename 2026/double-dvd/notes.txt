@@ -5,6 +5,8 @@
 - Added collision grid optimisation.
 - Removed the map of colour to block list and just have one array of blocks.
 - Flipped the collision win condition, now the colour with fewer total blocks wins.
+- Added a cross wall in the middle.
+- Increased the block speed.
 
 # 2026-05-20
 - Idea from friend.

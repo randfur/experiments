@@ -1,7 +1,7 @@
 const blockSize = 32;
-const blockSpeed = 2;
+const blockSpeed = 3;
 const blockTrailLength = 20;
-const initialColourBlocks = 3;
+const initialColourBlocks = 2;
 const maxBlockCount = 2000;
 const width = window.innerWidth;
 const height = window.innerHeight;
@@ -9,7 +9,7 @@ const wallSize = 64;
 const floorColour = '#436';
 const wallColour = '#84a';
 const collisionGridCellSize = 200;
-const cooldownDuration = 60 * 4;
+const cooldownDuration = 60 * 2;
 
 let blocks = null;
 let walls = null;
@@ -104,6 +104,24 @@ function init() {
     createWallCentred(
       (wallSize + width / 2) / 2,
       (height / 2 + height - wallSize) / 2,
+      wallSize,
+      wallSize,
+    ),
+    createWallCentred(
+      width / 2,
+      height / 2,
+      wallSize,
+      height * 2 / 3,
+    ),
+    createWallCentred(
+      width / 2,
+      height / 2,
+      width * 2 / 3,
+      wallSize,
+    ),
+    createWallCentred(
+      width / 2,
+      height / 2,
       wallSize,
       wallSize,
     ),
