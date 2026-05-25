@@ -11,6 +11,8 @@ const wallColour = '#84a';
 const collisionGridCellSize = 200;
 const cooldownDuration = 60 * 2;
 const winScreenDuration = 60 * 4;
+const colourTallyRenderWidth = 4;
+const colourTallyRenderHeightScale = 1 / 4;
 
 let blocks = null;
 let walls = null;
@@ -18,6 +20,8 @@ let context = null;
 let collisionGrid = null;
 let winner = null;
 let winScreenLeft = 0;
+let debug = false;
+let colourTallies = [];
 
 async function main() {
   setup();
@@ -44,6 +48,8 @@ function setup() {
   context = canvas.getContext('2d');
 
   collisionGrid = new CollisionGrid(width, height, collisionGridCellSize);
+
+  window.addEventListener('click', _ => debug ^= true);
 }
 
 function init() {
@@ -150,6 +156,8 @@ function update() {
   for (const block of blocks) {
     block.cooldownLeft = Math.max(block.cooldownLeft - 1, 0);
 
+    block.lastCheckId = null;
+
     block.trail.push({x: block.x, y: block.y})
     while (block.trail.length > blockTrailLength) {
       block.trail.shift();
@@ -167,6 +175,11 @@ function update() {
     collisionGrid.addRect(block.x, block.y, block.x + blockSize, block.y + blockSize, block);
   }
 
+  colourTallies.push(colourTally);
+  while (colourTallies.length > width / colourTallyRenderWidth) {
+    colourTallies.shift();
+  }
+
   for (const block of blocks) {
     collisionGrid.forEachCollision(
       block.x,
@@ -174,9 +187,10 @@ function update() {
       block.x + blockSize,
       block.y + blockSize,
       otherBlock => {
-        if (block.id <= otherBlock.id) {
+        if (block.id <= otherBlock.id || otherBlock.lastCheckId === block.id) {
           return;
         }
+        otherBlock.lastCheckId = block.id;
         const collisionDxdy = testBlockCollision(block, otherBlock);
         if (collisionDxdy) {
           if (winner) {
@@ -238,6 +252,7 @@ function render() {
   context.fillRect(0, 0, width, height);
 
   context.strokeStyle = 'black';
+  context.lineWidth = 2;
 
   // Trails
   for (const block of blocks) {
@@ -268,6 +283,26 @@ function render() {
     context.strokeRect(wall.x, wall.y, wall.width, wall.height);
   }
 
+  // Colour tallies
+  if (debug) {
+    for (let i = 0; i < colourTallies.length; ++i) {
+      const colourTally = colourTallies[i];
+      let lastY = 0;
+      let y = 0;
+      for (const colour in colourTally) {
+        lastY = y;
+        y += colourTally[colour] * colourTallyRenderHeightScale;
+        context.fillStyle = colour;
+        context.fillRect(
+          i * colourTallyRenderWidth,
+          lastY,
+          colourTallyRenderWidth,
+          y - lastY,
+        );
+      }
+    }
+  }
+
   // Win text
   if (winner) {
     context.fillStyle = 'black';
@@ -277,11 +312,17 @@ function render() {
     context.fillText(winner.toUpperCase(), width / 2, height / 3);
     context.fillText('WINS!', width / 2, height * 2 / 3);
   }
+
+  // Collision grid
+  if (debug) {
+    collisionGrid.render();
+  }
 }
 
 function createBlock(x, y, dx, dy, fill, trailFill) {
   return {
     id: id++,
+    lastCheckId: null,
     x,
     y,
     dx,

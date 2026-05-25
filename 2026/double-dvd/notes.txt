@@ -1,3 +1,15 @@
+# 2026-05-26
+- Fixed bug in collision grid edge overlap.
+  - Was seeing grid line patterns in the extreme collision scenarios at the end.
+  - Items would get added to all cells they overlapped with.
+  - This results in them being seen multiple times during collision check passes.
+  - Each block in turn is doing a pass over all other blocks in its vicinity and would see another block multiple times.
+  - The checker:checked multiplicity is 1:many.
+  - Mark the checked with who they were last checked by, if they come up again for that checker then skip.
+  - Found this method while talking to AI.
+- Added back debug visuals, made them toggle on click.
+- Added colour tally history display.
+
 # 2026-05-25
 - Added cooldown before duplication is allowed to each new block.
   - Results in a slower explosion of blocks.
