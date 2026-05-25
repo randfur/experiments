@@ -9,6 +9,10 @@
   - Found this method while talking to AI.
 - Added back debug visuals, made them toggle on click.
 - Added colour tally history display.
+- Performance.
+  - Reduced the size of the collision grid cells.
+  - Reduced the trail length.
+  - Compute is dominated by fillRect(), next performance step could be to use WebGL rendering.
 
 # 2026-05-25
 - Added cooldown before duplication is allowed to each new block.

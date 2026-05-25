@@ -1,6 +1,6 @@
 const blockSize = 32;
 const blockSpeed = 3;
-const blockTrailLength = 20;
+const blockTrailLength = 10;
 const initialColourBlocks = 2;
 const width = window.innerWidth;
 const height = window.innerHeight;
@@ -8,7 +8,7 @@ const maxBlockCount = Math.min((width * height) / (blockSize ** 2) * 0.75, 2000)
 const wallSize = 64;
 const floorColour = '#436';
 const wallColour = '#84a';
-const collisionGridCellSize = 200;
+const collisionGridCellSize = 100;
 const cooldownDuration = 60 * 2;
 const winScreenDuration = 60 * 4;
 const colourTallyRenderWidth = 4;
@@ -564,11 +564,11 @@ class CollisionGrid {
       context.moveTo(0, y * this.cellSize);
       context.lineTo(width, y * this.cellSize);
     }
-    context.strokeStyle = 'pink';
+    context.strokeStyle = 'black';
     context.stroke();
 
     context.font = '20px sans-serif';
-    context.fillStyle = 'pink';
+    context.fillStyle = 'black';
     for (let x = 0; x < this.width; ++x) {
       for (let y = 0; y < this.height; ++y) {
         context.fillText(
