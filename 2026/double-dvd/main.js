@@ -2,8 +2,8 @@ const blockSize = 32;
 const blockSpeed = 2;
 const blockTrailLength = 20;
 const maxColourBlockCount = 1000;
-const width = 1000;
-const height = 1000;
+const width = window.innerWidth;
+const height = window.innerHeight;
 const wallSize = 64;
 const floorColour = '#436';
 const wallColour = '#84a';
@@ -28,6 +28,7 @@ function setup() {
     padding: 0;
     margin: 0;
     background-color: black;
+    overflow: hidden;
   `;
   const canvas = document.createElement('canvas');
   canvas.width = width;
