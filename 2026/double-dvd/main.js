@@ -165,7 +165,7 @@ function update() {
     collisionGrid.addRect(block.x, block.y, block.x + blockSize, block.y + blockSize, block);
 
     if (!collisionGrid.inRange(block.x, block.y)) {
-      removeBlocks.push(block);
+      removeBlocks.add(block);
     }
   }
 
