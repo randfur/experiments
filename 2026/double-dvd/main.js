@@ -194,8 +194,10 @@ function update() {
         const collisionDxdy = testBlockCollision(block, otherBlock);
         if (collisionDxdy) {
           if (winner) {
-            if (block.fill === winner && otherBlock.fill !== block.fill) {
+            if (block.fill === winner && block.fill !== otherBlock.fill) {
               removeBlocks.add(otherBlock);
+            } else if (otherBlock.fill === winner && block.fill !== otherBlock.fill) {
+              removeBlocks.add(block);
             } else {
               updateDxdy(block, collisionDxdy);
               updateDxdy(otherBlock, oppositeDxdy(collisionDxdy));
