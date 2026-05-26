@@ -13,6 +13,7 @@
   - Reduced the size of the collision grid cells.
   - Reduced the trail length.
   - Compute is dominated by fillRect(), next performance step could be to use WebGL rendering.
+- Added win mode where winner colour deletes all other colours it comes into contact with.
 
 # 2026-05-25
 - Added cooldown before duplication is allowed to each new block.
