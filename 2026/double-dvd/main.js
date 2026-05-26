@@ -10,7 +10,6 @@ const floorColour = '#436';
 const wallColour = '#84a';
 const collisionGridCellSize = 100;
 const cooldownDuration = 60 * 2;
-const winScreenDuration = 60 * 4;
 const colourTallyRenderWidth = 4;
 const colourTallyRenderHeightScale = 1 / 4;
 
@@ -19,7 +18,6 @@ let walls = null;
 let context = null;
 let collisionGrid = null;
 let winner = null;
-let winScreenLeft = 0;
 let debug = false;
 let colourTallies = [];
 
@@ -54,7 +52,6 @@ function setup() {
 
 function init() {
   winner = null;
-  winScreenLeft = 0;
 
   blocks = [
     ...createBlocks(
@@ -141,13 +138,6 @@ function init() {
 }
 
 function update() {
-  if (winner !== null) {
-    --winScreenLeft;
-    if (winScreenLeft <= 0) {
-      init();
-    }
-  }
-
   const colourTally = {};
   collisionGrid.clear();
   const addBlocks = [];
@@ -235,7 +225,11 @@ function update() {
     blocks.push(block);
   }
 
-  if (!winner && blocks.length >= maxBlockCount) {
+  if (winner !== null) {
+    if (Object.keys(colourTally).length === 1) {
+      init();
+    }
+  } else if (blocks.length >= maxBlockCount) {
     let highestCount = 0;
     let highestColour = null;
     for (const colour in colourTally) {
@@ -245,7 +239,6 @@ function update() {
       }
     }
     winner = highestColour;
-    winScreenLeft = winScreenDuration;
   }
 }
 
