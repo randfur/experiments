@@ -163,6 +163,10 @@ function update() {
     colourTally[block.fill] = (colourTally[block.fill] ?? 0) + 1;
 
     collisionGrid.addRect(block.x, block.y, block.x + blockSize, block.y + blockSize, block);
+
+    if (!collisionGrid.inRange(block.x, block.y)) {
+      removeBlocks.push(block);
+    }
   }
 
   colourTallies.push(colourTally);
