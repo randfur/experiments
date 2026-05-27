@@ -1,4 +1,10 @@
 # 2026-05-26
+- Made centre walls shrink as the max block count is approached.
+  - Suggestion from coworker.
+  - Have seen it get "stuck" in an equilibrium of each colour in each corner.
+  - As the walls shrink it increases the rate they eliminate each other and cause the walls to grow again.
+
+# 2026-05-26
 - Fixed bug in collision grid edge overlap.
   - Was seeing grid line patterns in the extreme collision scenarios at the end.
   - Items would get added to all cells they overlapped with.

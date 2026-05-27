@@ -22,6 +22,8 @@ let winner = null;
 let winWaitLeft = 0;
 let debug = false;
 let colourTallies = [];
+let rowWall = null;
+let colWall = null;
 
 async function main() {
   setup();
@@ -89,11 +91,27 @@ function init() {
   for (const block of blocks) {
     block.cooldownLeft = 0;
   }
+  rowWall = createWallCentred(
+    width / 2,
+    height / 2,
+    wallSize,
+    height * 2 / 3,
+  );
+  colWall = createWallCentred(
+    width / 2,
+    height / 2,
+    width * 2 / 3,
+    wallSize,
+  );
+
   walls = [
     createWall(0, 0, wallSize, height),
     createWall(width - wallSize, 0, wallSize, height),
     createWall(0, 0, width, wallSize),
     createWall(0, height - wallSize, width, wallSize),
+
+    rowWall,
+    colWall,
 
     createWallCentred(
       (wallSize + width / 2) / 2,
@@ -117,18 +135,6 @@ function init() {
       (wallSize + width / 2) / 2,
       (height / 2 + height - wallSize) / 2,
       wallSize,
-      wallSize,
-    ),
-    createWallCentred(
-      width / 2,
-      height / 2,
-      wallSize,
-      height * 2 / 3,
-    ),
-    createWallCentred(
-      width / 2,
-      height / 2,
-      width * 2 / 3,
       wallSize,
     ),
     createWallCentred(
@@ -145,6 +151,24 @@ function update() {
   collisionGrid.clear();
   const addBlocks = [];
   const removeBlocks = new Set();
+
+  const wallShrinkProgress = winner === null
+    ? Math.max(0, lerp(-1, 1, blocks.length / maxBlockCount)) ** 2
+    : 1;
+  setWallCentred(
+    rowWall,
+    width / 2,
+    height / 2,
+    lerp(width * 2 / 3, wallSize, wallShrinkProgress),
+    wallSize,
+  );
+  setWallCentred(
+    colWall,
+    width / 2,
+    height / 2,
+    wallSize,
+    lerp(height * 2 / 3, wallSize, wallShrinkProgress),
+  );
 
   for (const block of blocks) {
     block.cooldownLeft = Math.max(block.cooldownLeft - 1, 0);
@@ -353,50 +377,45 @@ function createBlockRandomDirection(x, y, fill, trailFill) {
 
 function createBlocks(count, xMin, xMax, yMin, yMax, fill, trailFill) {
   const blocks = [];
-  let attempts = 0;
-  while (true) {
-    const block = createBlockRandomDirection(
+  for (let i = 0; i < count; ++i) {
+    blocks.push(createBlockRandomDirection(
       randomRange(xMin, xMax),
       randomRange(yMin, yMax),
       fill,
       trailFill,
-    );
-    let collide = false;
-    for (const otherBlock of blocks) {
-      if (testBlockCollision(block, otherBlock) !== null) {
-        collide = true;
-        break;
-      }
-    }
-    if (collide) {
-      ++attempts;
-      if (attempts < 100) {
-        continue;
-      }
-    }
-    blocks.push(block);
-    if (blocks.length >= count) {
-      break;
-    }
+    ));
   }
   return blocks;
 }
 
 function createWall(x, y, width, height) {
-  return {x, y, width, height};
+  return {
+    x: Math.round(x),
+    y: Math.round(y),
+    width: Math.round(width),
+    height: Math.round(height),
+  }
 }
 
 function createWallCentred(x, y, width, height) {
-  return createWall(
-    Math.round(x - width / 2),
-    Math.round(y - height / 2),
-    width,
-    height,
-  );
+  const wall = createWall(0, 0, 0, 0);
+  setWallCentred(wall, x, y, width, height);
+  return wall;
+}
+
+function setWallCentred(wall, x, y, width, height) {
+  wall.x = Math.round(x - width / 2);
+  wall.y = Math.round(y - height / 2);
+  wall.width = Math.round(width);
+  wall.height = Math.round(height);
 }
 
 function randomRange(min, max) {
   return Math.round(Math.random() * (max - min) + min);
+}
+
+function lerp(a, b, progress) {
+  return a + (b - a) * progress;
 }
 
 function updateDxdy(block, collisionDxdy) {
