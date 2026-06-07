@@ -1,0 +1,16 @@
+# 2026-06-07
+- Camera travelling through a wormhole tunnel.
+- Walls of the wormhole changing between different interesting patterns and shapes and textures and animations.
+- Wormhole path:
+  - Would be nice to use a continuous function that takes a t and returns a position and orientation but without being able to compound on its own previous outputs it's hard to have something complex and not repetitive like a Lissajous pattern.
+  - Could generate successive steps on the path like keyframes and interpolate between them for any intermediate distances.
+    - How to interpolate Rot3s?
+      - Linear isn't correct.
+      - Maybe is fine for relatively small interpolations.
+    - Do they need interpolating between?
+      - May be better to be using the steps as structure for the wormhole walls grid.
+  - Could have segmented continuous functions that crossfade between each other, the next built on the result of the last.
+
+
+
+
