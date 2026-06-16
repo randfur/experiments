@@ -240,26 +240,22 @@ function computeSequence(model) {
   }
   sequence.bellsList.push(bells);
 
-  // Run through all the touches.
-  // while (touchIndex < touch.length) {
-  //   touchCall = touch[touchIndex];
-  //   console.log('todo');
-  // }
-
-  // // Run until we see a repeated sequence.
-  // const seenBells = new Set([arrayLast(sequence.bellsList).join('')]);
-  // while (true) {
-  // Run for a set number of changes
-  for (let i = 0; i < 500; ++i) {
+  let terminatingBellsString = bells.join('');
+  let safetyLimit = 1000;
+  while (true) {
+    if (--safetyLimit <= 0) {
+      break;
+    }
     const annotatedPlaces = computeAnnotatedPlaces(model, sequence.bellsList.length - 1);
     sequence.annotatedPlacesList.push(annotatedPlaces);
     const bells = makePlaces(arrayLast(sequence.bellsList), annotatedPlaces.places);
     sequence.bellsList.push(bells);
-    // const bellsKey = bells.join('');
-    // if (seenBells.has(bellsKey)) {
-    //   break;
-    // }
-    // seenBells.add(bellsKey);
+    const bellsString = bells.join('');
+    if (annotatedPlaces.isWork) {
+      terminatingBellsString = bellsString;
+    } else if (bellsString === terminatingBellsString) {
+      break;
+    }
   }
 
   return sequence;

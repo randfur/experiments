@@ -19,8 +19,8 @@ async function main() {
 class Path {
 }
 
-class Step {
-  constructor(distance, position, orientation) {
+class Segment {
+  constructor(startDistance, position, orientation) {
   }
 }
 

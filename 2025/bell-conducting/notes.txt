@@ -1,3 +1,6 @@
+# 2026-06-16
+- Updated sequence computation to run until there was a repeat of the last touch.
+
 # 2025-05-05
 - Started working on minimap.
   - Added window event listeners with global tracking of added ones that gets cleared on re-render to prevent memory leakage.

@@ -38,7 +38,7 @@ function render() {
     ]),
     renderMainContainer([
       renderSequence(model, render),
-      renderMinimap(model, render),
+      // renderMinimap(model, render),
     ]),
   );
 }
