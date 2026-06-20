@@ -1,7 +1,9 @@
 import {createElement, createText} from './create-element.js';
+import {model, loadSavedModel} from './model.js';
+import {app} from './app.js';
 import {range} from './utils.js';
 
-export function renderBlueLinePicker(model, rerender) {
+export function renderBlueLinePicker() {
   return createElement({
     tag: 'div',
     style: {
@@ -29,7 +31,7 @@ export function renderBlueLinePicker(model, rerender) {
           events: {
             click: () => {
               model.selected.blueLine = bellNumber;
-              rerender();
+              app.render();
             },
           },
           textContent: bellNumber,

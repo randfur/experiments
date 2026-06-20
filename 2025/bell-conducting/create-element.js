@@ -1,5 +1,3 @@
-const pendingEventListeners = new Map();
-
 export function createElement(params) {
   const {
     tag,
@@ -35,25 +33,6 @@ export function createElement(params) {
     for (const [eventName, listener] of Object.entries(events)) {
       element.addEventListener(eventName, listener);
     }
-  }
-
-  if (parentEvents) {
-    for (const [parentId, events] of Object.entries(parentEvents)) {
-      if (!pendingEventListeners.has(parentId)) {
-        pendingEventListeners.set(parentId, []);
-      }
-      pendingEventListeners.get(parentId).push({listeningElement: element, events});
-    }
-  }
-
-  if (pendingEventListeners.has(id)) {
-    for (const {listeningElement, events} of pendingEventListeners.get(id)) {
-      console.log({listeningElement, events});
-      for (const [eventName, listener] of Object.entries(events)) {
-        element.addEventListener(eventName, event => listener(event, listeningElement));
-      }
-    }
-    pendingEventListeners.delete(id);
   }
 
   if (attributes) {

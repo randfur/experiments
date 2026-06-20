@@ -1,11 +1,14 @@
+import {RenderableElement} from './renderable-element.js';
+import {model} from './model.js';
+import {app} from './app.js';
 import {createSvgElement} from './create-element.js';
 import {range} from './utils.js';
 
 const rowHeight = 22;
 const columnWidth = 30;
 
-export function renderSequence(model, rerender) {
-  const sequence = computeSequence(model);
+export const sequence = new RenderableElement(() => {
+  const bellSequence = computeBellSequence();
   return createSvgElement({
     tag: 'svg',
     style: {
@@ -17,18 +20,18 @@ export function renderSequence(model, rerender) {
     },
     attributes: {
       width: 100 + model.methods[model.selected.methodName].bells * 60,
-      height: 100 + sequence.bellsList.length * 50,
+      height: 100 + bellSequence.bellsList.length * 50,
     },
     children: [
       renderStyle(),
-      renderBells(model, sequence),
-      renderRepeatLines(model, sequence),
-      renderBlueLine(model, sequence),
-      renderPlaces(sequence),
-      renderTouches(model, sequence, rerender),
+      renderBells(bellSequence),
+      renderRepeatLines(bellSequence),
+      renderBlueLine(bellSequence),
+      renderPlaces(bellSequence),
+      renderTouches(bellSequence),
     ],
   });
-}
+});
 
 function renderStyle() {
   return createSvgElement({
@@ -87,13 +90,13 @@ function renderStyle() {
   });
 }
 
-function renderBells(model, sequence) {
+function renderBells(bellSequence) {
   return createSvgElement({
     tag: 'g',
     attributes: {
       transform: 'translate(60, 50)',
     },
-    children: sequence.bellsList.flatMap((bells, i) => {
+    children: bellSequence.bellsList.flatMap((bells, i) => {
       return bells.map((bell, j) => {
         return createSvgElement({
             tag: 'text',
@@ -101,7 +104,7 @@ function renderBells(model, sequence) {
               'bell',
               ...(bell === model.selected.blueLine ? ['highlight'] : []),
               ...(isRounds(bells) ? ['rounds'] : []),
-              ...(isDoingWork(sequence, i) ? ['work'] : []),
+              ...(isDoingWork(bellSequence, i) ? ['work'] : []),
             ],
             textContent: bell,
             attributes: {
@@ -114,13 +117,13 @@ function renderBells(model, sequence) {
   });
 }
 
-function renderBlueLine(model, sequence) {
+function renderBlueLine(bellSequence) {
   return createSvgElement({
     tag: 'path',
     classes: ['blue-line'],
     attributes: {
       transform: `translate(65, ${31 + rowHeight / 2})`,
-      d: sequence.bellsList.map((bells, i) => {
+      d: bellSequence.bellsList.map((bells, i) => {
         const j = bells.indexOf(model.selected.blueLine);
         return `${i === 0 ? 'M' : 'L'} ${j * columnWidth} ${i * rowHeight}`
       }).join(''),
@@ -128,13 +131,13 @@ function renderBlueLine(model, sequence) {
   });
 }
 
-function renderPlaces(sequence) {
+function renderPlaces(bellSequence) {
   return createSvgElement({
     tag: 'g',
     attributes: {
       transform: `translate(50, ${47 + rowHeight / 2})`,
     },
-    children: sequence.annotatedPlacesList.map((annotatedPlaces, i) => {
+    children: bellSequence.annotatedPlacesList.map((annotatedPlaces, i) => {
       return createSvgElement({
         tag: 'text',
         classes: ['places'],
@@ -148,7 +151,7 @@ function renderPlaces(sequence) {
   });
 }
 
-function renderRepeatLines(model, sequence) {
+function renderRepeatLines(bellSequence) {
   const method = model.methods[model.selected.methodName];
   const placeNotationLength = method.placeNotation.length;
   return createSvgElement({
@@ -156,7 +159,7 @@ function renderRepeatLines(model, sequence) {
     attributes: {
       transform: `translate(50, ${21 + rowHeight / 2})`,
     },
-    children: range(sequence.bellsList.length / placeNotationLength - 1).map(i => {
+    children: range(bellSequence.bellsList.length / placeNotationLength - 1).map(i => {
       const y = (i + 1) * placeNotationLength * rowHeight;
       return createSvgElement({
         tag: 'path',
@@ -169,7 +172,7 @@ function renderRepeatLines(model, sequence) {
   });
 }
 
-function renderTouches(model, sequence, rerender) {
+function renderTouches(bellSequence) {
   const touch = model.selected.touch;
   const method = model.methods[model.selected.methodName];
   const placeNotationLength = method.placeNotation.length;
@@ -178,7 +181,7 @@ function renderTouches(model, sequence, rerender) {
     attributes: {
       transform: `translate(${70 + method.bells * columnWidth}, ${29 + rowHeight / 2})`,
     },
-    children: range(sequence.bellsList.length / placeNotationLength - 1).flatMap(i => {
+    children: range(bellSequence.bellsList.length / placeNotationLength - 1).flatMap(i => {
       const y = (i + 1) * placeNotationLength * rowHeight;
       const currentTouchCall = i < touch.length ? touch[i] : 'P';
       return ['P', 'B', 'S'].map((touchCall, j) => {
@@ -204,7 +207,7 @@ function renderTouches(model, sequence, rerender) {
                 return;
               }
               model.selected.touch = touch.substring(0, i) + touchCall + touch.substring(i + 1);
-              rerender();
+              sequence.render();
             },
           },
         });
@@ -217,18 +220,18 @@ function isRounds(bells) {
   return bells.every((bell, i) => i === 0 || bell > bells[i - 1]);
 }
 
-function isDoingWork(sequence, index) {
+function isDoingWork(bellSequence, index) {
   return (
-    index > 0 && sequence.annotatedPlacesList[index - 1].isWork
+    index > 0 && bellSequence.annotatedPlacesList[index - 1].isWork
   ) || (
-    index < sequence.annotatedPlacesList.length && sequence.annotatedPlacesList[index].isWork
+    index < bellSequence.annotatedPlacesList.length && bellSequence.annotatedPlacesList[index].isWork
   );
 }
 
-function computeSequence(model) {
+function computeBellSequence() {
   const method = model.methods[model.selected.methodName];
   const touch = model.selected.touch;
-  const sequence = {
+  const bellSequence = {
     bellsList: [],
     annotatedPlacesList: [],
     touches: [],
@@ -238,7 +241,7 @@ function computeSequence(model) {
   for (let i = 1; i <= method.bells; ++i) {
     bells.push(i);
   }
-  sequence.bellsList.push(bells);
+  bellSequence.bellsList.push(bells);
 
   let terminatingBellsString = bells.join('');
   let safetyLimit = 1000;
@@ -246,10 +249,10 @@ function computeSequence(model) {
     if (--safetyLimit <= 0) {
       break;
     }
-    const annotatedPlaces = computeAnnotatedPlaces(model, sequence.bellsList.length - 1);
-    sequence.annotatedPlacesList.push(annotatedPlaces);
-    const bells = makePlaces(arrayLast(sequence.bellsList), annotatedPlaces.places);
-    sequence.bellsList.push(bells);
+    const annotatedPlaces = computeAnnotatedPlaces(bellSequence.bellsList.length - 1);
+    bellSequence.annotatedPlacesList.push(annotatedPlaces);
+    const bells = makePlaces(arrayLast(bellSequence.bellsList), annotatedPlaces.places);
+    bellSequence.bellsList.push(bells);
     const bellsString = bells.join('');
     if (annotatedPlaces.isWork) {
       terminatingBellsString = bellsString;
@@ -258,10 +261,10 @@ function computeSequence(model) {
     }
   }
 
-  return sequence;
+  return bellSequence;
 }
 
-function computeAnnotatedPlaces(model, step) {
+function computeAnnotatedPlaces(step) {
   const method = model.methods[model.selected.methodName];
   const touch = model.selected.touch;
   // Find where step is inside a placeNotation sequence.

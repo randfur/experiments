@@ -1,6 +1,7 @@
 import {createElement} from './create-element.js';
+import {model} from './model.js';
 
-export function renderTouch(model) {
+export function renderTouch() {
   return createElement({
     tag: 'input',
     type: 'text',

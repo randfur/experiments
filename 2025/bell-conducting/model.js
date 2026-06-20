@@ -1,3 +1,5 @@
+export let model = null;
+
 export function loadSavedModel() {
   // try {
   //   const saved = JSON.parse(localStorage.getItem('storage'));
@@ -6,7 +8,7 @@ export function loadSavedModel() {
   //   }
   // } catch (e) {
   // }
-  return {
+  model = {
     version: 1,
     selected: {
       methodName: 'Grandsire Doubles',
@@ -336,6 +338,6 @@ export function loadSavedModel() {
   };
 }
 
-export function saveModel(model) {
+export function saveModel() {
   localStorage.setItem('storage', JSON.stringify(model));
 }

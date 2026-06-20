@@ -1,6 +1,8 @@
+import {app} from './app.js';
 import {createElement, createText} from './create-element.js';
+import {model} from './model.js';
 
-export function renderMethodPicker(model, rerender) {
+export function renderMethodPicker() {
   const methodEntries = Object.entries(model.methods).sort(
     (a, b) => a[0].localeCompare(b[0]),
   );
@@ -28,7 +30,7 @@ export function renderMethodPicker(model, rerender) {
             const method = model.methods[select.value];
             model.selected.touch = method.touches[0];
             model.selected.blueLine = Math.min(model.selected.blueLine, method.bells);
-            rerender();
+            app.render();
           },
         },
         children: methodEntries.map(([name, method]) => createElement({

@@ -1,5 +1,17 @@
+# 2026-06-20
+- Finished sub tree rendering refactor.
+  - Seems to work well with scroll now.
+
+# 2026-06-17
+- Attempting to only re-render subsections of the page to preserve scroll position.
+  - Mutations to the model now need to know which parts need re-rendering.
+  - Created RenderableElement to be used as singletons that can be referenced from anywhere and re-rendered just for at subtree.
+  - RenderableElement will replaceWith itself() with a new version of itself on re-render.
+  - Only the subtrees that need re-rendering need to be converted to RenderableElements, the rest can stay as is.
+
 # 2026-06-16
 - Updated sequence computation to run until there was a repeat of the last touch.
+- Browser doesn't seem to save scroll position on render anymore.
 
 # 2025-05-05
 - Started working on minimap.

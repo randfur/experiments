@@ -1,6 +1,8 @@
+import {app} from './app.js';
 import {createElement, createText} from './create-element.js';
+import {model} from './model.js';
 
-export function renderTouchPicker(model, rerender) {
+export function renderTouchPicker() {
   return createElement({
     tag: 'div',
     style: {
@@ -21,7 +23,7 @@ export function renderTouchPicker(model, rerender) {
         events: {
           change: event => {
             model.selected.touch = event.currentTarget.value;
-            rerender();
+            app.render();
           },
         },
         children: model.methods[model.selected.methodName].touches.map(touch => createElement({
