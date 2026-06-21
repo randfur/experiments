@@ -1,4 +1,4 @@
-import {app} from './app.js';
+import {appElement} from './app.js';
 import {createElement, createText} from './create-element.js';
 import {model} from './model.js';
 
@@ -10,6 +10,7 @@ export function renderMethodPicker() {
     tag: 'div',
     style: {
       display: 'flex',
+      alignItems: 'center',
       gap: '5px',
       fontSize: '24px',
       fontFamily: 'sans-serif',
@@ -20,7 +21,8 @@ export function renderMethodPicker() {
         tag: 'select',
         style: {
           fontSize: '24px',
-          minWidth: '25vw',
+          height: '50px',
+          minWidth: '50vw',
           backgroundColor: '#fffc',
         },
         events: {
@@ -30,7 +32,7 @@ export function renderMethodPicker() {
             const method = model.methods[select.value];
             model.selected.touch = method.touches[0];
             model.selected.blueLine = Math.min(model.selected.blueLine, method.bells);
-            app.render();
+            appElement.render();
           },
         },
         children: methodEntries.map(([name, method]) => createElement({

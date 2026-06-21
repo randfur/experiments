@@ -1,3 +1,9 @@
+# 2026-06-21
+- Adjusted sizes of all UI to fit mobile better.
+- Made top section not sticky position.
+- Added clear touch button.
+- Hid touch picker for now, pending ability to save and edit touches.
+
 # 2026-06-20
 - Finished sub tree rendering refactor.
   - Seems to work well with scroll now.

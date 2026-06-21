@@ -1,4 +1,4 @@
-import {app} from './app.js';
+import {appElement} from './app.js';
 import {createElement, createText} from './create-element.js';
 import {model} from './model.js';
 
@@ -8,7 +8,8 @@ export function renderTouchPicker() {
     style: {
       display: 'flex',
       gap: '5px',
-      fontSize: '20px',
+      fontSize: '24px',
+      alignItems: 'center',
       fontFamily: 'sans-serif',
     },
     children: [
@@ -16,14 +17,15 @@ export function renderTouchPicker() {
       createElement({
         tag: 'select',
         style: {
-          fontSize: '20px',
-          minWidth: '25vw',
+          fontSize: '24px',
+          height: '50px',
+          minWidth: '50vw',
           backgroundColor: '#fff8',
         },
         events: {
           change: event => {
             model.selected.touch = event.currentTarget.value;
-            app.render();
+            appElement.render();
           },
         },
         children: model.methods[model.selected.methodName].touches.map(touch => createElement({

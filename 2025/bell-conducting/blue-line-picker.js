@@ -1,6 +1,6 @@
 import {createElement, createText} from './create-element.js';
 import {model, loadSavedModel} from './model.js';
-import {app} from './app.js';
+import {appElement} from './app.js';
 import {range} from './utils.js';
 
 export function renderBlueLinePicker() {
@@ -9,7 +9,9 @@ export function renderBlueLinePicker() {
     style: {
       display: 'flex',
       flexDirection: 'row',
-      fontSize: '20px',
+      fontSize: '24px',
+      height: '50px',
+      alignItems: 'center',
       gap: '5px',
       fontFamily: 'sans-serif',
     },
@@ -20,7 +22,8 @@ export function renderBlueLinePicker() {
         return createElement({
           tag: 'button',
           style: {
-            fontSize: '20px',
+            fontSize: '24px',
+            height: '50px',
             width: '100px',
             ...(model.selected.blueLine === bellNumber ? {
               color: 'white',
@@ -31,7 +34,7 @@ export function renderBlueLinePicker() {
           events: {
             click: () => {
               model.selected.blueLine = bellNumber;
-              app.render();
+              appElement.render();
             },
           },
           textContent: bellNumber,

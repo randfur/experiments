@@ -1,13 +1,13 @@
-import {RenderableElement} from './renderable-element.js';
-import {model} from './model.js';
-import {app} from './app.js';
 import {createSvgElement} from './create-element.js';
+import {model} from './model.js';
 import {range} from './utils.js';
+import {RenderableElement} from './renderable-element.js';
+import {touchElement} from './touch.js';
 
 const rowHeight = 22;
 const columnWidth = 30;
 
-export const sequence = new RenderableElement(() => {
+export const sequenceElement = new RenderableElement(() => {
   const bellSequence = computeBellSequence();
   return createSvgElement({
     tag: 'svg',
@@ -19,8 +19,8 @@ export const sequence = new RenderableElement(() => {
       top: '0px',
     },
     attributes: {
-      width: 100 + model.methods[model.selected.methodName].bells * 60,
-      height: 100 + bellSequence.bellsList.length * 50,
+      width: 200 + model.methods[model.selected.methodName].bells * 60,
+      height: 100 + bellSequence.bellsList.length * 24,
     },
     children: [
       renderStyle(),
@@ -71,7 +71,8 @@ function renderStyle() {
       }
       .touch-call {
         fill: #ccc;
-        font-size: 25px;
+        font-size: 30px;
+        text-align: center;
         user-select: none;
       }
       .called {
@@ -179,24 +180,16 @@ function renderTouches(bellSequence) {
   return createSvgElement({
     tag: 'g',
     attributes: {
-      transform: `translate(${70 + method.bells * columnWidth}, ${29 + rowHeight / 2})`,
+      transform: `translate(${110 + method.bells * columnWidth}, ${20 + rowHeight / 2})`,
     },
     children: range(bellSequence.bellsList.length / placeNotationLength - 1).flatMap(i => {
       const y = (i + 1) * placeNotationLength * rowHeight;
       const currentTouchCall = i < touch.length ? touch[i] : 'P';
-      return ['P', 'B', 'S'].map((touchCall, j) => {
+      return ['P', 'B', 'S'].flatMap((touchCall, j) => {
+        const called = currentTouchCall === touchCall;
+        const separation = 80;
         return createSvgElement({
-          tag: 'text',
-          classes: [
-            ...(currentTouchCall === touchCall ? ['called'] : []),
-            touchCall === 'P' ? 'plain' : (touchCall === 'B' ? 'bob' : 'single'),
-            'touch-call',
-          ],
-          textContent: touchCall,
-          attributes: {
-            x: j * 30,
-            y,
-          },
+          tag: 'g',
           events: {
             click: () => {
               let touch = model.selected.touch;
@@ -207,9 +200,39 @@ function renderTouches(bellSequence) {
                 return;
               }
               model.selected.touch = touch.substring(0, i) + touchCall + touch.substring(i + 1);
-              sequence.render();
+              sequenceElement.render();
+              touchElement.render();
             },
           },
+          children: [
+            createSvgElement({
+              tag: 'circle',
+              attributes: {
+                cx: j * separation,
+                cy: y,
+                r: 30,
+                stroke: 'black',
+                ...(called ? {
+                  fill: touchCall === 'P' ? '#eee' : '#fea',
+                } : {
+                  fill: 'white',
+                }),
+              },
+            }),
+            createSvgElement({
+              tag: 'text',
+              classes: [
+                ...(called ? ['called'] : []),
+                touchCall === 'P' ? 'plain' : (touchCall === 'B' ? 'bob' : 'single'),
+                'touch-call',
+              ],
+              textContent: touchCall,
+              attributes: {
+                x: j * separation - 10,
+                y: y + 10,
+              },
+            }),
+          ],
         });
       });
     }),
