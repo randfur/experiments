@@ -9,3 +9,4 @@
 - Decreasing V decreases the max value.
 - Decreasing S increases the min value proportionally within the available space.
   - Not sure about this one, needs experimentation.
+- Implemented algorithm, it works.
