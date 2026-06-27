@@ -1,0 +1,54 @@
+# Seed 2026
+PARAM cash 25
+PARAM fuel_capacity 62
+PARAM maximum_move 7
+PARAM bag_capacity 37
+PARAM turns_left 94
+LOC Wentworth Rock Cruncher | Anything | 36971 | 2
+LOC Penrith Rock | Platinum | 2293 | -26
+LOC Red Centre West 4034 | Platinum | 1252 | 86
+LOC Morven Brown G5 | Sapphire | 997 | 63
+LOC Law Library G17 | Quartz | 1040 | 15
+LOC Red Centre Central Wing M032 | Granite | 1258 | 72
+LOC Old Main Building 229 | Sapphire | 1172 | 37
+LOC Silver Brothers | Silver | 1243 | -20
+LOC Sapphire Sisters | Sapphire | 2310 | -25
+LOC UNSW Ethanol | Petrol | 2292 | -3
+LOC Lovely Quartzs | Quartz | 2250 | -9
+LOC Mathews 226 | Jade | 800 | 59
+LOC Mathews 306 | Ruby | 912 | 33
+LOC Mathews B | Turquoise | 786 | 96
+LOC Electrical Eng 418 | Gold | 610 | 131
+LOC Maroubra Emerald Centre | Emerald | 3577 | -52
+LOC Old Main Building 150 | Emerald | 886 | 78
+LOC Webster 302 | Amethyst | 1390 | 45
+LOC Zetland Estate | Turquoise | 3577 | -48
+LOC Ainsworth 101 | Sandstone | 688 | 43
+LOC Kingsford Estate | Ruby | 2074 | -24
+LOC Shiny Sandstones | Sandstone | 2708 | -34
+LOC Bondi Granite Specialists | Granite | 2415 | -64
+LOC Ainsworth 102 | Clay | 1103 | 67
+LOC Colombo Theatre A | Diamond | 1256 | 54
+LOC Quadrangle G033 | Emerald | 1092 | 70
+LOC Quadrangle G044 | Diamond | 1346 | 83
+LOC Beaconsfield Ethanol | Petrol | 1194 | -4
+LOC Shiny Jades | Jade | 2353 | -31
+LOC Gold Brothers | Gold | 1952 | -56
+LOC Great Diamond | Diamond | 2391 | -33
+LOC Electrical Eng G25 | Granite | 1544 | 85
+LOC Chemical Sc M11 | Silver | 1425 | 31
+LOC Bronte BP | Petrol | 2284 | -2
+LOC Central Lecture Block 6 | Sandstone | 605 | 46
+LOC Goldstein G01 | Jade | 1342 | 48
+LOC Matraville Amethyst Centre | Amethyst | 894 | -25
+LOC Old Main Building G31 | Turquoise | 1140 | 90
+LOC Mathews 311 | Amethyst | 897 | 23
+LOC Central Lecture Block 5 | Gold | 866 | 103
+LOC Mathews 302 | Clay | 915 | 68
+LOC Padstow Clay Centre | Clay | 3220 | -36
+LOC J17-202 | Silver | 1304 | 35
+LOC Shell | Petrol | 2923 | -1
+LOC Viola Lab | Platinum | 1549 | 63
+LOC Old Main Building 230 | Ruby | 1231 | 44
+LOC La Perouse Rock Cruncher | Anything | 28222 | 1
+LOC John Goodsell LG21 | Quartz | 417 | 13
