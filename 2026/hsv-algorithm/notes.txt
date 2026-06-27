@@ -1,0 +1,11 @@
+# 2026-06-27
+- HSV -> RGB algorithm.
+- Simple approach:
+  - The H angle gets a point on a circle around the axis 1,1,1.
+    - Perpendicular vectors are easy to find:
+      - 1,1,-1
+      - 1,-1,1
+  - Scale the values such that the max value is 255 and the min value is 0.
+- Decreasing V decreases the max value.
+- Decreasing S increases the min value proportionally within the available space.
+  - Not sure about this one, needs experimentation.

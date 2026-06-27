@@ -1,0 +1,25 @@
+# 2026-06-27
+- Visual:
+  - World:
+    - Ring of segments, like a bracelet.
+  - Multiple camera views:
+    - Following a bot.
+    - Free form flying over world.
+    - Overall world view.
+      - Level of information detail changes with scale based on screen size of segments.
+      - Can zoom into top section and spin world around.
+  - Segment:
+    - A square of land.
+    - Shop building randomly placed on land.
+    - Type of segment is based on what it buys/sells.
+    - Type determines overall colour.
+    - Random trees/shrubs/rocks with different densities and sizes, consistent across same type.
+  - Bot:
+    - Simple box car model.
+    - Different accent colours across bots.
+    - Movement avoids shop buildings.
+      - Smooth bezier paths.
+      - Sideways acceleration determines angle of car, always facing towards direction of acceleration.
+      - Not real physics, just visualisation.
+    - Buy/sell telegraphed with floating transaction details label.
+
