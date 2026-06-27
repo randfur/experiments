@@ -11,3 +11,4 @@
   - Not sure about this one, needs experimentation.
 - Implemented algorithm, it works.
 - AI reviewed it and pointed out a flaw; the RGB will change with trig curves while the usual conversion algorithm is piecewise linear, this may have similar peak values but the inbetweens will be skewed.
+  - Added comparison graphic at the bottom putting the hue computation of trig vs linear side by side.

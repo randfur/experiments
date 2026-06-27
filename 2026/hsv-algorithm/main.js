@@ -6,38 +6,46 @@ function main() {
   document.body.style.gap = '10px';
   document.body.style.whiteSpace = 'pre';
   document.body.style.fontFamily = 'monospace';
-  const algorithmLabel = addLabel(render);
+  const algorithmLabel = addLabel(hsvToRgb);
   const hSlider = addSlider('H', 0, render);
   const sSlider = addSlider('S', 255, render);
   const vSlider = addSlider('V', 255, render);
   const rgbLabel = addLabel();
-  const context = addCanvas();
-  render();
+  const context = addCanvas(400, 100);
+  addHueComparison();
 
   function render() {
-    const angle = TAU * hSlider.value / 255;
-    const cos = Math.cos(angle);
-    const sin = Math.sin(angle);
-    let r = cos + sin;
-    let g = -cos + sin;
-    let b = -cos - sin;
-    const min = Math.min(r, g, b);
-    r -= min;
-    g -= min;
-    b -= min;
-    const max = Math.max(r, g, b);
-    r /= max;
-    g /= max;
-    b /= max;
-    const s = sSlider.value / 255;
-    const v = vSlider.value;
-    r = Math.round((r * s + (1 - s)) * v);
-    g = Math.round((g * s + (1 - s)) * v);
-    b = Math.round((b * s + (1 - s)) * v);
+    hsvToRgb(hSlider.value, sSlider.value, vSlider.value);
     rgbLabel.textContent = `rgb(${r}, ${g}, ${b})`;
     context.fillStyle = rgbLabel.textContent;
     context.fillRect(0, 0, context.canvas.width, context.canvas.height);
   }
+
+  render();
+}
+
+let r = 0;
+let g = 0;
+let b = 0;
+function hsvToRgb(h, s, v) {
+  const angle = TAU * h / 255;
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  r = cos + sin;
+  g = -cos + sin;
+  b = -cos - sin;
+  const min = Math.min(r, g, b);
+  r -= min;
+  g -= min;
+  b -= min;
+  const max = Math.max(r, g, b);
+  r /= max;
+  g /= max;
+  b /= max;
+  const sFraction = s / 255;
+  r = Math.round((r * sFraction + (1 - sFraction)) * v);
+  g = Math.round((g * sFraction + (1 - sFraction)) * v);
+  b = Math.round((b * sFraction + (1 - sFraction)) * v);
 }
 
 function addSlider(text, initialValue, render) {
@@ -69,10 +77,42 @@ function addLabel(initialText = '') {
   return label;
 }
 
-function addCanvas() {
+function addCanvas(width, height) {
   const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
   document.body.append(canvas);
   return canvas.getContext('2d');
+}
+
+function addHueComparison() {
+  const container = document.createElement('div');
+  container.style.display = 'flex';
+  container.style.flexDirection = 'row';
+
+  const labelContainer = document.createElement('div');
+  labelContainer.style.display = 'flex';
+  labelContainer.style.flexDirection = 'column';
+  const trigLabel = document.createElement('div');
+  trigLabel.textContent = 'Trig:';
+  const linearLabel = document.createElement('div');
+  linearLabel.textContent = 'Linear:';
+  labelContainer.append(trigLabel, linearLabel);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 256;
+  canvas.height = 30;
+  const context = canvas.getContext('2d');
+  for (let i = 0; i < 256; ++i) {
+    hsvToRgb(i, 255, 255);
+    context.fillStyle = `rgb(${r}, ${g}, ${b})`;
+    context.fillRect(i, 0, 1, 15);
+    context.fillStyle = `hsl(${i * 360 / 255}deg 100% 50%)`;
+    context.fillRect(i, 15, 1, 15);
+  }
+
+  container.append(labelContainer, canvas);
+  document.body.append(container);
 }
 
 main();
