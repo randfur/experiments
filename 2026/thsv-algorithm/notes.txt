@@ -1,3 +1,14 @@
+# 2026-06-28
+- Renamed hsv to thsv because it's not linear like hsv is, t stands for trig.
+- Added graph of RGB values to compare thsv with hsv.
+  - Exposed another bug in the implementation, the basis vectors of the RGB circle were not orthogonal to 1,1,1.
+    - The x,y,z -> z,-x,y swizzle only given non-parallel vectors, it doesn't give orthogonal vectors.
+  - Saved comparison as: non-orthogonal-rgb-circle.png
+- Fixed up code to compute orthogonal basis vectors for the RGB circle.
+  - Comparison with hsv is nearly identical.
+  - Can see a slight curve in the RGB lines so still worth calling it something different.
+  - Implementation much more complex now, maybe not worth the complexity vs the linear approach.
+
 # 2026-06-27
 - HSV -> RGB algorithm.
 - Simple approach:
