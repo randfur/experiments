@@ -65,9 +65,6 @@ function thsvToRgb(th, s, v) {
   r = rgbCircleXy.x.x * cos + rgbCircleXy.y.x * sin;
   g = rgbCircleXy.x.y * cos + rgbCircleXy.y.y * sin;
   b = rgbCircleXy.x.z * cos + rgbCircleXy.y.z * sin;
-  r = cos + sin;
-  g = -cos + sin;
-  b = -cos - sin;
   const min = Math.min(r, g, b);
   r -= min;
   g -= min;
