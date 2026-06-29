@@ -1,0 +1,20 @@
+# 2026-06-29
+- Building getWorldRay() method in HexLinesContext to get a world ray from screen space co-ordinates.
+- Maybe needs to invert a transform matrix.
+- Internet suggests for typical transform matrices this can be done without full inversion.
+  - https://graphics.stanford.edu/courses/cs248-98-fall/Final/q4.html
+  - Covers translation and rotation but not scale.
+  - Going to ignore skew.
+- Scale should be easily read from the diagonal.
+- Will start out in 2D first.
+- Take a jumbled set of transform operations and attempt to undo it from just the final matrix.
+- Implemented:
+  - Mat3 class.
+  - Vec2 class.
+  - Transform sequence.
+  - Canvas display of points.
+  - Inverse attempt.
+- Not working.
+  - Leaving out scale for now, just rotate and translate.
+  - Not coming to correct values.
+  - Needs investigation and comparison with above website.
