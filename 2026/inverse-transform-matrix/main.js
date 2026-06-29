@@ -57,23 +57,23 @@ class Mat3 {
 
   setMultiply(x, y) {
     // [ a b c ]   [ j k l ]
-    // [ d e f ] * [ n m o ]
+    // [ d e f ] * [ m n o ]
     // [ g h i ]   [ p q r ]
 
     const {a, b, c, d, e, f, g, h, i} = x;
     const {a: j, b: k, c: l, d: m, e: n, f: o, g: p, h: q, i: r} = y;
 
     return this.setParts(
-      a * j + b * n + c * p,
-      a * k + b * m + c * q,
+      a * j + b * m + c * p,
+      a * k + b * n + c * q,
       a * l + b * o + c * r,
 
-      d * j + e * n + f * p,
-      d * k + e * m + f * q,
+      d * j + e * m + f * p,
+      d * k + e * n + f * q,
       d * l + e * o + f * r,
 
-      g * j + h * n + i * p,
-      g * k + h * m + i * q,
+      g * j + h * m + i * p,
+      g * k + h * n + i * q,
       g * l + h * o + i * r,
     );
   }
@@ -88,7 +88,7 @@ ${this.g.toFixed(2)} ${this.h.toFixed(2)} ${this.i.toFixed(2)}`);
   setInverse(transform) {
     const {a, b, c, d, e, f, g, h, i} = transform;
     return this.setMultiply(
-      new Mat3().setScale(1),
+      new Mat3().setScale(1 / (a * a + b * b)),
       new Mat3().setMultiply(
         new Mat3().setParts(
           a, d, 0,
@@ -112,12 +112,16 @@ class Vec2 {
     this.y = mat3.d * vec2.x + mat3.e * vec2.y + mat3.f;
     return this;
   }
+
+  toString() {
+    return `(${this.x.toFixed(2)}, ${this.y.toFixed(2)})`;
+  }
 }
 
 function main() {
   const canvas = document.createElement('canvas');
-  canvas.width = 1024;
-  canvas.height = 1024;
+  canvas.width = 400;
+  canvas.height = 400;
   const context = canvas.getContext('2d');
   document.body.append(canvas);
 
@@ -129,7 +133,7 @@ function main() {
       new Mat3().setMultiply(
         new Mat3().setTranslate(200, 200),
         new Mat3().setMultiply(
-          new Mat3().setScale(1),
+          new Mat3().setScale(0.1),
           new Mat3().setRotate(TAU * 0.6),
         ),
       ),
@@ -139,18 +143,28 @@ function main() {
   const inverseTransform = new Mat3().setInverse(transform);
   const untransformedPoint = new Vec2().setTransform(inverseTransform, transformedPoint);
 
-  console.log(point);
-  console.log(transform.toString());
-  console.log(transformedPoint);
-  console.log(inverseTransform.toString());
-  console.log(untransformedPoint);
-
   context.fillStyle = 'black';
-  context.fillRect(point.x, point.y, 10, 10);
+  context.fillRect(point.x - 2, point.y - 2, 14, 14);
   context.fillStyle = 'blue';
   context.fillRect(transformedPoint.x, transformedPoint.y, 10, 10);
   context.fillStyle = 'lime';
   context.fillRect(untransformedPoint.x, untransformedPoint.y, 10, 10);
+
+  const pre = document.createElement('pre');
+  pre.textContent = `
+point (black): ${point.toString()}
+
+transform:
+${transform.toString()}
+
+transformedPoint (blue): ${transformedPoint.toString()}
+
+inverseTransform:
+${inverseTransform.toString()}
+
+untransformedPoint (lime): ${untransformedPoint.toString()}
+  `;
+  document.body.append(pre);
 }
 
 main();

@@ -1,6 +1,6 @@
 const directory = {
   2026: [
-    {name: 'inverse-transform-matrix', wip: true},
+    {name: 'inverse-transform-matrix', wip: false},
     {name: 'thsv-algorithm', wip: false},
     {name: 'trader-snail', wip: true},
     {name: 'wormhole', wip: true},

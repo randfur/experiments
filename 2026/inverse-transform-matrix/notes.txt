@@ -18,3 +18,17 @@
   - Leaving out scale for now, just rotate and translate.
   - Not coming to correct values.
   - Needs investigation and comparison with above website.
+  - Something seems to be wrong with Mat3.setMultiply(), giving the identity matrix on one side doesn't leave the other unaffected.
+    - Had a couple of the parts flipped around (m and n on the RHS).
+- Working for rotate and translate.
+- Still figuring out how to deal with scale.
+  - The scale is being applied a second time by the inverse transform.
+    - Scale 0.1 in the transform.
+    - 200,100 -> 2,1
+- Figured it out:
+  - Take one row of the rotation and get its inverse square length.
+  - This will undo the scaling being done by the WIP inverse transform matrix as well as the scaling already done to the transformed point.
+- TODO: Do the same for 3D in the ga library.
+- TODO: Investigate skew.
+  - It's probably just each row done separately.
+  - Whether its row or column would depend on which side the vector is multiplied on probably.
