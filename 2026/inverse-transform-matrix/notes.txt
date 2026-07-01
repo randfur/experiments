@@ -1,3 +1,10 @@
+# 2026-07-01
+- Tried inverting separate x y scale, was not successful.
+  - Used rows or columns to determine scale size.
+  - Worked in simple cases but not with translate * scale * rotate.
+  - Would need to play around with it algebraically.
+  - Probably not needed.
+
 # 2026-06-29
 - Building getWorldRay() method in HexLinesContext to get a world ray from screen space co-ordinates.
 - Maybe needs to invert a transform matrix.

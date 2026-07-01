@@ -39,10 +39,10 @@ class Mat3 {
     );
   }
 
-  setScale(scale) {
+  setScale(x, y) {
     return this.setParts(
-      scale, 0, 0,
-      0, scale, 0,
+      x, 0, 0,
+      0, y, 0,
       0, 0, 1,
     );
   }
@@ -88,7 +88,7 @@ ${this.g.toFixed(2)} ${this.h.toFixed(2)} ${this.i.toFixed(2)}`);
   setInverse(transform) {
     const {a, b, c, d, e, f, g, h, i} = transform;
     return this.setMultiply(
-      new Mat3().setScale(1 / (a * a + b * b)),
+      new Mat3().setScale(1 / (a * a + d * d), 1 / (b * b + e * e)),
       new Mat3().setMultiply(
         new Mat3().setParts(
           a, d, 0,
@@ -133,7 +133,7 @@ function main() {
       new Mat3().setMultiply(
         new Mat3().setTranslate(200, 200),
         new Mat3().setMultiply(
-          new Mat3().setScale(0.1),
+          new Mat3().setScale(0.1, 0.1), // TODO: Figure out separate x y scale inversion.
           new Mat3().setRotate(TAU * 0.6),
         ),
       ),
