@@ -1,3 +1,9 @@
+# 2026-07-04
+- Added more implementation for the path segment building, rendering and camera transform.
+- Locking camera position to the furthest back segment.
+- Added basic orientation turning, looks alright.
+- Would be good to decouple the camera speed from the segment step size.
+
 # 2026-06-07
 - Camera travelling through a wormhole tunnel.
 - Walls of the wormhole changing between different interesting patterns and shapes and textures and animations.
