@@ -19,7 +19,7 @@ export const sequenceElement = new RenderableElement(() => {
       top: '0px',
     },
     attributes: {
-      width: 200 + model.methods[model.selected.methodName].bells * 60,
+      width: 200 + model.selected.methodBellCount * 60,
       height: 100 + bellSequence.bellsList.length * 24,
     },
     children: [
@@ -32,6 +32,10 @@ export const sequenceElement = new RenderableElement(() => {
     ],
   });
 });
+
+function selectedMethod() {
+  return model.methods[model.selected.methodName][model.selected.methodBellCount];
+}
 
 function renderStyle() {
   return createSvgElement({
@@ -153,7 +157,7 @@ function renderPlaces(bellSequence) {
 }
 
 function renderRepeatLines(bellSequence) {
-  const method = model.methods[model.selected.methodName];
+  const method = selectedMethod();
   const placeNotationLength = method.placeNotation.length;
   return createSvgElement({
     tag: 'g',
@@ -166,7 +170,7 @@ function renderRepeatLines(bellSequence) {
         tag: 'path',
         classes: ['repeat-line'],
         attributes: {
-          d: `M 0 ${y} L ${method.bells * columnWidth} ${y}`,
+          d: `M 0 ${y} L ${model.selected.methodBellCount * columnWidth} ${y}`,
         },
       });
     }),
@@ -175,12 +179,12 @@ function renderRepeatLines(bellSequence) {
 
 function renderTouches(bellSequence) {
   const touch = model.selected.touch;
-  const method = model.methods[model.selected.methodName];
+  const method = selectedMethod();
   const placeNotationLength = method.placeNotation.length;
   return createSvgElement({
     tag: 'g',
     attributes: {
-      transform: `translate(${110 + method.bells * columnWidth}, ${20 + rowHeight / 2})`,
+      transform: `translate(${110 + model.selected.methodBellCount * columnWidth}, ${20 + rowHeight / 2})`,
     },
     children: range(bellSequence.bellsList.length / placeNotationLength - 1).flatMap(i => {
       const y = (i + 1) * placeNotationLength * rowHeight;
@@ -252,7 +256,7 @@ function isDoingWork(bellSequence, index) {
 }
 
 function computeBellSequence() {
-  const method = model.methods[model.selected.methodName];
+  const method = selectedMethod();
   const touch = model.selected.touch;
   const bellSequence = {
     bellsList: [],
@@ -261,7 +265,7 @@ function computeBellSequence() {
   };
 
   let bells = [];
-  for (let i = 1; i <= method.bells; ++i) {
+  for (let i = 1; i <= model.selected.methodBellCount; ++i) {
     bells.push(i);
   }
   bellSequence.bellsList.push(bells);
@@ -288,7 +292,7 @@ function computeBellSequence() {
 }
 
 function computeAnnotatedPlaces(step) {
-  const method = model.methods[model.selected.methodName];
+  const method = selectedMethod();
   const touch = model.selected.touch;
   // Find where step is inside a placeNotation sequence.
   const repeatLength = method.placeNotation.length;

@@ -17,7 +17,7 @@ export function renderBlueLinePicker() {
     },
     children: [
       createText('Highlight:'),
-      ...range(model.methods[model.selected.methodName].bells).map(i => {
+      ...range(model.selected.methodBellCount).map(i => {
         const bellNumber = i + 1;
         return createElement({
           tag: 'button',

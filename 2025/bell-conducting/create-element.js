@@ -8,6 +8,7 @@ export function createElement(params) {
     events,
     parentEvents,
     attributes,
+    dataset,
     children,
     ...properties
   } = params;
@@ -38,6 +39,12 @@ export function createElement(params) {
   if (attributes) {
     for (const [name, value] of Object.entries(attributes)) {
       element.setAttribute(name, value);
+    }
+  }
+
+  if (dataset) {
+    for (const [name, value] of Object.entries(dataset)) {
+      element.dataset[name] = value;
     }
   }
 

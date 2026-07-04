@@ -1,3 +1,11 @@
+# 2026-07-04
+- Updated methods to be grouped by name with sub categories for how many working bells are involved.
+  - Can sort by name then bell count.
+- Added plain bob minor.
+- Tried adding Stedman doubles.
+  - There are two lead ends during the place notation sequence and not aligned to the start.
+  - Bobs are not supported, app doesn't support not supporting bobs.
+
 # 2026-06-21
 - Adjusted sizes of all UI to fit mobile better.
 - Made top section not sticky position.
