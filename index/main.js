@@ -3,7 +3,7 @@ const directory = {
     {name: 'inverse-transform-matrix', wip: false},
     {name: 'thsv-algorithm', wip: false},
     {name: 'trader-snail', wip: true},
-    {name: 'wormhole', wip: true},
+    {name: 'wormhole', wip: false},
     {name: 'double-dvd', wip: false},
     {name: 'smooth-graph', wip: false},
     {name: '3d-swirl-motion', wip: false},
