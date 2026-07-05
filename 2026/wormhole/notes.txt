@@ -1,3 +1,7 @@
+# 2026-07-06
+- Refactored the path to be able to progress a distance amount rather than a discrete path segment amount.
+  - Can now fly through the wormhole at different speeds.
+
 # 2026-07-04
 - Added more implementation for the path segment building, rendering and camera transform.
 - Locking camera position to the furthest back segment.
