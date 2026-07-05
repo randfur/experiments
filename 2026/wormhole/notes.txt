@@ -1,6 +1,8 @@
 # 2026-07-06
 - Refactored the path to be able to progress a distance amount rather than a discrete path segment amount.
   - Can now fly through the wormhole at different speeds.
+- Made path reset its start position to be at the origin on every frame.
+  - This will avoid hitting floating point limits particularly on mobile GPUs.
 
 # 2026-07-04
 - Added more implementation for the path segment building, rendering and camera transform.

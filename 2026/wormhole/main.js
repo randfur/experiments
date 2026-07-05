@@ -78,6 +78,15 @@ class Path {
     this.start.distance = lerp(this.start.distance, startPoint.distance, overShoot);
     this.start.position.inplaceLerp(startPoint.position, overShoot);
     this.start.orientation.inplaceLerp(startPoint.orientation, overShoot).inplaceNormalise();
+
+    for (const point of this.points) {
+      point.distance -= this.start.distance;
+      point.position.inplaceSubtract(this.start.position);
+    }
+    this.end.distance -= this.start.distance;
+    this.end.position.inplaceSubtract(this.start.position);
+    this.start.distance = 0;
+    this.start.position.setZero();
   }
 
   writeNextPoint(index) {
