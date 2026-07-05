@@ -1,4 +1,4 @@
-# 2026-07-06
+# 2026-07-05
 - Refactored the path to be able to progress a distance amount rather than a discrete path segment amount.
   - Can now fly through the wormhole at different speeds.
 - Made path reset its start position to be at the origin on every frame.
