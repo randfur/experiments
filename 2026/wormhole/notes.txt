@@ -1,3 +1,8 @@
+# 2026-07-13
+- Split Path out to separate file.
+- Tweak camera speed.
+- Made path point distance a constant.
+
 # 2026-07-05
 - Refactored the path to be able to progress a distance amount rather than a discrete path segment amount.
   - Can now fly through the wormhole at different speeds.
