@@ -35,13 +35,13 @@ export class PinkSpikes {
       const radius = 20 + 30 * (Math.cos(delta / 700 + 1) + 1);
       const startAngle = delta / 300 + 5 * Math.cos(time / 5000) * (Math.cos(delta / 1000) + 1.5);
       const spokes = 10 + 6 * Math.cos(delta / 1500);
-      const scaleX = 1.2 + 0.6 * Math.cos(delta / 6500 + 2);
-      const scaleY = 1.0 + 0.5 * Math.cos(delta / 9000 + 5);
+      const scaleX = 1.2 + 0.6 * Math.cos(delta / 6500 + 3);
+      const scaleY = 0.9 + 0.5 * Math.cos(delta / 9000 + 2);
 
       for (let i = 0; i < spokes; ++i) {
         rotation.setPolar(startAngle + TAU * i / spokes);
 
-        const squishMax = 15 * Math.cos(TAU * (Math.cos(delta / 5000) + 1)) * Math.cos(delta / 3000);
+        const squishMax = 10 * Math.cos(TAU * (Math.cos(delta / 5000) + 1)) * Math.cos(delta / 3000);
         const squishDirection = Vec3.a.setPolar(delta / 8500);
         const squish = squishMax * rotation.dot(squishDirection);
 

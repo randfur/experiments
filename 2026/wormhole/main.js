@@ -13,7 +13,7 @@ async function main() {
 
   while (true) {
     const time = await new Promise(requestAnimationFrame);
-    path.progress(3 + 3 * (Math.cos(time / 10000) + 1));
+    path.progress(3 + 3 * (Math.cos(time / 10000 + 2) + 2));
     hexLines.clear();
     path.render(hexLines, time);
     Mat4.multiply(

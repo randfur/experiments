@@ -115,8 +115,8 @@ export class Path {
       ),
     ).inplaceMultiplyLeft(
       Rotor3.axisAngle(
-        Vec3.polar((this.stepCount + 100) / 400).inplaceOrthogonal().inplaceNormalise(),
-        0.02,
+        Vec3.polar(this.stepCount / 400 + 5).inplaceOrthogonal().inplaceNormalise(),
+        0.015,
       ),
     );
     this.end.distance += this.pointStepDistance;
