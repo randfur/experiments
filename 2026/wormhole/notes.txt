@@ -2,6 +2,10 @@
 - Split Path out to separate file.
 - Tweak camera speed.
 - Made path point distance a constant.
+- Added pink spikes style.
+  - Lots of tweaking of values.
+  - Lots of cos() relative to a distance delta to style origin distance.
+- roundTo() with origin point surprisingly important here.
 
 # 2026-07-05
 - Refactored the path to be able to progress a distance amount rather than a discrete path segment amount.

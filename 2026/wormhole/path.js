@@ -19,9 +19,9 @@ export class Path {
     }
 
     setLerp(a, b, t) {
-      this.distance = lerp(a.distance, b.distance, overShoot);
-      this.position.setLerp(a.position, b.position, overShoot);
-      this.orientation.setLerp(a.orientation, b.orientation, overShoot).inplaceNormalise();
+      this.distance = lerp(a.distance, b.distance, t);
+      this.position.setLerp(a.position, b.position, t);
+      this.orientation.setLerp(a.orientation, b.orientation, t).inplaceNormalise();
       return this;
     }
 
@@ -39,22 +39,24 @@ export class Path {
     }
   };
 
-  constructor(pointCount, pointStepDistance) {
+  constructor(pointCount, pointStepDistance, style) {
     this.pointCount = pointCount;
     this.pointStepDistance = pointStepDistance;
+    this.style = style;
 
     this.stepCount = 0;
 
-    this.startIndex = 0;
+    this.start = new Path.Point();
+    this.end = new Path.Point();
 
+    this.startIndex = 0;
     this.points = [];
     for (let i = 0; i < this.pointCount; ++i) {
       this.points.push(new Path.Point());
       this.writeNextPoint(i);
     }
 
-    this.start = new Path.Point().set(this.points[0]);
-    this.end = new Path.Point().set(this.points[this.points.length - 1]);
+    this.style.distance = this.end.distance;
   }
 
   progress(distance) {
@@ -62,8 +64,7 @@ export class Path {
     let previousDistance = this.start.distance;
     let deleteCount = 0;
     for (let i = 0; i < this.pointCount; ++i) {
-      const point = this.points[(this.startIndex + i) % this.pointCount];
-      const segmentDistance = point.distance - previousDistance;
+      const segmentDistance = this.getPointByIndex(i).distance - previousDistance;
       if (remainingDistance > segmentDistance) {
         remainingDistance -= segmentDistance;
         ++deleteCount;
@@ -100,6 +101,7 @@ export class Path {
     }
     this.end.distance -= this.start.distance;
     this.end.position.inplaceSubtract(this.start.position);
+    this.style.distance -= this.start.distance;
     this.start.distance = 0;
     this.start.position.setZero();
   }
@@ -108,7 +110,12 @@ export class Path {
     ++this.stepCount;
     this.end.orientation.inplaceMultiplyLeft(
       Rotor3.axisAngle(
-        Vec3.polar((this.stepCount) / 40),
+        Vec3.polar(this.stepCount / 40),
+        0.02,
+      ),
+    ).inplaceMultiplyLeft(
+      Rotor3.axisAngle(
+        Vec3.polar((this.stepCount + 100) / 400).inplaceOrthogonal().inplaceNormalise(),
         0.02,
       ),
     );
@@ -117,29 +124,34 @@ export class Path {
     this.points[index].set(this.end);
   }
 
-  getPoint(distance) {
-    if (distance <= this.points[0].distance) {
-      return getPointReturnValue.setLerp(this.points[0], this.points[1], (distance - this.points[0].distance) / this.pointStepDistance);
+  getPointByIndex(index) {
+    return this.points[(this.startIndex + index + this.pointCount) % this.pointCount];
+  }
+
+  getPointByDistance(distance) {
+    if (distance <= this.getPointByIndex(0).distance) {
+      return getPointReturnValue.setLerp(this.getPointByIndex(0), this.getPointByIndex(1), (distance - this.getPointByIndex(0).distance) / this.pointStepDistance);
     }
-    if (distance >= this.points[this.points.length - 1].distance) {
+    if (distance >= this.getPointByIndex(-1).distance) {
       return getPointReturnValue.setLerp(
-        this.points[this.points.length - 2],
-        this.points[this.points.length - 1],
-        (distance - this.points[this.points.length - 1].distance) / this.pointStepDistance,
+        this.getPointByIndex(-2),
+        this.getPointByIndex(-1),
+        (distance - this.getPointByIndex(-1).distance) / this.pointStepDistance,
       );
     }
-    const index = Math.floor((distance - this.points[0].distance) / this.pointStepDistance);
+    const index = Math.floor((distance - this.getPointByIndex(0).distance) / this.pointStepDistance);
     return getPointReturnValue.setLerp(
-      this.points[index],
-      this.points[index + 1],
-      (distance - this.points[index].distance) / this.pointStepDistance,
+      this.getPointByIndex(index),
+      this.getPointByIndex(index + 1),
+      (distance - this.getPointByIndex(index).distance) / this.pointStepDistance,
     );
   }
 
-  render(hexLines) {
-    for (const point of this.points) {
-      point.render(hexLines);
-    }
+  render(hexLines, time) {
+    // for (const point of this.points) {
+    //   point.render(hexLines);
+    // }
+    this.style.render(hexLines, time, this, this.start.distance, this.end.distance);
   }
 }
 
