@@ -9,18 +9,16 @@ export class PinkSpikes {
 
     const base = {r: 255, g: 50, b: 200};
     const peak = {r: 255, g: 120, b: 255};
-    const spikeWidth = 10;
-    const spikeHeight = 8;
     this.spikePoints = [{
-      position: new Vec3(0, spikeWidth / 2),
+      position: new Vec3(0, 0.5),
       colour: base,
       size: 2,
     }, {
-      position: new Vec3(spikeHeight, 0),
+      position: new Vec3(1, 0),
       colour: peak,
       size: 1,
     }, {
-      position: new Vec3(0, -spikeWidth / 2),
+      position: new Vec3(0, -0.5),
       colour: base,
       size: 2,
     }];
@@ -35,8 +33,8 @@ export class PinkSpikes {
       const radius = 20 + 30 * (Math.cos(delta / 700 + 1) + 1);
       const startAngle = delta / 300 + 5 * Math.cos(time / 5000) * (Math.cos(delta / 1000) + 1.5);
       const spokes = 10 + 6 * Math.cos(delta / 1500);
-      const scaleX = 1.2 + 0.6 * Math.cos(delta / 6500 + 3);
-      const scaleY = 0.9 + 0.5 * Math.cos(delta / 9000 + 2);
+      const scaleX = 12 + 8 * Math.cos(delta / 6500 + 3);
+      const scaleY = Math.min(14 + 5 * Math.cos(delta / 9000 + 10), TAU * radius / spokes / 2);
 
       for (let i = 0; i < spokes; ++i) {
         rotation.setPolar(startAngle + TAU * i / spokes);

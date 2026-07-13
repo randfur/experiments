@@ -5,6 +5,7 @@
 - Added pink spikes style.
   - Lots of tweaking of values.
   - Lots of cos() relative to a distance delta to style origin distance.
+  - Set limit on width of triangles relative to tightness of radius, avoid creating rings, they look too epileptic.
 - roundTo() with origin point surprisingly important here.
 
 # 2026-07-05
