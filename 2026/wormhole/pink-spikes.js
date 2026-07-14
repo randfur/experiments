@@ -45,16 +45,16 @@ export class PinkSpikes {
 
         for (let j = 0; j <= this.spikePoints.length; ++j) {
           const spikePoint = this.spikePoints[j % this.spikePoints.length];
-          hexLines.addPoint({
-            colour: spikePoint.colour,
-            position: Vec3.set(spikePoint.position)
+          hexLines.addPointParts(
+            Vec3.set(spikePoint.position)
               .inplaceScaleXyz(scaleX, scaleY)
               .inplaceAddXyz(radius + squish)
               .inplaceRotateXy(rotation)
               .inplaceRotateRotor3(point.orientation)
               .inplaceAdd(point.position),
-            size: spikePoint.size,
-          });
+            spikePoint.size,
+            spikePoint.colour,
+          );
         }
         hexLines.addNull();
       }
