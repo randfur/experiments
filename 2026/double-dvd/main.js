@@ -152,23 +152,23 @@ function update() {
   const addBlocks = [];
   const removeBlocks = new Set();
 
-  const wallShrinkProgress = winner === null
-    ? Math.max(0, lerp(-1, 1, blocks.length / maxBlockCount)) ** 2
-    : 1;
-  setWallCentred(
-    rowWall,
-    width / 2,
-    height / 2,
-    lerp(width * 2 / 3, wallSize, wallShrinkProgress),
-    wallSize,
-  );
-  setWallCentred(
-    colWall,
-    width / 2,
-    height / 2,
-    wallSize,
-    lerp(height * 2 / 3, wallSize, wallShrinkProgress),
-  );
+  // const wallShrinkProgress = winner === null
+  //   ? Math.max(0, lerp(-1, 1, blocks.length / maxBlockCount)) ** 2
+  //   : 1;
+  // setWallCentred(
+  //   rowWall,
+  //   width / 2,
+  //   height / 2,
+  //   lerp(width * 2 / 3, wallSize, wallShrinkProgress),
+  //   wallSize,
+  // );
+  // setWallCentred(
+  //   colWall,
+  //   width / 2,
+  //   height / 2,
+  //   wallSize,
+  //   lerp(height * 2 / 3, wallSize, wallShrinkProgress),
+  // );
 
   for (const block of blocks) {
     block.cooldownLeft = Math.max(block.cooldownLeft - 1, 0);
