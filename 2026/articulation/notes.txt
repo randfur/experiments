@@ -1,0 +1,25 @@
+# 2026-08-22
+- Inspired by: https://www.youtube.com/watch?v=HkgoWiZi7cE
+- A structure with many pivot points, nested pivoting.
+  - Every pivot's axis is pointing towards a central point in space.
+  - Seems to result in the structure always "pointing" at the point in space no matter what the pivot angles, even with nesting.
+- Considered how to construct the pieces:
+  - Need angles to change so the start and end sides are always pointing at the centre.
+  - Could do simple trapezoids.
+  - Would be cool to have curving geometry.
+  - Could use 3D beziers, can control the direction of exit with control points.
+  - How to control the orientation to be correct?
+  - Can have a rolling orientation that turns as points along the curve are sampled.
+  - Not sure how to have it be correctly oriented such that "down" is pointing at the centre by the end, current plan only controls the planar facing and will end up with a "random" roll angle.
+  - Best idea so far is to generate the orientations from both endpoints and crossfade inbetween.
+    - Would probably work fine for graphics, doesn't have to make perfect sense.
+    - Never interpolated significantly different rotors before...
+- Starting with trapezoids is probably a good idea.
+- Implementation pass.
+  - It works.
+  - Used simple trapezoids.
+  - Created a long chain of articulation arms.
+  - Set angle based on time and depth.
+  - Set colour based on depth.
+  - Used red scribble instead of dot because dot hexagon shape wasn't rotating with the camera.
+  - Added purple stars in the background.
