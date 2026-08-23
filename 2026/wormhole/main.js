@@ -8,12 +8,13 @@ import {Vec3} from '../../third-party/ga/vec3.js';
 async function main() {
   const {hexLinesContext} = HexLinesContext.setupFullPageContext({is3d: true, pixelSize: 4});
   const hexLines = hexLinesContext.createLines();
-  const pinkSpikes = new PinkSpikes();
-  const path = new Path(1000, 10, pinkSpikes);
+  const path = new Path(1000, 10, [
+    PinkSpikes,
+  ]);
 
   while (true) {
     const time = await new Promise(requestAnimationFrame);
-    path.progress(3 + 3 * (Math.cos(time / 10000 + 2) + 2));
+    path.progressCamera(time);
     hexLines.clear();
     path.render(hexLines, time);
     Mat4.multiply(

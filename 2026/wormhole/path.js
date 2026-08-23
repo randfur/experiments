@@ -1,65 +1,35 @@
 import {Vec3} from '../../third-party/ga/vec3.js';
 import {Rotor3} from '../../third-party/ga/rotor3.js';
+import {Point} from './point.js';
 
 const TAU = Math.PI * 2;
 
 export class Path {
-  static Point = class Point {
-    constructor() {
-      this.distance = 0;
-      this.position = new Vec3();
-      this.orientation = new Rotor3();
-    }
-
-    set(other) {
-      this.distance = other.distance;
-      this.position.set(other.position);
-      this.orientation.set(other.orientation);
-      return this;
-    }
-
-    setLerp(a, b, t) {
-      this.distance = lerp(a.distance, b.distance, t);
-      this.position.setLerp(a.position, b.position, t);
-      this.orientation.setLerp(a.orientation, b.orientation, t).inplaceNormalise();
-      return this;
-    }
-
-    render(hexLines) {
-      const ringSegmentCount = 6;
-      const ringRadius = 100;
-      for (let i = 0; i <= ringSegmentCount; ++i) {
-        hexLines.addPoint({
-          position: Vec3.polar((i / ringSegmentCount) * TAU, ringRadius).inplaceRotateRotor3(this.orientation).inplaceAdd(this.position),
-          size: 1,
-          colour: {r: 255, g: 255, b: 255},
-        });
-      }
-      hexLines.addNull();
-    }
-  };
-
-  constructor(pointCount, pointStepDistance, style) {
+  constructor(pointCount, pointStepDistance, styles) {
     this.pointCount = pointCount;
     this.pointStepDistance = pointStepDistance;
-    this.style = style;
+    this.styles = styles;
+    // WIP
+    this.style = new styles[0]();
+    this.style = null;
 
-    this.stepCount = 0;
-
-    this.start = new Path.Point();
-    this.end = new Path.Point();
+    this.start = new Point();
+    this.end = new Point();
 
     this.startIndex = 0;
     this.points = [];
     for (let i = 0; i < this.pointCount; ++i) {
-      this.points.push(new Path.Point());
-      this.writeNextPoint(i);
+      this.points.push(new Point());
+      this.setNextPoint(i);
     }
-
-    this.style.distance = this.end.distance;
   }
 
-  progress(distance) {
+  progressCamera(time) {
+    // WIP
+    // if (this.style === null) {
+    // }
+    const distance = this.style.progressCamera(time);
+
     let remainingDistance = distance;
     let previousDistance = this.start.distance;
     let deleteCount = 0;
@@ -75,10 +45,10 @@ export class Path {
 
     if (deleteCount >= this.pointCount) {
       this.startIndex = 0;
-      this.start = new Path.Point();
-      this.end = new Path.Point();
+      this.start = new Point();
+      this.end = new Point();
       for (let i = 0; i < deleteCount; ++i) {
-        this.writeNextPoint(i);
+        this.setNextPoint(i);
       }
       return;
     }
@@ -87,7 +57,7 @@ export class Path {
       this.start.set(this.points[(this.startIndex + deleteCount - 1) % this.pointCount]);
     }
     for (let i = 0; i < deleteCount; ++i) {
-      this.writeNextPoint(this.startIndex)
+      this.setNextPoint(this.startIndex)
       this.startIndex = (this.startIndex + 1) % this.pointCount;
     }
 
@@ -106,22 +76,9 @@ export class Path {
     this.start.position.setZero();
   }
 
-  writeNextPoint(index) {
-    ++this.stepCount;
-    this.end.orientation.inplaceMultiplyLeft(
-      Rotor3.axisAngle(
-        Vec3.polar(this.stepCount / 40),
-        0.02,
-      ),
-    ).inplaceMultiplyLeft(
-      Rotor3.axisAngle(
-        Vec3.polar(this.stepCount / 400 + 5).inplaceOrthogonal().inplaceNormalise(),
-        0.015,
-      ),
-    );
-    this.end.distance += this.pointStepDistance;
-    this.end.position.inplaceAdd(Vec3.z().inplaceRotateRotor3(this.end.orientation).inplaceScale(this.pointStepDistance));
-    this.points[index].set(this.end);
+  setNextPoint(index) {
+    // TODO: Merging two styles together.
+    this.points[index].set(this.style.getNextPoint());
   }
 
   getPointByIndex(index) {
@@ -148,9 +105,6 @@ export class Path {
   }
 
   render(hexLines, time) {
-    // for (const point of this.points) {
-    //   point.render(hexLines);
-    // }
     this.style.render(hexLines, time, this, this.start.distance, this.end.distance);
   }
 }
@@ -159,4 +113,4 @@ function lerp(a, b, t) {
   return a + (b - a) * t;
 }
 
-const getPointReturnValue = new Path.Point();
+const getPointReturnValue = new Point();

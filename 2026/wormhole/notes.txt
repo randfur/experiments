@@ -1,3 +1,6 @@
+# 2026-07-26
+- Refactoring style to be in control of the point generation and camera progression.
+
 # 2026-07-14
 - Added addPointParts() to hex-lines, replaces addPoint() which forces an object creation.
   - Hopefully this stops the occasional frame drop on mobile, probably due to GC.

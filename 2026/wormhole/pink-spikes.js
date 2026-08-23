@@ -1,9 +1,11 @@
 import {Vec3} from '../../third-party/ga/vec3.js';
 import {Rotor3} from '../../third-party/ga/rotor3.js';
+import {Style} from './style.js';
+import {Point} from './point.js';
 
 const TAU = Math.PI * 2;
 
-export class PinkSpikes {
+export class PinkSpikesStyle extends Style {
   constructor() {
     this.distance = 0;
 
@@ -22,6 +24,31 @@ export class PinkSpikes {
       colour: base,
       size: 2,
     }];
+
+    this.stepCount = 0;
+    this.point = new Path.Point();
+  }
+
+  progressCamera(time) {
+    return 3 + 3 * (Math.cos(time / 10000 + 2) + 2);
+  }
+
+  getNextPoint() {
+    ++this.stepCount;
+    this.end.orientation.inplaceMultiplyLeft(
+      Rotor3.axisAngle(
+        Vec3.polar(this.stepCount / 40),
+        0.02,
+      ),
+    ).inplaceMultiplyLeft(
+      Rotor3.axisAngle(
+        Vec3.polar(this.stepCount / 400 + 5).inplaceOrthogonal().inplaceNormalise(),
+        0.015,
+      ),
+    );
+    this.end.distance += this.pointStepDistance;
+    this.end.position.inplaceAdd(Vec3.z().inplaceRotateRotor3(this.end.orientation).inplaceScale(this.pointStepDistance));
+    return this.end;
   }
 
   render(hexLines, time, path, nearDistance, farDistance) {
