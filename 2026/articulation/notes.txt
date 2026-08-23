@@ -1,3 +1,6 @@
+# 2026-08-23
+- Added a small gap between trapezoids.
+
 # 2026-08-22
 - Inspired by: https://www.youtube.com/watch?v=HkgoWiZi7cE
 - A structure with many pivot points, nested pivoting.

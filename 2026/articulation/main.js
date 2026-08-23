@@ -53,6 +53,9 @@ async function main() {
     stars.push(star);
   }
 
+  const baseAxis = new Vec3().setX(-1);
+  const baseDirection = new Vec3().setZ(-1);
+
   while (true) {
     const time = await new Promise(requestAnimationFrame);
 
@@ -90,7 +93,7 @@ async function main() {
     }
 
     for (const root of roots) {
-      root.draw(hexLines, 0, Vec3.a.setX(-1), Vec3.b.setZ(-1));
+      root.draw(hexLines, 0, baseAxis, baseDirection);
     }
 
     hexLines.draw();
@@ -136,31 +139,37 @@ class Articulation {
       this.articulatedDirection,
     );
 
+    const straightArcDirection = Vec3.a.setDelta(
+      Vec3.b.setScale(this.startRadius, baseAxis),
+      Vec3.c.setScale(this.startRadius, this.endAxis),
+    ).inplaceNormalise();
+
     const size = 5;
     const l = 255 / (1 + depth / 3);
+    const margin = 5;
     addPoint(
       hexLines,
-      Vec3.scale(this.startRadius, baseAxis),
+      Vec3.sum(this.startRadius, baseAxis, margin, straightArcDirection),
       size, l, l, l,
     );
     addPoint(
       hexLines,
-      Vec3.scale(this.startRadius, this.endAxis),
+      Vec3.sum(this.startRadius, this.endAxis, -margin, straightArcDirection),
       size, l, l, l,
     );
     addPoint(
       hexLines,
-      Vec3.scale(this.endRadius, this.endAxis),
+      Vec3.sum(this.endRadius, this.endAxis, -margin, straightArcDirection),
       size, l, l, l,
     );
     addPoint(
       hexLines,
-      Vec3.scale(this.endRadius, baseAxis),
+      Vec3.sum(this.endRadius, baseAxis, margin, straightArcDirection),
       size, l, l, l,
     );
     addPoint(
       hexLines,
-      Vec3.scale(this.startRadius, baseAxis),
+      Vec3.sum(this.startRadius, baseAxis, margin, straightArcDirection),
       size, l, l, l,
     );
     hexLines.addNull();
