@@ -8,8 +8,8 @@ async function main() {
   const {hexLinesContext} = HexLinesContext.setupFullPageContext({is3d: true});
   const hexLines = hexLinesContext.createLines();
 
-  const rootCount = 1;
-  const armCount = 50;
+  const rootCount = 2;
+  const armCount = 30;
   const roots = [];
   for (let i = 0; i < rootCount; ++i) {
     let root = null;
@@ -72,7 +72,8 @@ async function main() {
       while (current !== null) {
         current.articulatedAngle =
           Math.sin(i + depth + time / (1000 + depth * 100))
-          * TAU * ((1 + 0.5 * Math.sin(time / 10000))) / 10;
+          * TAU * ((1 + 0.5 * Math.sin(time / 10000))) / 10
+          * (depth === 1 ? 0.5 : 1);
         current = current.next;
         ++depth;
       }
@@ -92,8 +93,8 @@ async function main() {
       hexLines.addNull();
     }
 
-    for (const root of roots) {
-      root.draw(hexLines, 0, baseAxis, baseDirection);
+    for (let i = 0; i < rootCount; ++i) {
+      roots[i].draw(hexLines, 0, baseAxis, baseDirection.clone().inplaceScale(i ? 1 : -1));
     }
 
     hexLines.draw();
@@ -145,7 +146,7 @@ class Articulation {
     ).inplaceNormalise();
 
     const size = 5;
-    const l = 255 / (1 + depth / 3);
+    const l = 255 / (1 + depth / 2);
     const margin = 5;
     addPoint(
       hexLines,
