@@ -61,8 +61,11 @@ async function main() {
 
     Mat4
       .multiply(
-        Mat4.b.setTranslateXyz(0, 0, 250),
-        Mat4.a.setRotateZx(time / 5000),
+        Mat4.c.setRotateYz(-0.2),
+        Mat4.a.setTranslateXyz(0, -50, 250),
+      ).inplaceMultiplyRight(
+        Mat4.b.setRotateZx(-time / 5000),
+        // Mat4.b.setRotateZx(0),
       )
       .exportToArrayBuffer(hexLines.transformMatrix);
 
@@ -71,7 +74,7 @@ async function main() {
       let current = roots[i];
       while (current !== null) {
         current.articulatedAngle =
-          Math.sin(i + depth + time / (1000 + depth * 100))
+          Math.sin(i + depth + time / (1000 + (i + depth) * 100))
           * TAU * ((1 + 0.5 * Math.sin(time / 10000))) / 10
           * (depth === 1 ? 0.5 : 1);
         current = current.next;
@@ -116,64 +119,67 @@ class Articulation {
     this.endDirection = new Vec3();
   }
 
-  draw(hexLines, depth, baseAxis, baseDirection) {
-    this.sideDirection.setCross(baseAxis, baseDirection);
+  draw(hexLines, depth, startAxis, startDirection) {
+    this.sideDirection.setCross(startAxis, startDirection);
 
     this.articulatedDirection.setSum(
       Math.cos(this.articulatedAngle),
-      baseDirection,
+      startDirection,
       Math.sin(this.articulatedAngle),
       this.sideDirection,
     );
 
     this.endAxis.setSum(
       this.cosArc,
-      baseAxis,
+      startAxis,
       this.sinArc,
       this.articulatedDirection,
     );
 
     this.endDirection.setSum(
       -this.sinArc,
-      baseAxis,
+      startAxis,
       this.cosArc,
       this.articulatedDirection,
     );
 
     const straightArcDirection = Vec3.a.setDelta(
-      Vec3.b.setScale(this.startRadius, baseAxis),
+      Vec3.b.setScale(this.startRadius, startAxis),
       Vec3.c.setScale(this.startRadius, this.endAxis),
     ).inplaceNormalise();
 
-    const size = 5;
-    const g = 255 / (1 + depth / 1.5);
-    const r = Math.min(g, (255 - g) / 15);
-    const b = r;
     const margin = 5;
+    const size = 5;
+    const startG = 255 / (1 + depth / 1.5);
+    const startR = Math.min(startG, (255 - startG) / 15);
+    const startB = startR;
+    const endG = 255 / (1 + (depth + 1) / 1.5);
+    const endR = Math.min(endG, (255 - endG) / 15);
+    const endB = endR;
     addPoint(
       hexLines,
-      Vec3.sum(this.startRadius, baseAxis, margin, straightArcDirection),
-      size, r, g, b,
+      Vec3.sum(this.startRadius, startAxis, margin, straightArcDirection),
+      size, startR, startG, startB,
     );
     addPoint(
       hexLines,
       Vec3.sum(this.startRadius, this.endAxis, -margin, straightArcDirection),
-      size, r, g, b,
+      size, endR, endG, endB,
     );
     addPoint(
       hexLines,
       Vec3.sum(this.endRadius, this.endAxis, -margin, straightArcDirection),
-      size, r, g, b,
+      size, endR, endG, endB,
     );
     addPoint(
       hexLines,
-      Vec3.sum(this.endRadius, baseAxis, margin, straightArcDirection),
-      size, r, g, b,
+      Vec3.sum(this.endRadius, startAxis, margin, straightArcDirection),
+      size, startR, startG, startB,
     );
     addPoint(
       hexLines,
-      Vec3.sum(this.startRadius, baseAxis, margin, straightArcDirection),
-      size, r, g, b,
+      Vec3.sum(this.startRadius, startAxis, margin, straightArcDirection),
+      size, startR, startG, startB,
     );
     hexLines.addNull();
 
