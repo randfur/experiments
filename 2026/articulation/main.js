@@ -9,7 +9,7 @@ async function main() {
   const hexLines = hexLinesContext.createLines();
 
   const rootCount = 2;
-  const armCount = 30;
+  const armCount = 25;
   const roots = [];
   for (let i = 0; i < rootCount; ++i) {
     let root = null;
@@ -64,8 +64,7 @@ async function main() {
         Mat4.c.setRotateYz(-0.2),
         Mat4.a.setTranslateXyz(0, -50, 250),
       ).inplaceMultiplyRight(
-        Mat4.b.setRotateZx(-time / 5000),
-        // Mat4.b.setRotateZx(0),
+        Mat4.b.setRotateZx(-time / 3000),
       )
       .exportToArrayBuffer(hexLines.transformMatrix);
 
@@ -74,8 +73,8 @@ async function main() {
       let current = roots[i];
       while (current !== null) {
         current.articulatedAngle =
-          Math.sin(i + depth + time / (1000 + (i + depth) * 100))
-          * TAU * ((1 + 0.5 * Math.sin(time / 10000))) / 10
+          Math.sin(i + depth + time / (500 + (i + depth) * 80))
+          * TAU * ((depth / 10 + 0.5 * Math.sin(time / 5000))) / 10
           * (depth === 1 ? 0.5 : 1);
         current = current.next;
         ++depth;
@@ -150,10 +149,10 @@ class Articulation {
 
     const margin = 5;
     const size = 5;
-    const startG = 255 / (1 + depth / 1.5);
+    const startG = 255 / (1 + depth / 1.2);
     const startR = Math.min(startG, (255 - startG) / 15);
     const startB = startR;
-    const endG = 255 / (1 + (depth + 1) / 1.5);
+    const endG = 255 / (1 + (depth + 1) / 1.2);
     const endR = Math.min(endG, (255 - endG) / 15);
     const endB = endR;
     addPoint(
