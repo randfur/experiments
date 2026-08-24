@@ -1,5 +1,6 @@
 # 2026-08-24
 - Gave it two arms going in different directions.
+- Made the arms green with a grey fade out.
 
 # 2026-08-23
 - Added a small gap between trapezoids.

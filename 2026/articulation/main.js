@@ -146,32 +146,34 @@ class Articulation {
     ).inplaceNormalise();
 
     const size = 5;
-    const l = 255 / (1 + depth / 2);
+    const g = 255 / (1 + depth / 1.5);
+    const r = Math.min(g, (255 - g) / 15);
+    const b = r;
     const margin = 5;
     addPoint(
       hexLines,
       Vec3.sum(this.startRadius, baseAxis, margin, straightArcDirection),
-      size, l, l, l,
+      size, r, g, b,
     );
     addPoint(
       hexLines,
       Vec3.sum(this.startRadius, this.endAxis, -margin, straightArcDirection),
-      size, l, l, l,
+      size, r, g, b,
     );
     addPoint(
       hexLines,
       Vec3.sum(this.endRadius, this.endAxis, -margin, straightArcDirection),
-      size, l, l, l,
+      size, r, g, b,
     );
     addPoint(
       hexLines,
       Vec3.sum(this.endRadius, baseAxis, margin, straightArcDirection),
-      size, l, l, l,
+      size, r, g, b,
     );
     addPoint(
       hexLines,
       Vec3.sum(this.startRadius, baseAxis, margin, straightArcDirection),
-      size, l, l, l,
+      size, r, g, b,
     );
     hexLines.addNull();
 
