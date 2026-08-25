@@ -69,7 +69,7 @@ async function main() {
     stars.push(star);
   }
 
-  const baseAxis = new Vec3().setZ(-1);
+  const baseAxis = new Vec3().setZ(1);
 
   while (true) {
     const time = await new Promise(requestAnimationFrame);
@@ -79,7 +79,7 @@ async function main() {
         Mat4.c.setRotateYz(-0.2),
         Mat4.a.setTranslateXyz(0, -50, 250),
       ).inplaceMultiplyRight(
-        Mat4.b.setRotateZx(-(time - 2000) / 3000),
+        Mat4.b.setRotateZx(-(time + 1000) / 3000),
       )
       .exportToArrayBuffer(hexLines.transformMatrix);
 
@@ -89,7 +89,7 @@ async function main() {
       while (current !== null) {
         current.articulatedAngle =
           Math.sin(i + depth + time / (500 + (i + depth) * 80))
-          * TAU * ((depth / 10 + 0.75 * Math.sin(time / 5000))) / 10
+          * TAU * ((depth / 6 + 0.75 * Math.sin(i + time / 5000))) / 10
           * (depth === 1 ? 0.5 : 1);
         current = current.next;
         ++depth;
@@ -111,7 +111,7 @@ async function main() {
     }
 
     for (let i = 0; i < rootCount; ++i) {
-      roots[i].draw(hexLines, 0, baseAxis, new Vec3().setPolar(-0.6 + TAU * i / rootCount));
+      roots[i].draw(hexLines, 0, baseAxis, new Vec3().setPolar(TAU * i / rootCount));
     }
 
     hexLines.draw();
