@@ -1,7 +1,7 @@
 import {Vec3} from '../../third-party/ga/vec3.js';
 import {Rotor3} from '../../third-party/ga/rotor3.js';
 
-class Point {
+export class Point {
   constructor() {
     this.distance = 0;
     this.position = new Vec3();
@@ -21,4 +21,8 @@ class Point {
     this.orientation.setLerp(a.orientation, b.orientation, t).inplaceNormalise();
     return this;
   }
+}
+
+function lerp(a, b, t) {
+  return a + (b - a) * t;
 }

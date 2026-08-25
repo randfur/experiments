@@ -7,7 +7,7 @@ const TAU = Math.PI * 2;
 
 export class PinkSpikesStyle extends Style {
   constructor() {
-    this.distance = 0;
+    super();
 
     const base = {r: 255, g: 50, b: 200};
     const peak = {r: 255, g: 120, b: 255};
@@ -26,14 +26,15 @@ export class PinkSpikesStyle extends Style {
     }];
 
     this.stepCount = 0;
-    this.point = new Path.Point();
+    this.distance = 0;
+    this.end = new Point();
   }
 
   progressCamera(time) {
     return 3 + 3 * (Math.cos(time / 10000 + 2) + 2);
   }
 
-  getNextPoint() {
+  getNextPoint(pointStepDistance) {
     ++this.stepCount;
     this.end.orientation.inplaceMultiplyLeft(
       Rotor3.axisAngle(
@@ -46,9 +47,15 @@ export class PinkSpikesStyle extends Style {
         0.015,
       ),
     );
-    this.end.distance += this.pointStepDistance;
-    this.end.position.inplaceAdd(Vec3.z().inplaceRotateRotor3(this.end.orientation).inplaceScale(this.pointStepDistance));
+    this.end.distance += pointStepDistance;
+    this.end.position.inplaceAdd(Vec3.z().inplaceRotateRotor3(this.end.orientation).inplaceScale(pointStepDistance));
     return this.end;
+  }
+
+  subtractStart(start) {
+    this.distance -= start.distance;
+    this.end.distance -= start.distance;
+    this.end.position.inplaceSubtract(start.position);
   }
 
   render(hexLines, time, path, nearDistance, farDistance) {

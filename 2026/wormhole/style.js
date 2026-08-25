@@ -1,13 +1,17 @@
-class Style {
+export class Style {
   progressCamera(time) {
     throw 'Unimplemented';
   }
 
-  render(hexLines, time) {
+  getNextPoint() {
     throw 'Unimplemented';
   }
 
-  setNextPoint(index) {
+  subtractDistance(distance) {
+    throw 'Unimplemented';
+  }
+
+  render(hexLines, time) {
     throw 'Unimplemented';
   }
 }

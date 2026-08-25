@@ -1,3 +1,12 @@
+# 2026-08-25
+- Oops the refactor wasn't finished, shouldn't have pushed.
+- Trying to fix up errors.
+  - Done.
+- Still not rendering.
+  - Start and end living somewhere between Path and Style is currently broken, not clear where they should live.
+- Fixed it up.
+  - Start, end and distance are confused concepts at the moment.
+
 # 2026-07-26
 - Refactoring style to be in control of the point generation and camera progression.
 

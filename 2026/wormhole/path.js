@@ -10,11 +10,10 @@ export class Path {
     this.pointStepDistance = pointStepDistance;
     this.styles = styles;
     // WIP
+    // Have two styles to crossfade between.
     this.style = new styles[0]();
-    this.style = null;
 
     this.start = new Point();
-    this.end = new Point();
 
     this.startIndex = 0;
     this.points = [];
@@ -22,6 +21,7 @@ export class Path {
       this.points.push(new Point());
       this.setNextPoint(i);
     }
+    this.start.set(this.points[0]);
   }
 
   progressCamera(time) {
@@ -46,7 +46,6 @@ export class Path {
     if (deleteCount >= this.pointCount) {
       this.startIndex = 0;
       this.start = new Point();
-      this.end = new Point();
       for (let i = 0; i < deleteCount; ++i) {
         this.setNextPoint(i);
       }
@@ -69,16 +68,14 @@ export class Path {
       point.distance -= this.start.distance;
       point.position.inplaceSubtract(this.start.position);
     }
-    this.end.distance -= this.start.distance;
-    this.end.position.inplaceSubtract(this.start.position);
-    this.style.distance -= this.start.distance;
+    this.style.subtractStart(this.start);
     this.start.distance = 0;
     this.start.position.setZero();
   }
 
   setNextPoint(index) {
     // TODO: Merging two styles together.
-    this.points[index].set(this.style.getNextPoint());
+    this.points[index].set(this.style.getNextPoint(this.pointStepDistance));
   }
 
   getPointByIndex(index) {
@@ -105,7 +102,7 @@ export class Path {
   }
 
   render(hexLines, time) {
-    this.style.render(hexLines, time, this, this.start.distance, this.end.distance);
+    this.style.render(hexLines, time, this, this.start.distance, this.getPointByIndex(-1).distance);
   }
 }
 
