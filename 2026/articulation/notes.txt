@@ -1,3 +1,9 @@
+# 2026-08-25
+- Added third arm, distributed angles evenly.
+- Made arms decay into the middle, they now touch the red centre star.
+- Made colour decay into rotting swamp colour.
+- Changed purple star distribution to be biased to the middle of the star space.
+
 # 2026-08-24
 - Gave it two arms going in different directions.
 - Made the arms green with a grey fade out.

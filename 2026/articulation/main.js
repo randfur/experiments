@@ -8,14 +8,26 @@ async function main() {
   const {hexLinesContext} = HexLinesContext.setupFullPageContext({is3d: true});
   const hexLines = hexLinesContext.createLines();
 
-  const rootCount = 2;
-  const armCount = 25;
+  const rootCount = 3;
+  const armCount = 38;
   const roots = [];
+  const arcDecay = 1;
+  const radiusDecay = 0.94;
+  const marginDecay = 0.99;
   for (let i = 0; i < rootCount; ++i) {
     let root = null;
     let previous = null;
+    let arc = 0.7;
+    let startRadius = 130;
+    let endRadius = 180;
+    let margin = 5;
     for (let j = 0; j < armCount; ++j) {
-      const articulation = new Articulation(0.5, i / 100, 100, 150);
+      const articulation = new Articulation(arc, 0, margin, startRadius, endRadius);
+      arc *= arcDecay;
+      margin *= marginDecay;
+      startRadius *= radiusDecay;
+      endRadius *= radiusDecay;
+      arc *= radiusDecay;
       if (root === null) {
         root = articulation;
       } else {
@@ -26,7 +38,7 @@ async function main() {
     roots.push(root);
   }
 
-  const centrePointCount = 20;
+  const centrePointCount = 40;
   const centrePoints = [];
   const centreRadius = 10;
   for (let i = 0; i < centrePointCount; ++i) {
@@ -38,12 +50,16 @@ async function main() {
 
   const starCount = 500;
   const stars = [];
-  const starPoints = 4;
-  const starRadius = 10;
-  const starSpaceSize = 5000;
+  const starPoints = 6;
+  const starRadius = 14;
+  const starSpaceSize = 10000;
   for (let i = 0; i < starCount; ++i) {
     const star = [];
-    const spacePosition = Vec3.xyz(deviate(starSpaceSize), deviate(starSpaceSize), deviate(starSpaceSize));
+    const spacePosition = Vec3.xyz(
+      deviate(starSpaceSize / 2) + deviate(starSpaceSize / 2),
+      deviate(starSpaceSize / 2) + deviate(starSpaceSize / 2),
+      deviate(starSpaceSize / 2) + deviate(starSpaceSize / 2),
+    );
     for (let j = 0; j < starPoints; ++j) {
       star.push(
         new Vec3(deviate(starRadius), deviate(starRadius), deviate(starRadius))
@@ -53,8 +69,7 @@ async function main() {
     stars.push(star);
   }
 
-  const baseAxis = new Vec3().setX(-1);
-  const baseDirection = new Vec3().setZ(-1);
+  const baseAxis = new Vec3().setZ(-1);
 
   while (true) {
     const time = await new Promise(requestAnimationFrame);
@@ -64,7 +79,7 @@ async function main() {
         Mat4.c.setRotateYz(-0.2),
         Mat4.a.setTranslateXyz(0, -50, 250),
       ).inplaceMultiplyRight(
-        Mat4.b.setRotateZx(-time / 3000),
+        Mat4.b.setRotateZx(-(time - 2000) / 3000),
       )
       .exportToArrayBuffer(hexLines.transformMatrix);
 
@@ -74,7 +89,7 @@ async function main() {
       while (current !== null) {
         current.articulatedAngle =
           Math.sin(i + depth + time / (500 + (i + depth) * 80))
-          * TAU * ((depth / 10 + 0.5 * Math.sin(time / 5000))) / 10
+          * TAU * ((depth / 10 + 0.75 * Math.sin(time / 5000))) / 10
           * (depth === 1 ? 0.5 : 1);
         current = current.next;
         ++depth;
@@ -90,13 +105,13 @@ async function main() {
 
     for (const star of stars) {
       for (const point of star) {
-        addPoint(hexLines, point, 4, 200, 50, 255);
+        addPoint(hexLines, point, 8, 200, 50, 255);
       }
       hexLines.addNull();
     }
 
     for (let i = 0; i < rootCount; ++i) {
-      roots[i].draw(hexLines, 0, baseAxis, baseDirection.clone().inplaceScale(i ? 1 : -1));
+      roots[i].draw(hexLines, 0, baseAxis, new Vec3().setPolar(-0.6 + TAU * i / rootCount));
     }
 
     hexLines.draw();
@@ -104,10 +119,11 @@ async function main() {
 }
 
 class Articulation {
-  constructor(arc, articulatedAngle, startRadius, endRadius) {
+  constructor(arc, articulatedAngle, margin, startRadius, endRadius) {
     this.cosArc = Math.cos(arc);
     this.sinArc = Math.sin(arc);
     this.articulatedAngle = articulatedAngle;
+    this.margin = margin;
     this.startRadius = startRadius;
     this.endRadius = endRadius;
     this.next = null;
@@ -147,37 +163,36 @@ class Articulation {
       Vec3.c.setScale(this.startRadius, this.endAxis),
     ).inplaceNormalise();
 
-    const margin = 5;
     const size = 5;
     const startG = 255 / (1 + depth / 1.2);
-    const startR = Math.min(startG, (255 - startG) / 15);
-    const startB = startR;
+    const startB = Math.min(startG, (255 - startG) / 5);
+    const startR = startB / 4;
     const endG = 255 / (1 + (depth + 1) / 1.2);
-    const endR = Math.min(endG, (255 - endG) / 15);
-    const endB = endR;
+    const endB = Math.min(endG, (255 - endG) / 5);
+    const endR = endB / 4;
     addPoint(
       hexLines,
-      Vec3.sum(this.startRadius, startAxis, margin, straightArcDirection),
+      Vec3.sum(this.startRadius, startAxis, this.margin, straightArcDirection),
       size, startR, startG, startB,
     );
     addPoint(
       hexLines,
-      Vec3.sum(this.startRadius, this.endAxis, -margin, straightArcDirection),
+      Vec3.sum(this.startRadius, this.endAxis, -this.margin, straightArcDirection),
       size, endR, endG, endB,
     );
     addPoint(
       hexLines,
-      Vec3.sum(this.endRadius, this.endAxis, -margin, straightArcDirection),
+      Vec3.sum(this.endRadius, this.endAxis, -this.margin, straightArcDirection),
       size, endR, endG, endB,
     );
     addPoint(
       hexLines,
-      Vec3.sum(this.endRadius, startAxis, margin, straightArcDirection),
+      Vec3.sum(this.endRadius, startAxis, this.margin, straightArcDirection),
       size, startR, startG, startB,
     );
     addPoint(
       hexLines,
-      Vec3.sum(this.startRadius, startAxis, margin, straightArcDirection),
+      Vec3.sum(this.startRadius, startAxis, this.margin, straightArcDirection),
       size, startR, startG, startB,
     );
     hexLines.addNull();
