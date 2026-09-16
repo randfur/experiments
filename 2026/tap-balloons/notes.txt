@@ -1,0 +1,21 @@
+# 2026-09-16
+- https://store.google.com/in/magazine/google-birthday
+  - Recreate this for fun.
+- Use hex-lines for graphics.
+- First pass implementation:
+  - Using an entity system this time.
+  - Added balloons with a grow, hang, fade lifecycle.
+  - Added balloon random floating motion.
+  - Added balloon spacing at creation.
+  - Added balloon click detection.
+  - Added pop combo counter.
+- TODO:
+  - Pop particles.
+    - Stars for every point received that accelerate towards the score.
+  - HUD info.
+  - Pending start game stage.
+  - Connected balloons (pop within a short time of each other to pop them all for higher points).
+  - Bad balloons that delete points.
+    - Gemini balloon that clears bad balloons.
+  - Special sequence balloons.
+    - Big G balloon that takes many clicks but gives huge points.
