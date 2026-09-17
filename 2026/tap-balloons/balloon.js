@@ -85,7 +85,7 @@ export class Balloon {
     const rotation = this.rotateBase + this.rotateAmplitude * Math.sin(this.time * this.rotateFrequency + this.rotatePhase);
     const fade = easeOut(this.fadeRemaining / fadeDuration);
 
-    drawModel(hexLines, this.balloonModel, 4, fadeColour(this.colour, fade), point => {
+    drawModel(hexLines, this.balloonModel, 4 + this.radius / 40, fadeColour(this.colour, fade), point => {
       return Vec3
         .set(point)
         .inplaceScale(this.radius)
@@ -125,7 +125,7 @@ const balloonModels = [
     new Vec3(-0.87, -0.35),
     new Vec3(-0.94, 0.38),
     new Vec3(-0.67, 0.80),
-    new Vec3(-0.11, 1.02),
+    new Vec3(-0.10, 1.00),
     null,
   ],
   [
