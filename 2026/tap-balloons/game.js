@@ -158,7 +158,7 @@ const stages = [{
   spawnChance: 0.06,
   badChance: 0.01,
 }, {
-  colour: {r: 20, g: 50, b: 255},
+  colour: {r: 20, g: 100, b: 255},
   spawnChance: 0.1,
   badChance: 0.05,
 }, {
