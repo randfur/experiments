@@ -93,7 +93,7 @@ export class Balloon {
         .inplaceAdd(this.position);
     });
 
-    drawModel(hexLines, shineModel, 4, fadeColour(this.bad ? badShineColour : white, fade), point => {
+    drawModel(hexLines, this.bad ? badShineModel : shineModel, 4, fadeColour(this.bad ? badShineColour : white, fade), point => {
       return Vec3
         .set(point)
         .inplaceScale(this.radius)
@@ -107,7 +107,7 @@ const growDuration = 2000;
 const hangDuration = 2000;
 const fadeDuration = 1500;
 const badColour = {r: 200, g: 200, b: 200};
-const badShineColour = {r: 150, g: 0, b: 0};
+const badShineColour = {r: 200, g: 0, b: 0};
 
 const balloonModels = [
   [
@@ -224,6 +224,19 @@ const shineModel = [
   new Vec3(-0.44, 0.43),
   new Vec3(-0.27, 0.60),
   new Vec3(-0.10, 0.66),
+  null,
+];
+
+const badShineModel = [
+  new Vec3(-0.31, 0.77),
+  new Vec3(-0.62, 0.62),
+  new Vec3(-0.78, 0.34),
+  new Vec3(-0.76, -0.09),
+  new Vec3(-0.64, 0.22),
+  new Vec3(-0.53, 0.42),
+  new Vec3(-0.36, 0.60),
+  new Vec3(-0.03, 0.80),
+  new Vec3(-0.32, 0.77),
   null,
 ];
 
