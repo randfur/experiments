@@ -3,7 +3,7 @@ import {Confetti} from './confetti.js';
 import {random, easeOut, fadeColour} from './utils.js';
 
 export class Balloon {
-  static maxRadius = 50;
+  static maxRadius = 80;
   static maxDrift = 10;
 
   constructor(game, position, colour) {
