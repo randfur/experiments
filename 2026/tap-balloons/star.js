@@ -41,7 +41,7 @@ export class Star {
   }
 }
 
-const starColour = {r: 255, g: 200, b: 100};
+const starColour = {r: 255, g: 200, b: 50};
 
 const starModelPoints = [
   new Vec3(-0.62, 0.77),
