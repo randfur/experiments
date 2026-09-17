@@ -62,7 +62,7 @@ export class Balloon {
     this.alive = false;
 
     if (!this.bad) {
-      const count = 3 + random(3);
+      const count = 5 + random(5);
       const confettis = [];
       for (let i = 0; i < count; ++i) {
         const confetti = new Confetti(this.position.clone(), this.radius, this.colour, confettis);

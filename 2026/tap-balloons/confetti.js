@@ -36,7 +36,7 @@ export class Confetti {
         break;
       }
     }
-    this.velocity.inplaceScale(0.2);
+    this.velocity.inplaceScale(0.5);
 
     this.duration = 400 + random(500);
     this.remaining = this.duration;

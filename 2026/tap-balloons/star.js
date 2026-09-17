@@ -30,7 +30,7 @@ export class Star {
     drawModel(
       hexLines,
       this.bad ? badStarModel : starModel,
-      this.bad ? 3 : 4,
+      4,
       this.bad ? badStarColour : starColour,
       point => {
         return Vec3
