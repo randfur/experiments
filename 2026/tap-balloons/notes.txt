@@ -13,6 +13,10 @@
   - Similar for confetti.
 - Increased combo limit to 10.
   - Tweaks to stars for this.
+- Added bad balloons.
+  - Skull stars for negative points.
+- Changed high score to track whatever score has largest absolute magnitude.
+- Added shockwave effect.
 
 # 2026-09-16
 - https://store.google.com/in/magazine/google-birthday

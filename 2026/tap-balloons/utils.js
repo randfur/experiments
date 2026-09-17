@@ -16,6 +16,10 @@ export function random(x) {
   return Math.random() * x;
 }
 
+export function easeIn(x) {
+  return x ** 2;
+}
+
 export function easeOut(x) {
   return 1 - (1 - x) ** 2;
 }

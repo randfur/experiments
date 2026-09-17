@@ -1,9 +1,12 @@
 import {Vec3} from '../../third-party/ga/vec3.js';
 import {Confetti} from './confetti.js';
-import {random, pickRandom, easeOut, fadeColour, drawModel} from './utils.js';
+import {Shockwave} from './shockwave.js';
+import {TAU, random, pickRandom, easeOut, fadeColour, drawModel} from './utils.js';
 
 export class Balloon {
-  constructor(game, position, maxRadius, colour) {
+  static drift = 20;
+
+  constructor(game, position, maxRadius, colour, bad) {
     this.alive = true;
     this.game = game;
     this.basePosition = position;
@@ -14,7 +17,9 @@ export class Balloon {
     this.growProgress = 0;
     this.radius = 0;
     this.maxRadius = maxRadius;
-    this.colour = colour;
+    this.colour = bad ? badColour : colour;
+    this.bad = bad;
+    this.balloonModel = bad ? badBalloonModel : pickRandom(balloonModels);
     this.driftXFrequency = random(1 / 600);
     this.driftYFrequency = random(1 / 600);
     this.driftXPhase = random(TAU);
@@ -24,7 +29,6 @@ export class Balloon {
     this.rotateBase = random(0.1);
     this.rotateAmplitude = 0.05 + random(0.2);
     this.time = 0;
-    this.balloonModel = pickRandom(balloonModels);
   }
 
   update(time, timeDelta) {
@@ -45,8 +49,8 @@ export class Balloon {
 
     this.position.setAddXyz(
       this.basePosition,
-      drift * this.growProgress * Math.cos(this.time * this.driftXFrequency + this.driftXPhase),
-      drift * this.growProgress * Math.sin(this.time * this.driftYFrequency + this.driftYPhase),
+      Balloon.drift * this.growProgress * Math.cos(this.time * this.driftXFrequency + this.driftXPhase),
+      Balloon.drift * this.growProgress * Math.sin(this.time * this.driftYFrequency + this.driftYPhase),
     );
 
     if (this.fadeRemaining <= 0) {
@@ -56,13 +60,25 @@ export class Balloon {
 
   pop() {
     this.alive = false;
-    const count = 10 + random(10);
-    const confettis = [];
-    for (let i = 0; i < count; ++i) {
-      const confetti = new Confetti(this.position.clone(), this.radius, this.colour, confettis);
-      confettis.push(confetti);
-      this.game.entities.push(confetti);
+
+    if (!this.bad) {
+      const count = 3 + random(3);
+      const confettis = [];
+      for (let i = 0; i < count; ++i) {
+        const confetti = new Confetti(this.position.clone(), this.radius, this.colour, confettis);
+        confettis.push(confetti);
+        this.game.entities.push(confetti);
+      }
     }
+
+    this.game.entities.push(
+      new Shockwave(
+        this.position.clone(),
+        this.colour,
+        this.radius,
+        this.bad ? 10 : 2,
+      ),
+    );
   }
 
   draw(hexLines, textContext) {
@@ -77,7 +93,7 @@ export class Balloon {
         .inplaceAdd(this.position);
     });
 
-    drawModel(hexLines, shineModel, 4, fadeColour(white, fade), point => {
+    drawModel(hexLines, shineModel, 4, fadeColour(this.bad ? badShineColour : white, fade), point => {
       return Vec3
         .set(point)
         .inplaceScale(this.radius)
@@ -87,15 +103,11 @@ export class Balloon {
   }
 }
 
-export function drawBalloon(hexLines, position, colour, scale, rotation, fade) {
-}
-
-const TAU = Math.PI * 2;
-
 const growDuration = 2000;
 const hangDuration = 2000;
 const fadeDuration = 1500;
-const drift = 20;
+const badColour = {r: 200, g: 200, b: 200};
+const badShineColour = {r: 150, g: 0, b: 0};
 
 const balloonModels = [
   [
@@ -171,6 +183,35 @@ const badBalloonModel = [
   new Vec3(0.51, 0.84),
   new Vec3(0.11, 0.95),
   new Vec3(-0.00, 1.16),
+  null,
+];
+
+const clearBadBalloonModel = [
+  new Vec3(-0.01, 1.01),
+  new Vec3(0.16, 0.97),
+  new Vec3(0.28, 0.68),
+  new Vec3(0.38, 0.44),
+  new Vec3(0.63, 0.26),
+  new Vec3(0.91, 0.12),
+  new Vec3(1.00, 0.01),
+  new Vec3(0.95, -0.14),
+  new Vec3(0.67, -0.27),
+  new Vec3(0.37, -0.34),
+  new Vec3(0.20, -0.66),
+  new Vec3(0.09, -0.95),
+  new Vec3(0.00, -1.01),
+  new Vec3(-0.18, -0.94),
+  new Vec3(-0.28, -0.65),
+  new Vec3(-0.36, -0.33),
+  new Vec3(-0.66, -0.21),
+  new Vec3(-0.97, -0.08),
+  new Vec3(-1.05, 0.01),
+  new Vec3(-1.00, 0.14),
+  new Vec3(-0.69, 0.30),
+  new Vec3(-0.38, 0.41),
+  new Vec3(-0.22, 0.73),
+  new Vec3(-0.14, 0.97),
+  new Vec3(-0.02, 1.01),
   null,
 ];
 

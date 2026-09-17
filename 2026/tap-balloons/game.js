@@ -41,7 +41,7 @@ export class Game {
         }
         return;
       }
-      this.stageRemaining = 5000;
+      this.stageRemaining = 15000;
       this.stage = stages[this.stageIndex];
     }
 
@@ -50,7 +50,7 @@ export class Game {
       this.comboLevel = 0;
     }
 
-    let balloons = this.stage.chance;
+    let balloons = this.stage.spawnChance;
     while (balloons > 0) {
       if (Math.random() < balloons) {
         this.maybeAddBalloon();
@@ -66,9 +66,20 @@ export class Game {
         const squareDistance = Vec3.delta(entity.position, position).squareLength();
         if (squareDistance < entity.radius ** 2) {
           entity.pop();
-          this.comboLevel = Math.min(maxComboLevel, this.comboLevel + 1);
-          this.comboRemaining = comboDuration;
-          this.entities.push(new StarEmitter(this, position.clone(), entity.radius, this.comboLevel));
+          if (entity.bad) {
+            this.comboLevel = 0;
+            this.comboRemaining = 0;
+          } else {
+            this.comboLevel = Math.min(maxComboLevel, this.comboLevel + 1);
+            this.comboRemaining = comboDuration;
+          }
+          this.entities.push(new StarEmitter(
+            this,
+            position.clone(),
+            entity.radius / 2,
+            entity.bad ? 50 : this.comboLevel,
+            entity.bad,
+          ));
           pop = true;
           break;
         }
@@ -77,6 +88,13 @@ export class Game {
     if (!pop) {
       this.entities.push(new Cross(position.clone()));
       this.comboLevel = 0;
+    }
+  }
+
+  addScore(points) {
+    this.score += points;
+    if (Math.abs(this.score) > Math.abs(this.highScore)) {
+      this.highScore = this.score;
     }
   }
 
@@ -93,7 +111,7 @@ export class Game {
       for (const entity of this.entities) {
         if (entity instanceof Balloon) {
           const squareDistance = Vec3.delta(entity.position, position).squareLength();
-          if (squareDistance < (entity.maxRadius + maxRadius) ** 2) {
+          if (squareDistance < (entity.maxRadius + maxRadius + Balloon.drift) ** 2) {
             collision = true;
             maxRadius *= 0.8;
             break;
@@ -101,7 +119,8 @@ export class Game {
         }
       }
       if (!collision) {
-        this.entities.push(new Balloon(this, position, maxRadius, this.stage.colour));
+        const bad = Math.random() < this.stage.badChance;
+        this.entities.push(new Balloon(this, position, maxRadius, this.stage.colour, bad));
         break;
       }
     }
@@ -136,16 +155,20 @@ const maxBalloonRadius = 80;
 const comboDuration = 600;
 const stages = [{
   colour: {r: 255, g: 20, b: 10},
-  chance: 0.06,
+  spawnChance: 0.06,
+  badChance: 0.01,
 }, {
   colour: {r: 20, g: 50, b: 255},
-  chance: 0.1,
+  spawnChance: 0.1,
+  badChance: 0.05,
 }, {
   colour: {r: 255, g: 190, b: 20},
-  chance: 0.5,
+  spawnChance: 0.4,
+  badChance: 0.1,
 }, {
   colour: {r: 20, g: 220, b: 10},
-  chance: 5,
+  spawnChance: 5,
+  badChance: 0.2,
 }];
 
 const white = {r: 255, g: 255, b: 255};

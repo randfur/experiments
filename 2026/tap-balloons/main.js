@@ -32,7 +32,9 @@ async function main() {
     lastTime = time;
 
     for (const entity of entities) {
-      entity.update(time, timeDelta);
+      if (entity.alive) {
+        entity.update(time, timeDelta);
+      }
     }
 
     let aliveIndex = 0;
