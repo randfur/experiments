@@ -5,38 +5,40 @@ export class Cross {
   constructor(position) {
     this.alive = true;
     this.position = position;
-    this.remaining = 10;
+    this.remaining = 300;
   }
 
   update(time, timeDelta) {
-    --this.remaining;
-    this.alive = this.remaining > 0;
+    this.remaining -= timeDelta;
+    if (this.remaining <= 0) {
+      this.alive = false;
+    }
   }
 
   draw(hexLines, textContext) {
-    const bump = (Math.floor(this.remaining / 3) % 2 == 0 ? 1 : -1) * 1;
-    drawModel(hexLines, crossModelPoints, 3, grey, point => {
+    const bump = (Math.floor(this.remaining / 50) % 2 == 0 ? 1 : -1) * 1;
+    drawModel(hexLines, crossModel, 3, brown, point => {
       return Vec3
         .scale(50, point)
         .inplaceRotateXyAngle(0.1)
         .inplaceAdd(this.position)
-        .inplaceAddXyz(-1 + bump, -1 - bump);
+        .inplaceAddXyz(-3 + bump, 1 - bump);
     });
   }
 }
 
-const grey = {r: 100, g: 100, b: 100};
+const brown = {r: 100, g: 10, b: 10};
 
-const crossModelPoints = [
-  new Vec3(-0.70, 0.78),
-  new Vec3(0.78, -0.71),
-  new Vec3(-0.67, 0.85),
-  new Vec3(0.66, -0.64),
+const crossModel = [
+  new Vec3(-0.74, 0.78),
+  new Vec3(0.74, -0.71),
+  new Vec3(-0.71, 0.85),
+  new Vec3(0.62, -0.64),
   null,
-  new Vec3(0.83, 0.68),
-  new Vec3(-0.82, -0.71),
-  new Vec3(0.66, 0.63),
-  new Vec3(-0.67, -0.67),
-  new Vec3(0.53, 0.48),
+  new Vec3(0.80, 0.68),
+  new Vec3(-0.85, -0.71),
+  new Vec3(0.63, 0.63),
+  new Vec3(-0.70, -0.67),
+  new Vec3(0.50, 0.48),
   null,
 ];

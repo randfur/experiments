@@ -25,10 +25,10 @@ async function main() {
   }
   entities.push(new Game(entities, width, height));
 
-  let lastTime = performance.now();
+  let lastTime = 0;
   while (true) {
     const time = await new Promise(requestAnimationFrame);
-    const timeDelta = Math.max(1000 / 30, time - lastTime);
+    const timeDelta = Math.min(1000 / 30, time - lastTime);
     lastTime = time;
 
     for (const entity of entities) {

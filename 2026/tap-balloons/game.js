@@ -1,6 +1,7 @@
 import {Balloon} from './balloon.js';
 import {Vec3} from '../../third-party/ga/vec3.js';
 import {StarEmitter} from './star-emitter.js';
+import {Star} from './star.js';
 import {Cross} from './cross.js';
 import {deviate, drawModel} from './utils.js';
 
@@ -28,34 +29,33 @@ export class Game {
   }
 
   update(time, timeDelta) {
-    --this.stageRemaining;
+    this.stageRemaining -= timeDelta;
     if (this.stageRemaining <= 0) {
       ++this.stageIndex;
       if (this.stageIndex >= stages.length) {
         this.reset();
         for (const entity of this.entities) {
-          if (entity instanceof Balloon) {
+          if (entity !== this) {
             entity.alive = false;
           }
         }
         return;
       }
-      this.stageRemaining = 1000;
+      this.stageRemaining = 5000;
       this.stage = stages[this.stageIndex];
     }
 
-    --this.comboRemaining;
+    this.comboRemaining -= timeDelta;
     if (this.comboRemaining <= 0) {
       this.comboLevel = 0;
     }
 
     let balloons = this.stage.chance;
-    while (balloons > 1) {
+    while (balloons > 0) {
+      if (Math.random() < balloons) {
+        this.maybeAddBalloon();
+      }
       --balloons;
-      this.maybeAddBalloon();
-    }
-    if (Math.random() < balloons) {
-      this.maybeAddBalloon();
     }
   }
 
@@ -68,7 +68,7 @@ export class Game {
           entity.pop();
           this.comboLevel = Math.min(maxComboLevel, this.comboLevel + 1);
           this.comboRemaining = comboDuration;
-          this.entities.push(new StarEmitter(this, position.clone(), this.comboLevel));
+          this.entities.push(new StarEmitter(this, position.clone(), entity.radius, this.comboLevel));
           pop = true;
           break;
         }
@@ -82,21 +82,28 @@ export class Game {
 
   maybeAddBalloon() {
     const position = new Vec3(
-      deviate(this.width / 2 - Balloon.maxRadius),
-      deviate(this.height / 2 - Balloon.maxRadius),
+      deviate(this.width / 2 - maxBalloonRadius),
+      deviate(this.height / 2 - maxBalloonRadius),
     );
-    let collision = false;
-    for (const entity of this.entities) {
-      if (entity instanceof Balloon) {
-        const squareDistance = Vec3.delta(entity.position, position).squareLength();
-        if (squareDistance < (Balloon.maxRadius * 2) ** 2) {
-          collision = true;
-          break;
+    let attemptsLeft = 5;
+    let maxRadius = maxBalloonRadius;
+    while (attemptsLeft > 0) {
+      --attemptsLeft;
+      let collision = false;
+      for (const entity of this.entities) {
+        if (entity instanceof Balloon) {
+          const squareDistance = Vec3.delta(entity.position, position).squareLength();
+          if (squareDistance < (entity.maxRadius + maxRadius) ** 2) {
+            collision = true;
+            maxRadius *= 0.8;
+            break;
+          }
         }
       }
-    }
-    if (!collision) {
-      this.entities.push(new Balloon(this, position, this.stage.colour));
+      if (!collision) {
+        this.entities.push(new Balloon(this, position, maxRadius, this.stage.colour));
+        break;
+      }
     }
   }
 
@@ -120,12 +127,13 @@ export class Game {
     drawModel(hexLines, comboModelPoints, 10, white, point => {
       return Vec3.set(point).inplaceScale(100).inplaceAddXyz(this.width / 2 - 140, wordsY);
     });
-    textContext.fillText('X '.repeat(this.comboLevel).trim(), this.width - 140, numberY);
+    textContext.fillText(`${this.comboLevel} X`, this.width - 140, numberY);
   }
 }
 
-const maxComboLevel = 3;
-const comboDuration = 50;
+const maxComboLevel = 10;
+const maxBalloonRadius = 80;
+const comboDuration = 600;
 const stages = [{
   colour: {r: 255, g: 20, b: 10},
   chance: 0.06,

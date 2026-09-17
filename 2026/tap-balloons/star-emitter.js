@@ -1,28 +1,37 @@
+import {Vec3} from '../../third-party/ga/vec3.js';
 import {Star} from './star.js';
+import {random, TAU} from './utils.js';
 
 export class StarEmitter {
-  constructor(game, position, count) {
+  constructor(game, position, radius, count) {
     this.alive = true;
     this.game = game;
     this.position = position;
-    this.remaining = emitDuration;
-    this.count = count;
-    this.size = 5;
+    this.radius = radius;
+    this.delayRemaining = 0;
+    this.starsRemaining = count;
+    this.starCount = 0;
   }
 
   update(time, timeDelta) {
-    --this.remaining;
-    if (this.remaining <= 0) {
-      this.game.entities.push(new Star(this.game, this.position.clone(), this.size));
-      this.size += 5;
-      --this.count;
-      this.remaining = emitDuration;
+    this.delayRemaining -= timeDelta;
+    if (this.delayRemaining <= 0) {
+      this.game.entities.push(new Star(
+        this.game,
+        new Vec3().setPolar(random(TAU), random(this.radius)).inplaceAdd(this.position),
+        this.starCount,
+      ));
+      ++this.starCount;
+      --this.starsRemaining;
+      this.delayRemaining = delayDuration;
     }
-    this.alive = this.count > 0;
+    if (this.starsRemaining <= 0) {
+      this.alive = false;
+    }
   }
 
   draw(hexLines, textContext) {
   }
 }
 
-const emitDuration = 3;
+const delayDuration = 20;

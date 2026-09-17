@@ -1,3 +1,5 @@
+export const TAU = Math.PI * 2;
+
 const returnColour = {r: 0, g: 0, b: 0};
 export function fadeColour(colour, fade) {
   returnColour.r = colour.r * fade;
@@ -34,4 +36,8 @@ export function drawModel(hexLines, points, size, colour, transform) {
       hexLines.addPointParts(transform(point), size, colour);
     }
   }
+}
+
+export function pickRandom(list) {
+  return list[Math.floor(random(list.length))];
 }
