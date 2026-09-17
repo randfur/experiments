@@ -16,7 +16,7 @@ export class Star {
   update(time, timeDelta) {
     this.position.inplaceScaleAdd(timeDelta, this.velocity);
     if (!this.bad) {
-      this.position.x -= this.position.x / 10;
+      this.position.x -= timeDelta * this.position.x / 1000;
     }
     this.velocity.y += timeDelta * this.yAcceleration;
 

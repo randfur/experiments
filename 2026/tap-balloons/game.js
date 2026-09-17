@@ -151,7 +151,7 @@ export class Game {
 }
 
 const maxComboLevel = 10;
-const maxBalloonRadius = 80;
+const maxBalloonRadius = 150;
 const comboDuration = 600;
 const stages = [{
   colour: {r: 255, g: 20, b: 10},

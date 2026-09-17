@@ -17,7 +17,7 @@ export class Cross {
 
   draw(hexLines, textContext) {
     const bump = (Math.floor(this.remaining / 50) % 2 == 0 ? 1 : -1) * 1;
-    drawModel(hexLines, crossModel, 3, brown, point => {
+    drawModel(hexLines, crossModel, 5, brown, point => {
       return Vec3
         .scale(50, point)
         .inplaceRotateXyAngle(0.1)
@@ -27,7 +27,7 @@ export class Cross {
   }
 }
 
-const brown = {r: 100, g: 10, b: 10};
+const brown = {r: 100, g: 10, b: 20};
 
 const crossModel = [
   new Vec3(-0.74, 0.78),
