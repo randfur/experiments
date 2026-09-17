@@ -1,0 +1,6 @@
+# 2026-09-17
+- Quick and dirty co-ordinate capture for simple hard coded models.
+- Outputs to console.
+- Just in 2D.
+- Done.
+  - Needed to use event.clientX/Y rather than offsetX/Y due to the canvas transform scale.

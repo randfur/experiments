@@ -1,3 +1,14 @@
+# 2026-09-17
+- Need a quick and dirty image editor to capture vector co-ordinates.
+  - Created 2026/quick-draw project.
+    - Very helpful.
+- Added:
+  - HUD.
+  - Confetti.
+  - Scoring stars.
+  - Game over.
+  - High score.
+
 # 2026-09-16
 - https://store.google.com/in/magazine/google-birthday
   - Recreate this for fun.
