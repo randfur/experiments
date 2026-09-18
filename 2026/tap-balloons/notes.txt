@@ -1,3 +1,10 @@
+# 2026-09-18
+- Added clean up balloon type.
+  - Fancy colour rendering.
+- Moved balloon model data out into separate file.
+  - Was needed to be able to reference in static variables without putting at the top of the file.
+- Added distortion to the balloon shine.
+
 # 2026-09-17
 - Need a quick and dirty image editor to capture vector co-ordinates.
   - Created 2026/quick-draw project.

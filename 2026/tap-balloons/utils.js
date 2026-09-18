@@ -1,19 +1,15 @@
 export const TAU = Math.PI * 2;
 
-const returnColour = {r: 0, g: 0, b: 0};
-export function fadeColour(colour, fade) {
-  returnColour.r = colour.r * fade;
-  returnColour.g = colour.g * fade;
-  returnColour.b = colour.b * fade;
-  return returnColour;
-}
-
 export function deviate(x) {
   return Math.random() * 2 * x - x;
 }
 
 export function random(x) {
   return Math.random() * x;
+}
+
+export function modulo(x, n) {
+  return x - n * Math.floor(x / n);
 }
 
 export function easeIn(x) {
@@ -44,4 +40,20 @@ export function drawModel(hexLines, points, size, colour, transform) {
 
 export function pickRandom(list) {
   return list[Math.floor(random(list.length))];
+}
+
+const fadeColourResult = {r: 0, g: 0, b: 0};
+export function fadeColour(colour, fade) {
+  fadeColourResult.r = colour.r * fade;
+  fadeColourResult.g = colour.g * fade;
+  fadeColourResult.b = colour.b * fade;
+  return fadeColourResult;
+}
+
+const lerpColourResult = {r: 0, g: 0, b: 0};
+export function lerpColour(colourA, colourB, progress) {
+  lerpColourResult.r = colourA.r + (colourB.r - colourA.r) * progress;
+  lerpColourResult.g = colourA.g + (colourB.g - colourA.g) * progress;
+  lerpColourResult.b = colourA.b + (colourB.b - colourA.b) * progress;
+  return lerpColourResult;
 }

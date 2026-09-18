@@ -1,14 +1,16 @@
 import {Vec3} from '../../third-party/ga/vec3.js';
 import {Confetti} from './confetti.js';
 import {Shockwave} from './shockwave.js';
-import {TAU, random, pickRandom, easeOut, fadeColour, drawModel} from './utils.js';
+import {TAU, random, pickRandom, modulo, easeOut, fadeColour, lerpColour, drawModel} from './utils.js';
+import {balloonModels, badBalloonModel, cleanUpBalloonModel, normalShineModel, badShineModel, cleanUpShineModel} from './model-data.js';
 
 export class Balloon {
   static drift = 20;
 
-  constructor(game, position, maxRadius, colour, bad) {
+  constructor(game, type, position, maxRadius, stageColour) {
     this.alive = true;
     this.game = game;
+    this.type = type;
     this.basePosition = position;
     this.position = position.clone();
     this.growRemaining = growDuration;
@@ -17,9 +19,16 @@ export class Balloon {
     this.growProgress = 0;
     this.radius = 0;
     this.maxRadius = maxRadius;
-    this.colour = bad ? badColour : colour;
-    this.bad = bad;
-    this.balloonModel = bad ? badBalloonModel : pickRandom(balloonModels);
+    this.colour = {
+      normal: stageColour,
+      bad: badColour,
+      cleanUp: null,
+    }[type];
+    this.balloonModel = {
+      normal: pickRandom(balloonModels),
+      bad: badBalloonModel,
+      cleanUp: cleanUpBalloonModel,
+    }[type];
     this.driftXFrequency = random(1 / 600);
     this.driftYFrequency = random(1 / 600);
     this.driftXPhase = random(TAU);
@@ -27,7 +36,7 @@ export class Balloon {
     this.rotateFrequency = random(1 / 400);
     this.rotatePhase = random(TAU);
     this.rotateBase = random(0.1);
-    this.rotateAmplitude = 0.05 + random(0.2);
+    this.rotateAmplitude = 0.05 + random(0.3);
     this.time = 0;
   }
 
@@ -61,7 +70,7 @@ export class Balloon {
   pop() {
     this.alive = false;
 
-    if (!this.bad) {
+    if (this.type === 'normal') {
       const count = 5 + random(5);
       const confettis = [];
       for (let i = 0; i < count; ++i) {
@@ -74,30 +83,69 @@ export class Balloon {
     this.game.entities.push(
       new Shockwave(
         this.position.clone(),
-        this.colour,
+        this.type === 'cleanUp' ? cleanUpShockwaveColour : this.colour,
         this.radius,
-        this.bad ? 10 : 2,
+        this.type === 'bad' ? 10 : 2,
       ),
     );
   }
 
+  static shineModel = {
+    normal: normalShineModel,
+    bad: badShineModel,
+    cleanUp: cleanUpShineModel,
+  };
+  static shineColour = {
+    normal: {r: 255, g: 255, b: 255},
+    bad: {r: 200, g: 0, b: 0},
+    cleanUp: {r: 255, g: 255, b: 255},
+  };
   draw(hexLines, textContext) {
     const rotation = this.rotateBase + this.rotateAmplitude * Math.sin(this.time * this.rotateFrequency + this.rotatePhase);
     const fade = easeOut(this.fadeRemaining / fadeDuration);
+    const modelThickness = 4 + this.radius / 40;
 
-    drawModel(hexLines, this.balloonModel, 4 + this.radius / 40, fadeColour(this.colour, fade), point => {
+    if (this.type === 'cleanUp') {
+      for (let i = 0; i < cleanUpBalloonModel.length; ++i) {
+        const point = cleanUpBalloonModel[i];
+        const colourIndex = 0.25 + rotation * 2 + i / cleanUpBalloonModel.length * cleanUpColours.length;
+        const colourA = cleanUpColours[modulo(Math.floor(colourIndex), cleanUpColours.length)];
+        const colourB = cleanUpColours[modulo(Math.floor(colourIndex + 1), cleanUpColours.length)];
+        const colour = fadeColour(lerpColour(colourA, colourB, colourIndex - Math.floor(colourIndex)), fade);
+        if (point === null) {
+          hexLines.addNull();
+        } else {
+          hexLines.addPointParts(
+            Vec3
+              .set(point)
+              .inplaceScale(this.radius)
+              .inplaceRotateXyAngle(rotation)
+              .inplaceAdd(this.position),
+            modelThickness,
+            colour,
+          );
+        }
+      }
+    } else {
+      drawModel(hexLines, this.balloonModel, modelThickness, fadeColour(this.colour, fade), point => {
+        return Vec3
+          .set(point)
+          .inplaceScale(this.radius)
+          .inplaceRotateXyAngle(rotation)
+          .inplaceAdd(this.position);
+      });
+    }
+
+    const distortion = this.type === 'cleanUp' ? 0 : this.radius / 40;
+    drawModel(hexLines, Balloon.shineModel[this.type], 4, fadeColour(Balloon.shineColour[this.type], fade), point => {
       return Vec3
         .set(point)
         .inplaceScale(this.radius)
-        .inplaceRotateXyAngle(rotation)
-        .inplaceAdd(this.position);
-    });
-
-    drawModel(hexLines, this.bad ? badShineModel : shineModel, 4, fadeColour(this.bad ? badShineColour : white, fade), point => {
-      return Vec3
-        .set(point)
-        .inplaceScale(this.radius)
-        .inplaceRotateXyAngle(rotation / 3)
+        .inplaceRotateXyAngle(rotation / 2)
+        .inplaceAddXyz(
+          distortion * Math.cos(-12 * point.y + 3 * rotation),
+          distortion * Math.sin(-12 * point.x + 3 * rotation),
+        )
         .inplaceAdd(this.position);
     });
   }
@@ -107,137 +155,11 @@ const growDuration = 2000;
 const hangDuration = 2000;
 const fadeDuration = 1500;
 const badColour = {r: 200, g: 200, b: 200};
-const badShineColour = {r: 200, g: 0, b: 0};
+const cleanUpShockwaveColour = {r: 255, g: 255, b: 255};
 
-const balloonModels = [
-  [
-    new Vec3(-0.10, 1.00),
-    new Vec3(0.32, 0.96),
-    new Vec3(0.72, 0.77),
-    new Vec3(0.94, 0.30),
-    new Vec3(0.82, -0.49),
-    new Vec3(0.51, -0.76),
-    new Vec3(-0.01, -0.99),
-    new Vec3(-0.18, -1.16),
-    new Vec3(0.14, -1.19),
-    new Vec3(-0.01, -1.00),
-    new Vec3(-0.50, -0.79),
-    new Vec3(-0.87, -0.35),
-    new Vec3(-0.94, 0.38),
-    new Vec3(-0.67, 0.80),
-    new Vec3(-0.10, 1.00),
-    null,
-  ],
-  [
-    new Vec3(-0.02, 1.01),
-    new Vec3(0.45, 0.90),
-    new Vec3(0.82, 0.60),
-    new Vec3(0.93, 0.12),
-    new Vec3(0.79, -0.42),
-    new Vec3(0.34, -0.80),
-    new Vec3(-0.01, -1.1),
-    new Vec3(-0.19, -1.3),
-    new Vec3(0.22, -1.27),
-    new Vec3(-0.00, -1.00),
-    new Vec3(-0.38, -0.79),
-    new Vec3(-0.79, -0.35),
-    new Vec3(-0.90, 0.27),
-    new Vec3(-0.72, 0.76),
-    new Vec3(-0.31, 1.01),
-    new Vec3(-0.02, 1.01),
-    null,
-  ]
+const cleanUpColours = [
+  {r: 255, g: 20, b: 10},
+  {r: 20, g: 100, b: 255},
+  {r: 20, g: 220, b: 10},
+  {r: 255, g: 190, b: 20},
 ];
-
-const badBalloonModel = [
-  new Vec3(0.00, 1.16),
-  new Vec3(-0.14, 0.95),
-  new Vec3(-0.50, 0.81),
-  new Vec3(-0.74, 0.88),
-  new Vec3(-0.70, 0.67),
-  new Vec3(-0.89, 0.39),
-  new Vec3(-1.07, 0.40),
-  new Vec3(-0.95, 0.27),
-  new Vec3(-0.97, -0.13),
-  new Vec3(-1.08, -0.27),
-  new Vec3(-0.90, -0.31),
-  new Vec3(-0.72, -0.62),
-  new Vec3(-0.84, -0.87),
-  new Vec3(-0.59, -0.76),
-  new Vec3(0.00, -0.99),
-  new Vec3(0.19, -1.28),
-  new Vec3(0.01, -1.19),
-  new Vec3(-0.19, -1.25),
-  new Vec3(-0.01, -0.98),
-  new Vec3(0.35, -0.89),
-  new Vec3(0.53, -0.96),
-  new Vec3(0.52, -0.79),
-  new Vec3(0.82, -0.50),
-  new Vec3(1.02, -0.51),
-  new Vec3(0.90, -0.31),
-  new Vec3(0.97, 0.00),
-  new Vec3(1.13, 0.16),
-  new Vec3(0.92, 0.30),
-  new Vec3(0.73, 0.66),
-  new Vec3(0.77, 0.98),
-  new Vec3(0.51, 0.84),
-  new Vec3(0.11, 0.95),
-  new Vec3(-0.00, 1.16),
-  null,
-];
-
-const clearBadBalloonModel = [
-  new Vec3(-0.01, 1.01),
-  new Vec3(0.16, 0.97),
-  new Vec3(0.28, 0.68),
-  new Vec3(0.38, 0.44),
-  new Vec3(0.63, 0.26),
-  new Vec3(0.91, 0.12),
-  new Vec3(1.00, 0.01),
-  new Vec3(0.95, -0.14),
-  new Vec3(0.67, -0.27),
-  new Vec3(0.37, -0.34),
-  new Vec3(0.20, -0.66),
-  new Vec3(0.09, -0.95),
-  new Vec3(0.00, -1.01),
-  new Vec3(-0.18, -0.94),
-  new Vec3(-0.28, -0.65),
-  new Vec3(-0.36, -0.33),
-  new Vec3(-0.66, -0.21),
-  new Vec3(-0.97, -0.08),
-  new Vec3(-1.05, 0.01),
-  new Vec3(-1.00, 0.14),
-  new Vec3(-0.69, 0.30),
-  new Vec3(-0.38, 0.41),
-  new Vec3(-0.22, 0.73),
-  new Vec3(-0.14, 0.97),
-  new Vec3(-0.02, 1.01),
-  null,
-];
-
-const shineModel = [
-  new Vec3(-0.10, 0.67),
-  new Vec3(-0.32, 0.78),
-  new Vec3(-0.54, 0.62),
-  new Vec3(-0.68, 0.37),
-  new Vec3(-0.68, 0.09),
-  new Vec3(-0.44, 0.43),
-  new Vec3(-0.27, 0.60),
-  new Vec3(-0.10, 0.66),
-  null,
-];
-
-const badShineModel = [
-  new Vec3(-0.31, 0.77),
-  new Vec3(-0.62, 0.62),
-  new Vec3(-0.78, 0.34),
-  new Vec3(-0.76, -0.09),
-  new Vec3(-0.64, 0.22),
-  new Vec3(-0.53, 0.42),
-  new Vec3(-0.36, 0.60),
-  new Vec3(-0.03, 0.80),
-  new Vec3(-0.32, 0.77),
-  null,
-];
-
-const white = {r: 255, g: 255, b: 255};

@@ -22,7 +22,7 @@ export class Star {
 
     if (this.position.y > this.game.height / 2) {
       this.alive = false;
-      this.game.addScore(this.bad ? -1 : 1);
+      this.game.score += this.bad ? -1 : 1;
     }
   }
 

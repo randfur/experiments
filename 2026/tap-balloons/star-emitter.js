@@ -9,7 +9,7 @@ export class StarEmitter {
     this.position = position;
     this.radius = radius;
     this.delayRemaining = 0;
-    this.starsRemaining = count;
+    this.starsRemaining = bad ? 50 : count;
     this.starCount = 0;
     this.bad = bad;
   }
@@ -21,7 +21,12 @@ export class StarEmitter {
       for (let i = 0; i < repeat; ++i) {
         this.game.entities.push(new Star(
           this.game,
-          new Vec3().setPolar(random(TAU), random(this.radius)).inplaceAdd(this.position),
+          new Vec3()
+            .setPolar(
+              random(TAU),
+              random(this.radius * Math.min(2, this.starCount / 5)),
+            )
+            .inplaceAdd(this.position),
           this.starCount,
           this.bad,
         ));

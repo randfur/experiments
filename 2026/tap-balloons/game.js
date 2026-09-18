@@ -33,6 +33,9 @@ export class Game {
     if (this.stageRemaining <= 0) {
       ++this.stageIndex;
       if (this.stageIndex >= stages.length) {
+        if (Math.abs(this.score) > Math.abs(this.highScore)) {
+          this.highScore = this.score;
+        }
         this.reset();
         for (const entity of this.entities) {
           if (entity !== this) {
@@ -59,46 +62,17 @@ export class Game {
     }
   }
 
-  click(position) {
-    let pop = false;
+  maybeAddBalloon() {
+    let hasCleanUp = false;
+    let badCount = 0;
     for (const entity of this.entities) {
-      if (entity.alive && entity instanceof Balloon) {
-        const squareDistance = Vec3.delta(entity.position, position).squareLength();
-        if (squareDistance < entity.radius ** 2) {
-          entity.pop();
-          if (entity.bad) {
-            this.comboLevel = 0;
-            this.comboRemaining = 0;
-          } else {
-            this.comboLevel = Math.min(maxComboLevel, this.comboLevel + 1);
-            this.comboRemaining = comboDuration;
-          }
-          this.entities.push(new StarEmitter(
-            this,
-            position.clone(),
-            entity.radius / 2,
-            entity.bad ? 50 : this.comboLevel,
-            entity.bad,
-          ));
-          pop = true;
-          break;
-        }
+      if (entity instanceof Balloon) {
+        hasCleanUp ||= entity.type === 'cleanUp';
+        badCount += entity.type === 'bad' ? 1 : 0;
       }
     }
-    if (!pop) {
-      this.entities.push(new Cross(position.clone()));
-      this.comboLevel = 0;
-    }
-  }
+    const createCleanUp = !hasCleanUp && badCount >= 3;
 
-  addScore(points) {
-    this.score += points;
-    if (Math.abs(this.score) > Math.abs(this.highScore)) {
-      this.highScore = this.score;
-    }
-  }
-
-  maybeAddBalloon() {
     const position = new Vec3(
       deviate(this.width / 2 - maxBalloonRadius),
       deviate(this.height / 2 - maxBalloonRadius),
@@ -120,9 +94,62 @@ export class Game {
       }
       if (!collision) {
         const bad = Math.random() < this.stage.badChance;
-        this.entities.push(new Balloon(this, position, maxRadius, this.stage.colour, bad));
+        this.entities.push(new Balloon(
+          this,
+          createCleanUp ? 'cleanUp' : (bad ? 'bad' : 'normal'),
+          position,
+          maxRadius,
+          this.stage.colour,
+        ));
         break;
       }
+    }
+  }
+
+  click(position) {
+    let pop = false;
+    for (const entity of this.entities) {
+      if (entity.alive && entity instanceof Balloon) {
+        const squareDistance = Vec3.delta(entity.position, position).squareLength();
+        if (squareDistance < entity.radius ** 2) {
+          this.popBalloon(entity);
+          pop = true;
+          break;
+        }
+      }
+    }
+    if (!pop) {
+      this.entities.push(new Cross(position.clone()));
+      this.comboLevel = 0;
+    }
+  }
+
+  popBalloon(balloon, cleaningUp=false) {
+    balloon.pop();
+    const bad = balloon.type === 'bad';
+    if (bad) {
+      if (!cleaningUp) {
+        this.comboLevel = 0;
+        this.comboRemaining = 0;
+      }
+    } else {
+      this.comboLevel = Math.min(maxComboLevel, this.comboLevel + 1);
+      this.comboRemaining = comboDuration;
+    }
+    if (balloon.type === 'cleanUp') {
+      for (const entity of this.entities) {
+        if (entity instanceof Balloon && entity.type === 'bad') {
+          this.popBalloon(entity, /*cleaningUp=*/true);
+        }
+      }
+    } else {
+      this.entities.push(new StarEmitter(
+        this,
+        balloon.position.clone(),
+        balloon.radius,
+        this.comboLevel,
+        bad && !cleaningUp,
+      ));
     }
   }
 

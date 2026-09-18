@@ -16,11 +16,11 @@ export class Cross {
   }
 
   draw(hexLines, textContext) {
-    const bump = (Math.floor(this.remaining / 50) % 2 == 0 ? 1 : -1) * 1;
+    const bump = (Math.floor(this.remaining / 50) % 2 == 0 ? 1 : -1) * 2;
     drawModel(hexLines, crossModel, 5, brown, point => {
       return Vec3
         .scale(100, point)
-        .inplaceRotateXyAngle(0.1)
+        .inplaceRotateXyAngle(0.05)
         .inplaceAdd(this.position)
         .inplaceAddXyz(-3 + bump, 1 - bump);
     });
