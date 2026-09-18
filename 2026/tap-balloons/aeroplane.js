@@ -7,7 +7,7 @@ import {white} from './colours.js';
 import {TAU, randomBool, drawModel} from './utils.js';
 
 export class Aeroplane {
-  static size = 70;
+  static size = 100;
 
   constructor(game, flightSquad, colour, position, launchDirection, launchLength) {
     this.alive = true;
