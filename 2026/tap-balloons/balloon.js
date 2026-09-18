@@ -1,6 +1,7 @@
 import {Vec3} from '../../third-party/ga/vec3.js';
 import {Confetti} from './confetti.js';
 import {Shockwave} from './shockwave.js';
+import {StarEmitter} from './star-emitter.js';
 import {stageColours} from './colours.js';
 import {TAU, random, pickRandom, modulo, easeIn, easeOut, fadeColour, lerpColour, drawModel} from './utils.js';
 import {balloonModels, badBalloonModel, cleanUpBalloonModel, normalShineModel, badShineModel, cleanUpShineModel} from './model-data.js';
@@ -81,7 +82,14 @@ export class Balloon {
     }
   }
 
-  pop() {
+  click(position) {
+    if (Vec3.delta(this.position, position).squareLength() < this.radius ** 2) {
+      this.game.popCheck = true;
+      this.pop();
+    }
+  }
+
+  pop(cleaningUp=false) {
     this.alive = false;
 
     switch (this.type) {
@@ -119,6 +127,27 @@ export class Balloon {
         this.type === 'normal' ? 2 : 10,
       ),
     );
+
+    if (this.type === 'bad' && !cleaningUp) {
+      this.game.clearCombo();
+    } else {
+      this.game.incrementCombo();
+    }
+    if (this.type === 'cleanUp') {
+      for (const entity of this.game.entities) {
+        if (entity instanceof Balloon && entity.type === 'bad') {
+          entity.pop(/*cleaningUp=*/true);
+        }
+      }
+    } else {
+      this.game.entities.push(new StarEmitter(
+        this.game,
+        this.position.clone(),
+        this.radius,
+        this.game.comboLevel,
+        this.type === 'bad' && !cleaningUp,
+      ));
+    }
   }
 
   static shineModel = {
@@ -144,7 +173,7 @@ export class Balloon {
     if (this.type === 'cleanUp') {
       for (let i = 0; i < cleanUpBalloonModel.length; ++i) {
         const point = cleanUpBalloonModel[i];
-        const colourIndex = 0.25 + rotation * 2 + i / cleanUpBalloonModel.length * stageColours.length;
+        const colourIndex = -0.75 + rotation * 2 + i / (cleanUpBalloonModel.length - 2) * stageColours.length;
         const colourA = stageColours[modulo(Math.floor(colourIndex), stageColours.length)];
         const colourB = stageColours[modulo(Math.floor(colourIndex + 1), stageColours.length)];
         const colour = fadeColour(lerpColour(colourA, colourB, colourIndex - Math.floor(colourIndex)), fade);

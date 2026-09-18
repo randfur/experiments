@@ -17,6 +17,14 @@
     - In stage 3 four aeroplanes glide through the screen (whichever dimension is longer) and need to be popped in the right order.
     - This unlocks a big snake that's attracted to bombs sliding around the screen that takes 20 hits to pop.
     - Once the snake is destroyed the cursor sparks with fire and has a glowing trail, the user no longer needs to click/tap and can swipe around the screen popping balloons but has to be careful not to pop the bombs.
+- Added some planes to stage 3.
+  - 3D model.
+  - Wavy flight path.
+    - Could be a bit more interesting making use of 3D but it'll do.
+  - TODO:
+    - Coloured trail.
+    - Explosion when killed.
+- Refactored clicking to be an optional method on entity.
 
 # 2026-09-17
 - Need a quick and dirty image editor to capture vector co-ordinates.

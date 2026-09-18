@@ -1,7 +1,6 @@
 import {Balloon} from './balloon.js';
 import {Vec3} from '../../third-party/ga/vec3.js';
 import {Mat4} from '../../third-party/ga/mat4.js';
-import {StarEmitter} from './star-emitter.js';
 import {Star} from './star.js';
 import {Cross} from './cross.js';
 import {stageBlue, stageGreen, stageYellow, stageRed} from './colours.js';
@@ -28,10 +27,16 @@ export class Game {
     this.stageRemaining = 0;
     this.colour = null;
     this.score = 0;
+    this.popCheck = false;
     this.comboRemaining = 0;
     this.comboLevel = 0;
     this.spawnDelayRemaining = 0;
     this.wobbleSources = [];
+    for (const entity of this.entities) {
+      if (entity !== this) {
+        entity.alive = false;
+      }
+    }
   }
 
   update(time, timeDelta) {
@@ -43,13 +48,9 @@ export class Game {
           this.highScore = this.score;
         }
         this.reset();
-        for (const entity of this.entities) {
-          if (entity !== this) {
-            entity.alive = false;
-          }
-        }
         return;
       }
+
       this.stageRemaining = 15000;
       this.stage = stages[this.stageIndex];
       if (this.stage.special) {
@@ -124,50 +125,26 @@ export class Game {
     }
   }
 
-  click(position) {
-    let pop = false;
-    for (const entity of this.entities) {
-      if (entity.alive && entity instanceof Balloon) {
-        const squareDistance = Vec3.delta(entity.position, position).squareLength();
-        if (squareDistance < entity.radius ** 2) {
-          this.popBalloon(entity);
-          pop = true;
-          break;
-        }
-      }
-    }
-    if (!pop) {
-      this.entities.push(new Cross(position.clone()));
-      this.comboLevel = 0;
-    }
+  incrementCombo() {
+    this.comboLevel = Math.min(maxComboLevel, this.comboLevel + 1);
+    this.comboRemaining = comboDuration;
   }
 
-  popBalloon(balloon, cleaningUp=false) {
-    balloon.pop();
-    const bad = balloon.type === 'bad';
-    if (bad) {
-      if (!cleaningUp) {
-        this.comboLevel = 0;
-        this.comboRemaining = 0;
+  clearCombo() {
+    this.comboLevel = 0;
+    this.comboRemaining = 0;
+  }
+
+  click(position) {
+    this.popCheck = false;
+    for (const entity of this.entities) {
+      if (entity !== this && entity.alive) {
+        entity.click?.(position);
       }
-    } else {
-      this.comboLevel = Math.min(maxComboLevel, this.comboLevel + 1);
-      this.comboRemaining = comboDuration;
     }
-    if (balloon.type === 'cleanUp') {
-      for (const entity of this.entities) {
-        if (entity instanceof Balloon && entity.type === 'bad') {
-          this.popBalloon(entity, /*cleaningUp=*/true);
-        }
-      }
-    } else {
-      this.entities.push(new StarEmitter(
-        this,
-        balloon.position.clone(),
-        balloon.radius,
-        this.comboLevel,
-        bad && !cleaningUp,
-      ));
+    if (!this.popCheck) {
+      this.entities.push(new Cross(position.clone()));
+      this.comboLevel = 0;
     }
   }
 
@@ -206,8 +183,8 @@ export class Game {
 }
 
 const maxComboLevel = 10;
-const maxBalloonRadius = 150;
 const comboDuration = 800;
+const maxBalloonRadius = 150;
 const spawnDelayDuration = 10;
 const stages = [{
   colour: stageBlue,

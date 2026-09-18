@@ -8,6 +8,10 @@ export function random(x) {
   return Math.random() * x;
 }
 
+export function randomBool() {
+  return Math.random() < 0.5;
+}
+
 export function modulo(x, n) {
   return x - n * Math.floor(x / n);
 }
