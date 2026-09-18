@@ -1,7 +1,8 @@
 import {Vec3} from '../../third-party/ga/vec3.js';
 import {Confetti} from './confetti.js';
 import {Shockwave} from './shockwave.js';
-import {TAU, random, pickRandom, modulo, easeOut, fadeColour, lerpColour, drawModel} from './utils.js';
+import {stageColours} from './colours.js';
+import {TAU, random, pickRandom, modulo, easeIn, easeOut, fadeColour, lerpColour, drawModel} from './utils.js';
 import {balloonModels, badBalloonModel, cleanUpBalloonModel, normalShineModel, badShineModel, cleanUpShineModel} from './model-data.js';
 
 export class Balloon {
@@ -12,6 +13,7 @@ export class Balloon {
     this.game = game;
     this.type = type;
     this.basePosition = position;
+    this.preWobblePosition = position.clone();
     this.position = position.clone();
     this.growRemaining = growDuration;
     this.hangRemaining = hangDuration;
@@ -56,11 +58,23 @@ export class Balloon {
       : 1;
     this.radius = this.maxRadius * this.growProgress;
 
-    this.position.setAddXyz(
+    this.preWobblePosition.setAddXyz(
       this.basePosition,
       Balloon.drift * this.growProgress * Math.cos(this.time * this.driftXFrequency + this.driftXPhase),
       Balloon.drift * this.growProgress * Math.sin(this.time * this.driftYFrequency + this.driftYPhase),
     );
+
+    this.position.set(this.preWobblePosition);
+    for (const wobbleSource of this.game.wobbleSources) {
+      const delta = Vec3.delta(wobbleSource.position, this.position);
+      this.position.inplaceScaleAdd(
+        5000
+          * (1 - Math.cos((wobbleDuration - wobbleSource.remaining) / 150))
+          * easeIn(wobbleSource.remaining / wobbleDuration)
+          / (delta.squareLength() * 4),
+        delta,
+      );
+    }
 
     if (this.fadeRemaining <= 0) {
       this.alive = false;
@@ -70,13 +84,30 @@ export class Balloon {
   pop() {
     this.alive = false;
 
-    if (this.type === 'normal') {
-      const count = 5 + random(5);
-      const confettis = [];
-      for (let i = 0; i < count; ++i) {
-        const confetti = new Confetti(this.position.clone(), this.radius, this.colour, confettis);
-        confettis.push(confetti);
-        this.game.entities.push(confetti);
+    switch (this.type) {
+      case 'normal':
+      case 'cleanUp': {
+        const count = this.type === 'cleanUp' ? 20 + random(20) : 5 + random(5);
+        const confettis = [];
+        for (let i = 0; i < count; ++i) {
+          const confetti = new Confetti(
+            this.position.clone(),
+            this.radius,
+            this.type === 'cleanUp' ? 2 : 0.5,
+            this.type === 'cleanUp' ? pickRandom(stageColours) : this.colour,
+            confettis,
+          );
+          confettis.push(confetti);
+          this.game.entities.push(confetti);
+        }
+        break;
+      }
+      case 'bad': {
+        this.game.wobbleSources.push({
+          remaining: wobbleDuration,
+          position: this.position.clone(),
+        });
+        break;
       }
     }
 
@@ -84,8 +115,8 @@ export class Balloon {
       new Shockwave(
         this.position.clone(),
         this.type === 'cleanUp' ? cleanUpShockwaveColour : this.colour,
-        this.radius,
-        this.type === 'bad' ? 10 : 2,
+        this.radius * (this.type === 'cleanUp' ? 2 : 1),
+        this.type === 'normal' ? 2 : 10,
       ),
     );
   }
@@ -100,6 +131,11 @@ export class Balloon {
     bad: {r: 200, g: 0, b: 0},
     cleanUp: {r: 255, g: 255, b: 255},
   };
+  static distortionRadiusDivisor = {
+    normal: 40,
+    bad: 30,
+    cleanUp: 20,
+  };
   draw(hexLines, textContext) {
     const rotation = this.rotateBase + this.rotateAmplitude * Math.sin(this.time * this.rotateFrequency + this.rotatePhase);
     const fade = easeOut(this.fadeRemaining / fadeDuration);
@@ -108,9 +144,9 @@ export class Balloon {
     if (this.type === 'cleanUp') {
       for (let i = 0; i < cleanUpBalloonModel.length; ++i) {
         const point = cleanUpBalloonModel[i];
-        const colourIndex = 0.25 + rotation * 2 + i / cleanUpBalloonModel.length * cleanUpColours.length;
-        const colourA = cleanUpColours[modulo(Math.floor(colourIndex), cleanUpColours.length)];
-        const colourB = cleanUpColours[modulo(Math.floor(colourIndex + 1), cleanUpColours.length)];
+        const colourIndex = 0.25 + rotation * 2 + i / cleanUpBalloonModel.length * stageColours.length;
+        const colourA = stageColours[modulo(Math.floor(colourIndex), stageColours.length)];
+        const colourB = stageColours[modulo(Math.floor(colourIndex + 1), stageColours.length)];
         const colour = fadeColour(lerpColour(colourA, colourB, colourIndex - Math.floor(colourIndex)), fade);
         if (point === null) {
           hexLines.addNull();
@@ -136,15 +172,16 @@ export class Balloon {
       });
     }
 
-    const distortion = this.type === 'cleanUp' ? 0 : this.radius / 40;
+    const distortion = this.radius / Balloon.distortionRadiusDivisor[this.type];
+    const rotationDivisor = this.type === 'cleanUp' ? 1.1 : 2;
     drawModel(hexLines, Balloon.shineModel[this.type], 4, fadeColour(Balloon.shineColour[this.type], fade), point => {
       return Vec3
         .set(point)
         .inplaceScale(this.radius)
-        .inplaceRotateXyAngle(rotation / 2)
+        .inplaceRotateXyAngle(rotation / rotationDivisor)
         .inplaceAddXyz(
-          distortion * Math.cos(-12 * point.y + 3 * rotation),
-          distortion * Math.sin(-12 * point.x + 3 * rotation),
+          distortion * Math.cos(-2 * point.y + 3 * rotation),
+          distortion * Math.sin(-2 * point.x + 3 * rotation),
         )
         .inplaceAdd(this.position);
     });
@@ -154,6 +191,7 @@ export class Balloon {
 const growDuration = 2000;
 const hangDuration = 2000;
 const fadeDuration = 1500;
+const wobbleDuration = 1000;
 const badColour = {r: 200, g: 200, b: 200};
 const cleanUpShockwaveColour = {r: 255, g: 255, b: 255};
 

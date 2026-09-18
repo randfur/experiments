@@ -6,7 +6,7 @@ export class Star {
     this.alive = true;
     this.game = game;
     this.position = position;
-    this.size = 3 + starCount;
+    this.size = 10 + starCount;
     this.angle = deviate(0.5);
     this.velocity = bad ? new Vec3().setPolar(random(TAU), 1) : new Vec3(0, -0.5 - random(0.5));
     this.yAcceleration = 10 / 1000;

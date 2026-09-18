@@ -1,9 +1,10 @@
 import {HexLinesContext} from '../../third-party/hex-lines/src/hex-lines.js';
 import {Game} from './game.js';
+import {cleanUpList} from './utils.js';
 
 async function main() {
   const {hexLinesContext, width, height} = HexLinesContext.setupFullPageContext({
-    is3d: false,
+    is3d: true,
     pixelSize: 3,
   });
   const hexLines = hexLinesContext.createLines();
@@ -37,16 +38,7 @@ async function main() {
       }
     }
 
-    let aliveIndex = 0;
-    for (let i = 0; i < entities.length; ++i) {
-      if (entities[i].alive) {
-        entities[aliveIndex] = entities[i];
-        ++aliveIndex;
-      } else {
-        entities[i].destroy?.();
-      }
-    }
-    entities.length = aliveIndex;
+    cleanUpList(entities, entity => entity.alive, entity => entity.destroy?.());
 
     hexLines.clear();
     textContext.clearRect(0, 0, width, height);

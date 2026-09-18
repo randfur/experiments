@@ -4,7 +4,7 @@ import {random, deviate, range, fadeColour} from './utils.js';
 const TAU = Math.PI * 2;
 
 export class Confetti {
-  constructor(position, radius, colour, others) {
+  constructor(position, radius, velocityScale, colour, others) {
     this.alive = true;
     const spokes = 4 + random(2);
     const size = radius * (0.2 + random(0.1));
@@ -36,7 +36,7 @@ export class Confetti {
         break;
       }
     }
-    this.velocity.inplaceScale(0.5);
+    this.velocity.inplaceScale(velocityScale);
 
     this.duration = 400 + random(500);
     this.remaining = this.duration;

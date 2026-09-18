@@ -1,9 +1,13 @@
 import {Balloon} from './balloon.js';
 import {Vec3} from '../../third-party/ga/vec3.js';
+import {Mat4} from '../../third-party/ga/mat4.js';
 import {StarEmitter} from './star-emitter.js';
 import {Star} from './star.js';
 import {Cross} from './cross.js';
-import {deviate, drawModel} from './utils.js';
+import {stageBlue, stageGreen, stageYellow, stageRed} from './colours.js';
+import {FlightSquad} from './flight-squad.js';
+import {Snake} from './snake.js';
+import {cleanUpList, deviate, drawModel} from './utils.js';
 
 export class Game {
   constructor(entities, width, height) {
@@ -26,6 +30,8 @@ export class Game {
     this.score = 0;
     this.comboRemaining = 0;
     this.comboLevel = 0;
+    this.spawnDelayRemaining = 0;
+    this.wobbleSources = [];
   }
 
   update(time, timeDelta) {
@@ -46,6 +52,9 @@ export class Game {
       }
       this.stageRemaining = 15000;
       this.stage = stages[this.stageIndex];
+      if (this.stage.special) {
+        this.entities.push(new this.stage.special(this));
+      }
     }
 
     this.comboRemaining -= timeDelta;
@@ -53,13 +62,22 @@ export class Game {
       this.comboLevel = 0;
     }
 
-    let balloons = this.stage.spawnChance;
-    while (balloons > 0) {
-      if (Math.random() < balloons) {
-        this.maybeAddBalloon();
+    this.spawnDelayRemaining -= timeDelta;
+    if (this.spawnDelayRemaining <= 0) {
+      this.spawnDelayRemaining = spawnDelayDuration;
+      let balloons = this.stage.spawnChance;
+      while (balloons > 0) {
+        if (Math.random() < balloons) {
+          this.maybeAddBalloon();
+        }
+        --balloons;
       }
-      --balloons;
     }
+
+    for (const wobbleSource of this.wobbleSources) {
+      wobbleSource.remaining -= timeDelta;
+    }
+    cleanUpList(this.wobbleSources, wobbleSource => wobbleSource.remaining > 0);
   }
 
   maybeAddBalloon() {
@@ -84,7 +102,7 @@ export class Game {
       let collision = false;
       for (const entity of this.entities) {
         if (entity instanceof Balloon) {
-          const squareDistance = Vec3.delta(entity.position, position).squareLength();
+          const squareDistance = Vec3.delta(entity.preWobblePosition, position).squareLength();
           if (squareDistance < (entity.maxRadius + maxRadius + Balloon.drift) ** 2) {
             collision = true;
             maxRadius *= 0.8;
@@ -154,6 +172,16 @@ export class Game {
   }
 
   draw(hexLines, textContext) {
+    // Mat4
+    //   .multiply(
+    //     Mat4.a.setTranslateXyz(0, 0, 800),
+    //     Mat4.b.setRotateZx(this.stageRemaining / 1000),
+    //   )
+    //   .exportToArrayBuffer(hexLines.transformMatrix);
+    Mat4
+      .translateXyz(0, 0, 800)
+      .exportToArrayBuffer(hexLines.transformMatrix);
+
     const wordsY = this.height / 2 - 50;
     const numberY = 130;
     textContext.font = '60px impact';
@@ -179,23 +207,26 @@ export class Game {
 
 const maxComboLevel = 10;
 const maxBalloonRadius = 150;
-const comboDuration = 600;
+const comboDuration = 800;
+const spawnDelayDuration = 10;
 const stages = [{
-  colour: {r: 255, g: 20, b: 10},
-  spawnChance: 0.06,
-  badChance: 0.01,
+  colour: stageBlue,
+  spawnChance: 0.07,
+  badChance: 0,
 }, {
-  colour: {r: 20, g: 100, b: 255},
+  colour: stageGreen,
   spawnChance: 0.1,
-  badChance: 0.05,
-}, {
-  colour: {r: 255, g: 190, b: 20},
-  spawnChance: 0.4,
   badChance: 0.1,
 }, {
-  colour: {r: 20, g: 220, b: 10},
-  spawnChance: 5,
+  colour: stageYellow,
+  spawnChance: 0.4,
   badChance: 0.2,
+  special: FlightSquad,
+}, {
+  colour: stageRed,
+  spawnChance: 5,
+  badChance: 0.4,
+  special: Snake,
 }];
 
 const white = {r: 255, g: 255, b: 255};

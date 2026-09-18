@@ -4,6 +4,19 @@
 - Moved balloon model data out into separate file.
   - Was needed to be able to reference in static variables without putting at the top of the file.
 - Added distortion to the balloon shine.
+- Added global blast wobble.
+  - Fun to watch when the clean up balloons make all the bombs explode.
+- Fixed up the shine distortion parameters across all three balloon types.
+- Put the rendering into 3D, ready for 3D fun stuff later maybe.
+- TODO:
+  - Make the numbers hand drawn.
+  - A start/end screen.
+  - A timer.
+  - Screen effects for when the timer is running out.
+  - Another challenge task that unlocks a bonus stage with all colours and swipe popping.
+    - In stage 3 four aeroplanes glide through the screen (whichever dimension is longer) and need to be popped in the right order.
+    - This unlocks a big snake that's attracted to bombs sliding around the screen that takes 20 hits to pop.
+    - Once the snake is destroyed the cursor sparks with fire and has a glowing trail, the user no longer needs to click/tap and can swipe around the screen popping balloons but has to be careful not to pop the bombs.
 
 # 2026-09-17
 - Need a quick and dirty image editor to capture vector co-ordinates.

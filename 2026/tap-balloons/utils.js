@@ -57,3 +57,16 @@ export function lerpColour(colourA, colourB, progress) {
   lerpColourResult.b = colourA.b + (colourB.b - colourA.b) * progress;
   return lerpColourResult;
 }
+
+export function cleanUpList(list, filter, onRemoval=null) {
+  let aliveIndex = 0;
+  for (let i = 0; i < list.length; ++i) {
+    if (filter(list[i])) {
+      list[aliveIndex] = list[i];
+      ++aliveIndex;
+    } else {
+      onRemoval?.(list[i]);
+    }
+  }
+  list.length = aliveIndex;
+}
