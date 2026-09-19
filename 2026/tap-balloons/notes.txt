@@ -5,6 +5,9 @@
   - Started adding shrapnel.
     - Will be created out of the plane model.
     - Have each line segment fly away spinning.
+- Added shrapnel.
+  - It looks really good.
+  - Added extra z velocity to give substantial flying towards/away from camera effect.
 
 # 2026-09-18
 - Added clean up balloon type.

@@ -193,11 +193,11 @@ const stages = [{
 }, {
   colour: stageGreen,
   spawnChance: 0.1,
-  badChance: 0.1,
+  badChance: 0.2,
 }, {
   colour: stageYellow,
   spawnChance: 0.4,
-  badChance: 0.2,
+  badChance: 0.3,
   special: FlightSquad,
 }, {
   colour: stageRed,

@@ -1,18 +1,28 @@
 import {Vec3} from '../../third-party/ga/vec3.js';
+import {Rotor3} from '../../third-party/ga/rotor3.js';
 import {fadeColour, random, deviate} from './utils.js';
+import {white} from './colours.js';
 
 export class Shrapnel {
-  constructor(position, velocity, orientationVelocity) { 
+  constructor(start, end, velocity, size) {
     this.alive = true;
-    this.position = position;
+    this.position = new Vec3().setAdd(start, end).inplaceScale(0.5);
+    this.modelStart = new Vec3().setDelta(this.position, start);
+    this.modelEnd = new Vec3().setDelta(this.position, end);
     this.velocity = velocity;
+    this.size = size;
     this.orientation = new Rotor3();
-    this.orientationVelocity = orientationVelocity;
+    this.orientationVelocity = new Rotor3(deviate(1), deviate(1), deviate(1), deviate(1))
+      .inplaceNormalise()
+      .inplaceReduce(0.05 + random(0.2));
     this.duration = 1000 + random(500);
     this.remaining = this.duration;
   }
 
   update(time, timeDelta) {
+    this.position.inplaceScaleAdd(timeDelta, this.velocity);
+
+    this.orientation.inplaceMultiplyRight(this.orientationVelocity);
 
     this.remaining -= timeDelta;
     if (this.remaining <= 0) {
@@ -21,12 +31,21 @@ export class Shrapnel {
   }
 
   draw(hexLines, textContext) {
-    const colour = fadeColour(this.colour, this.remaining / this.duration);
-    hexLines.addPointParts(this.position, this.size / 2, colour);
     hexLines.addPointParts(
-      Vec3.scaleAdd(this.position, (1 - this.remaining / this.duration) * 200, this.velocityLocal),
+      Vec3.a.setAdd(
+        this.position,
+        Vec3.b.setRotateRotor3(this.modelStart, this.orientation),
+      ),
       this.size,
-      colour,
+      white,
+    );
+    hexLines.addPointParts(
+      Vec3.a.setAdd(
+        this.position,
+        Vec3.b.setRotateRotor3(this.modelEnd, this.orientation),
+      ),
+      this.size,
+      white,
     );
     hexLines.addNull();
   }

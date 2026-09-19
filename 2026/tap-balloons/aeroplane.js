@@ -4,6 +4,7 @@ import {aeroplaneModel} from './model-data.js';
 import {StarEmitter} from './star-emitter.js';
 import {Exhaust} from './exhaust.js';
 import {Shockwave} from './shockwave.js';
+import {Shrapnel} from './shrapnel.js';
 import {white} from './colours.js';
 import {TAU, random, deviate, randomBool, drawModel} from './utils.js';
 
@@ -75,13 +76,38 @@ export class Aeroplane {
       ),
     );
 
+    for (let i = 0; i < aeroplaneModel.length - 1; ++i) {
+      const modelStart = aeroplaneModel[i];
+      const modelEnd = aeroplaneModel[i + 1];
+      if (modelStart === null || modelEnd === null) {
+        continue;
+      }
+      const start = this.transform(new Vec3().set(modelStart))
+      const end = this.transform(new Vec3().set(modelEnd))
+      const deviation = 0.01;
+      this.game.entities.push(
+        new Shrapnel(
+          start,
+          end,
+          new Vec3()
+            .setAdd(start, end)
+            .inplaceScale(0.5)
+            .inplaceSubtract(this.position)
+            .inplaceScale(0.01)
+            .inplaceAdd(this.velocity)
+            .inplaceAddXyz(deviate(deviation), deviate(deviation), 200 * deviate(deviation)),
+          thickness,
+        ),
+      );
+    }
+
     for (let i = 0; i < 100; ++i) {
-      const direction = new Vec3().setPolar(random(TAU), (1 - random(1) ** 2)).inplaceAddXyz(0, 0, deviate(1));
+      const direction = new Vec3().setPolar(random(TAU), random(1)).inplaceAddXyz(0, 0, deviate(1));
       this.game.entities.push(
         new Exhaust(
           this.transform(direction.clone()),
-          this.velocity.clone().inplaceScale(0.1),
-          this.transform(direction.clone()).inplaceSubtract(this.position).inplaceScale(0.01),
+          this.velocity.clone().inplaceScale(0.2 + random(0.5)),
+          this.transform(direction.clone()).inplaceSubtract(this.position).inplaceScale(0.02),
           this.colour,
         ),
       );
@@ -98,9 +124,10 @@ export class Aeroplane {
   }
 
   draw(hexLines, textContext) {
-    drawModel(hexLines, aeroplaneModel, 5, white, position => this.transform(Vec3.set(position)));
+    drawModel(hexLines, aeroplaneModel, thickness, white, position => this.transform(Vec3.set(position)));
   }
 }
 
 const lifeDuration = 1500;
-const exhaustDelayDuration = 30;
+const exhaustDelayDuration = 20;
+const thickness = 5;

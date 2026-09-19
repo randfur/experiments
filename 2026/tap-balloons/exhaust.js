@@ -8,13 +8,14 @@ export class Exhaust {
     this.velocityBase = velocityBase;
     this.velocityLocal = velocityLocal;
     this.colour = colour;
-    this.size = 10;
-    this.duration = 600 + random(200);
+    this.size = 1;
+    this.length = 30 + random(20);
+    this.duration = 400 + random(400);
     this.remaining = this.duration;
   }
 
   update(time, timeDelta) {
-    this.velocityBase.inplaceScale(0.99);
+    this.velocityBase.inplaceScale(0.9);
     this.velocityBase.inplaceAdd(Vec3.xyz(deviate(1), deviate(1)).inplaceScale(0.01));
     this.position.inplaceScaleAdd(timeDelta, this.velocityBase);
     this.position.inplaceScaleAdd(timeDelta, this.velocityLocal);
@@ -29,9 +30,11 @@ export class Exhaust {
 
   draw(hexLines, textContext) {
     const colour = fadeColour(this.colour, this.remaining / this.duration);
-    hexLines.addPointParts(this.position, this.size / 2, colour);
+    hexLines.addPointParts(this.position, this.size / 1.2, colour);
     hexLines.addPointParts(
-      Vec3.scaleAdd(this.position, (1 - this.remaining / this.duration) * 200, this.velocityLocal),
+      Vec3
+        .scaleAdd(this.position, (1 - this.remaining / this.duration) * this.length, this.velocityLocal)
+        .inplaceScaleAdd(this.length, this.velocityBase),
       this.size,
       colour,
     );

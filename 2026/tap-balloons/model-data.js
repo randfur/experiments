@@ -119,7 +119,7 @@ export const badShineModel = [
 
 export const cleanUpShineModel = [
   new Vec3(-0.17 + 0.1, 0.57 - 0.15),
-  new Vec3(-0.27 + 0.1, 0.34 - 0.15),
+  new Vec3(-0.29 + 0.1, 0.36 - 0.15),
   new Vec3(-0.57 + 0.1, 0.31 - 0.15),
   new Vec3(-0.22 + 0.1, 0.27 - 0.15),
   new Vec3(-0.17 + 0.1, 0.56 - 0.15),
