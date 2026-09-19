@@ -6,7 +6,7 @@ import {Cross} from './cross.js';
 import {stageBlue, stageGreen, stageYellow, stageRed} from './colours.js';
 import {FlightSquad} from './flight-squad.js';
 import {Snake} from './snake.js';
-import {cleanUpList, deviate, drawModel} from './utils.js';
+import {cleanUpList, deviate, drawModel, drawString} from './utils.js';
 
 export class Game {
   constructor(entities, width, height) {
@@ -22,7 +22,7 @@ export class Game {
   }
 
   reset() {
-    this.stageIndex = -1;
+    this.stageIndex = 1;
     this.stage = null;
     this.stageRemaining = 0;
     this.colour = null;
@@ -168,17 +168,23 @@ export class Game {
     drawModel(hexLines, highModelPoints, 10, white, point => {
       return Vec3.set(point).inplaceScale(100).inplaceAddXyz(-this.width / 2 + 100, wordsY);
     });
-    textContext.fillText(this.highScore, 100, numberY);
+    drawString(hexLines, `${this.highScore}`, 10, white, position => {
+      return Vec3.set(position).inplaceAddXyz(0, -1).inplaceScale(40).inplaceAddXyz(-this.width / 2 + 100, this.height / 2 - 90);
+    });
 
     drawModel(hexLines, scoreModelPoints, 10, white, point => {
       return Vec3.set(point).inplaceScale(100).inplaceAddXyz(0, wordsY);
     });
-    textContext.fillText(this.score, this.width / 2, numberY);
+    drawString(hexLines, `${this.score}`, 10, white, position => {
+      return Vec3.set(position).inplaceAddXyz(0, -1).inplaceScale(40).inplaceAddXyz(0, this.height / 2 - 90);
+    });
 
     drawModel(hexLines, comboModelPoints, 10, white, point => {
       return Vec3.set(point).inplaceScale(100).inplaceAddXyz(this.width / 2 - 140, wordsY);
     });
-    textContext.fillText(`${this.comboLevel} X`, this.width - 140, numberY);
+    drawString(hexLines, `${this.comboLevel}X`, 10, white, position => {
+      return Vec3.set(position).inplaceAddXyz(0, -1).inplaceScale(40).inplaceAddXyz(this.width / 2 - 140, this.height / 2 - 90);
+    });
   }
 }
 

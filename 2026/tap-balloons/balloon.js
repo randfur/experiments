@@ -168,7 +168,7 @@ export class Balloon {
   draw(hexLines, textContext) {
     const rotation = this.rotateBase + this.rotateAmplitude * Math.sin(this.time * this.rotateFrequency + this.rotatePhase);
     const fade = easeOut(this.fadeRemaining / fadeDuration);
-    const modelThickness = 4 + this.radius / 40;
+    const modelThickness = 4 + this.radius / (this.type === 'cleanUp' ? 20 : 40);
 
     if (this.type === 'cleanUp') {
       for (let i = 0; i < cleanUpBalloonModel.length; ++i) {

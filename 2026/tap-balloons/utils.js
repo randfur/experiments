@@ -1,15 +1,22 @@
-export const TAU = Math.PI * 2;
+import {Vec3} from '../../third-party/ga/vec3.js';
+import {characterModels} from './model-data.js';
 
-export function deviate(x) {
-  return Math.random() * 2 * x - x;
-}
+export const TAU = Math.PI * 2;
 
 export function random(x) {
   return Math.random() * x;
 }
 
+export function deviate(x) {
+  return Math.random() * 2 * x - x;
+}
+
 export function randomBool() {
   return Math.random() < 0.5;
+}
+
+export function pickRandom(list) {
+  return list[Math.floor(random(list.length))];
 }
 
 export function modulo(x, n) {
@@ -30,20 +37,6 @@ export function range(n) {
     result.push(i);
   }
   return result;
-}
-
-export function drawModel(hexLines, positions, size, colour, transform) {
-  for (const position of positions) {
-    if (position === null) {
-      hexLines.addNull();
-    } else {
-      hexLines.addPointParts(transform(position), size, colour);
-    }
-  }
-}
-
-export function pickRandom(list) {
-  return list[Math.floor(random(list.length))];
 }
 
 const fadeColourResult = {r: 0, g: 0, b: 0};
@@ -73,4 +66,32 @@ export function cleanUpList(list, filter, onRemoval=null) {
     }
   }
   list.length = aliveIndex;
+}
+
+export function drawModel(hexLines, positions, thickness, colour, transform) {
+  for (const position of positions) {
+    if (position === null) {
+      hexLines.addNull();
+    } else {
+      hexLines.addPointParts(transform(position), thickness, colour);
+    }
+  }
+}
+
+const characterPosition = new Vec3();
+export function drawString(hexLines, string, thickness, colour, transform) {
+  const characterWidth = 1.2;
+  for (let i = 0; i < string.length; ++i) {
+    drawModel(
+      hexLines,
+      characterModels[string[i]] ?? [],
+      thickness,
+      colour,
+      position => transform(
+        characterPosition
+          .set(position)
+          .inplaceAddXyz((i - (string.length - 1) / 2) * characterWidth)
+      ),
+    );
+  }
 }

@@ -4,13 +4,14 @@ import {fadeColour, random, deviate} from './utils.js';
 import {white} from './colours.js';
 
 export class Shrapnel {
-  constructor(start, end, velocity, size) {
+  constructor(start, end, velocity, thickness, colour) {
     this.alive = true;
     this.position = new Vec3().setAdd(start, end).inplaceScale(0.5);
     this.modelStart = new Vec3().setDelta(this.position, start);
     this.modelEnd = new Vec3().setDelta(this.position, end);
     this.velocity = velocity;
-    this.size = size;
+    this.thickness = thickness;
+    this.colour = colour;
     this.orientation = new Rotor3();
     this.orientationVelocity = new Rotor3(deviate(1), deviate(1), deviate(1), deviate(1))
       .inplaceNormalise()
@@ -36,16 +37,16 @@ export class Shrapnel {
         this.position,
         Vec3.b.setRotateRotor3(this.modelStart, this.orientation),
       ),
-      this.size,
-      white,
+      this.thickness,
+      this.colour,
     );
     hexLines.addPointParts(
       Vec3.a.setAdd(
         this.position,
         Vec3.b.setRotateRotor3(this.modelEnd, this.orientation),
       ),
-      this.size,
-      white,
+      this.thickness,
+      this.colour,
     );
     hexLines.addNull();
   }

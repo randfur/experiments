@@ -5,9 +5,16 @@
   - Started adding shrapnel.
     - Will be created out of the plane model.
     - Have each line segment fly away spinning.
-- Added shrapnel.
-  - It looks really good.
-  - Added extra z velocity to give substantial flying towards/away from camera effect.
+  - Added shrapnel.
+    - It looks really good.
+    - Added extra z velocity to give substantial flying towards/away from camera effect.
+  - Removed exhaust from aeroplane explosions.
+    - Shrapnel looks cooler, exhaust looks like reused assets because it is.
+  - Update shrapnel to be white and stage colour.
+- Updated flight squad to only release another aeroplane if the last one was popped.
+- Added text rendering to hexlines.
+  - Have a simple character map with hand drawn characters, mainly numbers for now.
+  - Can remove the text canvas now.
 
 # 2026-09-18
 - Added clean up balloon type.

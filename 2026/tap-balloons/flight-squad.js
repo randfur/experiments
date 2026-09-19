@@ -8,25 +8,33 @@ export class FlightSquad {
     this.alive = true;
     this.game = game;
     this.aeroplanesRemaining = stageColours.length;
-    this.launchesRemaining = stageColours.length;
-    this.launchDelayRemaining = launchDelayDuration();
+    this.launchDelayRemaining = null;
+    this.maybeScheduleLaunch()
+  }
+
+  maybeScheduleLaunch() {
+    if (this.aeroplanesRemaining <= 0) {
+      return;
+    }
+
+    this.launchDelayRemaining = 1000 + random(2000);
   }
 
   update(time, timeDelta) {
-    if (this.launchesRemaining > 0) {
+    if (this.launchDelayRemaining !== null) {
       this.launchDelayRemaining -= timeDelta;
       if (this.launchDelayRemaining <= 0) {
-        this.launchDelayRemaining = launchDelayDuration();
-        --this.launchesRemaining;
-
+        this.launchDelayRemaining = null;
+        --this.aeroplanesRemaining;
         const sign = randomBool() ? 1 : -1;
         const launchDirection = randomBool() ? new Vec3(sign, 0) : new Vec3(0, sign);
         const launchLength = Math.abs(Vec3.xyz(this.game.width, this.game.height).dot(launchDirection)) + 4 * Aeroplane.size;
-        const colour = stageColours[stageColours.length - 1 - this.launchesRemaining];
+        const colour = stageColours[stageColours.length - 1 - this.aeroplanesRemaining];
         this.game.entities.push(
           new Aeroplane(
             this.game,
             this,
+            1200 + 200 * this.aeroplanesRemaining,
             colour,
             new Vec3()
               .setScale(-launchLength / 2, launchDirection),
@@ -41,5 +49,3 @@ export class FlightSquad {
   draw(hexLines, textContext) {
   }
 }
-
-const launchDelayDuration = () => 1000 + random(2000);

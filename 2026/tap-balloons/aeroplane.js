@@ -11,14 +11,15 @@ import {TAU, random, deviate, randomBool, drawModel} from './utils.js';
 export class Aeroplane {
   static size = 100;
 
-  constructor(game, flightSquad, colour, position, launchDirection, launchLength) {
+  constructor(game, flightSquad, lifeDuration, colour, position, launchDirection, launchLength) {
     this.alive = true;
     this.game = game;
     this.flightSquad = flightSquad;
+    this.lifeDuration = lifeDuration;
     this.colour = colour;
     this.launchDirection = launchDirection;
     this.position = position;
-    this.velocity = launchDirection.clone().inplaceScale(launchLength / lifeDuration);
+    this.velocity = launchDirection.clone().inplaceScale(launchLength / this.lifeDuration);
     this.roll = 0;
     this.lifeElapsed = 0;
     this.rollDirection = randomBool() ? 1 : -1;
@@ -40,7 +41,7 @@ export class Aeroplane {
     }
 
     this.lifeElapsed += timeDelta;
-    if (this.lifeElapsed > lifeDuration) {
+    if (this.lifeElapsed > this.lifeDuration) {
       this.alive = false;
     }
   }
@@ -62,9 +63,9 @@ export class Aeroplane {
     }
 
     this.alive = false;
-    --this.flightSquad.aeroplanesRemaining;
     this.game.popCheck = true;
     this.game.incrementCombo();
+    this.flightSquad.maybeScheduleLaunch();
 
     this.game.entities.push(
       new StarEmitter(
@@ -94,21 +95,10 @@ export class Aeroplane {
             .inplaceScale(0.5)
             .inplaceSubtract(this.position)
             .inplaceScale(0.01)
-            .inplaceAdd(this.velocity)
+            .inplaceScaleAdd(0.5 + random(0.5), this.velocity)
             .inplaceAddXyz(deviate(deviation), deviate(deviation), 200 * deviate(deviation)),
           thickness,
-        ),
-      );
-    }
-
-    for (let i = 0; i < 100; ++i) {
-      const direction = new Vec3().setPolar(random(TAU), random(1)).inplaceAddXyz(0, 0, deviate(1));
-      this.game.entities.push(
-        new Exhaust(
-          this.transform(direction.clone()),
-          this.velocity.clone().inplaceScale(0.2 + random(0.5)),
-          this.transform(direction.clone()).inplaceSubtract(this.position).inplaceScale(0.02),
-          this.colour,
+          randomBool() ? white : this.colour,
         ),
       );
     }
@@ -128,6 +118,5 @@ export class Aeroplane {
   }
 }
 
-const lifeDuration = 1500;
 const exhaustDelayDuration = 20;
-const thickness = 5;
+const thickness = 10;
