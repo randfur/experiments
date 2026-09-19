@@ -22,7 +22,7 @@ export class Game {
   }
 
   reset() {
-    this.stageIndex = 1;
+    this.stageIndex = -1;
     this.stage = null;
     this.stageRemaining = 0;
     this.colour = null;
