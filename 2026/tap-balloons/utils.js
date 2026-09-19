@@ -32,12 +32,12 @@ export function range(n) {
   return result;
 }
 
-export function drawModel(hexLines, points, size, colour, transform) {
-  for (const point of points) {
-    if (point === null) {
+export function drawModel(hexLines, positions, size, colour, transform) {
+  for (const position of positions) {
+    if (position === null) {
       hexLines.addNull();
     } else {
-      hexLines.addPointParts(transform(point), size, colour);
+      hexLines.addPointParts(transform(position), size, colour);
     }
   }
 }

@@ -163,3 +163,13 @@ export const aeroplaneModel = [
   new Vec3(-0.97, 0, -0.04),
   null,
 ];
+
+export const starModel = [
+  new Vec3(-0.62, 0.77),
+  new Vec3(0.98, 0.27),
+  new Vec3(-0.85, -0.59),
+  new Vec3(0.19, 0.95),
+  new Vec3(0.33, -0.94),
+  new Vec3(-0.59, 0.76),
+  null,
+];

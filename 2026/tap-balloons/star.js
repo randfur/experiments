@@ -1,4 +1,5 @@
 import {Vec3} from '../../third-party/ga/vec3.js';
+import {starModel} from './model-data.js';
 import {TAU, random, deviate, drawModel} from './utils.js';
 
 export class Star {
@@ -45,16 +46,6 @@ export class Star {
 
 const starColour = {r: 255, g: 200, b: 50};
 const badStarColour = {r: 100, g: 100, b: 100};
-
-const starModel = [
-  new Vec3(-0.62, 0.77),
-  new Vec3(0.98, 0.27),
-  new Vec3(-0.85, -0.59),
-  new Vec3(0.19, 0.95),
-  new Vec3(0.33, -0.94),
-  new Vec3(-0.59, 0.76),
-  null,
-];
 
 const badStarModel = [
   new Vec3(0.00, 0.94),

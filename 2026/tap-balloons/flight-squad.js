@@ -1,7 +1,7 @@
 import {Aeroplane} from './aeroplane.js';
 import {stageColours} from './colours.js';
 import {Vec3} from '../../third-party/ga/vec3.js';
-import {randomBool, deviate} from './utils.js';
+import {randomBool, random} from './utils.js';
 
 export class FlightSquad {
   constructor(game) {
@@ -16,12 +16,12 @@ export class FlightSquad {
     if (this.launchesRemaining > 0) {
       this.launchDelayRemaining -= timeDelta;
       if (this.launchDelayRemaining <= 0) {
-        this.launchDelayRemaining = launchDelayDuration;
+        this.launchDelayRemaining = launchDelayDuration();
         --this.launchesRemaining;
 
         const sign = randomBool() ? 1 : -1;
         const launchDirection = randomBool() ? new Vec3(sign, 0) : new Vec3(0, sign);
-        const launchLength = Math.abs(Vec3.xyz(this.game.width, this.game.height).dot(launchDirection)) + 2 * Aeroplane.size;
+        const launchLength = Math.abs(Vec3.xyz(this.game.width, this.game.height).dot(launchDirection)) + 4 * Aeroplane.size;
         const colour = stageColours[this.launchesRemaining];
         this.game.entities.push(
           new Aeroplane(
@@ -42,4 +42,4 @@ export class FlightSquad {
   }
 }
 
-const launchDelayDuration = 3000;
+const launchDelayDuration = () => 500 + random(3000);
