@@ -80,7 +80,7 @@ export function drawModel(hexLines, positions, thickness, colour, transform) {
 
 const characterPosition = new Vec3();
 export function drawString(hexLines, string, thickness, colour, transform) {
-  const characterWidth = 1.2;
+  const characterWidth = 1.4;
   for (let i = 0; i < string.length; ++i) {
     drawModel(
       hexLines,
