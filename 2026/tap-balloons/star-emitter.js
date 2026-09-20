@@ -39,9 +39,6 @@ export class StarEmitter {
       this.alive = false;
     }
   }
-
-  draw(hexLines, textContext) {
-  }
 }
 
 const delayDuration = 20;

@@ -1,3 +1,36 @@
+# 2026-09-20
+- Removed text canvas.
+- Worked on the snake:
+  - Drew snake segments:
+    - Head, body, tail.
+    - Different models for normal and destroyed states.
+    - Separate models for base and spines to give them different colours.
+  - Implemented segment following with restricting max angle between adjacent segments.
+  - Gave snake a random target point that was always in a different quadrant to it.
+  - Snake pops balloons it runs into, does not give points.
+    - Solves the issue of visual overload with snake overlapping everything else.
+  - Segment destroyed effects.
+  - Snake destroyed effect.
+- Implemented slicer reward.
+  - Mouse trail.
+  - Tests for collisions on mouse move.
+  - Ignores bombs if they're too small since they can spawn under the mouse.
+  - Originally made click break the combo, discouraged clicking to focus on mouse movement.
+    - Clicking is more fun.
+    - Disabled combo break on click.
+    - Then added star detector on click.
+    - Now is advantageous to spam clicking which is more fun and adds to the visual overload.
+  - Made star balloons explode shrapnel when hit by slicer.
+- Added timer to HUD.
+  - Refactored HUD code to be much more reusable.
+- TODO:
+  - Timer count down pressure effects.
+    - Thinking a full screen circle ease out homing in on the timer for the last 5 seconds.
+  - Pending play screen.
+    - Showcase the last score.
+    - Give fancy effects when a high score is reached.
+    - Maybe grade the score [0, 1000, 2000, 3000+] brackets?
+
 # 2026-09-19
 - Aeroplane:
   - Added exhaust.

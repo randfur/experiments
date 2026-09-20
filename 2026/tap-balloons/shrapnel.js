@@ -4,6 +4,32 @@ import {fadeColour, random, deviate} from './utils.js';
 import {white} from './colours.js';
 
 export class Shrapnel {
+  static createForModel(game, model, position, transform, velocityFunction, thickness, colour) {
+    for (let i = 0; i < model.length - 1; ++i) {
+      const modelStart = model[i];
+      const modelEnd = model[i + 1];
+      if (modelStart === null || modelEnd === null) {
+        continue;
+      }
+      const start = transform(new Vec3().set(modelStart))
+      const end = transform(new Vec3().set(modelEnd))
+      game.entities.push(
+        new Shrapnel(
+          start,
+          end,
+          velocityFunction(
+            new Vec3()
+              .setAdd(start, end)
+              .inplaceScale(0.5)
+              .inplaceSubtract(position),
+          ),
+          thickness,
+          colour,
+        ),
+      );
+    }
+  }
+
   constructor(start, end, velocity, thickness, colour) {
     this.alive = true;
     this.position = new Vec3().setAdd(start, end).inplaceScale(0.5);
@@ -31,7 +57,7 @@ export class Shrapnel {
     }
   }
 
-  draw(hexLines, textContext) {
+  draw(hexLines) {
     hexLines.addPointParts(
       Vec3.a.setAdd(
         this.position,

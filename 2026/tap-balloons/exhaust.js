@@ -28,7 +28,7 @@ export class Exhaust {
     }
   }
 
-  draw(hexLines, textContext) {
+  draw(hexLines) {
     const colour = fadeColour(this.colour, this.remaining / this.duration);
     hexLines.addPointParts(this.position, this.size / 1.2, colour);
     hexLines.addPointParts(

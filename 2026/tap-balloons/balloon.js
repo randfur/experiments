@@ -40,6 +40,7 @@ export class Balloon {
     this.rotatePhase = random(TAU);
     this.rotateBase = random(0.1);
     this.rotateAmplitude = 0.05 + random(0.3);
+    this.rotation = 0;
     this.time = 0;
   }
 
@@ -77,6 +78,8 @@ export class Balloon {
       );
     }
 
+    this.rotation = this.rotateBase + this.rotateAmplitude * Math.sin(this.time * this.rotateFrequency + this.rotatePhase)
+
     if (this.fadeRemaining <= 0) {
       this.alive = false;
     }
@@ -85,13 +88,44 @@ export class Balloon {
   click(position) {
     if (Vec3.delta(this.position, position).squareLength() < this.radius ** 2) {
       this.game.popCheck = true;
-      this.pop();
+      this.pop(/*directClick=*/true, /*scoresPoints=*/true);
     }
   }
 
-  pop(cleaningUp=false) {
+  pop(directClick, scoresPoints) {
     this.alive = false;
 
+    this.popEffects();
+
+    if (directClick) {
+      if (this.type === 'bad') {
+        this.game.clearCombo();
+      } else {
+        this.game.incrementCombo();
+      }
+
+    }
+
+    if (this.type === 'cleanUp') {
+      for (const entity of this.game.entities) {
+        if (entity instanceof Balloon && entity.type === 'bad') {
+          entity.pop(/*directClick=*/false, /*scoresPoints=*/directClick);
+        }
+      }
+    }
+
+    if (scoresPoints) {
+      this.game.entities.push(new StarEmitter(
+        this.game,
+        this.position.clone(),
+        this.radius,
+        this.game.comboLevel,
+        this.type === 'bad' && directClick,
+      ));
+    }
+  }
+
+  popEffects() {
     switch (this.type) {
       case 'normal':
       case 'cleanUp': {
@@ -127,27 +161,6 @@ export class Balloon {
         this.type === 'normal' ? 2 : 10,
       ),
     );
-
-    if (this.type === 'bad' && !cleaningUp) {
-      this.game.clearCombo();
-    } else {
-      this.game.incrementCombo();
-    }
-    if (this.type === 'cleanUp') {
-      for (const entity of this.game.entities) {
-        if (entity instanceof Balloon && entity.type === 'bad') {
-          entity.pop(/*cleaningUp=*/true);
-        }
-      }
-    } else {
-      this.game.entities.push(new StarEmitter(
-        this.game,
-        this.position.clone(),
-        this.radius,
-        this.game.comboLevel,
-        this.type === 'bad' && !cleaningUp,
-      ));
-    }
   }
 
   static shineModel = {
@@ -165,40 +178,28 @@ export class Balloon {
     bad: 30,
     cleanUp: 20,
   };
-  draw(hexLines, textContext) {
-    const rotation = this.rotateBase + this.rotateAmplitude * Math.sin(this.time * this.rotateFrequency + this.rotatePhase);
+  draw(hexLines) {
     const fade = easeOut(this.fadeRemaining / fadeDuration);
-    const modelThickness = 4 + this.radius / (this.type === 'cleanUp' ? 20 : 40);
 
     if (this.type === 'cleanUp') {
       for (let i = 0; i < cleanUpBalloonModel.length; ++i) {
-        const point = cleanUpBalloonModel[i];
-        const colourIndex = -0.75 + rotation * 2 + i / (cleanUpBalloonModel.length - 2) * stageColours.length;
+        const position = cleanUpBalloonModel[i];
+        const colourIndex = -0.75 + this.rotation * 2 + i / (cleanUpBalloonModel.length - 2) * stageColours.length;
         const colourA = stageColours[modulo(Math.floor(colourIndex), stageColours.length)];
         const colourB = stageColours[modulo(Math.floor(colourIndex + 1), stageColours.length)];
         const colour = fadeColour(lerpColour(colourA, colourB, colourIndex - Math.floor(colourIndex)), fade);
-        if (point === null) {
+        if (position === null) {
           hexLines.addNull();
         } else {
           hexLines.addPointParts(
-            Vec3
-              .set(point)
-              .inplaceScale(this.radius)
-              .inplaceRotateXyAngle(rotation)
-              .inplaceAdd(this.position),
-            modelThickness,
+            this.transform(Vec3.set(position)),
+            this.thickness(),
             colour,
           );
         }
       }
     } else {
-      drawModel(hexLines, this.balloonModel, modelThickness, fadeColour(this.colour, fade), point => {
-        return Vec3
-          .set(point)
-          .inplaceScale(this.radius)
-          .inplaceRotateXyAngle(rotation)
-          .inplaceAdd(this.position);
-      });
+      drawModel(hexLines, this.balloonModel, this.thickness(), fadeColour(this.colour, fade), position => this.transform(Vec3.set(position)));
     }
 
     const distortion = this.radius / Balloon.distortionRadiusDivisor[this.type];
@@ -207,13 +208,24 @@ export class Balloon {
       return Vec3
         .set(point)
         .inplaceScale(this.radius)
-        .inplaceRotateXyAngle(rotation / rotationDivisor)
+        .inplaceRotateXyAngle(this.rotation / rotationDivisor)
         .inplaceAddXyz(
-          distortion * Math.cos(-2 * point.y + 3 * rotation),
-          distortion * Math.sin(-2 * point.x + 3 * rotation),
+          distortion * Math.cos(-2 * point.y + 3 * this.rotation),
+          distortion * Math.sin(-2 * point.x + 3 * this.rotation),
         )
         .inplaceAdd(this.position);
     });
+  }
+
+  transform(position) {
+    return position
+      .inplaceScale(this.radius)
+      .inplaceRotateXyAngle(this.rotation)
+      .inplaceAdd(this.position);
+  }
+
+  thickness() {
+    return 4 + this.radius / (this.type === 'cleanUp' ? 20 : 40);
   }
 }
 

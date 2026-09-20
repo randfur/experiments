@@ -3,9 +3,10 @@ import {Vec3} from '../../third-party/ga/vec3.js';
 import {Mat4} from '../../third-party/ga/mat4.js';
 import {Star} from './star.js';
 import {Cross} from './cross.js';
-import {stageBlue, stageGreen, stageYellow, stageRed} from './colours.js';
+import {stageBlue, stageGreen, stageYellow, stageRed, white, goodStarColour, badStarColour} from './colours.js';
 import {FlightSquad} from './flight-squad.js';
 import {Snake} from './snake.js';
+import {hudModels} from './model-data.js';
 import {cleanUpList, deviate, drawModel, drawString} from './utils.js';
 
 export class Game {
@@ -17,8 +18,15 @@ export class Game {
     this.highScore = 0;
     this.reset();
     window.addEventListener('pointerdown', event => {
-      this.click(new Vec3(event.offsetX - width / 2, -(event.offsetY - height / 2)));
+      this.click(this.pointerEventToPosition(event));
     });
+    window.addEventListener('pointermove', event => {
+      this.pointerMove(this.pointerEventToPosition(event));
+    });
+  }
+
+  pointerEventToPosition(event) {
+    return new Vec3(event.clientX - this.width / 2, -(event.clientY - this.height / 2));
   }
 
   reset() {
@@ -51,7 +59,7 @@ export class Game {
         return;
       }
 
-      this.stageRemaining = 15000;
+      this.stageRemaining = stageDuration;
       this.stage = stages[this.stageIndex];
       if (this.stage.special) {
         this.entities.push(new this.stage.special(this));
@@ -148,50 +156,73 @@ export class Game {
     }
   }
 
-  draw(hexLines, textContext) {
-    // Mat4
-    //   .multiply(
-    //     Mat4.a.setTranslateXyz(0, 0, 800),
-    //     Mat4.b.setRotateZx(this.stageRemaining / 1000),
-    //   )
-    //   .exportToArrayBuffer(hexLines.transformMatrix);
+  pointerMove(position) {
+     for (const entity of this.entities) {
+      if (entity !== this && entity.alive) {
+        entity.pointerMove?.(position);
+      }
+    }
+ }
+
+  draw(hexLines) {
     Mat4
       .translateXyz(0, 0, 800)
       .exportToArrayBuffer(hexLines.transformMatrix);
 
-    const wordsY = this.height / 2 - 50;
-    const numberY = 130;
-    textContext.font = '60px impact';
-    textContext.fillStyle = 'white';
-    textContext.textAlign = 'center';
+    const textSize = 100;
+    const textThickness = 10;
+    const textY = this.height / 2 - 50;
 
-    drawModel(hexLines, highModelPoints, 10, white, point => {
-      return Vec3.set(point).inplaceScale(100).inplaceAddXyz(-this.width / 2 + 100, wordsY);
-    });
-    drawString(hexLines, `${this.highScore}`, 10, white, position => {
-      return Vec3.set(position).inplaceAddXyz(0, -1).inplaceScale(40).inplaceAddXyz(-this.width / 2 + 100, this.height / 2 - 90);
-    });
+    const numberSize = 40;
+    const numberThickness = 10;
+    const numberY = this.height / 2 - 90;
 
-    drawModel(hexLines, scoreModelPoints, 10, white, point => {
-      return Vec3.set(point).inplaceScale(100).inplaceAddXyz(0, wordsY);
-    });
-    drawString(hexLines, `${this.score}`, 10, white, position => {
-      return Vec3.set(position).inplaceAddXyz(0, -1).inplaceScale(40).inplaceAddXyz(0, this.height / 2 - 90);
-    });
+    const timeXOffset = 100;
+    const comboXOffset = 140;
+    const scoreXOffset = 100;
+    const highScoreXOffset = 100;
 
-    drawModel(hexLines, comboModelPoints, 10, white, point => {
-      return Vec3.set(point).inplaceScale(100).inplaceAddXyz(this.width / 2 - 140, wordsY);
+    const columnWidth = this.width / 3;
+    let x = -this.width / 2;
+
+    const seconds = this.secondsRemaining();
+    this.drawHudPart(hexLines, hudModels.time, `${Math.floor(seconds / 60)}:${Math.floor(seconds % 60).toString().padStart(2, '0')}`, x + 100);
+    x += columnWidth;
+    this.drawHudPart(hexLines, hudModels.combo, `${this.comboLevel}X`, x + 40);
+    x += columnWidth;
+    this.drawHudPart(hexLines, hudModels.score, `${this.score}`, x - 40);
+    x += columnWidth;
+    this.drawHudPart(hexLines, hudModels.highScore, `${this.highScore}`, x - 100);
+    x += columnWidth;
+  }
+
+  drawHudPart(hexLines, model, string, x) {
+    const colour = this.comboLevel === maxComboLevel ? goodStarColour : badStarColour;
+    drawModel(hexLines, model, 10, colour, position => {
+      return Vec3
+        .set(position)
+        .inplaceScale(100)
+        .inplaceAddXyz(x, this.height / 2 - 50);
     });
-    drawString(hexLines, `${this.comboLevel}X`, 10, white, position => {
-      return Vec3.set(position).inplaceAddXyz(0, -1).inplaceScale(40).inplaceAddXyz(this.width / 2 - 140, this.height / 2 - 90);
+    drawString(hexLines, string, 10, colour, position => {
+      return Vec3
+        .set(position)
+        .inplaceScale(30)
+        .inplaceAddXyz(x, this.height / 2 - 140);
     });
+  }
+
+  secondsRemaining() {
+    return Math.ceil((this.stageRemaining + (stages.length - 1 - this.stageIndex) * stageDuration) / 1000);
   }
 }
 
+const stageDuration = 15000;
 const maxComboLevel = 10;
 const comboDuration = 800;
 const maxBalloonRadius = 150;
 const spawnDelayDuration = 10;
+
 const stages = [{
   colour: stageBlue,
   spawnChance: 0.07,
@@ -211,173 +242,3 @@ const stages = [{
   badChance: 0.4,
   special: Snake,
 }];
-
-const white = {r: 255, g: 255, b: 255};
-
-const scoreModelPoints = [
-  new Vec3(0.02, 0.23),
-  new Vec3(-0.21, 0.18),
-  new Vec3(-0.27, -0.07),
-  new Vec3(-0.03, -0.20),
-  new Vec3(0.17, -0.09),
-  new Vec3(0.14, 0.12),
-  new Vec3(0.03, 0.23),
-  null,
-  new Vec3(0.32, -0.24),
-  new Vec3(0.33, 0.26),
-  new Vec3(0.55, 0.23),
-  new Vec3(0.60, 0.09),
-  new Vec3(0.34, 0.00),
-  new Vec3(0.54, -0.20),
-  null,
-  new Vec3(0.86, 0.23),
-  new Vec3(0.72, 0.24),
-  new Vec3(0.72, 0.02),
-  new Vec3(0.84, 0.02),
-  new Vec3(0.72, 0.03),
-  new Vec3(0.72, -0.25),
-  new Vec3(0.85, -0.22),
-  null,
-  new Vec3(0.98, -0.15),
-  new Vec3(0.98, -0.14),
-  null,
-  new Vec3(0.98, 0.11),
-  new Vec3(0.98, 0.11),
-  null,
-  new Vec3(-0.39, 0.26),
-  new Vec3(-0.51, 0.32),
-  new Vec3(-0.71, 0.26),
-  new Vec3(-0.73, -0.09),
-  new Vec3(-0.55, -0.25),
-  new Vec3(-0.40, -0.15),
-  null,
-  new Vec3(-0.84, 0.19),
-  new Vec3(-0.96, 0.29),
-  new Vec3(-1.11, 0.26),
-  new Vec3(-1.11, 0.08),
-  new Vec3(-1.03, 0.04),
-  new Vec3(-0.89, -0.00),
-  new Vec3(-0.86, -0.13),
-  new Vec3(-0.93, -0.22),
-  new Vec3(-1.10, -0.21),
-  new Vec3(-1.17, -0.13),
-  null,
-];
-
-const comboModelPoints = [
-  new Vec3(-0.66, 0.16),
-  new Vec3(-0.82, 0.23),
-  new Vec3(-1.00, 0.14),
-  new Vec3(-1.03, -0.11),
-  new Vec3(-0.88, -0.27),
-  new Vec3(-0.70, -0.22),
-  null,
-  new Vec3(-0.45, -0.25),
-  new Vec3(-0.56, -0.11),
-  new Vec3(-0.54, 0.13),
-  new Vec3(-0.36, 0.21),
-  new Vec3(-0.22, 0.01),
-  new Vec3(-0.24, -0.18),
-  new Vec3(-0.44, -0.24),
-  null,
-  new Vec3(-0.13, -0.22),
-  new Vec3(-0.07, 0.24),
-  new Vec3(0.02, 0.00),
-  new Vec3(0.14, 0.25),
-  new Vec3(0.17, -0.21),
-  null,
-  new Vec3(0.29, -0.22),
-  new Vec3(0.30, 0.25),
-  new Vec3(0.45, 0.25),
-  new Vec3(0.56, 0.08),
-  new Vec3(0.41, -0.03),
-  new Vec3(0.50, -0.14),
-  new Vec3(0.46, -0.25),
-  new Vec3(0.30, -0.23),
-  null,
-  new Vec3(0.82, -0.24),
-  new Vec3(0.65, -0.08),
-  new Vec3(0.65, 0.13),
-  new Vec3(0.71, 0.31),
-  new Vec3(0.89, 0.31),
-  new Vec3(0.99, 0.09),
-  new Vec3(0.93, -0.13),
-  new Vec3(0.84, -0.23),
-  null,
-  new Vec3(1.09, -0.12),
-  new Vec3(1.09, -0.12),
-  null,
-  new Vec3(1.10, 0.21),
-  new Vec3(1.10, 0.21),
-  null,
-];
-
-const highModelPoints = [
-  new Vec3(-0.77, 0.25),
-  new Vec3(-0.59, 0.27),
-  null,
-  new Vec3(-0.68, 0.26),
-  new Vec3(-0.68, -0.20),
-  null,
-  new Vec3(-0.75, -0.21),
-  new Vec3(-0.62, -0.19),
-  null,
-  new Vec3(-0.68, 0.03),
-  new Vec3(-0.44, 0.05),
-  null,
-  new Vec3(-0.48, 0.25),
-  new Vec3(-0.39, 0.26),
-  null,
-  new Vec3(-0.44, 0.26),
-  new Vec3(-0.44, -0.20),
-  null,
-  new Vec3(-0.51, -0.19),
-  new Vec3(-0.39, -0.21),
-  null,
-  new Vec3(-0.25, 0.25),
-  new Vec3(-0.15, 0.29),
-  null,
-  new Vec3(-0.20, 0.27),
-  new Vec3(-0.21, -0.19),
-  null,
-  new Vec3(-0.28, -0.18),
-  new Vec3(-0.15, -0.22),
-  null,
-  new Vec3(0.24, 0.14),
-  new Vec3(0.17, 0.27),
-  new Vec3(-0.00, 0.29),
-  new Vec3(-0.10, 0.08),
-  new Vec3(-0.04, -0.12),
-  new Vec3(0.07, -0.18),
-  new Vec3(0.22, -0.12),
-  new Vec3(0.24, -0.02),
-  new Vec3(0.10, -0.02),
-  null,
-  new Vec3(0.37, -0.18),
-  new Vec3(0.45, -0.19),
-  null,
-  new Vec3(0.41, -0.18),
-  new Vec3(0.41, 0.26),
-  null,
-  new Vec3(0.36, 0.25),
-  new Vec3(0.48, 0.28),
-  null,
-  new Vec3(0.42, 0.02),
-  new Vec3(0.59, 0.03),
-  null,
-  new Vec3(0.56, 0.26),
-  new Vec3(0.63, 0.29),
-  null,
-  new Vec3(0.59, 0.28),
-  new Vec3(0.59, -0.19),
-  null,
-  new Vec3(0.52, -0.19),
-  new Vec3(0.64, -0.19),
-  null,
-  new Vec3(0.76, 0.14),
-  new Vec3(0.76, 0.14),
-  null,
-  new Vec3(0.78, -0.07),
-  new Vec3(0.78, -0.07),
-  null,
-];

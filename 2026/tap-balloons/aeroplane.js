@@ -77,29 +77,18 @@ export class Aeroplane {
       ),
     );
 
-    for (let i = 0; i < aeroplaneModel.length - 1; ++i) {
-      const modelStart = aeroplaneModel[i];
-      const modelEnd = aeroplaneModel[i + 1];
-      if (modelStart === null || modelEnd === null) {
-        continue;
-      }
-      const start = this.transform(new Vec3().set(modelStart))
-      const end = this.transform(new Vec3().set(modelEnd))
-      const deviation = 0.01;
-      this.game.entities.push(
-        new Shrapnel(
-          start,
-          end,
-          new Vec3()
-            .setAdd(start, end)
-            .inplaceScale(0.5)
-            .inplaceSubtract(this.position)
-            .inplaceScale(0.01)
-            .inplaceScaleAdd(0.5 + random(0.5), this.velocity)
-            .inplaceAddXyz(deviate(deviation), deviate(deviation), 200 * deviate(deviation)),
-          thickness,
-          randomBool() ? white : this.colour,
-        ),
+    for (let i = 0; i < 2; ++i) {
+      Shrapnel.createForModel(
+        this.game,
+        aeroplaneModel,
+        this.position,
+        position => this.transform(position),
+        velocity => velocity
+          .inplaceScale(0.01)
+          .inplaceScaleAdd(0.5 + random(0.5), this.velocity)
+          .inplaceAddXyz(deviate(0.01), deviate(0.01), deviate(2)),
+        thickness,
+        i === 0 ? white : this.colour,
       );
     }
   }
@@ -113,7 +102,7 @@ export class Aeroplane {
       .inplaceAdd(this.position);
   }
 
-  draw(hexLines, textContext) {
+  draw(hexLines) {
     drawModel(hexLines, aeroplaneModel, thickness, white, position => this.transform(Vec3.set(position)));
   }
 }

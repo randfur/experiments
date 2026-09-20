@@ -21,7 +21,7 @@ export class Shockwave {
     }
   }
 
-  draw(hexLines, textContext) {
+  draw(hexLines) {
     const spokes = 20;
 
     for (let i = 0; i <= spokes; ++i) {

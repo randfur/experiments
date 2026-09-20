@@ -15,7 +15,7 @@ export class Cross {
     }
   }
 
-  draw(hexLines, textContext) {
+  draw(hexLines) {
     const bump = (Math.floor(this.remaining / 50) % 2 == 0 ? 1 : -1) * 2;
     drawModel(hexLines, crossModel, 5, brown, point => {
       return Vec3

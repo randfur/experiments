@@ -9,11 +9,13 @@ export class FlightSquad {
     this.game = game;
     this.aeroplanesRemaining = stageColours.length;
     this.launchDelayRemaining = null;
+    this.destroyed = false;
     this.maybeScheduleLaunch()
   }
 
   maybeScheduleLaunch() {
     if (this.aeroplanesRemaining <= 0) {
+      this.destroyed = true;
       return;
     }
 
@@ -44,8 +46,5 @@ export class FlightSquad {
         );
       }
     }
-  }
-
-  draw(hexLines, textContext) {
   }
 }

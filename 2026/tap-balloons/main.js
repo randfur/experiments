@@ -9,21 +9,11 @@ async function main() {
   });
   const hexLines = hexLinesContext.createLines();
 
-  const textCanvas = document.createElement('canvas');
-  textCanvas.width = width;
-  textCanvas.height = height;
-  textCanvas.style.cssText = `
-    position: absolute;
-    left: 0px;
-    top: 0px;
-  `;
-  document.body.append(textCanvas);
-  const textContext = textCanvas.getContext('2d');
-
   let entities = [];
   function add(entity) {
     entities.push(entity);
   }
+
   entities.push(new Game(entities, width, height));
 
   let lastTime = 0;
@@ -41,9 +31,8 @@ async function main() {
     cleanUpList(entities, entity => entity.alive, entity => entity.destroy?.());
 
     hexLines.clear();
-    textContext.clearRect(0, 0, width, height);
     for (const entity of entities) {
-      entity.draw(hexLines, textContext);
+      entity.draw?.(hexLines);
     }
     hexLines.draw();
   }

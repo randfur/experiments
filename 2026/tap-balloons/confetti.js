@@ -53,7 +53,7 @@ export class Confetti {
     this.alive = this.remaining > 0;
   }
 
-  draw(hexLines, textContext) {
+  draw(hexLines) {
     const fadedColour = fadeColour(this.colour, this.remaining / this.duration);
     for (const point of this.model) {
       hexLines.addPointParts(
