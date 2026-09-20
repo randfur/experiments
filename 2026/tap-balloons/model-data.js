@@ -33,7 +33,7 @@ export const hudModels = {
     new Vec3(0.95, -0.09),
     new Vec3(0.95, -0.12),
     null,
-  ].map(v => v === null ? null : v.inplaceAddXyz(0, -0.1)),
+  ],
 
   score: [
     new Vec3(0.02, 0.23),
