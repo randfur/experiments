@@ -290,7 +290,7 @@ export class Game {
         return Vec3.set(position).inplaceScale(50).inplaceAddXyz(0, y);
       });
       y -= rowHeight;
-      drawString(hexLines, `HIGHSCORE: ${this.highScore}`, 15, scoreColour, position => {
+      drawString(hexLines, `HIGH: ${this.highScore}`, 15, scoreColour, position => {
         return Vec3.set(position).inplaceScale(50).inplaceAddXyz(0, y);
       });
       y -= rowHeight;
