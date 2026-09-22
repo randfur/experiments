@@ -8,8 +8,8 @@ export class Star {
     this.alive = true;
     this.game = game;
     this.position = position;
-    this.size = 10 + starCount;
-    this.angle = deviate(0.5);
+    this.size = (10 + starCount) * (bad ? 5 : 1);
+    this.angle = deviate(bad ? 0.5 : TAU);
     this.velocity = bad ? new Vec3().setPolar(random(TAU), 1) : new Vec3(0, -0.5 - random(0.5));
     this.yAcceleration = 10 / 1000;
     this.bad = bad;
@@ -24,7 +24,9 @@ export class Star {
 
     if (this.position.y > this.game.height / 2) {
       this.alive = false;
-      this.game.score += this.bad ? -1 : 1;
+      if (!this.game.gameOver) {
+        this.game.score += this.bad ? -1 : 1;
+      }
     }
   }
 
@@ -32,7 +34,7 @@ export class Star {
     drawModel(
       hexLines,
       this.bad ? starModels.bad : starModels.good,
-      4,
+      this.bad ? 8 : 4,
       this.bad ? badStarColour : goodStarColour,
       point => {
         return Vec3

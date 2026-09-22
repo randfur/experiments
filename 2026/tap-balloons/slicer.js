@@ -31,7 +31,7 @@ export class Slicer {
       hitTestPosition.setScaleAdd(this.position, x / length, pointerDelta);
       for (const entity of this.game.entities) {
         if (entity.alive && entity instanceof Balloon) {
-          if (entity.type === 'bad' && entity.radius < 50) {
+          if (entity.type === 'bad' && entity.radius < 80) {
             continue;
           }
           if (balloonDelta.setDelta(hitTestPosition, entity.position).squareLength() < entity.radius ** 2) {

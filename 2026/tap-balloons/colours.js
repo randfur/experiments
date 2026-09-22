@@ -1,4 +1,6 @@
 export const white = {r: 255, g: 255, b: 255};
+export const black = {r: 0, g: 0, b: 0};
+export const dullHud = {r: 200, g: 200, b: 200};
 
 export const stageBlue = {r: 20, g: 100, b: 255};
 export const stageGreen = {r: 20, g: 220, b: 10};

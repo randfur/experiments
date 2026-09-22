@@ -2,12 +2,14 @@ import {Balloon} from './balloon.js';
 import {Vec3} from '../../third-party/ga/vec3.js';
 import {Mat4} from '../../third-party/ga/mat4.js';
 import {Star} from './star.js';
+import {Slicer} from './slicer.js';
 import {Cross} from './cross.js';
-import {stageBlue, stageGreen, stageYellow, stageRed, white, goodStarColour, badStarColour} from './colours.js';
+import {Shrapnel} from './shrapnel.js';
+import {white, black, stageBlue, stageGreen, stageYellow, stageRed, stageColours, goodStarColour, dullHud} from './colours.js';
 import {FlightSquad} from './flight-squad.js';
 import {Snake} from './snake.js';
 import {hudModels} from './model-data.js';
-import {cleanUpList, deviate, drawModel, drawString} from './utils.js';
+import {TAU, easeIn, cleanUpList, random, deviate, randomBool, pickRandom, drawModel, drawString} from './utils.js';
 
 export class Game {
   constructor(entities, width, height) {
@@ -15,11 +17,31 @@ export class Game {
     this.entities = entities;
     this.width = width;
     this.height = height;
+
+    this.gameOver = true;
+    this.startCooldownRemaining = 0;
+
+    this.score = 0;
     this.highScore = 0;
-    this.reset();
+
+    this.resetQuestion = false;
+    this.resetQuestionBarsRemaining = 0;
+
+    this.stageIndex = null;
+    this.stage = null;
+    this.stageRemaining = 0;
+
+    this.popCheck = false;
+    this.comboRemaining = 0;
+    this.comboLevel = 0;
+    this.spawnDelayRemaining = 0;
+
+    this.wobbleSources = [];
+
     window.addEventListener('pointerdown', event => {
-      this.click(this.pointerEventToPosition(event));
+      this.pointerDown(event);
     });
+
     window.addEventListener('pointermove', event => {
       this.pointerMove(this.pointerEventToPosition(event));
     });
@@ -29,12 +51,39 @@ export class Game {
     return new Vec3(event.clientX - this.width / 2, -(event.clientY - this.height / 2));
   }
 
-  reset() {
+  pointerDown(event) {
+    switch (event.button) {
+    case 0:
+      if (this.gameOver) {
+        if (this.startCooldownRemaining <= 0) {
+          this.start();
+        }
+      } else if (this.resetQuestion) {
+        this.start();
+      } else {
+        this.click(this.pointerEventToPosition(event));
+      }
+      break;
+    case 2:
+      if (this.gameOver) {
+        break;
+      } else if (!this.resetQuestion) {
+        this.resetQuestion = true;
+        this.resetQuestionBarsRemaining = resetQuestionBarsDuration;
+      } else {
+        this.resetQuestion = false;
+      }
+      break;
+    }
+  }
+
+  start() {
+    this.gameOver = false;
     this.stageIndex = -1;
     this.stage = null;
     this.stageRemaining = 0;
-    this.colour = null;
     this.score = 0;
+    this.resetQuestion = false;
     this.popCheck = false;
     this.comboRemaining = 0;
     this.comboLevel = 0;
@@ -47,7 +96,63 @@ export class Game {
     }
   }
 
+  endGame() {
+    this.gameOver = true;
+    this.resetQuestion = false;
+    this.startCooldownRemaining = startCooldownDuration;
+
+    for (const entity of this.entities) {
+      if (entity instanceof Balloon) {
+        entity.pop(/*directClick=*/false, /*scoresPoints=*/false);
+      } else if (entity instanceof Slicer) {
+        entity.alive = false;
+      }
+    }
+
+    for (let i = 0; i < 500; ++i) {
+      this.entities.push(
+        new Shrapnel(
+          new Vec3(-this.width / 2, this.height / 2),
+          new Vec3(-this.width / 2 - random(100), this.height / 2),
+          new Vec3(random(2), random(-2), random(-3)),
+          10,
+          randomBool() ? stageRed : white,
+        ),
+      );
+    }
+  }
+
   update(time, timeDelta) {
+    if (this.gameOver) {
+      this.startCooldownRemaining -= timeDelta;
+      let balloonCount = 0;
+      for (const entity of this.entities) {
+        if (entity instanceof Balloon) {
+          ++balloonCount;
+        }
+      }
+      if (balloonCount === 0) {
+        this.entities.push(new Balloon(
+          this,
+          Math.random() < 0.1 ? 'bad' : 'normal',
+          new Vec3(deviate(this.width / 2), deviate(this.height / 2)),
+          maxBalloonRadius,
+          pickRandom(stageColours),
+        ));
+      }
+      if (this.score > 0 && this.score === this.highScore) {
+        for (let i = this.startCooldownRemaining / 500; i > 0; --i) {
+          this.entities.push(new Star(
+            this,
+            new Vec3().setXyz(deviate(this.width / 2), -this.height / 2),
+            this.startCooldownRemaining / 200,
+            /*bad=*/false,
+          ));
+        }
+      }
+      return;
+    }
+
     this.stageRemaining -= timeDelta;
     if (this.stageRemaining <= 0) {
       ++this.stageIndex;
@@ -55,7 +160,7 @@ export class Game {
         if (Math.abs(this.score) > Math.abs(this.highScore)) {
           this.highScore = this.score;
         }
-        this.reset();
+        this.endGame();
         return;
       }
 
@@ -87,6 +192,8 @@ export class Game {
       wobbleSource.remaining -= timeDelta;
     }
     cleanUpList(this.wobbleSources, wobbleSource => wobbleSource.remaining > 0);
+
+    this.resetQuestionBarsRemaining = Math.max(0, this.resetQuestionBarsRemaining - timeDelta);
   }
 
   maybeAddBalloon() {
@@ -104,7 +211,7 @@ export class Game {
       deviate(this.width / 2 - maxBalloonRadius),
       deviate(this.height / 2 - maxBalloonRadius),
     );
-    let attemptsLeft = 5;
+    let attemptsLeft = 10;
     let maxRadius = maxBalloonRadius;
     while (attemptsLeft > 0) {
       --attemptsLeft;
@@ -114,7 +221,7 @@ export class Game {
           const squareDistance = Vec3.delta(entity.preWobblePosition, position).squareLength();
           if (squareDistance < (entity.maxRadius + maxRadius + Balloon.drift) ** 2) {
             collision = true;
-            maxRadius *= 0.8;
+            maxRadius *= 0.95;
             break;
           }
         }
@@ -157,7 +264,10 @@ export class Game {
   }
 
   pointerMove(position) {
-     for (const entity of this.entities) {
+    if (this.gameOver) {
+      return;
+    }
+    for (const entity of this.entities) {
       if (entity !== this && entity.alive) {
         entity.pointerMove?.(position);
       }
@@ -168,6 +278,29 @@ export class Game {
     Mat4
       .translateXyz(0, 0, 800)
       .exportToArrayBuffer(hexLines.transformMatrix);
+
+    if (this.gameOver) {
+      drawString(hexLines, 'TAP BALLOON', 10, white, position => {
+        return Vec3.set(position).inplaceScale(60).inplaceAddXyz(0, this.height / 2 - 200);
+      });
+      const rowHeight = 150;
+      let y = rowHeight;
+      const scoreColour = this.score > 0 && this.score === this.highScore ? goodStarColour : dullHud;
+      drawString(hexLines, `SCORE: ${this.score}`, 15, scoreColour, position => {
+        return Vec3.set(position).inplaceScale(50).inplaceAddXyz(0, y);
+      });
+      y -= rowHeight;
+      drawString(hexLines, `HIGHSCORE: ${this.highScore}`, 15, scoreColour, position => {
+        return Vec3.set(position).inplaceScale(50).inplaceAddXyz(0, y);
+      });
+      y -= rowHeight;
+      if (this.startCooldownRemaining <= 0) {
+        drawString(hexLines, `<TAP TO START>`, 10, dullHud, position => {
+          return Vec3.set(position).inplaceScale(30).inplaceAddXyz(0, y);
+        });
+      }
+      return;
+    }
 
     const textSize = 100;
     const textThickness = 10;
@@ -194,10 +327,64 @@ export class Game {
     x += columnWidth;
     this.drawHudPart(hexLines, hudModels.highScore, `${this.highScore}`, x - 100);
     x += columnWidth;
+
+    if (this.stageIndex === stages.length - 1) {
+      const secondsRemaining = this.stageRemaining / 1000;
+      const timerPressureStart = 5;
+      const pressureProgress = 1 - secondsRemaining / timerPressureStart;
+      if (secondsRemaining < timerPressureStart) {
+        const spokes = 6;
+        for (let i = 0; i < spokes; ++i) {
+          hexLines.addPointParts(
+            Vec3.polar(
+              -TAU / 4 * i / (spokes - 1),
+              Math.max(this.width, this.height) * Math.sqrt(2) * ((secondsRemaining % 1) ** (2 * pressureProgress + 1)),
+            ).inplaceAddXyz(-this.width / 2, this.height / 2),
+            50,
+            white,
+          );
+        }
+        hexLines.addNull();
+      }
+    }
+
+    if (this.resetQuestion) {
+      drawString(hexLines, 'RESTART?', 10, white, position => {
+        return Vec3
+          .set(position)
+          .inplaceScale(50);
+      });
+
+      const barProgress = 1 - this.resetQuestionBarsRemaining / resetQuestionBarsDuration;
+      const barThickness = 100;
+      const barLength = this.width + this.height;
+
+      let up = true;
+      for (let x = -barLength; x < barLength; x += barThickness * 2) {
+        hexLines.addPointParts(
+          Vec3.xyz(
+            x,
+            (this.height / 2) * (up ? -1 : 1),
+          ),
+          barThickness,
+          black,
+        );
+        hexLines.addPointParts(
+          Vec3.xyz(
+            x + barLength * barProgress,
+            (this.height / 2 - barLength * barProgress) * (up ? -1 : 1),
+          ),
+          barThickness,
+          this.stage.colour,
+        );
+        hexLines.addNull();
+        up = !up;
+      }
+    }
   }
 
   drawHudPart(hexLines, model, string, x) {
-    const colour = this.comboLevel === maxComboLevel ? goodStarColour : badStarColour;
+    const colour = this.comboLevel === maxComboLevel ? goodStarColour : dullHud;
     drawModel(hexLines, model, 10, colour, position => {
       return Vec3
         .set(position)
@@ -217,16 +404,18 @@ export class Game {
   }
 }
 
+const startCooldownDuration = 2000;
 const stageDuration = 15000;
 const maxComboLevel = 10;
 const comboDuration = 800;
 const maxBalloonRadius = 150;
 const spawnDelayDuration = 10;
+const resetQuestionBarsDuration = 1000;
 
 const stages = [{
   colour: stageBlue,
-  spawnChance: 0.07,
-  badChance: 0,
+  spawnChance: 0.08,
+  badChance: 0.0,
 }, {
   colour: stageGreen,
   spawnChance: 0.1,
@@ -238,7 +427,7 @@ const stages = [{
   special: FlightSquad,
 }, {
   colour: stageRed,
-  spawnChance: 5,
-  badChance: 0.4,
+  spawnChance: 10,
+  badChance: 0.3,
   special: Snake,
 }];

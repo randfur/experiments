@@ -70,7 +70,7 @@ export class Balloon {
     for (const wobbleSource of this.game.wobbleSources) {
       const delta = Vec3.delta(wobbleSource.position, this.position);
       this.position.inplaceScaleAdd(
-        5000
+        10000
           * (1 - Math.cos((wobbleDuration - wobbleSource.remaining) / 150))
           * easeIn(wobbleSource.remaining / wobbleDuration)
           / (delta.squareLength() * 4),
@@ -119,7 +119,7 @@ export class Balloon {
         this.game,
         this.position.clone(),
         this.radius,
-        this.game.comboLevel,
+        this.type === 'bad' ? 10 : this.game.comboLevel,
         this.type === 'bad' && directClick,
       ));
     }

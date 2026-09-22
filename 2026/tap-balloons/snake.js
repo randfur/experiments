@@ -167,14 +167,14 @@ class Segment {
       hexLines,
       this.model[this.state].base,
       baseThickness,
-      baseColour,
+      this.state === 'destroyed' ? destroyedColour : baseColour,
       position => this.transform(Vec3.set(position)),
     );
     drawModel(
       hexLines,
       this.model[this.state].spines,
       spinesThickness,
-      spinesColour,
+      this.state === 'destroyed' ? destroyedColour : spinesColour,
       position => this.transform(Vec3.set(position)),
     );
   }
@@ -195,15 +195,16 @@ class Segment {
   }
 }
 
-const baseThickness = 6;
-const spinesThickness = 8;
+const baseThickness = 8;
+const spinesThickness = 10;
 const size = 100;
-const speed = 1.5;
+const speed = 1.3;
 const turnSpeed = 0.005;
 const maxSegmentAngle = 0.9;
 const maxSegmentAngleSin = Math.sin(maxSegmentAngle);
 const maxSegmentAngleCos = Math.cos(maxSegmentAngle);
 const duration = 5000;
+const destroyedColour = {r: 80, g: 60, b: 120};
 const baseColour = {r: 100, g: 20, b: 200};
 const spinesColour = {r: 180, g: 100, b: 255};
 

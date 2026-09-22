@@ -9,7 +9,7 @@ export class StarEmitter {
     this.position = position;
     this.radius = radius;
     this.delayRemaining = 0;
-    this.starsRemaining = bad ? 50 : count;
+    this.starsRemaining = count;
     this.starCount = 0;
     this.bad = bad;
   }
@@ -24,7 +24,7 @@ export class StarEmitter {
           new Vec3()
             .setPolar(
               random(TAU),
-              random(this.radius * Math.min(2, this.starCount / 5)),
+              random(this.radius * Math.min(2, this.starCount / 4)),
             )
             .inplaceAdd(this.position),
           this.starCount,

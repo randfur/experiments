@@ -1,3 +1,14 @@
+# 2026-09-22
+- Added game over screen.
+- Added star effects when a new high score is reached.
+- Tweaked snake speed and colours.
+- Reduced bomb penalty.
+- Added restart option.
+- Tweaked cross graphic.
+- Added time pressure graphics plus burst effect when game is over.
+- Added more character models for HUD text.
+- Tweaked snake graphics.
+
 # 2026-09-20
 - Removed text canvas.
 - Worked on the snake:

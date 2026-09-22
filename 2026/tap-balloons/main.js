@@ -6,6 +6,7 @@ async function main() {
   const {hexLinesContext, width, height} = HexLinesContext.setupFullPageContext({
     is3d: true,
     pixelSize: 3,
+    enableContextMenu: false,
   });
   const hexLines = hexLinesContext.createLines();
 
