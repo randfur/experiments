@@ -280,7 +280,7 @@ export class Game {
       .exportToArrayBuffer(hexLines.transformMatrix);
 
     if (this.gameOver) {
-      drawString(hexLines, 'TAP BALLOON', 10, white, position => {
+      drawString(hexLines, 'TAP BALLOONS', 10, white, position => {
         return Vec3.set(position).inplaceScale(60).inplaceAddXyz(0, this.height / 2 - 200);
       });
       const rowHeight = 150;
