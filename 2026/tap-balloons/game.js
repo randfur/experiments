@@ -5,10 +5,11 @@ import {Star} from './star.js';
 import {Slicer} from './slicer.js';
 import {Cross} from './cross.js';
 import {Shrapnel} from './shrapnel.js';
-import {white, black, stageBlue, stageGreen, stageYellow, stageRed, stageColours, goodStarColour, dullHud} from './colours.js';
 import {FlightSquad} from './flight-squad.js';
-import {Snake} from './snake.js';
+import {Snake} from './snake.js'
+import {DemoCursor} from './demo-cursor.js'
 import {hudModels} from './model-data.js';
+import {white, black, stageBlue, stageGreen, stageYellow, stageRed, stageColours, goodStarColour, dullHud} from './colours.js';
 import {TAU, easeIn, cleanUpList, random, deviate, randomBool, pickRandom, drawModel, drawString} from './utils.js';
 
 export class Game {
@@ -20,6 +21,7 @@ export class Game {
 
     this.gameOver = true;
     this.startCooldownRemaining = 0;
+    this.demoDelayRemaining = demoDelayDuration;
 
     this.score = 0;
     this.highScore = 0;
@@ -100,11 +102,12 @@ export class Game {
     this.gameOver = true;
     this.resetQuestion = false;
     this.startCooldownRemaining = startCooldownDuration;
+    this.demoDelayRemaining = demoDelayDuration;
 
     for (const entity of this.entities) {
       if (entity instanceof Balloon) {
         entity.pop(/*directClick=*/false, /*scoresPoints=*/false);
-      } else if (entity instanceof Slicer) {
+      } else if (entity instanceof Slicer || entity instanceof DemoCursor) {
         entity.alive = false;
       }
     }
@@ -125,6 +128,13 @@ export class Game {
   update(time, timeDelta) {
     if (this.gameOver) {
       this.startCooldownRemaining -= timeDelta;
+
+      this.demoDelayRemaining -= timeDelta;
+      if (this.demoDelayRemaining <= 0) {
+        this.start();
+        this.entities.push(new DemoCursor(this));
+      }
+
       let balloonCount = 0;
       for (const entity of this.entities) {
         if (entity instanceof Balloon) {
@@ -295,7 +305,7 @@ export class Game {
       });
       y -= rowHeight;
       if (this.startCooldownRemaining <= 0) {
-        drawString(hexLines, `<TAP TO START>`, 10, dullHud, position => {
+        drawString(hexLines, `< TAP TO START >`, 10, dullHud, position => {
           return Vec3.set(position).inplaceScale(30).inplaceAddXyz(0, y);
         });
       }
@@ -404,8 +414,9 @@ export class Game {
   }
 }
 
+const demoDelayDuration = 1_000;
 const startCooldownDuration = 2000;
-const stageDuration = 15000;
+const stageDuration = 15_000;
 const maxComboLevel = 10;
 const comboDuration = 800;
 const maxBalloonRadius = 150;

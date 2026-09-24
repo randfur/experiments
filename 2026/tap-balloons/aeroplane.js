@@ -19,6 +19,7 @@ export class Aeroplane {
     this.colour = colour;
     this.launchDirection = launchDirection;
     this.position = position;
+    this.radius = Aeroplane.size;
     this.velocity = launchDirection.clone().inplaceScale(launchLength / this.lifeDuration);
     this.roll = 0;
     this.lifeElapsed = 0;
@@ -58,7 +59,7 @@ export class Aeroplane {
   }
 
   click(position) {
-    if (Vec3.delta(this.position, position).squareLength() > Aeroplane.size ** 2) {
+    if (Vec3.delta(this.position, position).squareLength() > this.radius ** 2) {
       return;
     }
 
@@ -71,7 +72,7 @@ export class Aeroplane {
       new StarEmitter(
         this.game,
         this.position.clone(),
-        Aeroplane.size,
+        this.radius,
         this.game.comboLevel,
         /*bad=*/false,
       ),
@@ -95,7 +96,7 @@ export class Aeroplane {
 
   transform(position) {
     return position
-      .inplaceScale(Aeroplane.size)
+      .inplaceScale(this.radius)
       .inplaceRotateXy(this.launchDirection)
       .inplaceRotateRotor3(Rotor3.axisAngle(this.launchDirection, this.roll))
       .inplaceRotateXyAngle(this.roll / 3)

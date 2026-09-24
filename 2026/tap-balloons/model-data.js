@@ -617,6 +617,14 @@ export const characterModels = {
     new Vec3(0.39, -0.66),
     null,
   ],
+  'D': [
+    new Vec3(-0.38, 0.98),
+    new Vec3(-0.36, -0.97),
+    new Vec3(0.53, -0.53),
+    new Vec3(0.48, 0.49),
+    new Vec3(-0.37, 0.98),
+    null,
+  ],
   'E': [
     new Vec3(-0.44, 0.91),
     new Vec3(-0.41, -0.92),
@@ -659,6 +667,14 @@ export const characterModels = {
     new Vec3(-0.24, 0.86),
     new Vec3(-0.29, -0.81),
     new Vec3(0.32, -0.86),
+    null,
+  ],
+  'M': [
+    new Vec3(-0.41, -0.93),
+    new Vec3(-0.35, 0.94),
+    new Vec3(0.01, 0.22),
+    new Vec3(0.32, 0.99),
+    new Vec3(0.43, -1.01),
     null,
   ],
   'N': [
@@ -977,3 +993,12 @@ export const snakeModel = {
     },
   },
 };
+
+export const demoCursorModel = [
+  new Vec3(-0.01, 0.00),
+  new Vec3(1.00, -0.29),
+  new Vec3(0.50, -0.50),
+  new Vec3(0.30, -0.99),
+  new Vec3(-0.01, 0.00),
+  null,
+];

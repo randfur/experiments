@@ -1,3 +1,10 @@
+# 2026-09-24
+- Added demo mode with AI cursor.
+  - Snake:
+    - It's not always able to get the snake.
+    - Because the snake never dies and just keeps flying downwards the cursor gets stuck banging the bottom of the screen.
+    - Seems fitting.
+
 # 2026-09-22
 - Added game over screen.
 - Added star effects when a new high score is reached.

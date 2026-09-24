@@ -24,7 +24,7 @@ export class Snake {
     this.game = game;
     this.segmentCount = 5;
     this.segments = range(this.segmentCount).map(
-      i => new Segment(
+      i => new SnakeSegment(
         game,
         this,
         i === 0
@@ -36,6 +36,7 @@ export class Snake {
         new Vec3(0, -1),
       )
     );
+    this.game.entities.push(...this.segments);
     this.destroyedCount = 0;
     this.destroyed = false;
     this.targetPosition = new Vec3(deviate(game.width / 2), deviate(game.height / 2));
@@ -82,12 +83,6 @@ export class Snake {
     }
   }
 
-  click(position) {
-    for (const segment of this.segments) {
-      segment.click(position);
-    }
-  }
-
   segmentDestroyed(position) {
     ++this.destroyedCount;
     if (this.destroyedCount === this.segmentCount) {
@@ -95,26 +90,23 @@ export class Snake {
       this.destroyed = true;
       this.alive = false;
       for (const segment of this.segments) {
+        segment.alive = false;
         segment.createShrapnel('destroyed');
       }
     }
   }
-
-  draw(hexLines) {
-    for (const segment of this.segments) {
-      segment.draw(hexLines);
-    }
-  }
 }
 
-class Segment {
+export class SnakeSegment {
   constructor(game, snake, model, position, direction) {
+    this.alive = true;
     this.game = game;
     this.snake = snake;
     this.model = model;
     this.state = 'normal';
     this.position = position;
     this.direction = direction;
+    this.radius = size;
   }
 
   click(position) {

@@ -25,7 +25,7 @@ async function main() {
 
     for (const entity of entities) {
       if (entity.alive) {
-        entity.update(time, timeDelta);
+        entity.update?.(time, timeDelta);
       }
     }
 
