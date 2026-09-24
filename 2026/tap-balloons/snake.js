@@ -90,9 +90,14 @@ export class Snake {
       this.destroyed = true;
       this.alive = false;
       for (const segment of this.segments) {
-        segment.alive = false;
         segment.createShrapnel('destroyed');
       }
+    }
+  }
+
+  destroy() {
+    for (const segment of this.segments) {
+      segment.alive = false;
     }
   }
 }
