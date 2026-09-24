@@ -104,12 +104,19 @@ export class Game {
     this.startCooldownRemaining = startCooldownDuration;
     this.demoDelayRemaining = demoDelayDuration;
 
+    let demoMode = false;
     for (const entity of this.entities) {
-      if (entity instanceof Balloon) {
+      if (entity instanceof DemoCursor) {
+        demoMode = true;
+      } else if (entity instanceof Balloon) {
         entity.pop(/*directClick=*/false, /*scoresPoints=*/false);
       } else if (entity instanceof Slicer || entity instanceof DemoCursor) {
         entity.alive = false;
       }
+    }
+
+    if (!demoMode && Math.abs(this.score) > Math.abs(this.highScore)) {
+      this.highScore = this.score;
     }
 
     for (let i = 0; i < 500; ++i) {
@@ -167,9 +174,6 @@ export class Game {
     if (this.stageRemaining <= 0) {
       ++this.stageIndex;
       if (this.stageIndex >= stages.length) {
-        if (Math.abs(this.score) > Math.abs(this.highScore)) {
-          this.highScore = this.score;
-        }
         this.endGame();
         return;
       }
@@ -414,7 +418,7 @@ export class Game {
   }
 }
 
-const demoDelayDuration = 1_000;
+const demoDelayDuration = 10_000;
 const startCooldownDuration = 2000;
 const stageDuration = 15_000;
 const maxComboLevel = 10;
