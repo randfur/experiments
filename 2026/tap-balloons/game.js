@@ -108,6 +108,7 @@ export class Game {
     for (const entity of this.entities) {
       if (entity instanceof DemoCursor) {
         demoMode = true;
+        entity.alive = false;
       } else if (entity instanceof Balloon) {
         entity.pop(/*directClick=*/false, /*scoresPoints=*/false);
       } else if (entity instanceof Slicer || entity instanceof DemoCursor) {
