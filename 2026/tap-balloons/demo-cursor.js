@@ -20,21 +20,24 @@ export class DemoCursor {
   update(time, timeDelta) {
     this.time = time;
     let target = null;
-    let targetSquareDistance = null;
+    let targetScore = null;
     let slicing = false;
     for (const entity of this.game.entities) {
       if (entity instanceof Slicer) {
         slicing = true;
       }
-      const entityRank = getEntityRank(entity);
-      const targetRank = getEntityRank(target);
+      const entityRank = getEntityRank(this.game, entity);
+      const targetRank = getEntityRank(this.game, target);
       if (entityRank > 0 && (target === null || targetRank <= entityRank)) {
-        const entitySquareDistance = Vec3.delta(this.position, entity.position).squareLength();
-        if (targetRank === entityRank && targetSquareDistance < entitySquareDistance) {
-          continue;
+        const delta = Vec3.a.setDelta(this.position, entity.position);
+        const entityScore = delta.squareLength() - 100 * delta.dot(this.velocity);
+        if (targetRank === entityRank) {
+          if (targetScore < entityScore) {
+            continue;
+          }
         }
         target = entity;
-        targetSquareDistance = entitySquareDistance;
+        targetScore = entityScore;
       }
     }
 
@@ -42,12 +45,20 @@ export class DemoCursor {
       const delta = Vec3.delta(this.position, target.position);
       const distance = delta.length();
       const speed = this.velocity.length();
-      const dot = this.velocity.dot(delta);
-      const limit = speed * distance * 0.7;
-      if (!slicing && speed > 0.1 && dot < limit) {
-        this.velocity.inplaceScale(0.5);
-      } else {
+      if (speed < 0.1) {
         this.velocity.inplaceScaleAdd(timeDelta / 40_000, delta);
+      } else {
+        const dot = this.velocity.dot(delta) / speed / distance;
+        if (dot <= 0 || speed > (slicing ? 10 : 4)) {
+          this.velocity.inplaceScale(0.3);
+        } else {
+          const mirrorVelocity = Vec3.a.setScale(-2, this.velocity).inplaceScaleAdd(2 * speed / distance, delta);
+          const offsetDelta = Vec3.b.setScaleAdd(delta, 100, mirrorVelocity);
+          if (target.velocity) {
+            offsetDelta.inplaceScaleAdd(500, target.velocity);
+          }
+          this.velocity.inplaceScaleAdd(timeDelta / 20_000, offsetDelta);
+        }
       }
     } else {
       this.velocity.inplaceScale(0.8);
@@ -85,10 +96,24 @@ export class DemoCursor {
   }
 }
 
-function getEntityRank(entity) {
+function getEntityRank(game, entity) {
+  if (entity === null) {
+    return 0;
+  }
+
+  if (!entity.position) {
+    return 0;
+  }
+
+  const inside = Math.abs(entity.position.x) < game.width / 2
+    && Math.abs(entity.position.y) < game.height / 2;
+  if (!inside) {
+    return 0;
+  }
+
   if (entity instanceof Balloon) {
     if (entity.type === 'normal') {
-      if (entity.radius > 60) {
+      if (entity.radius > 50) {
         return 1;
       }
     } else if (entity.type === 'cleanUp') {

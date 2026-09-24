@@ -18,6 +18,7 @@ export class Game {
     this.entities = entities;
     this.width = width;
     this.height = height;
+    this.time = 0;
 
     this.gameOver = true;
     this.startCooldownRemaining = 0;
@@ -134,6 +135,8 @@ export class Game {
   }
 
   update(time, timeDelta) {
+    this.time = time;
+
     if (this.gameOver) {
       this.startCooldownRemaining -= timeDelta;
 
@@ -295,22 +298,22 @@ export class Game {
       .exportToArrayBuffer(hexLines.transformMatrix);
 
     if (this.gameOver) {
-      drawString(hexLines, 'TAP BALLOONS', 10, white, position => {
+      drawString(hexLines, 'TAP BALLOON', 10, white, position => {
         return Vec3.set(position).inplaceScale(60).inplaceAddXyz(0, this.height / 2 - 200);
       });
       const rowHeight = 150;
       let y = rowHeight;
       const scoreColour = this.score > 0 && this.score === this.highScore ? goodStarColour : dullHud;
       drawString(hexLines, `SCORE: ${this.score}`, 15, scoreColour, position => {
-        return Vec3.set(position).inplaceScale(50).inplaceAddXyz(0, y);
+        return Vec3.set(position).inplaceScale(40).inplaceAddXyz(0, y);
       });
       y -= rowHeight;
-      drawString(hexLines, `HIGH: ${this.highScore}`, 15, scoreColour, position => {
-        return Vec3.set(position).inplaceScale(50).inplaceAddXyz(0, y);
+      drawString(hexLines, `HIGHSCORE: ${this.highScore}`, 15, scoreColour, position => {
+        return Vec3.set(position).inplaceScale(40).inplaceAddXyz(0, y);
       });
-      y -= rowHeight;
-      if (this.startCooldownRemaining <= 0) {
-        drawString(hexLines, `< TAP TO START >`, 10, dullHud, position => {
+      y -= rowHeight * 1.5;
+      if (this.startCooldownRemaining <= 0 && Math.floor(this.time / 1000) % 2 === 0) {
+        drawString(hexLines, `< TAP TO START >`, 10, white, position => {
           return Vec3.set(position).inplaceScale(30).inplaceAddXyz(0, y);
         });
       }

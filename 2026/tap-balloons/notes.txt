@@ -4,6 +4,8 @@
     - It's not always able to get the snake.
     - Because the snake never dies and just keeps flying downwards the cursor gets stuck banging the bottom of the screen.
     - Seems fitting.
+  - Improved the motion to target where the target is plus the target's velocity plus the current cursor velocity flipped across the delta line.
+    - This should help cause the velocity to turn towards the target if it's pointing off to the side instead.
 
 # 2026-09-22
 - Added game over screen.
