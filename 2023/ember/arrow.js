@@ -1,6 +1,6 @@
-import {Vec3} from '../../third-party/ga/vec3.js';
-import {Mat4} from '../../third-party/ga/mat4.js';
-import {Rotor3} from '../../third-party/ga/rotor3.js';
+import {Vec3} from '../../third-party/ga/src/vec3.js';
+import {Mat4} from '../../third-party/ga/src/mat4.js';
+import {Rotor3} from '../../third-party/ga/src/rotor3.js';
 import {range, never, TAU} from './utils.js';
 
 export class Arrow {
@@ -46,7 +46,7 @@ export class Arrow {
             Rotor3.temp().setConjugate(this.orientation)
           )
         )
-        .exportToArrayBuffer(hexLines.transformMatrix);
+        .exportToBuffer(hexLines.transformMatrix);
     } else {
       Mat4.temp()
         .setTranslateVec3(
@@ -65,7 +65,7 @@ export class Arrow {
               .inplaceConjugate()
           )
         )
-        .exportToArrayBuffer(hexLines.transformMatrix);
+        .exportToBuffer(hexLines.transformMatrix);
     }
 
     hexLines.addPoint({

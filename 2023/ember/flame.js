@@ -1,5 +1,5 @@
 import {Engine} from './engine.js';
-import {Vec3} from '../../third-party/ga/vec3.js';
+import {Vec3} from '../../third-party/ga/src/vec3.js';
 import {
   randomRange,
   deviate,

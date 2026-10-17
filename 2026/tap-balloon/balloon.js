@@ -1,4 +1,4 @@
-import {Vec3} from '../../third-party/ga/vec3.js';
+import {Vec3} from '../../third-party/ga/src/vec3.js';
 import {Confetti} from './confetti.js';
 import {Shockwave} from './shockwave.js';
 import {StarEmitter} from './star-emitter.js';

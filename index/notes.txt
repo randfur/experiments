@@ -1,3 +1,20 @@
+# 2026-10-17
+- Updated third-party/ga to a new version with JSDoc static typing comments and various backwards incompatible API changes.
+  - The following projects needed updating.
+    - 2023/ember
+    - 2023/grid-transform
+    - 2025/buildings
+    - 2025/cake-slices
+    - 2025/seaweed
+    - 2025/slanted-hexagons
+    - 2026/3d-swirl-motion
+    - 2026/articulation
+    - 2026/eel
+    - 2026/hex-ball
+    - 2026/quick-draw
+    - 2026/tap-balloons
+    - 2026/wormhole
+
 # 2025-10-04
 - Fixed h1 text style to be centred.
 

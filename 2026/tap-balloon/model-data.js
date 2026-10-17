@@ -1,4 +1,4 @@
-import {Vec3} from '../../third-party/ga/vec3.js';
+import {Vec3} from '../../third-party/ga/src/vec3.js';
 
 export const hudModels = {
   time: [

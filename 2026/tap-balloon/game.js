@@ -1,6 +1,6 @@
 import {Balloon} from './balloon.js';
-import {Vec3} from '../../third-party/ga/vec3.js';
-import {Mat4} from '../../third-party/ga/mat4.js';
+import {Vec3} from '../../third-party/ga/src/vec3.js';
+import {Mat4} from '../../third-party/ga/src/mat4.js';
 import {Star} from './star.js';
 import {Slicer} from './slicer.js';
 import {Cross} from './cross.js';
@@ -295,7 +295,7 @@ export class Game {
   draw(hexLines) {
     Mat4
       .translateXyz(0, 0, 800)
-      .exportToArrayBuffer(hexLines.transformMatrix);
+      .exportToBuffer(hexLines.transformMatrix);
 
     if (this.gameOver) {
       drawString(hexLines, 'TAP BALLOON', 10, white, position => {

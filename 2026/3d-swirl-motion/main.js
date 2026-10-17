@@ -1,5 +1,5 @@
 import {HexLinesContext} from '../../third-party/hex-lines/src/hex-lines.js';
-import {Vec3} from '../../third-party/ga/vec3.js';
+import {Vec3} from '../../third-party/ga/src/vec3.js';
 import {Swirly} from './swirly.js';
 import {Box} from './box.js';
 import {Mouse} from './mouse.js';

@@ -1,7 +1,7 @@
 import {HexLinesContext} from '../../third-party/hex-lines/src/hex-lines.js';
-import {Mat4} from '../../third-party/ga/mat4.js';
-import {Vec3} from '../../third-party/ga/vec3.js';
-import {Rotor3} from '../../third-party/ga/rotor3.js';
+import {Mat4} from '../../third-party/ga/src/mat4.js';
+import {Vec3} from '../../third-party/ga/src/vec3.js';
+import {Rotor3} from '../../third-party/ga/src/rotor3.js';
 
 async function main() {
   const {width, height, hexLinesContext} = HexLinesContext.setupFullPageContext({
@@ -78,7 +78,7 @@ function camera(hexLines, position, orientation) {
         Rotor3.temp().setConjugate(orientation)
       )
     )
-    .exportToArrayBuffer(hexLines.transformMatrix);
+    .exportToBuffer(hexLines.transformMatrix);
 }
 
 function draw(hexLines) {

@@ -1,6 +1,6 @@
 import {Aeroplane} from './aeroplane.js';
 import {stageColours} from './colours.js';
-import {Vec3} from '../../third-party/ga/vec3.js';
+import {Vec3} from '../../third-party/ga/src/vec3.js';
 import {randomBool, random} from './utils.js';
 
 export class FlightSquad {

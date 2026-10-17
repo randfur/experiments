@@ -1,5 +1,5 @@
-import {Vec3} from '../../third-party/ga/vec3.js';
-import {Rotor3} from '../../third-party/ga/rotor3.js';
+import {Vec3} from '../../third-party/ga/src/vec3.js';
+import {Rotor3} from '../../third-party/ga/src/rotor3.js';
 import {aeroplaneModel} from './model-data.js';
 import {StarEmitter} from './star-emitter.js';
 import {Exhaust} from './exhaust.js';

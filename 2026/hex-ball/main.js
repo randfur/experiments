@@ -1,8 +1,8 @@
 import {HexLinesContext} from '../../third-party/hex-lines/src/hex-lines.js';
-import {PlaneBasis} from '../../third-party/ga/plane-basis.js';
-import {Vec3} from '../../third-party/ga/vec3.js';
-import {Rotor3} from '../../third-party/ga/rotor3.js';
-import {Mat4} from '../../third-party/ga/mat4.js';
+import {PlaneBasis} from '../../third-party/ga/src/plane-basis.js';
+import {Vec3} from '../../third-party/ga/src/vec3.js';
+import {Rotor3} from '../../third-party/ga/src/rotor3.js';
+import {Mat4} from '../../third-party/ga/src/mat4.js';
 
 const TAU = Math.PI * 2;
 
@@ -48,7 +48,7 @@ async function main() {
       .inplaceMultiplyLeft(
         new Mat4().setTranslateXyz(0, 0, 6000)
       )
-      .exportToArrayBuffer(hexLines.transformMatrix);
+      .exportToBuffer(hexLines.transformMatrix);
 
     hexLines.draw();
   }

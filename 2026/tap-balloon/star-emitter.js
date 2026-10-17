@@ -1,4 +1,4 @@
-import {Vec3} from '../../third-party/ga/vec3.js';
+import {Vec3} from '../../third-party/ga/src/vec3.js';
 import {Star} from './star.js';
 import {random, TAU} from './utils.js';
 

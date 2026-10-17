@@ -1,9 +1,9 @@
 import {HexLinesContext} from '../../third-party/hex-lines/src/hex-lines.js';
-import {Temp} from '../../third-party/ga/temp.js';
-import {Mat4} from '../../third-party/ga/mat4.js';
-import {Rotor3} from '../../third-party/ga/rotor3.js';
-import {Vec3} from '../../third-party/ga/vec3.js';
-import {PlaneBasis} from '../../third-party/ga/plane-basis.js';
+import {Temp} from '../../third-party/ga/src/temp.js';
+import {Mat4} from '../../third-party/ga/src/mat4.js';
+import {Rotor3} from '../../third-party/ga/src/rotor3.js';
+import {Vec3} from '../../third-party/ga/src/vec3.js';
+import {PlaneBasis} from '../../third-party/ga/src/plane-basis.js';
 
 const TAU = Math.PI * 2;
 
@@ -83,7 +83,7 @@ async function main() {
     // Spin camera.
     Mat4.temp().setTranslateXyz(0, 0, 300)
       .inplaceMultiplyRight(Mat4.temp().setRotateZx(time / 1000))
-      .exportToArrayBuffer(hexLines.transformMatrix);
+      .exportToBuffer(hexLines.transformMatrix);
 
     drawFace(faceA, 4, {r: 255, g: 255, b: 255});
     drawFace(faceB, 4, {r: 255, g: 255, b: 255});

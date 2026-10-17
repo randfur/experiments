@@ -1,6 +1,6 @@
 import {HexLinesContext} from '../../third-party/hex-lines/src/hex-lines.js';
-import {Vec3} from '../../third-party/ga/vec3.js';
-import {Mat4} from '../../third-party/ga/mat4.js';
+import {Vec3} from '../../third-party/ga/src/vec3.js';
+import {Mat4} from '../../third-party/ga/src/mat4.js';
 
 const TAU = Math.PI * 2;
 
@@ -81,7 +81,7 @@ async function main() {
       ).inplaceMultiplyRight(
         Mat4.b.setRotateZx(-(time + 1000) / 3000),
       )
-      .exportToArrayBuffer(hexLines.transformMatrix);
+      .exportToBuffer(hexLines.transformMatrix);
 
     for (let i = 0; i < rootCount; ++i) {
       let depth = 1;

@@ -1,5 +1,5 @@
 import {HexLinesContext} from '../../third-party/hex-lines/src/hex-lines.js';
-import {Temp} from '../../third-party/ga/temp.js';
+import {Temp} from '../../third-party/ga/src/temp.js';
 
 export class Engine {
   static init() {
@@ -38,6 +38,7 @@ export class Engine {
   static async run() {
     while (true) {
       const secondsDelta = await this.nextFrame;
+      console.log(secondsDelta);
       this.nextFrame = this.nextFramePromise();
       Temp.reclaimAll();
       this.hexLines.clear();

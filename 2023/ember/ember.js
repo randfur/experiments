@@ -1,8 +1,8 @@
 import {Engine} from './engine.js';
 import {Flame} from './flame.js';
-import {Vec3} from '../../third-party/ga/vec3.js';
-import {Mat4} from '../../third-party/ga/mat4.js';
-import {Rotor3} from '../../third-party/ga/rotor3.js';
+import {Vec3} from '../../third-party/ga/src/vec3.js';
+import {Mat4} from '../../third-party/ga/src/mat4.js';
+import {Rotor3} from '../../third-party/ga/src/rotor3.js';
 import {
   secondsRange,
   never,
@@ -97,7 +97,7 @@ export class Ember {
                 .inplaceConjugate()
             )
           )
-          .exportToArrayBuffer(hexLines.transformMatrix);
+          .exportToBuffer(hexLines.transformMatrix);
       } else {
         const trailPosition = Vec3.temp(0, 20, 60)
           .inplaceRotateRotor3(this.orientation)
@@ -112,7 +112,7 @@ export class Ember {
                 .inplaceConjugate()
             )
           )
-          .exportToArrayBuffer(hexLines.transformMatrix);
+          .exportToBuffer(hexLines.transformMatrix);
       }
     }
 
