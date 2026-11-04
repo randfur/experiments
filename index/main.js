@@ -1,5 +1,6 @@
 const directory = {
   2026: [
+    {name: 'wet-ground', wip: true},
     {name: 'quick-draw', wip: false},
     {name: 'tap-balloon', wip: false},
     {name: 'articulation', wip: false},
