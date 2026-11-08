@@ -26,7 +26,7 @@ export class StarEmitter {
               random(TAU),
               random(this.radius * Math.min(2, this.starCount / 4)),
             )
-            .inplaceAdd(this.position),
+            .add(this.position),
           this.starCount,
           this.bad,
         ));

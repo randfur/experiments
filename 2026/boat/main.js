@@ -13,7 +13,7 @@ class Boat {
   static draw(hexLines) {
     hexLines.addPoints([
       {position: this.position, size: 10, colour: {r: 255, g: 255, b: 255}},
-      {position: Vec3.addXyz(this.position, 0, 10, 0), size: 10, colour: {r: 255, g: 255, b: 255}},
+      {position: Vec3.setAddXyz(this.position, 0, 10, 0), size: 10, colour: {r: 255, g: 255, b: 255}},
     ]);
   }
 }

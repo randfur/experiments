@@ -236,7 +236,7 @@ export class Game {
       let collision = false;
       for (const entity of this.entities) {
         if (entity instanceof Balloon) {
-          const squareDistance = Vec3.delta(entity.preWobblePosition, position).squareLength();
+          const squareDistance = Vec3.setDelta(entity.preWobblePosition, position).squareLength();
           if (squareDistance < (entity.maxRadius + maxRadius + Balloon.drift) ** 2) {
             collision = true;
             maxRadius *= 0.95;
@@ -299,22 +299,22 @@ export class Game {
 
     if (this.gameOver) {
       drawString(hexLines, 'TAP BALLOON', 10, white, position => {
-        return Vec3.set(position).inplaceScale(60).inplaceAddXyz(0, this.height / 2 - 200);
+        return Vec3.set(position).scale(60).addXyz(0, this.height / 2 - 200);
       });
       const rowHeight = 150;
       let y = rowHeight;
       const scoreColour = this.score > 0 && this.score === this.highScore ? goodStarColour : dullHud;
       drawString(hexLines, `SCORE: ${this.score}`, 15, scoreColour, position => {
-        return Vec3.set(position).inplaceScale(40).inplaceAddXyz(0, y);
+        return Vec3.set(position).scale(40).addXyz(0, y);
       });
       y -= rowHeight;
       drawString(hexLines, `HIGHSCORE: ${this.highScore}`, 15, scoreColour, position => {
-        return Vec3.set(position).inplaceScale(40).inplaceAddXyz(0, y);
+        return Vec3.set(position).scale(40).addXyz(0, y);
       });
       y -= rowHeight * 1.5;
       if (this.startCooldownRemaining <= 0 && Math.floor(this.time / 1000) % 2 === 0) {
         drawString(hexLines, `< TAP TO START >`, 10, white, position => {
-          return Vec3.set(position).inplaceScale(30).inplaceAddXyz(0, y);
+          return Vec3.set(position).scale(30).addXyz(0, y);
         });
       }
       return;
@@ -354,10 +354,10 @@ export class Game {
         const spokes = 6;
         for (let i = 0; i < spokes; ++i) {
           hexLines.addPointParts(
-            Vec3.polar(
+            Vec3.setPolar(
               -TAU / 4 * i / (spokes - 1),
               Math.max(this.width, this.height) * Math.sqrt(2) * ((secondsRemaining % 1) ** (2 * pressureProgress + 1)),
-            ).inplaceAddXyz(-this.width / 2, this.height / 2),
+            ).addXyz(-this.width / 2, this.height / 2),
             50,
             white,
           );
@@ -370,7 +370,7 @@ export class Game {
       drawString(hexLines, 'RESTART?', 10, white, position => {
         return Vec3
           .set(position)
-          .inplaceScale(50);
+          .scale(50);
       });
 
       const barProgress = 1 - this.resetQuestionBarsRemaining / resetQuestionBarsDuration;
@@ -380,7 +380,7 @@ export class Game {
       let up = true;
       for (let x = -barLength; x < barLength; x += barThickness * 2) {
         hexLines.addPointParts(
-          Vec3.xyz(
+          Vec3.setXyz(
             x,
             (this.height / 2) * (up ? -1 : 1),
           ),
@@ -388,7 +388,7 @@ export class Game {
           black,
         );
         hexLines.addPointParts(
-          Vec3.xyz(
+          Vec3.setXyz(
             x + barLength * barProgress,
             (this.height / 2 - barLength * barProgress) * (up ? -1 : 1),
           ),
@@ -406,14 +406,14 @@ export class Game {
     drawModel(hexLines, model, 10, colour, position => {
       return Vec3
         .set(position)
-        .inplaceScale(100)
-        .inplaceAddXyz(x, this.height / 2 - 50);
+        .scale(100)
+        .addXyz(x, this.height / 2 - 50);
     });
     drawString(hexLines, string, 10, colour, position => {
       return Vec3
         .set(position)
-        .inplaceScale(30)
-        .inplaceAddXyz(x, this.height / 2 - 140);
+        .scale(30)
+        .addXyz(x, this.height / 2 - 140);
     });
   }
 

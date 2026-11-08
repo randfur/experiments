@@ -71,13 +71,14 @@ class Model {
     }
     // TODO: Work into the API somehow.
     facesB.forEach(face => face.colour = {r: 100, g: 0, b: 255, a: 255});
+    const dog = new Vec3().set(this.position);
     return [
       facesA.length ? new Model({
-        position: new Vec3().set(this.position).inplaceScaleAdd(0.5, push),
+        position: dog.scaleAdd(0.5, push),
         faces: facesA,
       }) : null,
       facesB.length ? new Model({
-        position: new Vec3().set(this.position).inplaceScaleAdd(-0.5, push),
+        position: new Vec3().set(this.position).scaleAdd(-0.5, push),
         faces: facesB,
       }) : null,
     ];

@@ -39,19 +39,19 @@ async function main() {
       case '0':
         orientation.multiply(
           Rotor3.setVec3ToVec3(
-            Vec3.temp(0, 0, 1).inplaceRotateRotor3(orientation),
-            Vec3.temp(-deltaX, deltaY, 1000).inplaceRotateRotor3(orientation),
+            Vec3.a.setXyz(0, 0, 1).rotateRotor3(orientation),
+            Vec3.b.setXyz(-deltaX, deltaY, 1000).rotateRotor3(orientation),
           )
         );
         break;
       case '1':
-        position.inplaceAdd(
-          Vec3.temp(0, 0, deltaY).inplaceScale(0.8).inplaceRotateRotor3(orientation)
+        position.add(
+          Vec3.setXyz(0, 0, deltaY).scale(0.8).rotateRotor3(orientation)
         );
         break;
       case '2':
-        position.inplaceAdd(
-          Vec3.temp(-deltaX, deltaY, 0).inplaceScale(0.2).inplaceRotateRotor3(orientation)
+        position.add(
+          Vec3.setXyz(-deltaX, deltaY, 0).scale(0.2).rotateRotor3(orientation)
         );
         break;
       }
@@ -70,7 +70,7 @@ async function main() {
 
 function camera(hexLines, position, orientation) {
   Mat4.setTranslateVec3(
-      Vec3.temp().setScale(-1, position)
+      Vec3.setScale(-1, position)
     )
     .leftRotateRotor3(
       Rotor3.setConjugate(orientation)

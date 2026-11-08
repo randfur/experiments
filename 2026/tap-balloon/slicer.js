@@ -43,7 +43,7 @@ export class Slicer {
                 cleanUpBalloonModel,
                 entity.position,
                 position => entity.transform(position),
-                velocity => velocity.inplaceScale(0.01).inplaceAddXyz(0, 0, random(-1)),
+                velocity => velocity.scale(0.01).addXyz(0, 0, random(-1)),
                 entity.thickness(),
                 colour,
               );

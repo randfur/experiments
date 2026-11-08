@@ -30,7 +30,7 @@ async function main() {
         if (points[points.length - 1] === null) {
           points.splice(points.length - 1, 1);
         } else {
-          points = points.filter(point => point === null || Vec3.delta(pointerPosition, point).length() > deleteRadius);
+          points = points.filter(point => point === null || Vec3.setDelta(pointerPosition, point).length() > deleteRadius);
         }
       }
       break;
@@ -40,7 +40,7 @@ async function main() {
         if (point === null) {
           return '  null,\n';
         }
-        const scaledPoint = Vec3.scale(1 / boxSize, point);
+        const scaledPoint = Vec3.setScale(1 / boxSize, point);
         return `  new Vec3(${scaledPoint.x.toFixed(2)}, ${scaledPoint.y.toFixed(2)}),\n`;
       }).join('')
     }]`);

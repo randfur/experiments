@@ -42,26 +42,26 @@ export class DemoCursor {
     }
 
     if (target !== null) {
-      const delta = Vec3.delta(this.position, target.position);
+      const delta = Vec3.setDelta(this.position, target.position);
       const distance = delta.length();
       const speed = this.velocity.length();
       if (speed < 0.1) {
-        this.velocity.inplaceScaleAdd(timeDelta / 40_000, delta);
+        this.velocity.scaleAdd(timeDelta / 40_000, delta);
       } else {
         const dot = this.velocity.dot(delta) / speed / distance;
         if (dot <= 0 || speed > (slicing ? 10 : 4)) {
-          this.velocity.inplaceScale(0.3);
+          this.velocity.scale(0.3);
         } else {
-          const mirrorVelocity = Vec3.a.setScale(-2, this.velocity).inplaceScaleAdd(2 * speed / distance, delta);
+          const mirrorVelocity = Vec3.a.setScale(-2, this.velocity).scaleAdd(2 * speed / distance, delta);
           const offsetDelta = Vec3.b.setScaleAdd(delta, 100, mirrorVelocity);
           if (target.velocity) {
-            offsetDelta.inplaceScaleAdd(500, target.velocity);
+            offsetDelta.scaleAdd(500, target.velocity);
           }
-          this.velocity.inplaceScaleAdd(timeDelta / 20_000, offsetDelta);
+          this.velocity.scaleAdd(timeDelta / 20_000, offsetDelta);
         }
       }
     } else {
-      this.velocity.inplaceScale(0.8);
+      this.velocity.scale(0.8);
     }
 
     if (this.position.x > this.game.width / 2 && this.velocity.x > 0) { this.velocity.x *= -1; }
@@ -69,10 +69,10 @@ export class DemoCursor {
     if (this.position.y > this.game.height / 2 && this.velocity.y > 0) { this.velocity.y *= -1; }
     if (this.position.y < -this.game.height / 2 && this.velocity.y < 0) { this.velocity.y *= -1; }
 
-    this.position.inplaceScaleAdd(timeDelta, this.velocity);
+    this.position.scaleAdd(timeDelta, this.velocity);
     this.game.pointerMove(this.position);
 
-    if (target !== null && Vec3.delta(this.position, target.position).squareLength() < (target.radius * 0.9) ** 2) {
+    if (target !== null && Vec3.setDelta(this.position, target.position).squareLength() < (target.radius * 0.9) ** 2) {
       this.game.click(this.position);
       this.game.entities.push(new Shockwave(
         this.position.clone(),
@@ -85,12 +85,12 @@ export class DemoCursor {
 
   draw(hexLines) {
     drawModel(hexLines, demoCursorModel, 5, white, position => {
-      return Vec3.scale(50, position).inplaceAdd(this.position);
+      return Vec3.setScale(50, position).add(this.position);
     });
 
     if (Math.floor(this.time / 1000) % 2 === 0) {
       drawString(hexLines, '< DEMO MODE >', 10, white, position => {
-        return Vec3.scale(20, position).inplaceAddXyz(0, -this.game.height / 4);
+        return Vec3.setScale(20, position).addXyz(0, -this.game.height / 4);
       });
     }
   }

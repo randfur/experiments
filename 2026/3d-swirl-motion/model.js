@@ -26,9 +26,9 @@ export class Model {
       if (originalPoint !== null) {
         this.transformedPoints[i].position
           .set(originalPoint.position)
-          .inplaceScale(this.scale)
-          .inplaceRotateRotor3(this.rotate)
-          .inplaceAdd(this.translate);
+          .scale(this.scale)
+          .rotateRotor3(this.rotate)
+          .add(this.translate);
         this.transformedPoints[i].colour = this.colourOverride ?? originalPoint.colour;
       }
     }

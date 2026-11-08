@@ -27,7 +27,7 @@ export class Confetti {
       this.position.setScaleAdd(position, radius / 2, this.velocity);
       let collision = false;
       for (const other of others) {
-        if (Vec3.delta(this.position, other.position).squareLength() < (2 * size) ** 2) {
+        if (Vec3.setDelta(this.position, other.position).squareLength() < (2 * size) ** 2) {
           collision = true;
           break;
         }
@@ -36,7 +36,7 @@ export class Confetti {
         break;
       }
     }
-    this.velocity.inplaceScale(velocityScale);
+    this.velocity.scale(velocityScale);
 
     this.duration = 400 + random(500);
     this.remaining = this.duration;
@@ -46,8 +46,8 @@ export class Confetti {
     this.angle += this.angleVelocity * timeDelta;
     this.angleVelocity *= 0.9;
 
-    this.position.inplaceScaleAdd(timeDelta, this.velocity);
-    this.velocity.inplaceScale(0.9);
+    this.position.scaleAdd(timeDelta, this.velocity);
+    this.velocity.scale(0.9);
 
     this.remaining -= timeDelta;
     this.alive = this.remaining > 0;
@@ -57,7 +57,7 @@ export class Confetti {
     const fadedColour = fadeColour(this.colour, this.remaining / this.duration);
     for (const point of this.model) {
       hexLines.addPointParts(
-        Vec3.set(point).inplaceRotateXyAngle(this.angle).inplaceAdd(this.position),
+        Vec3.set(point).rotateXyAngle(this.angle).add(this.position),
         4,
         fadedColour,
       );

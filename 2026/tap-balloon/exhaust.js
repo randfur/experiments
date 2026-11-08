@@ -15,10 +15,10 @@ export class Exhaust {
   }
 
   update(time, timeDelta) {
-    this.velocityBase.inplaceScale(0.9);
-    this.velocityBase.inplaceAdd(Vec3.xyz(deviate(1), deviate(1)).inplaceScale(0.01));
-    this.position.inplaceScaleAdd(timeDelta, this.velocityBase);
-    this.position.inplaceScaleAdd(timeDelta, this.velocityLocal);
+    this.velocityBase.scale(0.9);
+    this.velocityBase.add(Vec3.setXyz(deviate(1), deviate(1)).scale(0.01));
+    this.position.scaleAdd(timeDelta, this.velocityBase);
+    this.position.scaleAdd(timeDelta, this.velocityLocal);
 
     this.size += timeDelta * 0.1;
 

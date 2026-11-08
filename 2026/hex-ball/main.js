@@ -69,12 +69,12 @@ class HexBall {
       );
     }
     --this.timer;
-    this.direction.inplaceTurnTowards(this.model.translation, this.destination, Math.cos(TAU / 100));
-    this.model.translation.inplaceScaleAdd(20, this.direction);
+    this.direction.turnTowards(this.model.translation, this.destination, Math.cos(TAU / 100));
+    this.model.translation.scaleAdd(20, this.direction);
     this.model.orientation.multiply(
       Rotor3.setVec3ToVec3(
-        Vec3.b.set(this.direction).inplaceScale(0.05).inplaceAddXyz(0, 0, 1),
-        Vec3.c.setZ(),
+        Vec3.a.set(this.direction).scale(0.05).addXyz(0, 0, 1),
+        Vec3.b.setZ(),
       )
     );
   }
@@ -190,7 +190,7 @@ function createHexPoints({planeBasis, radius, size, colour}) {
       position: new Vec3(
           Math.cos(angle) * radius,
           Math.sin(angle) * radius,
-        ).inplacePlanePosition3d(planeBasis),
+        ).planePosition3d(planeBasis),
       size,
       colour,
     };

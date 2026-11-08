@@ -47,7 +47,7 @@ class Model {
 
   split({position, direction, cuts, distance}) {
     const planeBasis = PlaneBasis.temp(position, direction);
-    const planeCuts = cuts.map(cut => cut.clone().inplacePlaneProjection2d(planeBasis));
+    const planeCuts = cuts.map(cut => cut.clone().planeProjection2d(planeBasis));
     const intersectingFaces = [];
     for (const face of this.faces) {
 

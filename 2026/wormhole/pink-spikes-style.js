@@ -38,24 +38,24 @@ export class PinkSpikesStyle extends Style {
     ++this.stepCount;
     this.end.orientation.leftMultiply(
       Rotor3.setAxisAngle(
-        Vec3.polar(this.stepCount / 40),
+        Vec3.setPolar(this.stepCount / 40),
         0.02,
       ),
     ).leftMultiply(
       Rotor3.setAxisAngle(
-        Vec3.polar(this.stepCount / 400 + 5).inplaceOrthogonal().inplaceNormalise(),
+        Vec3.setPolar(this.stepCount / 400 + 5).orthogonal().normalise(),
         0.015,
       ),
     );
     this.end.distance += pointStepDistance;
-    this.end.position.inplaceAdd(Vec3.z().inplaceRotateRotor3(this.end.orientation).inplaceScale(pointStepDistance));
+    this.end.position.add(Vec3.setZ().rotateRotor3(this.end.orientation).scale(pointStepDistance));
     return this.end;
   }
 
   subtractStart(start) {
     this.distance -= start.distance;
     this.end.distance -= start.distance;
-    this.end.position.inplaceSubtract(start.position);
+    this.end.position.subtract(start.position);
   }
 
   render(hexLines, time, path, nearDistance, farDistance) {
@@ -81,11 +81,11 @@ export class PinkSpikesStyle extends Style {
           const spikePoint = this.spikePoints[j % this.spikePoints.length];
           hexLines.addPointParts(
             Vec3.set(spikePoint.position)
-              .inplaceScaleXyz(scaleX, scaleY)
-              .inplaceAddXyz(radius + squish)
-              .inplaceRotateXy(rotation)
-              .inplaceRotateRotor3(point.orientation)
-              .inplaceAdd(point.position),
+              .scaleXyz(scaleX, scaleY)
+              .addXyz(radius + squish)
+              .rotateXy(rotation)
+              .rotateRotor3(point.orientation)
+              .add(point.position),
             spikePoint.size,
             spikePoint.colour,
           );

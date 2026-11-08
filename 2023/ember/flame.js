@@ -10,9 +10,9 @@ export class Flame {
     this.position = position;
     this.speed = randomRange(1, 4);
     this.velocity = new Vec3(0, 0, 1)
-      .inplaceRotateRotor3(orientation)
-      .inplaceAdd(Vec3.temp(deviate(1), deviate(1), deviate(1)))
-      .inplaceNormalise();
+      .rotateRotor3(orientation)
+      .add(Vec3.setXyz(deviate(1), deviate(1), deviate(1)))
+      .normalise();
     this.size = 10;
     this.maxLife = 1000;
     this.life = this.maxLife;
@@ -26,8 +26,8 @@ export class Flame {
   }
 
   step(secondsDelta) {
-    this.position.inplaceAdd(
-      Vec3.temp().set(this.velocity).inplaceScale(this.speed * secondsDelta),
+    this.position.add(
+      Vec3.set(this.velocity).scale(this.speed * secondsDelta),
     );
   }
 

@@ -36,7 +36,7 @@ async function main() {
     const angle = time / 1000;
     const points = 5;
     const cuts = range(points).map(i =>
-      Vec3.temp().setPolar(angle + TAU * i / points).inplacePlanePosition3d(planeBasis),
+      Vec3.temp().setPolar(angle + TAU * i / points).planePosition3d(planeBasis),
     );
 
     for (let i = 0; i < points; ++i) {
@@ -48,7 +48,7 @@ async function main() {
       const size = 10;
       const colour = {r: i / points * 255, b: 255};
       hexLines.addPoint({
-        position: Vec3.temp().setAdd(prevCut, cut).inplaceNormalise().inplaceScale(baseLength).inplaceAdd(position),
+        position: Vec3.temp().setAdd(prevCut, cut).normalise().scale(baseLength).add(position),
         size,
         colour: {r: (i + 1 / 3) / points * 255, b: 255},
       })
@@ -58,7 +58,7 @@ async function main() {
         colour: {r: (i + 2 / 3) / points * 255, b: 255},
       })
       hexLines.addPoint({
-        position: Vec3.temp().setAdd(cut, nextCut).inplaceNormalise().inplaceScale(baseLength).inplaceAdd(position),
+        position: Vec3.temp().setAdd(cut, nextCut).normalise().scale(baseLength).add(position),
         size,
         colour: {r: (i + 3 / 3) / points * 255, b: 255},
       })

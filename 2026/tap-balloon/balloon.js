@@ -68,8 +68,8 @@ export class Balloon {
 
     this.position.set(this.preWobblePosition);
     for (const wobbleSource of this.game.wobbleSources) {
-      const delta = Vec3.delta(wobbleSource.position, this.position);
-      this.position.inplaceScaleAdd(
+      const delta = Vec3.setDelta(wobbleSource.position, this.position);
+      this.position.scaleAdd(
         10000
           * (1 - Math.cos((wobbleDuration - wobbleSource.remaining) / 150))
           * easeIn(wobbleSource.remaining / wobbleDuration)
@@ -86,7 +86,7 @@ export class Balloon {
   }
 
   click(position) {
-    if (Vec3.delta(this.position, position).squareLength() < this.radius ** 2) {
+    if (Vec3.setDelta(this.position, position).squareLength() < this.radius ** 2) {
       this.game.popCheck = true;
       this.pop(/*directClick=*/true, /*scoresPoints=*/true);
     }
@@ -207,21 +207,21 @@ export class Balloon {
     drawModel(hexLines, Balloon.shineModel[this.type], 4, fadeColour(Balloon.shineColour[this.type], fade), point => {
       return Vec3
         .set(point)
-        .inplaceScale(this.radius)
-        .inplaceRotateXyAngle(this.rotation / rotationDivisor)
-        .inplaceAddXyz(
+        .scale(this.radius)
+        .rotateXyAngle(this.rotation / rotationDivisor)
+        .addXyz(
           distortion * Math.cos(-2 * point.y + 3 * this.rotation),
           distortion * Math.sin(-2 * point.x + 3 * this.rotation),
         )
-        .inplaceAdd(this.position);
+        .add(this.position);
     });
   }
 
   transform(position) {
     return position
-      .inplaceScale(this.radius)
-      .inplaceRotateXyAngle(this.rotation)
-      .inplaceAdd(this.position);
+      .scale(this.radius)
+      .rotateXyAngle(this.rotation)
+      .add(this.position);
   }
 
   thickness() {

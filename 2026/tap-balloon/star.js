@@ -16,7 +16,7 @@ export class Star {
   }
 
   update(time, timeDelta) {
-    this.position.inplaceScaleAdd(timeDelta, this.velocity);
+    this.position.scaleAdd(timeDelta, this.velocity);
     if (!this.bad) {
       this.position.x -= timeDelta * this.position.x / 1000;
     }
@@ -39,9 +39,9 @@ export class Star {
       point => {
         return Vec3
           .set(point)
-          .inplaceScale(this.size)
-          .inplaceRotateXyAngle(this.angle)
-          .inplaceAdd(this.position);
+          .scale(this.size)
+          .rotateXyAngle(this.angle)
+          .add(this.position);
       },
     );
   }

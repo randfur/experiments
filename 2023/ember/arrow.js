@@ -24,21 +24,21 @@ export class Arrow {
 
   step() {
     this.orientation
-      .inplaceMultiplyRight(
-        Rotor3.setAxisAngle(Vec3.temp(0, 1, 0), TAU * 0.001 + 0.01 * Math.sin(performance.now() * 0.001))
+      .multiply(
+        Rotor3.setAxisAngle(Vec3.setXyz(0, 1, 0), TAU * 0.001 + 0.01 * Math.sin(performance.now() * 0.001))
       )
-      .inplaceMultiplyRight(
-        Rotor3.setAxisAngle(Vec3.temp(1, 0, 0), TAU * 0.003)
+      .multiply(
+        Rotor3.setAxisAngle(Vec3.setXyz(1, 0, 0), TAU * 0.003)
       )
   }
 
   draw(hexLines) {
     if (this.cameraBehind) {
       Mat4.setTranslateVec3(
-          Vec3.temp(0, 10, -50)
-            .inplaceRotateRotor3(this.orientation)
-            .inplaceAdd(this.position)
-            .inplaceScale(-1)
+          Vec3.setXyz(0, 10, -50)
+            .rotateRotor3(this.orientation)
+            .add(this.position)
+            .scale(-1)
         )
         .leftRotateRotor3(
           Rotor3.setConjugate(this.orientation)
@@ -46,16 +46,16 @@ export class Arrow {
         .exportToBuffer(hexLines.transformMatrix);
     } else {
       Mat4.setTranslateVec3(
-          Vec3.temp(0, 10, 80)
-            .inplaceRotateRotor3(this.orientation)
-            .inplaceAdd(this.position)
-            .inplaceScale(-1)
+          Vec3.setXyz(0, 10, 80)
+            .rotateRotor3(this.orientation)
+            .add(this.position)
+            .scale(-1)
         )
         .leftRotateRotor3(
           Rotor3
-            .setTurnAround(Vec3.temp(0, 0, 1), Vec3.temp(1, 0, 0))
+            .setTurnAround(Vec3.setXyz(0, 0, 1), Vec3.setXyz(1, 0, 0))
             .multiply(this.orientation)
-            .inplaceConjugate()
+            .conjugate()
         )
         .exportToBuffer(hexLines.transformMatrix);
     }
@@ -66,7 +66,7 @@ export class Arrow {
       colour: {r: 100, g: 100, b: 100},
     });
     hexLines.addPoint({
-      position: Vec3.temp(0, 0, 40).inplaceRotateRotor3(this.orientation).inplaceAdd(this.position),
+      position: Vec3.setXyz(0, 0, 40).rotateRotor3(this.orientation).add(this.position),
       size: 5,
       colour: {r: 255, g: 255, b: 255},
     });

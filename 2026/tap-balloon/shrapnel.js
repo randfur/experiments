@@ -20,8 +20,8 @@ export class Shrapnel {
           velocityFunction(
             new Vec3()
               .setAdd(start, end)
-              .inplaceScale(0.5)
-              .inplaceSubtract(position),
+              .scale(0.5)
+              .subtract(position),
           ),
           thickness,
           colour,
@@ -32,7 +32,7 @@ export class Shrapnel {
 
   constructor(start, end, velocity, thickness, colour) {
     this.alive = true;
-    this.position = new Vec3().setAdd(start, end).inplaceScale(0.5);
+    this.position = new Vec3().setAdd(start, end).scale(0.5);
     this.modelStart = new Vec3().setDelta(this.position, start);
     this.modelEnd = new Vec3().setDelta(this.position, end);
     this.velocity = velocity;
@@ -47,7 +47,7 @@ export class Shrapnel {
   }
 
   update(time, timeDelta) {
-    this.position.inplaceScaleAdd(timeDelta, this.velocity);
+    this.position.scaleAdd(timeDelta, this.velocity);
 
     this.orientation.multiply(this.orientationVelocity);
 

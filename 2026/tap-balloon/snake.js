@@ -48,18 +48,18 @@ export class Snake {
     this.remaining -= timeDelta;
     if (this.remaining > 0) {
       while (getQuadrant(this.targetPosition) === getQuadrant(this.segments[0].position)) {
-        this.targetPosition.setXyz(deviate(this.game.width), deviate(this.game.height)).inplaceScale(1 / 4);
+        this.targetPosition.setXyz(deviate(this.game.width), deviate(this.game.height)).scale(1 / 4);
       }
     } else {
       this.targetPosition.setXyz(0, Math.min(-this.game.height / 2 + size, head.position.y - size));
     }
-    head.direction.inplaceTurnTowards(head.position, this.targetPosition, Math.cos(timeDelta * turnSpeed));
-    head.position.inplaceScaleAdd(timeDelta * speed, head.direction);
+    head.direction.turnTowards(head.position, this.targetPosition, Math.cos(timeDelta * turnSpeed));
+    head.position.scaleAdd(timeDelta * speed, head.direction);
 
     if (!this.destroyed) {
       for (const entity of this.game.entities) {
         if (entity.alive && entity instanceof Balloon) {
-          if (Vec3.delta(head.position, entity.position).squareLength() < (size + entity.radius) ** 2) {
+          if (Vec3.setDelta(head.position, entity.position).squareLength() < (size + entity.radius) ** 2) {
             entity.pop(/*directClick=*/false, /*scoresPoints=*/false);
           }
         }
@@ -70,14 +70,14 @@ export class Snake {
       const segment = this.segments[i];
       const nextSegment = this.segments[i + 1];
       const segmentBack = Vec3.a.setScaleAdd(segment.position, -size, segment.direction);
-      const direction = Vec3.b.setDelta(nextSegment.position, segmentBack).inplaceNormalise();
+      const direction = Vec3.b.setDelta(nextSegment.position, segmentBack).normalise();
       if (segment.direction.dot(direction) < maxSegmentAngleCos) {
-        const sign = Vec3.c.set(segment.direction).inplaceTurnXy().dot(direction) > 0 ? 1 : -1;
+        const sign = Vec3.c.set(segment.direction).turnXy().dot(direction) > 0 ? 1 : -1;
         nextSegment.direction
           .set(segment.direction)
-          .inplaceRotateXy(Vec3.d.setXyz(maxSegmentAngleCos, sign * maxSegmentAngleSin));
+          .rotateXy(Vec3.d.setXyz(maxSegmentAngleCos, sign * maxSegmentAngleSin));
       } else {
-        nextSegment.direction.set(direction).inplaceNormalise();
+        nextSegment.direction.set(direction).normalise();
       }
       nextSegment.position.setScaleAdd(segmentBack, -size, nextSegment.direction);
     }
@@ -118,7 +118,7 @@ export class SnakeSegment {
     if (this.state !== 'normal') {
       return;
     }
-    if (Vec3.delta(this.position, position).squareLength() > size ** 2) {
+    if (Vec3.setDelta(this.position, position).squareLength() > size ** 2) {
       return;
     }
 
@@ -178,17 +178,17 @@ export class SnakeSegment {
 
   transform(position) {
     return position
-      .inplaceScale(size)
-      .inplaceRotateXy(this.direction)
-      .inplaceUnturnXy()
-      .inplaceAdd(this.position);
+      .scale(size)
+      .rotateXy(this.direction)
+      .unturnXy()
+      .add(this.position);
   }
 
   shrapnelVelocity(velocity) {
     return velocity
-      .inplaceScale(0.01)
-      .inplaceScaleAdd(random(speed), this.direction)
-      .inplaceAddXyz(deviate(0.01), deviate(0.01), deviate(2));
+      .scale(0.01)
+      .scaleAdd(random(speed), this.direction)
+      .addXyz(deviate(0.01), deviate(0.01), deviate(2));
   }
 }
 

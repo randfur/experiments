@@ -30,7 +30,7 @@ export class FlightSquad {
         --this.aeroplanesRemaining;
         const sign = randomBool() ? 1 : -1;
         const launchDirection = randomBool() ? new Vec3(sign, 0) : new Vec3(0, sign);
-        const launchLength = Math.abs(Vec3.xyz(this.game.width, this.game.height).dot(launchDirection)) + 4 * Aeroplane.size;
+        const launchLength = Math.abs(Vec3.setXyz(this.game.width, this.game.height).dot(launchDirection)) + 4 * Aeroplane.size;
         const colour = stageColours[stageColours.length - 1 - this.aeroplanesRemaining];
         this.game.entities.push(
           new Aeroplane(

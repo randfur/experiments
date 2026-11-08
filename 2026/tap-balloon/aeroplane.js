@@ -20,7 +20,7 @@ export class Aeroplane {
     this.launchDirection = launchDirection;
     this.position = position;
     this.radius = Aeroplane.size;
-    this.velocity = launchDirection.clone().inplaceScale(launchLength / this.lifeDuration);
+    this.velocity = launchDirection.clone().scale(launchLength / this.lifeDuration);
     this.roll = 0;
     this.lifeElapsed = 0;
     this.rollDirection = randomBool() ? 1 : -1;
@@ -29,8 +29,8 @@ export class Aeroplane {
 
   update(time, timeDelta) {
     this.roll = this.rollDirection * 1.5 * Math.cos(this.lifeElapsed / 200);
-    this.velocity.inplaceScaleAdd(timeDelta * this.roll / 500, Vec3.turnXy(this.launchDirection));
-    this.position.inplaceScaleAdd(timeDelta, this.velocity);
+    this.velocity.scaleAdd(timeDelta * this.roll / 500, Vec3.setTurnXy(this.launchDirection));
+    this.position.scaleAdd(timeDelta, this.velocity);
 
     this.exhaustDelayRemaining -= timeDelta;
     if (this.exhaustDelayRemaining <= 0) {
@@ -50,16 +50,16 @@ export class Aeroplane {
   createExhaust(yOffset) {
     return new Exhaust(
       this.transform(new Vec3(-1, yOffset)),
-      this.velocity.clone().inplaceScale(0.1),
+      this.velocity.clone().scale(0.1),
       this.transform(new Vec3(-0.1, yOffset))
-        .inplaceSubtract(this.position)
-        .inplaceScale(0.02),
+        .subtract(this.position)
+        .scale(0.02),
       this.colour,
     );
   }
 
   click(position) {
-    if (Vec3.delta(this.position, position).squareLength() > this.radius ** 2) {
+    if (Vec3.setDelta(this.position, position).squareLength() > this.radius ** 2) {
       return;
     }
 
@@ -85,9 +85,9 @@ export class Aeroplane {
         this.position,
         position => this.transform(position),
         velocity => velocity
-          .inplaceScale(0.01)
-          .inplaceScaleAdd(0.5 + random(0.5), this.velocity)
-          .inplaceAddXyz(deviate(0.01), deviate(0.01), deviate(2)),
+          .scale(0.01)
+          .scaleAdd(0.5 + random(0.5), this.velocity)
+          .addXyz(deviate(0.01), deviate(0.01), deviate(2)),
         thickness,
         i === 0 ? white : this.colour,
       );
@@ -96,11 +96,11 @@ export class Aeroplane {
 
   transform(position) {
     return position
-      .inplaceScale(this.radius)
-      .inplaceRotateXy(this.launchDirection)
-      .inplaceRotateRotor3(Rotor3.setAxisAngle(this.launchDirection, this.roll))
-      .inplaceRotateXyAngle(this.roll / 3)
-      .inplaceAdd(this.position);
+      .scale(this.radius)
+      .rotateXy(this.launchDirection)
+      .rotateRotor3(Rotor3.setAxisAngle(this.launchDirection, this.roll))
+      .rotateXyAngle(this.roll / 3)
+      .add(this.position);
   }
 
   draw(hexLines) {

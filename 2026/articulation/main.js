@@ -44,7 +44,7 @@ async function main() {
   for (let i = 0; i < centrePointCount; ++i) {
     centrePoints.push(
       new Vec3(deviate(centreRadius), deviate(centreRadius), deviate(centreRadius))
-        .inplaceRotateXyAngle(TAU / 8)
+        .rotateXyAngle(TAU / 8)
     );
   }
 
@@ -55,7 +55,7 @@ async function main() {
   const starSpaceSize = 10000;
   for (let i = 0; i < starCount; ++i) {
     const star = [];
-    const spacePosition = Vec3.xyz(
+    const spacePosition = Vec3.setXyz(
       deviate(starSpaceSize / 2) + deviate(starSpaceSize / 2),
       deviate(starSpaceSize / 2) + deviate(starSpaceSize / 2),
       deviate(starSpaceSize / 2) + deviate(starSpaceSize / 2),
@@ -63,7 +63,7 @@ async function main() {
     for (let j = 0; j < starPoints; ++j) {
       star.push(
         new Vec3(deviate(starRadius), deviate(starRadius), deviate(starRadius))
-          .inplaceAdd(spacePosition)
+          .add(spacePosition)
       );
     }
     stars.push(star);
@@ -157,7 +157,7 @@ class Articulation {
     const straightArcDirection = Vec3.a.setDelta(
       Vec3.b.setScale(this.startRadius, startAxis),
       Vec3.c.setScale(this.startRadius, this.endAxis),
-    ).inplaceNormalise();
+    ).normalise();
 
     const size = 5;
     const startG = 255 / (1 + depth / 1.2);
@@ -168,27 +168,27 @@ class Articulation {
     const endR = endB / 4;
     addPoint(
       hexLines,
-      Vec3.sum(this.startRadius, startAxis, this.margin, straightArcDirection),
+      Vec3.setSum(this.startRadius, startAxis, this.margin, straightArcDirection),
       size, startR, startG, startB,
     );
     addPoint(
       hexLines,
-      Vec3.sum(this.startRadius, this.endAxis, -this.margin, straightArcDirection),
+      Vec3.setSum(this.startRadius, this.endAxis, -this.margin, straightArcDirection),
       size, endR, endG, endB,
     );
     addPoint(
       hexLines,
-      Vec3.sum(this.endRadius, this.endAxis, -this.margin, straightArcDirection),
+      Vec3.setSum(this.endRadius, this.endAxis, -this.margin, straightArcDirection),
       size, endR, endG, endB,
     );
     addPoint(
       hexLines,
-      Vec3.sum(this.endRadius, startAxis, this.margin, straightArcDirection),
+      Vec3.setSum(this.endRadius, startAxis, this.margin, straightArcDirection),
       size, startR, startG, startB,
     );
     addPoint(
       hexLines,
-      Vec3.sum(this.startRadius, startAxis, this.margin, straightArcDirection),
+      Vec3.setSum(this.startRadius, startAxis, this.margin, straightArcDirection),
       size, startR, startG, startB,
     );
     hexLines.addNull();

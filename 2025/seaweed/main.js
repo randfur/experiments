@@ -69,7 +69,7 @@ class Bubbler {
         this.bubbles.push(new Bubble({
           speed: baseSpeed * (1 - 1 / (count * 3 - i)),
           size: Math.max(2 + deviate(1) - i, 1),
-          position: new Vec3().set(position).inplaceAddXyz(
+          position: new Vec3().set(position).addXyz(
             deviate(10),
             deviate(10),
             deviate(10),
@@ -105,7 +105,7 @@ class Bubble {
   update(time) {
     --this.life;
     this.alive = this.life > 0;
-    this.wobble.inplaceAddXyz(
+    this.wobble.addXyz(
       Math.cos(this.wobble.y / 3),
       Math.cos(this.wobble.z / 3),
       Math.cos(this.wobble.x / 3),
@@ -117,9 +117,9 @@ class Bubble {
     for (const modelPosition of this.model) {
       hexLines.addPoint({
         position: Vec3.temp()
-          .inplaceAdd(this.position)
-          .inplaceAdd(this.wobble)
-          .inplaceAdd(modelPosition),
+          .add(this.position)
+          .add(this.wobble)
+          .add(modelPosition),
         size: 1,
         colour: {r: 100, g: 200, b: 255},
       });
@@ -196,12 +196,12 @@ class Fish {
     );
     this.position
       .setZero()
-      .inplaceAdd(this.schoolPosition)
-      .inplaceAdd(this.basePosition)
-      .inplaceAdd(this.wobble);
+      .add(this.schoolPosition)
+      .add(this.basePosition)
+      .add(this.wobble);
     const direction = Vec3.temp()
       .setDelta(this.lastPosition, this.position)
-      .inplaceNormalise();
+      .normalise();
     this.lastPosition.set(this.position);
     this.orientation.setVec3ToVec3(Vec3.temp(1, 0, 0), direction);
   }
@@ -211,8 +211,8 @@ class Fish {
       hexLines.addPoint({
         position: Vec3.temp()
           .set(modelPosition)
-          .inplaceRotateRotor3(this.orientation)
-          .inplaceAdd(this.position),
+          .rotateRotor3(this.orientation)
+          .add(this.position),
         size: 1,
         colour: {r: 255, g: 200, b: 50},
       });
@@ -230,8 +230,8 @@ class SeaweedFloor {
             const deviationRange = 5 + y * 3;
             return new ControlPoint({
               basePosition: new Vec3(x, y, z)
-                .inplaceAddXyz(-3.5, -1.25, 2)
-                .inplaceScale(30),
+                .addXyz(-3.5, -1.25, 2)
+                .scale(30),
               deviationA: new Vec3(
                 deviate(deviationRange),
                 deviate(deviationRange),
@@ -319,7 +319,7 @@ class ControlPoint {
         this.deviationB,
         (Math.cos(time / 10000 + this.deviationA.x + this.fastForward) + 1) / 2,
       )
-      .inplaceAdd(this.basePosition);
+      .add(this.basePosition);
   }
 }
 
@@ -339,12 +339,12 @@ function centrePositions(positions) {
   const min = Vec3.temp().set(positions[0]);
   const max = Vec3.temp().set(positions[0]);
   for (const position of positions) {
-    min.inplaceMin(position);
-    max.inplaceMax(position);
+    min.min(position);
+    max.max(position);
   }
-  const centrePosition = Vec3.temp().setAdd(min, max).inplaceScale(0.5);
+  const centrePosition = Vec3.temp().setAdd(min, max).scale(0.5);
   for (const position of positions) {
-    position.inplaceSubtract(centrePosition);
+    position.subtract(centrePosition);
   }
   return positions;
 }

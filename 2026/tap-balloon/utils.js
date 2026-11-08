@@ -90,7 +90,7 @@ export function drawString(hexLines, string, thickness, colour, transform) {
       position => transform(
         characterPosition
           .set(position)
-          .inplaceAddXyz((i - (string.length - 1) / 2) * characterWidth)
+          .addXyz((i - (string.length - 1) / 2) * characterWidth)
       ),
     );
   }

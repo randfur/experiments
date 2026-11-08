@@ -27,8 +27,8 @@ export class Shockwave {
     for (let i = 0; i <= spokes; ++i) {
       hexLines.addPointParts(
         Vec3
-          .polar(TAU * i / spokes, (0.5 + 1.5 * this.progress) * this.radius)
-          .inplaceAdd(this.position),
+          .setPolar(TAU * i / spokes, (0.5 + 1.5 * this.progress) * this.radius)
+          .add(this.position),
         this.thickness,
         this.colour,
       );
@@ -38,8 +38,8 @@ export class Shockwave {
     for (let i = 0; i <= spokes; ++i) {
       hexLines.addPointParts(
         Vec3
-          .polar(TAU * i / spokes, (0.8 + 1.5 * this.progress) * this.radius)
-          .inplaceAdd(this.position),
+          .setPolar(TAU * i / spokes, (0.8 + 1.5 * this.progress) * this.radius)
+          .add(this.position),
         this.thickness / 3,
         this.colour,
       );

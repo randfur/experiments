@@ -19,7 +19,7 @@ async function main() {
     new Vec3(50, -50, -50),
   ];
 
-  const faceB = faceA.map(vertex => vertex.clone().inplaceAdd(Vec3.temp(0, 0, 100))).reverse();
+  const faceB = faceA.map(vertex => vertex.clone().add(Vec3.temp(0, 0, 100))).reverse();
 
   const planeBasisA = facePlaneBasis(faceA);
   const planeBasisB = facePlaneBasis(faceB);
@@ -65,8 +65,8 @@ async function main() {
     for (let i = 0; i < face.length; ++i) {
       edgeStart.setPlaneProjection2d(facePlaneBasis, face[i]);
       edgeNormal.setDelta(face[i], face[(i + 1) % face.length])
-        .inplaceRelativePlaneProjection2d(facePlaneBasis)
-        .inplaceTurnXy();
+        .relativePlaneProjection2d(facePlaneBasis)
+        .turnXy();
       if (planePointDelta.setDelta(edgeStart, planePoint).dot(edgeNormal) < 0) {
         return false;
       }

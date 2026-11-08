@@ -108,8 +108,8 @@ function createCubePoints(sideLength, strokeSize, colourFunction) {
     corner
     ? {
       position: new Vec3(corner[0], corner[1], corner[2])
-        .inplaceMap(x => x - 0.5)
-        .inplaceScale(sideLength),
+        .map(x => x - 0.5)
+        .scale(sideLength),
       size: strokeSize,
       colour: colourFunction(corner),
     }

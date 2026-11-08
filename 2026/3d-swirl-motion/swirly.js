@@ -14,15 +14,15 @@ export class Swirly {
   }
 
   update() {
-    this.position.inplaceAdd(
+    this.position.add(
       Vec3.a.set(this.position)
-        .inplaceScale(this.randomScale)
-        .inplaceYzx()
-        .inplaceAdd(this.randomTranspose)
-        .inplaceMap(Math.sin)
-        .inplaceRotateRotor3(this.randomRotate)
-        .inplaceScale(this.randomSpeed)
-        .inplaceScaleAdd(this.targetPull, Vec3.b.setDelta(this.position, this.targetPosition))
+        .scale(this.randomScale)
+        .yzx()
+        .add(this.randomTranspose)
+        .map(Math.sin)
+        .rotateRotor3(this.randomRotate)
+        .scale(this.randomSpeed)
+        .scaleAdd(this.targetPull, Vec3.b.setDelta(this.position, this.targetPosition))
     );
   }
 }

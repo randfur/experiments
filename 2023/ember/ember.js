@@ -41,7 +41,7 @@ export class Ember {
     (async () => {
       while (!this.done) {
         (async () => {
-          const axis = new Vec3(deviate(1), deviate(1), deviate(1)).inplaceNormalise();
+          const axis = new Vec3(deviate(1), deviate(1), deviate(1)).normalise();
           const maxAngle = TAU * 0.06 * randomRange(1, 5);
           for await (const {progress, secondsDelta} of secondsRange(randomRange(3, 8))) {
             if (this.done) {
@@ -77,8 +77,8 @@ export class Ember {
       0.005,
     );
     const speed = progressSmooth(Math.min(Engine.seconds / this.maxSpeedDuration, 1)) * this.maxSpeed;
-    this.position.inplaceAdd(
-      Vec3.temp(0, 0, 1).inplaceRotateRotor3(this.orientation).inplaceScale(speed * secondsDelta),
+    this.position.add(
+      Vec3.temp(0, 0, 1).rotateRotor3(this.orientation).scale(speed * secondsDelta),
     );
   }
 
@@ -86,8 +86,8 @@ export class Ember {
     if (this.follow) {
       if (this.cameraBehind) {
         const trailPosition = Vec3.temp(0, 30, -150)
-          .inplaceRotateRotor3(this.orientation)
-          .inplaceAdd(this.position);
+          .rotateRotor3(this.orientation)
+          .add(this.position);
         Mat4.setTranslateVec3(Vec3.temp().setScale(-1, trailPosition))
           .leftRotateRotor3(
             Rotor3.setConjugate(this.orientation)
@@ -95,8 +95,8 @@ export class Ember {
           .exportToBuffer(hexLines.transformMatrix);
       } else {
         const trailPosition = Vec3.temp(0, 20, 60)
-          .inplaceRotateRotor3(this.orientation)
-          .inplaceAdd(this.position);
+          .rotateRotor3(this.orientation)
+          .add(this.position);
         Mat4.setTranslateVec3(Vec3.temp().setScale(-1, trailPosition))
           .leftRotateRotor3(
             Rotor3

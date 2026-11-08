@@ -20,9 +20,9 @@ export class Cross {
     drawModel(hexLines, crossModel, 10, brown, point => {
       return Vec3
         .scale(100, point)
-        .inplaceRotateXyAngle(0.05)
-        .inplaceAdd(this.position)
-        .inplaceAddXyz(-3 + bump, 1 - bump);
+        .rotateXyAngle(0.05)
+        .add(this.position)
+        .addXyz(-3 + bump, 1 - bump);
     });
   }
 }

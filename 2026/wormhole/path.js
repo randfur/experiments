@@ -65,7 +65,7 @@ export class Path {
 
     for (const point of this.points) {
       point.distance -= this.start.distance;
-      point.position.inplaceSubtract(this.start.position);
+      point.position.subtract(this.start.position);
     }
     this.style.subtractStart(this.start);
     this.start.distance = 0;
