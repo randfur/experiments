@@ -74,13 +74,9 @@ async function main() {
   while (true) {
     const time = await new Promise(requestAnimationFrame);
 
-    Mat4
-      .multiply(
-        Mat4.c.setRotateYz(-0.2),
-        Mat4.a.setTranslateXyz(0, -50, 250),
-      ).inplaceMultiplyRight(
-        Mat4.b.setRotateZx(-(time + 1000) / 3000),
-      )
+    Mat4.setRotateYz(-0.2)
+      .translateXyz(0, -50, 250)
+      .rotateZx(-(time + 1000) / 3000)
       .exportToBuffer(hexLines.transformMatrix);
 
     for (let i = 0; i < rootCount; ++i) {

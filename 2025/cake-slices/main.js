@@ -19,8 +19,8 @@ async function main() {
     Temp.reclaimAll();
     hexLines.clear();
 
-    Mat4.temp().setTranslateXyz(0, 0, 400)
-      .inplaceMultiplyRight(Mat4.temp().setRotateZx(time / 1800))
+    Mat4.setTranslateXyz(0, 0, 400)
+      .rotateZx(time / 1800)
       .exportToBuffer(hexLines.transformMatrix);
 
     const position = Vec3.temp(

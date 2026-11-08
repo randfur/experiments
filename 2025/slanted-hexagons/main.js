@@ -81,8 +81,8 @@ async function main() {
     hexLines.clear();
 
     // Spin camera.
-    Mat4.temp().setTranslateXyz(0, 0, 300)
-      .inplaceMultiplyRight(Mat4.temp().setRotateZx(time / 1000))
+    Mat4.setTranslateXyz(0, 0, 300)
+      .rotateZx(time / 1000)
       .exportToBuffer(hexLines.transformMatrix);
 
     drawFace(faceA, 4, {r: 255, g: 255, b: 255});

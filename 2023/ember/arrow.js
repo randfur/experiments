@@ -34,36 +34,30 @@ export class Arrow {
 
   draw(hexLines) {
     if (this.cameraBehind) {
-      Mat4.temp()
-        .setTranslateVec3(
+      Mat4.setTranslateVec3(
           Vec3.temp(0, 10, -50)
             .inplaceRotateRotor3(this.orientation)
             .inplaceAdd(this.position)
             .inplaceScale(-1)
         )
-        .inplaceMultiplyLeft(
-          Mat4.temp().setRotateRotor3(
-            Rotor3.temp().setConjugate(this.orientation)
-          )
+        .leftRotateRotor3(
+          Rotor3.temp().setConjugate(this.orientation)
         )
         .exportToBuffer(hexLines.transformMatrix);
     } else {
-      Mat4.temp()
-        .setTranslateVec3(
+      Mat4.setTranslateVec3(
           Vec3.temp(0, 10, 80)
             .inplaceRotateRotor3(this.orientation)
             .inplaceAdd(this.position)
             .inplaceScale(-1)
         )
-        .inplaceMultiplyLeft(
-          Mat4.temp().setRotateRotor3(
-            Rotor3.temp()
-              .setMultiply(
-                Rotor3.temp().setTurnAround(Vec3.temp(0, 0, 1), Vec3.temp(1, 0, 0)),
-                this.orientation,
-              )
-              .inplaceConjugate()
-          )
+        .leftRotateRotor3(
+          Rotor3.temp()
+            .setMultiply(
+              Rotor3.temp().setTurnAround(Vec3.temp(0, 0, 1), Vec3.temp(1, 0, 0)),
+              this.orientation,
+            )
+            .inplaceConjugate()
         )
         .exportToBuffer(hexLines.transformMatrix);
     }

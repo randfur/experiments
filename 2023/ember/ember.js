@@ -88,29 +88,23 @@ export class Ember {
         const trailPosition = Vec3.temp(0, 30, -150)
           .inplaceRotateRotor3(this.orientation)
           .inplaceAdd(this.position);
-        Mat4.temp()
-          .setTranslateVec3(Vec3.temp().setScale(-1, trailPosition))
-          .inplaceMultiplyLeft(
-            Mat4.temp().setRotateRotor3(
-              Rotor3.temp()
-                .inplaceMultiplyRight(this.orientation)
-                .inplaceConjugate()
-            )
+        Mat4.setTranslateVec3(Vec3.temp().setScale(-1, trailPosition))
+          .leftRotateRotor3(
+            Rotor3.temp()
+              .inplaceMultiplyRight(this.orientation)
+              .inplaceConjugate()
           )
           .exportToBuffer(hexLines.transformMatrix);
       } else {
         const trailPosition = Vec3.temp(0, 20, 60)
           .inplaceRotateRotor3(this.orientation)
           .inplaceAdd(this.position);
-        Mat4.temp()
-          .setTranslateVec3(Vec3.temp().setScale(-1, trailPosition))
-          .inplaceMultiplyLeft(
-            Mat4.temp().setRotateRotor3(
-              Rotor3.temp()
-                .setTurnAround(Vec3.temp(0, 0, 1), Vec3.temp(1, 0, 0))
-                .inplaceMultiplyRight(this.orientation)
-                .inplaceConjugate()
-            )
+        Mat4.setTranslateVec3(Vec3.temp().setScale(-1, trailPosition))
+          .leftRotateRotor3(
+            Rotor3.temp()
+              .setTurnAround(Vec3.temp(0, 0, 1), Vec3.temp(1, 0, 0))
+              .inplaceMultiplyRight(this.orientation)
+              .inplaceConjugate()
           )
           .exportToBuffer(hexLines.transformMatrix);
       }

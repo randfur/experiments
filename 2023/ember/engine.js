@@ -38,7 +38,6 @@ export class Engine {
   static async run() {
     while (true) {
       const secondsDelta = await this.nextFrame;
-      console.log(secondsDelta);
       this.nextFrame = this.nextFramePromise();
       Temp.reclaimAll();
       this.hexLines.clear();

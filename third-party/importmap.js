@@ -1,16 +1,12 @@
 (() => {
   const baseUrl = new URL('.', document.currentScript.src);
-  const libraries = [
-    'hex-lines/',
-    'hex-game/',
-    'ga/',
-  ];
+  const imports = {
+    'hex-lines': `${baseUrl}hex-lines/src/hex-lines.js`,
+    'hex-game': `${baseUrl}hex-game/src/hex-game.js`,
+    'ga': `${baseUrl}ga/src/index.js`,
+  };
   const importMap = document.createElement('script');
   importMap.type = 'importmap';
-  importMap.textContent = JSON.stringify({
-    imports: Object.fromEntries(
-      libraries.map(library => [library, baseUrl + library])
-    ),
-  });
+  importMap.textContent = JSON.stringify({imports});
   document.currentScript.after(importMap);
 })();

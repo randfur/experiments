@@ -17,10 +17,10 @@ async function main() {
     path.progressCamera(time);
     hexLines.clear();
     path.render(hexLines, time);
-    Mat4.multiply(
-      Mat4.a.setRotateRotor3(Rotor3.conjugate(path.getPointByDistance(100).orientation)),
-      Mat4.b.setTranslateVec3(Vec3.scale(-1, path.start.position)),
-    ).exportToBuffer(hexLines.transformMatrix);
+    Mat4
+      .setRotateRotor3(Rotor3.conjugate(path.getPointByDistance(100).orientation))
+      .translateVec3(Vec3.scale(-1, path.start.position))
+      .exportToBuffer(hexLines.transformMatrix);
     hexLines.draw();
   }
 }

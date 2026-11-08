@@ -1,3 +1,6 @@
+# 2026-11-08
+- Updated to use newer style of Mat4 inplace methods and singleton.
+
 # 2024-07-25
 - Replaced third-party/{hex-lines,ga} with 2023 common checkouts.
   - This is part of consolidating 2023's experiments to use the same third-party checkouts to improve repo initialisation times on GitHub.

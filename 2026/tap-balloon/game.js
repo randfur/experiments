@@ -294,7 +294,7 @@ export class Game {
 
   draw(hexLines) {
     Mat4
-      .translateXyz(0, 0, 800)
+      .setTranslateXyz(0, 0, 800)
       .exportToBuffer(hexLines.transformMatrix);
 
     if (this.gameOver) {

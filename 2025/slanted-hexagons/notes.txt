@@ -1,2 +1,5 @@
+# 2026-11-08
+- Updated to use newer style of Mat4 inplace methods and singleton.
+
 # 2025-08-24
 - Forked from cake-slices to preserve the hexagon collision detection test.

@@ -35,19 +35,10 @@ async function main() {
       hexBall.render(hexLines);
     }
 
-    new Mat4()
-      .inplaceMultiplyLeft(
-        new Mat4().setRotateXy(TAU / 4 - time / 10000)
-      )
-      .inplaceMultiplyLeft(
-        new Mat4().setTranslateXyz(0, 2000, -1000)
-      )
-      .inplaceMultiplyLeft(
-        new Mat4().setRotateYz(0.7 * TAU / 4)
-      )
-      .inplaceMultiplyLeft(
-        new Mat4().setTranslateXyz(0, 0, 6000)
-      )
+    Mat4.setRotateXy(TAU / 4 - time / 10000)
+      .leftTranslateXyz(0, 2000, -1000)
+      .leftRotateYz(0.7 * TAU / 4)
+      .leftTranslateXyz(0, 0, 6000)
       .exportToBuffer(hexLines.transformMatrix);
 
     hexLines.draw();
@@ -128,12 +119,8 @@ class Model {
   render(hexLines) {
     this.transformMatrix
       .setScale(this.scale)
-      .inplaceMultiplyLeft(
-        Mat4.rotateRotor3(this.orientation)
-      )
-      .inplaceMultiplyLeft(
-        Mat4.translateVec3(this.translation)
-      );
+      .leftRotateRotor3(this.orientation)
+      .leftTranslateVec3(this.translation);
 
     for (let i = 0; i < this.sourcePoints.length; ++i) {
       const sourcePoint = this.sourcePoints[i];

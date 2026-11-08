@@ -69,14 +69,11 @@ async function main() {
 }
 
 function camera(hexLines, position, orientation) {
-  Mat4.temp()
-    .setTranslateVec3(
+  Mat4.setTranslateVec3(
       Vec3.temp().setScale(-1, position)
     )
-    .inplaceMultiplyLeft(
-      Mat4.temp().setRotateRotor3(
-        Rotor3.temp().setConjugate(orientation)
-      )
+    .leftRotateRotor3(
+      Rotor3.temp().setConjugate(orientation)
     )
     .exportToBuffer(hexLines.transformMatrix);
 }
