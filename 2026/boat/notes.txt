@@ -1,0 +1,7 @@
+# 2026-11-08
+- Boat controlled by mouse.
+  - Boat locked to centre of screen.
+  - Distance away from boat is target speed and direction.
+- Water has sine waves to start with.
+- Displacement physics, the more the boat is submerged below the surface the more upward force it receives.
+  - Driving into waves is how to invoke the displacement.

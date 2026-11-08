@@ -1,3 +1,8 @@
+# 2026-11-08
+- Added third-party/importmap.js as part of using hex-game.
+  - This allows hex-game to use the existing hex-lines and ga imports.
+  - All projects that use hex-game will need to <script src="../../third-party/importmap.js"></script> before their main.js.
+
 # 2026-10-17
 - Updated third-party/ga to a new version with JSDoc static typing comments and various backwards incompatible API changes.
   - The following projects needed updating.

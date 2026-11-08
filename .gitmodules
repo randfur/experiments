@@ -16,3 +16,6 @@
 [submodule "2025/ice/third-party/hex-lines"]
 	path = 2025/ice/third-party/hex-lines
 	url = git@github.com:randfur/hex-lines.git
+[submodule "third-party/hex-game"]
+	path = third-party/hex-game
+	url = git@github.com:randfur/hex-game.git
