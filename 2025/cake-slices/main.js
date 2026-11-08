@@ -1,7 +1,6 @@
 import {HexLinesContext} from '../../third-party/hex-lines/src/hex-lines.js';
 import {Temp} from '../../third-party/ga/src/temp.js';
 import {Mat4} from '../../third-party/ga/src/mat4.js';
-import {Rotor3} from '../../third-party/ga/src/rotor3.js';
 import {Vec3} from '../../third-party/ga/src/vec3.js';
 import {PlaneBasis} from '../../third-party/ga/src/plane-basis.js';
 import {createBox} from './box.js';

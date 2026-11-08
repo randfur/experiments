@@ -18,7 +18,7 @@ async function main() {
     hexLines.clear();
     path.render(hexLines, time);
     Mat4
-      .setRotateRotor3(Rotor3.conjugate(path.getPointByDistance(100).orientation))
+      .setRotateRotor3(Rotor3.setConjugate(path.getPointByDistance(100).orientation))
       .translateVec3(Vec3.scale(-1, path.start.position))
       .exportToBuffer(hexLines.transformMatrix);
     hexLines.draw();

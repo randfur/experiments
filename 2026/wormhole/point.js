@@ -18,7 +18,7 @@ export class Point {
   setLerp(a, b, t) {
     this.distance = lerp(a.distance, b.distance, t);
     this.position.setLerp(a.position, b.position, t);
-    this.orientation.setLerp(a.orientation, b.orientation, t).inplaceNormalise();
+    this.orientation.setLerp(a.orientation, b.orientation, t).normalise();
     return this;
   }
 }

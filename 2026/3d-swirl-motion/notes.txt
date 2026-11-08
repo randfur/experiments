@@ -1,3 +1,6 @@
+# 2026-11-08
+- Updated to use newer style of ga inplace methods and singleton.
+
 # 2026-04-15
 - When the boxes are bunched up it looks too square.
   - Likely due to the cyclical nature of the sin on each axis.

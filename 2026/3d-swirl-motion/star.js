@@ -26,14 +26,14 @@ export class Star extends Swirly {
       b: 100 + Math.max(0, random(50 - distance * 10)),
     };
     this.model.scale = 1 / (1 + distance);
-    this.rotateVelocity = new Rotor3(20 + deviate(1), deviate(1), deviate(1), deviate(1)).inplaceNormalise();
+    this.rotateVelocity = new Rotor3(20 + deviate(1), deviate(1), deviate(1), deviate(1)).normalise();
   }
 
   update() {
     super.update();
 
     this.model.translate.set(this.position);
-    this.model.rotate.inplaceMultiplyRight(this.rotateVelocity).inplaceNormalise();
+    this.model.rotate.multiply(this.rotateVelocity).normalise();
     this.model.transformPoints();
   }
 

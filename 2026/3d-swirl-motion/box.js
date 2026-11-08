@@ -26,7 +26,7 @@ export class Box extends Swirly {
       deviate(1),
       deviate(1),
       deviate(1),
-    ).inplaceNormalise();
+    ).normalise();
 
     this.originalRandomSpeed = this.randomSpeed;
     this.originalRandomScale = this.randomScale;
@@ -35,7 +35,7 @@ export class Box extends Swirly {
 
     this.model = new Model(Box.cubePoints);
     this.model.scale = 1 - random(0.5);
-    this.rotateVelocity = new Rotor3(100 + deviate(1), deviate(1), deviate(1), deviate(1)).inplaceNormalise();
+    this.rotateVelocity = new Rotor3(100 + deviate(1), deviate(1), deviate(1), deviate(1)).normalise();
 
     const starCount = 20;
     this.stars = [];
@@ -65,7 +65,7 @@ export class Box extends Swirly {
     super.update();
 
     this.model.translate.set(this.position);
-    this.model.rotate.inplaceMultiplyRight(this.rotateVelocity).inplaceNormalise();
+    this.model.rotate.multiply(this.rotateVelocity).normalise();
     this.model.transformPoints();
 
     for (const star of this.stars) {

@@ -71,8 +71,8 @@ class HexBall {
     --this.timer;
     this.direction.inplaceTurnTowards(this.model.translation, this.destination, Math.cos(TAU / 100));
     this.model.translation.inplaceScaleAdd(20, this.direction);
-    this.model.orientation.inplaceMultiplyRight(
-      Rotor3.vec3ToVec3(
+    this.model.orientation.multiply(
+      Rotor3.setVec3ToVec3(
         Vec3.b.set(this.direction).inplaceScale(0.05).inplaceAddXyz(0, 0, 1),
         Vec3.c.setZ(),
       )

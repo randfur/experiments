@@ -37,8 +37,8 @@ async function main() {
       lastPosition.y = y;
       switch (button) {
       case '0':
-        orientation.inplaceMultiplyRight(
-          Rotor3.temp().setVec3ToVec3(
+        orientation.multiply(
+          Rotor3.setVec3ToVec3(
             Vec3.temp(0, 0, 1).inplaceRotateRotor3(orientation),
             Vec3.temp(-deltaX, deltaY, 1000).inplaceRotateRotor3(orientation),
           )
@@ -73,7 +73,7 @@ function camera(hexLines, position, orientation) {
       Vec3.temp().setScale(-1, position)
     )
     .leftRotateRotor3(
-      Rotor3.temp().setConjugate(orientation)
+      Rotor3.setConjugate(orientation)
     )
     .exportToBuffer(hexLines.transformMatrix);
 }

@@ -1,5 +1,5 @@
 # 2026-11-08
-- Updated to use newer style of Mat4 inplace methods and singleton.
+- Updated to use newer style of ga inplace methods and singleton.
 
 # 2026-09-24
 - Added demo mode with AI cursor.

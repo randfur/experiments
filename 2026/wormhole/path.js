@@ -1,5 +1,4 @@
 import {Vec3} from '../../third-party/ga/src/vec3.js';
-import {Rotor3} from '../../third-party/ga/src/rotor3.js';
 import {Point} from './point.js';
 
 const TAU = Math.PI * 2;

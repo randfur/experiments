@@ -40,8 +40,8 @@ export class Shrapnel {
     this.colour = colour;
     this.orientation = new Rotor3();
     this.orientationVelocity = new Rotor3(deviate(1), deviate(1), deviate(1), deviate(1))
-      .inplaceNormalise()
-      .inplaceReduce(0.05 + random(0.2));
+      .normalise()
+      .reduce(0.05 + random(0.2));
     this.duration = 1000 + random(500);
     this.remaining = this.duration;
   }
@@ -49,7 +49,7 @@ export class Shrapnel {
   update(time, timeDelta) {
     this.position.inplaceScaleAdd(timeDelta, this.velocity);
 
-    this.orientation.inplaceMultiplyRight(this.orientationVelocity);
+    this.orientation.multiply(this.orientationVelocity);
 
     this.remaining -= timeDelta;
     if (this.remaining <= 0) {

@@ -47,8 +47,8 @@ export class Ember {
             if (this.done) {
               return;
             }
-            this.orientation.inplaceMultiplyRight(
-              Rotor3.temp().setAxisAngle(
+            this.orientation.multiply(
+              Rotor3.setAxisAngle(
                 axis,
                 progressSmooth(progressUpDown(progress)) * maxAngle * secondsDelta,
               )
@@ -70,7 +70,7 @@ export class Ember {
   }
 
   step(secondsDelta) {
-    this.orientation.inplaceTurnTo(
+    this.orientation.turnTo(
       this.position,
       Vec3.temp(0, 0, 1),
       Vec3.temp(),
@@ -90,9 +90,7 @@ export class Ember {
           .inplaceAdd(this.position);
         Mat4.setTranslateVec3(Vec3.temp().setScale(-1, trailPosition))
           .leftRotateRotor3(
-            Rotor3.temp()
-              .inplaceMultiplyRight(this.orientation)
-              .inplaceConjugate()
+            Rotor3.setConjugate(this.orientation)
           )
           .exportToBuffer(hexLines.transformMatrix);
       } else {
@@ -101,10 +99,10 @@ export class Ember {
           .inplaceAdd(this.position);
         Mat4.setTranslateVec3(Vec3.temp().setScale(-1, trailPosition))
           .leftRotateRotor3(
-            Rotor3.temp()
+            Rotor3
               .setTurnAround(Vec3.temp(0, 0, 1), Vec3.temp(1, 0, 0))
-              .inplaceMultiplyRight(this.orientation)
-              .inplaceConjugate()
+              .multiply(this.orientation)
+              .conjugate()
           )
           .exportToBuffer(hexLines.transformMatrix);
       }

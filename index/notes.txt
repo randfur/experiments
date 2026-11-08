@@ -4,7 +4,7 @@
   - All projects that use hex-game will need to <script src="../../third-party/importmap.js"></script> before their main.js.
 - Updated dependencies to have a singular export js file so root imports can be used e.g.:
   - import {Vec3, Mat4} from 'ga';
-- Updated Mat4 to use new style inplace instance methods.
+- Updated uses of Mat4 and Rotor3 to use new style inplace instance and static methods.
 
 # 2026-10-17
 - Updated third-party/ga to a new version with JSDoc static typing comments and various backwards incompatible API changes.

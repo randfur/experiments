@@ -98,7 +98,7 @@ export class Aeroplane {
     return position
       .inplaceScale(this.radius)
       .inplaceRotateXy(this.launchDirection)
-      .inplaceRotateRotor3(Rotor3.axisAngle(this.launchDirection, this.roll))
+      .inplaceRotateRotor3(Rotor3.setAxisAngle(this.launchDirection, this.roll))
       .inplaceRotateXyAngle(this.roll / 3)
       .inplaceAdd(this.position);
   }

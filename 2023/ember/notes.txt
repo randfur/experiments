@@ -1,5 +1,5 @@
 # 2026-11-08
-- Updated to use newer style of Mat4 inplace methods and singleton.
+- Updated to use newer style of ga inplace methods and singleton.
 
 # 2024-07-25
 - Replaced third-party/{hex-lines,ga} with 2023 common checkouts.

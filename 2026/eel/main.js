@@ -10,7 +10,7 @@ async function main() {
   const bones = range(10).map(i => ({
     length: 100,
     position: new Vec3(deviate(1), deviate(1), 400 + deviate(1)),
-    orientation: new Rotor3(deviate(1), deviate(1), deviate(1), deviate(1)).inplaceNormalise(),
+    orientation: new Rotor3(deviate(1), deviate(1), deviate(1), deviate(1)).normalise(),
   }));
 
   let last = null;

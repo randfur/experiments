@@ -25,10 +25,10 @@ export class Arrow {
   step() {
     this.orientation
       .inplaceMultiplyRight(
-        Rotor3.temp().setAxisAngle(Vec3.temp(0, 1, 0), TAU * 0.001 + 0.01 * Math.sin(performance.now() * 0.001))
+        Rotor3.setAxisAngle(Vec3.temp(0, 1, 0), TAU * 0.001 + 0.01 * Math.sin(performance.now() * 0.001))
       )
       .inplaceMultiplyRight(
-        Rotor3.temp().setAxisAngle(Vec3.temp(1, 0, 0), TAU * 0.003)
+        Rotor3.setAxisAngle(Vec3.temp(1, 0, 0), TAU * 0.003)
       )
   }
 
@@ -41,7 +41,7 @@ export class Arrow {
             .inplaceScale(-1)
         )
         .leftRotateRotor3(
-          Rotor3.temp().setConjugate(this.orientation)
+          Rotor3.setConjugate(this.orientation)
         )
         .exportToBuffer(hexLines.transformMatrix);
     } else {
@@ -52,11 +52,9 @@ export class Arrow {
             .inplaceScale(-1)
         )
         .leftRotateRotor3(
-          Rotor3.temp()
-            .setMultiply(
-              Rotor3.temp().setTurnAround(Vec3.temp(0, 0, 1), Vec3.temp(1, 0, 0)),
-              this.orientation,
-            )
+          Rotor3
+            .setTurnAround(Vec3.temp(0, 0, 1), Vec3.temp(1, 0, 0))
+            .multiply(this.orientation)
             .inplaceConjugate()
         )
         .exportToBuffer(hexLines.transformMatrix);

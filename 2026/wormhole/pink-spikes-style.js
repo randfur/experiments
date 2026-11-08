@@ -36,13 +36,13 @@ export class PinkSpikesStyle extends Style {
 
   getNextPoint(pointStepDistance) {
     ++this.stepCount;
-    this.end.orientation.inplaceMultiplyLeft(
-      Rotor3.axisAngle(
+    this.end.orientation.leftMultiply(
+      Rotor3.setAxisAngle(
         Vec3.polar(this.stepCount / 40),
         0.02,
       ),
-    ).inplaceMultiplyLeft(
-      Rotor3.axisAngle(
+    ).leftMultiply(
+      Rotor3.setAxisAngle(
         Vec3.polar(this.stepCount / 400 + 5).inplaceOrthogonal().inplaceNormalise(),
         0.015,
       ),
