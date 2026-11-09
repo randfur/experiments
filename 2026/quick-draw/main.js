@@ -1,12 +1,12 @@
-import {HexGame, Pointer} from 'hex-game';
+import {Game, Pointer} from 'hex-game';
 import {Vec3} from 'ga';
 
 async function main() {
-  HexGame.init({
+  Game.init({
     is3d: false,
     enableContextMenu: false,
   });
-  HexGame.add(QuickDraw);
+  Game.add(QuickDraw);
 }
 
 class QuickDraw {
@@ -15,7 +15,7 @@ class QuickDraw {
     this.points = [];
     this.deleteRadius = 20;
     this.pointerPosition = new Vec3();
-    this.boxSize = Math.min(HexGame.width, HexGame.height) / 4;
+    this.boxSize = Math.min(Game.width, Game.height) / 4;
   }
 
   static update() {
@@ -84,11 +84,11 @@ class QuickDraw {
       {position: new Vec3(-this.boxSize, this.boxSize), size: 3, colour: white},
       {position: new Vec3(-this.boxSize, -this.boxSize), size: 3, colour: white},
       null,
-      {position: new Vec3(-HexGame.width, 0), size: 1, colour: white},
-      {position: new Vec3(HexGame.width, 0), size: 1, colour: white},
+      {position: new Vec3(-Game.width, 0), size: 1, colour: white},
+      {position: new Vec3(Game.width, 0), size: 1, colour: white},
       null,
-      {position: new Vec3(0, -HexGame.height), size: 1, colour: white},
-      {position: new Vec3(0, HexGame.height), size: 1, colour: white},
+      {position: new Vec3(0, -Game.height), size: 1, colour: white},
+      {position: new Vec3(0, Game.height), size: 1, colour: white},
       null,
     ]);
 

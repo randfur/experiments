@@ -1,9 +1,9 @@
-import {HexGame} from 'hex-game';
+import {Game} from 'hex-game';
 import {Vec3, Rotor3, Mat4} from 'ga';
 
 async function main() {
-  HexGame.init({is3d: true});
-  HexGame.entities.push(Boat, Water);
+  Game.init({is3d: true});
+  Game.entities.push(Boat, Water);
 }
 
 class Boat {
