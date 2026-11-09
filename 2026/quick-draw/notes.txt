@@ -1,3 +1,13 @@
+# 2026-11-10
+- Want to add support for switching which XY, YZ, ZX plane is being written to.
+  - Need to add UI buttons.
+- Can add slider to set the value of the third dimension.
+- Can draw the model in 3D with perspective, model will rotate with plane changes.
+- Can draw model rotating in 3D space on the side with coloured axes.
+- Rewriting to use hex-game.
+  - Will use to build out input module in hex-game.
+  - Success.
+
 # 2026-09-17
 - Quick and dirty co-ordinate capture for simple hard coded models.
 - Outputs to console.
