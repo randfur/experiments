@@ -19,7 +19,7 @@ export class Cross {
     const bump = (Math.floor(this.remaining / 40) % 2 == 0 ? 1 : -1) * 2;
     drawModel(hexLines, crossModel, 10, brown, point => {
       return Vec3
-        .scale(100, point)
+        .setScale(100, point)
         .rotateXyAngle(0.05)
         .add(this.position)
         .addXyz(-3 + bump, 1 - bump);
