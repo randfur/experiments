@@ -33,8 +33,8 @@ export class Exhaust {
     hexLines.addPointParts(this.position, this.size / 1.2, colour);
     hexLines.addPointParts(
       Vec3
-        .scaleAdd(this.position, (1 - this.remaining / this.duration) * this.length, this.velocityLocal)
-        .inplaceScaleAdd(this.length, this.velocityBase),
+        .setScaleAdd(this.position, (1 - this.remaining / this.duration) * this.length, this.velocityLocal)
+        .scaleAdd(this.length, this.velocityBase),
       this.size,
       colour,
     );
